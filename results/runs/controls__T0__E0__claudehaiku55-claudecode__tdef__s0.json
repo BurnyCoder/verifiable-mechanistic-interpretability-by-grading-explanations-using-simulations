@@ -1,0 +1,79 @@
+{
+  "kl_out": 0.009083891090443512,
+  "argmax_agreement": 1.0,
+  "accuracy": 1.0,
+  "target_accuracy": 1.0,
+  "sites": {
+    "resid_mid": {
+      "completeness": 0.006124663632857685,
+      "soundness": 0.058336556553722385,
+      "harmonic": 0.011085480087300995
+    },
+    "mlp_post": {
+      "completeness": 0.0,
+      "soundness": 0.14713836208029651,
+      "harmonic": 0.0
+    },
+    "resid_post": {
+      "completeness": 0.0,
+      "soundness": 0.14417000893943854,
+      "harmonic": 0.0
+    }
+  },
+  "hs": 0.0036951600291003314,
+  "centred_logit_fvu": 1.1404548274062536,
+  "calibrated_kl": 8.228644579275285e-06,
+  "calibration_scale": 2.694236486434261,
+  "cka": {
+    "resid_mid": 0.006704266644695093,
+    "mlp_post": 0.001970235242311334,
+    "resid_post": 0.0005216890293459783
+  },
+  "procrustes": {
+    "resid_mid": 1.915675220779005,
+    "mlp_post": 1.944815080113896,
+    "resid_post": 1.971352214096253
+  },
+  "matched_neuron_corr": 0.019730280465039662,
+  "matched_attention_distance": 0.31023294717737315,
+  "stitching_kl": NaN,
+  "embedding_spectrum_cosine": 0.04638346311713933,
+  "failed": false,
+  "error": null,
+  "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s0",
+  "stage": "controls",
+  "target": "T0",
+  "level": "E0",
+  "variant": "",
+  "round": 1,
+  "model": "claude-haiku-5-5",
+  "temperature": null,
+  "seed": 0,
+  "selftest": true,
+  "harness": "claudecode",
+  "effort": "medium",
+  "agent": {
+    "exit_code": 0,
+    "seconds": 90,
+    "timeout_s": 3600,
+    "events": 76,
+    "steps": 10,
+    "tool_calls": 4,
+    "errors": 0,
+    "wsl_returncode": 0,
+    "cost_usd": 0.0123,
+    "total_claude_spend_usd": 0.208,
+    "starter_unchanged": false
+  },
+  "audit": {
+    "flagged": false,
+    "reasons": [],
+    "suspicious_terms": []
+  },
+  "length": {
+    "chars": 279,
+    "gzip_bytes": 226,
+    "numbers": 2
+  },
+  "finished": "2026-11-21T12:34:49"
+}
