@@ -50,8 +50,12 @@ def build(max_round: int) -> dict:
             refs += [{"target": t, "kind": "distilled student", "hs": x["hs"], "kl_out": x["kl_out"]} for x in d["students"]]
     hyp = RES / f"hypotheses_round{max_round}.json"
     H = json.loads(hyp.read_text())["hypotheses"] if hyp.exists() else {}
+    from vmi.analysis.predictions import prediction_rows  # predicted vs. observed, same rows as the docs' table
+    pred = {r["id"]: r for r in prediction_rows(max_round)}
     verdicts = [{"id": k, "verdict": v.get("verdict") or "; ".join(f"{a}: {b}" for a, b in v.get("verdicts", {}).items()),
-                 "evidence": str(v.get("label", v.get("N", "")))} for k, v in H.items()]
+                 "evidence": str(v.get("label", v.get("N", ""))), "predicted": pred.get(k, {}).get("predicted", ""),
+                 "observed": pred.get(k, {}).get("observed", ""), "matches": pred.get(k, {}).get("matches", "")}
+                for k, v in H.items()]
     data = {"round": max_round, "runs": runs, "compiler": compiler, "references": refs, "hypotheses": verdicts,
             "key_results_md": tables.key_results(max_round)}
     OUT.write_text(json.dumps(data, indent=1), encoding="utf-8", newline="\n")

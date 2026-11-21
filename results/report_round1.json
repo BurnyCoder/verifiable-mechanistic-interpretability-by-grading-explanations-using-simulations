@@ -11,14 +11,16 @@
   ],
   "filled": {
     "README.md": [
-      "hypotheses",
       "scoreboard-T0",
       "baselines-T0",
-      "key-results"
+      "key-results",
+      "predictions",
+      "replications"
     ],
     "reports/summary.md": [
-      "hypotheses",
-      "key-results"
+      "key-results",
+      "predictions",
+      "replications"
     ],
     "reports/experiments/experiments.md": [
       "runs",
@@ -26,7 +28,6 @@
       "targets"
     ],
     "reports/paper/paper.md": [
-      "hypotheses",
       "runs",
       "scoreboard-T0",
       "baselines-T0",
@@ -39,6 +40,8 @@
       "explainer-sensitivity-T0",
       "frequencies",
       "stitching-T0",
+      "predictions",
+      "replications",
       "compiler-T0",
       "compiler-T1",
       "compiler-T2",
@@ -49,7 +52,6 @@
       "compiler-dev"
     ],
     "reports/experiments/01-round1/experiment.md": [
-      "hypotheses",
       "runs",
       "scoreboard-T0",
       "baselines-T0",
@@ -58,6 +60,8 @@
       "grader-sensitivity-compiler-T0",
       "explainer-sensitivity-T0",
       "frequencies",
+      "predictions",
+      "replications",
       "compiler-T0",
       "compiler-T1",
       "compiler-T2",

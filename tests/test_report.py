@@ -41,6 +41,17 @@ def test_h5_h6_marked_not_evaluable_when_local_ablation_incomplete():
             assert H[k]["verdict"].startswith("not evaluable") and "above chance" in H[k]["label"]
 
 
+def test_predictions_cover_every_hypothesis_and_match_rule():
+    from vmi.analysis import predictions
+    assert predictions._match({"a": True, "b": True}) == "yes"
+    assert predictions._match({"a": False, "b": False}).startswith("no (a; b")
+    assert predictions._match({"a": True, "b": False}) == "partly (b)"
+    rows = predictions.prediction_rows(1)
+    if rows:  # one row per preregistered hypothesis that has been evaluated, each with a prediction and an observation
+        assert {r["id"] for r in rows} <= set(predictions.PREDICTED) and all(r["observed"] and r["matches"] for r in rows)
+        assert "| H1 |" in tables.predictions_table(1)
+
+
 def test_key_results_report_the_target_swap_when_present():
     import json
     fq = tables.RES / "frequencies_round1.json"

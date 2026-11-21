@@ -128,6 +128,6 @@ scripts are reviewed by hand (`results/audit_reviews.json`).
 <!-- BEGIN cost -->
 | Model | runs (incl. checks) | requests | spend (USD) |
 |---|---|---|---|
-| claude-haiku-5-5 | 39 | 368 | 0.859 |
-| **total** | 39 | 368 | **0.859** |
+| claude-haiku-5-5 | 44 | 398 | 0.927 |
+| **total** | 44 | 398 | **0.927** |
 <!-- END cost -->

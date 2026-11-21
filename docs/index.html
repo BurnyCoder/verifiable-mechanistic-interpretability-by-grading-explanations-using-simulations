@@ -176,7 +176,8 @@ fetch("data.json").then(r => r.json()).then(D => {
   }
 
   function drawHyp(D) { const t = document.getElementById("hyp");
-    t.innerHTML = "<tr><th>Hypothesis</th><th>Verdict</th><th>Evidence size</th></tr>" + D.hypotheses.map(h => `<tr><td>${h.id}</td><td>${h.verdict}</td><td>${h.evidence}</td></tr>`).join(""); }
+    t.innerHTML = "<tr><th>Hypothesis</th><th>Predicted (preregistration §5)</th><th>Observed (main simulator, T0)</th><th>Direction matches?</th><th>Formal verdict</th><th>Evidence size</th></tr>" +
+      D.hypotheses.map(h => `<tr><td>${h.id}</td><td>${h.predicted ?? ""}</td><td>${h.observed ?? ""}</td><td>${h.matches ?? ""}</td><td>${h.verdict}</td><td>${h.evidence}</td></tr>`).join(""); }
 
   function drawTable(D) { const cols = ["stage","target","level","variant","model","seed","accuracy","kl_out","hs","matched_neuron_corr","cost_usd"];
     let sortKey = "stage", asc = true; const t = document.getElementById("runs");
