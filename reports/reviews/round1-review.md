@@ -92,3 +92,21 @@ is not a valid explanation score here; HS is valid for frequency-level content, 
 
 Promising methodology with clear, honestly reported negative results; not yet evidence at the strength the
 preregistration targets. Accept-worthy only after N = 10 and a second metric for sub-frequency structure.
+
+## Addendum at the end of round 1 (2026-11-21, after the seed stage and the local runs)
+
+15. **Results-driven stop of the local simulators (deviation 5).** The user stopped the Qwen runs after five runs at
+    chance. A stop on results can bias conclusions when it removes conditions that might have gone the other way.
+    Here the removed conditions only feed H5 and H6, which are now reported as "not evaluable"; no Haiku condition and
+    no other hypothesis depends on them. Residual risk: the 35B model, untested in round 1, might have worked. Its
+    seven stage-0 runs on the dev target reached at most 2.4 % task accuracy, which makes that unlikely but not
+    excluded. *Action:* disclosed in the preregistration, paper (method, results, limitations) and README.
+16. **Memorisation is now shown by a target swap,** not only by frequency sets: the same T0 E0/E1 weights score far
+    higher against the published checkpoint than against T0. Two replacements, N = 1; post hoc. *Action:* T-paper
+    excluded from every validity claim.
+17. **The stitching metric does not fill HS's blind spots.** After the NaN repair it produces values, but a linear
+    stitching map depends only on the subspace the replacement spans, so it has HS's invariance (W-alg and
+    W-scramble score like true explanations). *Action:* generated stitching table in the paper's discussion; the
+    second metric for sub-frequency structure remains open (matched-neuron correlation is the only candidate so far).
+18. **Prose readings re-read** after the final regeneration: Qwen text, H5/H6 text and the stitching sentence were
+    stale and are fixed.
