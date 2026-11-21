@@ -39,6 +39,7 @@ if [ "$MODE" = "claude" ]; then
   # enforces the dollar budget from claude.json and logs full request/response bodies (headers are not logged).
   python3 "$REPO/src/vmi/simulator/anthropic_proxy.py" "unix:$B/sock/llm.sock" "$RUN/claude.json" "$B/out/wire.log"     >"$B/out/proxy.log" 2>&1 &
   RUN_CAP="$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["run_cap_usd"])' "$RUN/claude.json")"
+  EFFORT="$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1])).get("effort", "medium"))' "$RUN/claude.json")"
 else
   # Outside relay: socket file → llama-server; logs every byte (full prompts and completions).
   python3 "$REPO/src/vmi/simulator/relay.py" unix-to-tcp "$B/sock/llm.sock" 127.0.0.1 "$PORT" "$B/out/wire.log" &
@@ -56,7 +57,7 @@ exec python3 /opt/vmi/harness.py /state/harness.json "$(cat /state/prompt.txt)" 
 elif [ "$MODE" = "claude" ]; then  # Claude Code with placeholder credentials; the outside proxy adds the real key
   INNER='python3 /opt/vmi/relay.py tcp-to-unix 127.0.0.1 '"$PORT"' /llm/llm.sock & sleep 0.5
 export ANTHROPIC_BASE_URL=http://127.0.0.1:'"$PORT"' ANTHROPIC_API_KEY=sandbox-placeholder-not-a-key   ANTHROPIC_SMALL_FAST_MODEL=claude-haiku-5-5 ANTHROPIC_DEFAULT_HAIKU_MODEL=claude-haiku-5-5 DISABLE_AUTOUPDATER=1   DISABLE_TELEMETRY=1 DISABLE_ERROR_REPORTING=1 CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
-exec /opt/cc/claude --bare -p "$(cat /state/prompt.txt)" --model '"$MODEL"' --output-format stream-json --verbose   --dangerously-skip-permissions --disallowedTools WebFetch WebSearch --no-session-persistence   --max-budget-usd '"$RUN_CAP"' </dev/null'
+exec /opt/cc/claude --bare -p "$(cat /state/prompt.txt)" --model '"$MODEL"' --output-format stream-json --verbose   --dangerously-skip-permissions --disallowedTools WebFetch WebSearch --no-session-persistence   --max-budget-usd '"$RUN_CAP"' --effort '"$EFFORT"' </dev/null'
 else
   INNER='python3 /opt/vmi/relay.py tcp-to-unix 127.0.0.1 '"$PORT"' /llm/llm.sock & sleep 0.5
 exec opencode run --standalone --auto --format json --thinking --agent weights --model '"$MODEL"' "$(cat /state/prompt.txt)" </dev/null'

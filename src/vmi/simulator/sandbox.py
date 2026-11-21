@@ -53,12 +53,13 @@ CLAUDE_RUN_CAPS_USD = {"claude-haiku-5-5": 2.0, "claude-sonnet-5-5": 6.0, "claud
 CLAUDE_LEDGER = REPO_ROOT / "results" / "claude" / "ledger.jsonl"  # every priced request of every Claude run
 
 
-def claude_config(settings: Settings, *, model: str, run_id: str) -> dict:
-    """Config of the outside proxy for one Claude Code run (paths as seen from WSL, where the proxy runs)."""
+def claude_config(settings: Settings, *, model: str, run_id: str, effort: str | None = None) -> dict:
+    """Config of the outside proxy (and Claude Code's effort level) for one Claude Code run; paths as seen from WSL."""
     from vmi.simulator.runner import to_wsl
 
     CLAUDE_LEDGER.parent.mkdir(parents=True, exist_ok=True)
     return {"upstream": "https://api.anthropic.com", "run_id": run_id, "ledger": to_wsl(CLAUDE_LEDGER),
+            "effort": effort or "medium",  # Claude Code's default; the hyperparameter stage uses low and high
             "models": sorted({model, "claude-haiku-5-5"}),  # Claude Code's background calls use the small model
             "cap_usd": settings.claude_cap_usd, "run_cap_usd": CLAUDE_RUN_CAPS_USD[model], "reserve_usd": 0.5}
 
@@ -105,7 +106,8 @@ def opencode_config(settings: Settings, *, model: str, temperature: float, seed:
 
 
 def prepare_run(settings: Settings, run_dir: Path, *, explanation: str, extra_files: dict[str, str], meta: dict,
-                model: str | None = None, temperature: float | None = None, seed: int = 0, selftest: bool = True) -> Path:
+                model: str | None = None, temperature: float | None = None, seed: int = 0, selftest: bool = True,
+                effort: str | None = None) -> Path:
     """Create run_dir with work/, opencode.jsonc, prompt.txt and run.json; return run_dir."""
     if run_dir.exists():
         shutil.rmtree(run_dir)
@@ -134,7 +136,7 @@ def prepare_run(settings: Settings, run_dir: Path, *, explanation: str, extra_fi
     hcfg = harness_config(settings, model=model, temperature=temperature, seed=seed)
     (run_dir / "harness.json").write_text(json.dumps(hcfg, indent=2), encoding="utf-8", newline="\n")
     if model.startswith("claude-"):  # Claude Code: sampling is the model's default (Claude 5.5 rejects custom values)
-        ccfg = claude_config(settings, model=model, run_id=run_dir.name)
+        ccfg = claude_config(settings, model=model, run_id=run_dir.name, effort=effort)
         (run_dir / "claude.json").write_text(json.dumps(ccfg, indent=2), encoding="utf-8", newline="\n")
     (run_dir / "prompt.txt").write_text(PROMPT if selftest else PROMPT_NO_SELFTEST, encoding="utf-8", newline="\n")
     (run_dir / "run.json").write_text(json.dumps({**meta, "model": model, "temperature": temperature, "seed": seed,

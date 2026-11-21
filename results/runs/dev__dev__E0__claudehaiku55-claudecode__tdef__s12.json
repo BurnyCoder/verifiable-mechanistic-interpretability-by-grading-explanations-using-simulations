@@ -1,0 +1,84 @@
+{
+  "kl_out": 2.4143683805598068e-05,
+  "argmax_agreement": 1.0,
+  "accuracy": 1.0,
+  "target_accuracy": 1.0,
+  "sites": {
+    "resid_mid": {
+      "completeness": 0.4036673233190554,
+      "soundness": 0.06249979644659176,
+      "harmonic": 0.10824069081605224
+    },
+    "mlp_post": {
+      "completeness": 0.8318428725987796,
+      "soundness": 0.11472640510871956,
+      "harmonic": 0.2016425942318802
+    },
+    "resid_post": {
+      "completeness": 0.6413923727357265,
+      "soundness": 0.10973632323604521,
+      "harmonic": 0.1874087386439215
+    }
+  },
+  "hs": 0.16576400789728465,
+  "centred_logit_fvu": 1.85532302459069,
+  "calibrated_kl": 1.044304640790264e-06,
+  "calibration_scale": 0.14144261442096118,
+  "cka": {
+    "resid_mid": 0.1410562683068493,
+    "mlp_post": 0.17225844536125812,
+    "resid_post": 0.1412023314163062
+  },
+  "procrustes": {
+    "resid_mid": 1.7140043441456099,
+    "mlp_post": 1.6200035579054313,
+    "resid_post": 1.7149292519794836
+  },
+  "matched_neuron_corr": 0.0743480987309043,
+  "matched_attention_distance": 0.30122528719800284,
+  "stitching_kl": NaN,
+  "embedding_spectrum_cosine": 0.19387886766925835,
+  "failed": false,
+  "error": null,
+  "run_id": "dev__dev__E0__claudehaiku55-claudecode__tdef__s12",
+  "stage": "dev",
+  "target": "dev",
+  "level": "E0",
+  "variant": "",
+  "round": 0,
+  "model": "claude-haiku-5-5",
+  "temperature": null,
+  "seed": 12,
+  "selftest": true,
+  "harness": "claudecode",
+  "agent": {
+    "exit_code": 0,
+    "seconds": 140,
+    "timeout_s": 3600,
+    "events": 117,
+    "steps": 29,
+    "tool_calls": 13,
+    "errors": 0,
+    "wsl_returncode": 0,
+    "cost_usd": 0.0169,
+    "total_claude_spend_usd": 0.0346,
+    "starter_unchanged": false
+  },
+  "audit": {
+    "flagged": true,
+    "reasons": [
+      "gradient-descent pattern: gradient, update_in_loop, optimizer"
+    ],
+    "suspicious_terms": [
+      "gradient",
+      "update_in_loop",
+      "optimizer"
+    ]
+  },
+  "length": {
+    "chars": 279,
+    "gzip_bytes": 226,
+    "numbers": 2
+  },
+  "finished": "2026-11-21T11:56:34"
+}

@@ -7,11 +7,12 @@
 | Setting | Value |
 |---|---|
 | Architecture (target and replacement) | 1-layer transformer, p = 113, d_model 128, 4 heads × 32, d_mlp 512, ReLU, no LayerNorm (paper layout, `grokviz` `d52a898`) |
-| Main simulator | OpenCode 2.3.2 + Qwen3.6-35B-A3B UD-IQ4_XS (rev `a483e9e`), llama.cpp b12600, 48k context (amendment 1), `--n-cpu-moe 34`, temperature 0.6, per-run seed |
+| Main simulator (amendment 2) | Claude Code 2.1.330 + **Claude Haiku 5.5** (`claude-haiku-5-5`, default sampling, effort medium), API credits through a key-injecting, budget-capped proxy ($2/run, $20 total) |
+| Capability ablation simulators | Qwen3.6-35B-A3B UD-IQ4_XS, Qwen3.5-9B, Qwen3.5-4B (Q4_K_M) on llama.cpp b12600, custom bash-only harness (mini-SWE-agent design), 80k context, 16k thinking budget, Qwen coding preset (temperature 0.6, presence penalty 0) |
 | Sandbox | WSL2 + bubblewrap, no network, only the run folder writable, numpy only, no access to any target file |
-| Agent inputs | `TASK.md`, `EXPLANATION.md` (+ CSV for E4), `ARCHITECTURE.md`, `forward.py`, `selftest.py` |
+| Agent inputs | `TASK.md`, `EXPLANATION.md` (+ CSV for E4), `ARCHITECTURE.md`, `forward.py`, `selftest.py`, starter `build_weights.py` |
 | Agent output | `build_weights.py` + `weights.npz` (11 named arrays in the paper layout) |
-| Limits | 40 min wall clock, 60 agent steps, build script ≤ 60 s |
+| Limits | 60 min wall clock (amendment 2), 60 steps for the local harness (Claude Code: time and budget only), build script ≤ 60 s |
 | Grading | all 113² inputs; KL_out and HS (preregistration §4) plus secondary metrics |
 
 ## Stage 0 — tooling and smoke test (dev target `wd1_s10`, never reported)
@@ -31,12 +32,14 @@
 | Main method | T0 × {E1, E2, E3, E4} | 4 / 8 / 28 | reference compiler on E1–E4 |
 | Controls | T0 × {E0, W-freq, W-alg, W-role, W-scramble} | 5 / 10 / 35 | random init ×5, wrong targets, planted calibration (trained), trajectory over 401 checkpoints |
 | Baselines | — | — | 9 retrains, 3 distilled students (trained), compiler on all explanations, Fourier-restricted M, weights dump |
-| Ablations | Qwen3.5-9B, Qwen3.5-4B × {E2, E3, E4, W-freq}; E3 math-format, E3 code-format; E3 self-test off | 11 / 22 / 77 | — |
-| Hyperparameter sensitivity | temperature 0.2, 1.0 × {E3, W-freq} | 4 / 8 / 28 | grader and explainer settings re-scored |
+| Ablations | Qwen3.6-35B-A3B, Qwen3.5-9B, Qwen3.5-4B (local) × {E2, E3, E4, W-freq}; E3 math-format, E3 code-format; E3 self-test off (Haiku) | 15 / 30 / 105 | — |
+| Hyperparameter sensitivity | effort low, high × {E3, W-freq} (amendment 2: Claude 5.5 rejects custom temperature) | 4 / 8 / 28 | grader and explainer settings re-scored |
 | Seed sensitivity | T1, T2 × {E2, E3, E4, W-freq}; T-new × {E3, E4, W-freq}; T-paper × {E-paper, E1, E3, E4, W-freq} | 16 / 32 / 112 | T-new trained (after freeze); redrawn W-freq/W-scramble; grader fold seeds |
-| **Total agent runs** | 40 conditions | **40 / 80 / 280** (400 total) | |
+| **Total agent runs** | 44 conditions | **44 / 88 / 308** (440 total; 352 Haiku, 88 local) | |
 
-Estimated GPU time at ~20 min per run: round 1 ≈ 13 h, round 2 ≈ 27 h, round 3 ≈ 90 h. Training jobs take minutes.
+Cost and time (amendment 2): Haiku runs took 2–8 minutes and ~$0.02 each on the dev target (≈ $7 for all three
+rounds, inside the $20 cap); local runs take up to 60 minutes of GPU time each (12 / 24 / 84 per round). Training jobs
+take minutes.
 
 ## Training jobs (all with the paper's official recipe unless stated)
 

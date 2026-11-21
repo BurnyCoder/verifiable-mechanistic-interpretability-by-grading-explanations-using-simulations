@@ -127,7 +127,8 @@ def run_id(stage: str, target: str, level: str, seed: int, model: str, temperatu
 
 
 def agent_run(settings: Settings, *, stage: str, target: str, level: str, seed: int, model: str | None = None,
-              temperature: float | None = None, selftest: bool = True, variant: str = "", round_: int = 0) -> dict:
+              temperature: float | None = None, selftest: bool = True, variant: str = "", round_: int = 0,
+              harness: str | None = None, effort: str | None = None) -> dict:
     """One full agent run: prepare → run offline in the sandbox → audit → grade → results/runs/<id>.json."""
     from vmi import targets
     from vmi.grader.score import grade_npz
@@ -135,6 +136,8 @@ def agent_run(settings: Settings, *, stage: str, target: str, level: str, seed: 
     from vmi.simulator.runner import run_agent
     from vmi.simulator.sandbox import prepare_run
 
+    if harness:  # per-condition harness from the manifest
+        settings = dataclasses.replace(settings, harness=harness)
     model = model or settings.llm_model
     temperature = settings.llm_temperature if temperature is None else temperature
     if model.startswith("claude-"):  # Claude 5.5 models reject non-default sampling parameters
@@ -149,7 +152,7 @@ def agent_run(settings: Settings, *, stage: str, target: str, level: str, seed: 
     run_dir = settings.runs_dir / rid
     meta = {"run_id": rid, "stage": stage, "target": target, "level": level, "variant": variant, "round": round_}
     prepare_run(settings, run_dir, explanation=text, extra_files=extra, meta=meta, model=model,
-                temperature=temperature, seed=seed, selftest=selftest)
+                temperature=temperature, seed=seed, selftest=selftest, effort=effort)
     mode = {"mini": "harness", "claudecode": "claude"}.get(settings.harness, "agent")
     if mode == "claude" and not model.startswith("claude-"):
         raise ValueError(f"the claudecode harness needs a Claude model id, got {model}")
@@ -166,7 +169,7 @@ def agent_run(settings: Settings, *, stage: str, target: str, level: str, seed: 
     res = grade_npz(targets.load_model(settings, target), run_dir / "work_out" / "weights.npz")
     length = json.loads((RESULTS / "explanations" / target / exp_level / "length.json").read_text())
     res.update({**meta, "model": model, "temperature": temperature, "seed": seed, "selftest": selftest,
-                "harness": settings.harness,
+                "harness": settings.harness, "effort": effort or ("medium" if mode == "claude" else None),
                 "agent": info, "audit": au, "length": length, "finished": time.strftime("%Y-%m-%dT%H:%M:%S")})
     _dump(result_file, res)
     log.info("run %s: failed=%s acc=%.4f KL=%.3g HS=%.3f audit=%s steps=%s %ss", rid, res["failed"], res["accuracy"],
@@ -174,11 +177,30 @@ def agent_run(settings: Settings, *, stage: str, target: str, level: str, seed: 
     return res
 
 
+def served_model(settings: Settings) -> str | None:
+    """Alias of the model llama-server is serving now (None if no server answers)."""
+    import httpx
+    try:
+        return httpx.get(f"http://127.0.0.1:{settings.llm_port}/props", timeout=5).json().get("model_alias")
+    except (httpx.HTTPError, ValueError):
+        return None
+
+
 def queue(settings: Settings, manifest: Path) -> None:
-    """Run every condition in a JSONL manifest (one JSON object of agent_run kwargs per line) without a result yet."""
+    """Run every condition in a JSONL manifest (one JSON object of agent_run kwargs per line) without a result yet.
+    Local-model conditions run only while llama-server serves that model; the others are skipped and picked up by
+    a later call with the right server (the queue is resumable)."""
     for line in manifest.read_text(encoding="utf-8").splitlines():
-        if line.strip():
-            agent_run(settings, **json.loads(line))
+        if not line.strip():
+            continue
+        cond = json.loads(line)
+        if cond.get("harness", settings.harness) != "claudecode":
+            want, have = cond.get("model", settings.llm_model), served_model(settings)
+            if want != have:
+                log.info("skip %s/%s/%s: needs llama-server serving %s (serving %s)", cond["stage"], cond["level"],
+                         cond.get("variant", ""), want, have)
+                continue
+        agent_run(settings, **cond)
 
 
 def main(argv: list[str] | None = None) -> None:

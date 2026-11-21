@@ -1,0 +1,9 @@
+{
+  "_about": "Manual review of build scripts flagged by the static audit (preregistration: static audit + manual review of flagged scripts). verdict 'valid' = no training or loss-driven weight updates; 'invalid' = run excluded from the primary analysis.",
+  "dev__dev__E0__claudehaiku55-claudecode__tdef__s12": {
+    "audit_terms": ["gradient", "update_in_loop", "optimizer"],
+    "verdict": "valid",
+    "reason": "Terms come from the comment 'Closed-form fit only, no gradient updates'. The only loop is a random search over sets of 16 frequencies scored by an analytic off-peak cosine criterion (no data, no labels, no weights updated against a loss); weights are constructed directly plus one np.linalg.lstsq read-out fit, which TASK.md allows.",
+    "reviewed": "2026-11-21"
+  }
+}

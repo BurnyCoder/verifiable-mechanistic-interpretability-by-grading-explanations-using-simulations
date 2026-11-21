@@ -16,27 +16,32 @@ from vmi.config import REPO_ROOT  # results folder
 
 STAGES = ("main", "controls", "ablations", "hyper", "seed")  # agent stages in order (baselines have no agent runs)
 ROUND_SEEDS = {1: [0], 2: [1, 2], 3: [3, 4, 5, 6, 7, 8, 9]}
-SMALL_MODELS = ("qwen3.5-9b", "qwen3.5-4b")  # ablation simulators (aliases served by llama-server)
+# Amendment 2: the main simulator is Claude Haiku 5.5 in Claude Code (the only simulator above the stage-0 rule); the
+# local Qwen models (custom harness, llama-server aliases) form the simulator-capability ablation
+MAIN = {"model": "claude-haiku-5-5", "harness": "claudecode"}
+LOCAL_MODELS = ("qwen3.6-35b-a3b", "qwen3.5-9b", "qwen3.5-4b")
 
 
 def conditions(stage: str) -> list[dict]:
     """Agent conditions of one stage (without seeds)."""
     if stage == "main":
-        return [{"stage": "main", "target": "T0", "level": lv} for lv in ("E1", "E2", "E3", "E4")]
+        return [{"stage": "main", "target": "T0", "level": lv, **MAIN} for lv in ("E1", "E2", "E3", "E4")]
     if stage == "controls":
-        return [{"stage": "controls", "target": "T0", "level": lv} for lv in ("E0", "W-freq", "W-alg", "W-role", "W-scramble")]
+        return [{"stage": "controls", "target": "T0", "level": lv, **MAIN}
+                for lv in ("E0", "W-freq", "W-alg", "W-role", "W-scramble")]
     if stage == "ablations":
-        out = [{"stage": "ablations", "target": "T0", "level": lv, "model": m} for m in SMALL_MODELS
+        out = [{"stage": "ablations", "target": "T0", "level": lv, "model": m, "harness": "mini"} for m in LOCAL_MODELS
                for lv in ("E2", "E3", "E4", "W-freq")]
-        out += [{"stage": "ablations", "target": "T0", "level": "E3", "variant": v} for v in ("fmt-math", "fmt-code")]
-        out.append({"stage": "ablations", "target": "T0", "level": "E3", "variant": "noselftest", "selftest": False})
+        out += [{"stage": "ablations", "target": "T0", "level": "E3", "variant": v, **MAIN} for v in ("fmt-math", "fmt-code")]
+        out.append({"stage": "ablations", "target": "T0", "level": "E3", "variant": "noselftest", "selftest": False, **MAIN})
         return out
-    if stage == "hyper":
-        return [{"stage": "hyper", "target": "T0", "level": lv, "temperature": t} for t in (0.2, 1.0) for lv in ("E3", "W-freq")]
+    if stage == "hyper":  # Claude 5.5 rejects non-default sampling, so effort replaces temperature (amendment 2)
+        return [{"stage": "hyper", "target": "T0", "level": lv, "variant": f"effort-{e}", "effort": e, **MAIN}
+                for e in ("low", "high") for lv in ("E3", "W-freq")]
     if stage == "seed":
-        out = [{"stage": "seed", "target": t, "level": lv} for t in ("T1", "T2") for lv in ("E2", "E3", "E4", "W-freq")]
-        out += [{"stage": "seed", "target": "T-new", "level": lv} for lv in ("E3", "E4", "W-freq")]
-        out += [{"stage": "seed", "target": "T-paper", "level": lv} for lv in ("E-paper", "E1", "E3", "E4", "W-freq")]
+        out = [{"stage": "seed", "target": t, "level": lv, **MAIN} for t in ("T1", "T2") for lv in ("E2", "E3", "E4", "W-freq")]
+        out += [{"stage": "seed", "target": "T-new", "level": lv, **MAIN} for lv in ("E3", "E4", "W-freq")]
+        out += [{"stage": "seed", "target": "T-paper", "level": lv, **MAIN} for lv in ("E-paper", "E1", "E3", "E4", "W-freq")]
         return out
     raise ValueError(stage)
 
