@@ -268,6 +268,30 @@ def frequencies_table(max_round: int, model: str = "claude-haiku-5-5") -> str:
     return "\n".join(rows)
 
 
+def predictions_table(max_round: int) -> str:
+    """Preregistered prediction vs. observation per hypothesis (main simulator), with the formal verdict beside it."""
+    from vmi.analysis.predictions import prediction_rows
+    rows = prediction_rows(max_round)
+    if not rows:
+        return "_not evaluated yet_"
+    out = ["| Hypothesis | Predicted (preregistration §5) | Observed (main simulator, T0) | Direction matches? | Formal verdict |",
+           "|---|-------|---------|-----|------|"]  # pandoc: dash counts set relative column widths in the PDF
+    out += [f"| {r['id']} | {r['predicted']} | {r['observed']} | {r['matches']} | {r['verdict']} · {r['evidence']} |" for r in rows]
+    return "\n".join(out)
+
+
+def replications_table(max_round: int) -> str:
+    """H1–H3 re-checked on the seed-sensitivity targets (preregistered replications)."""
+    from vmi.analysis.predictions import replication_rows
+    rows = replication_rows(max_round)
+    if not rows:
+        return "_not run yet_"
+    out = ["| Target | HS per true explanation | H1: HS rises E2→E4? | H2: HS(E3) − HS(W-freq) | H3 observed (W-freq) | H3 holds? |",
+           "|-----|------|---|---|-------|-----|"]
+    out += [f"| {r['target']} | {r['hs_by_level']} | {r['h1']} | {r['h2']} | {r['h3_observed']} | {r['h3']} |" for r in rows]
+    return "\n".join(out)
+
+
 def stitching_table(max_round: int, target: str = "T0") -> str:
     """Secondary causal metric: stitching KL of the main simulator's and the compiler's replacements, next to HS."""
     from vmi.analysis.hypotheses import _select, compiler, load_runs

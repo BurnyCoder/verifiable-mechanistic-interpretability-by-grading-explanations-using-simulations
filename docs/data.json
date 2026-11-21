@@ -344,6 +344,25 @@
    "calibrated_kl": 1.1528658733899824e-05
   },
   {
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s1",
+   "stage": "main",
+   "target": "T0",
+   "level": "E1",
+   "variant": "",
+   "model": "claude-haiku-5-5",
+   "seed": 1,
+   "round": 2,
+   "failed": false,
+   "cost_usd": 0.0127,
+   "seconds": 130,
+   "hs": 0.04482621260495612,
+   "kl_out": 0.27173407698425045,
+   "accuracy": 1.0,
+   "matched_neuron_corr": 0.02771750469422299,
+   "centred_logit_fvu": 1.0259199715639307,
+   "calibrated_kl": 1.453015474750023e-05
+  },
+  {
    "run_id": "main__T0__E2__claudehaiku55-claudecode__tdef__s0",
    "stage": "main",
    "target": "T0",
@@ -361,6 +380,25 @@
    "matched_neuron_corr": 0.6661768384338649,
    "centred_logit_fvu": 2.982374335930455,
    "calibrated_kl": 9.281313477162507e-06
+  },
+  {
+   "run_id": "main__T0__E2__claudehaiku55-claudecode__tdef__s1",
+   "stage": "main",
+   "target": "T0",
+   "level": "E2",
+   "variant": "",
+   "model": "claude-haiku-5-5",
+   "seed": 1,
+   "round": 2,
+   "failed": false,
+   "cost_usd": 0.0111,
+   "seconds": 96,
+   "hs": 0.8945524617726366,
+   "kl_out": 0.00027029522141211037,
+   "accuracy": 1.0,
+   "matched_neuron_corr": 0.6746810677993578,
+   "centred_logit_fvu": 0.38464623174314544,
+   "calibrated_kl": 1.1043139092921155e-05
   },
   {
    "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s0",
@@ -382,6 +420,25 @@
    "calibrated_kl": 0.0014366002133843418
   },
   {
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s1",
+   "stage": "main",
+   "target": "T0",
+   "level": "E3",
+   "variant": "",
+   "model": "claude-haiku-5-5",
+   "seed": 1,
+   "round": 2,
+   "failed": false,
+   "cost_usd": 0.0184,
+   "seconds": 155,
+   "hs": 0.9324099362097188,
+   "kl_out": 0.004628176695935077,
+   "accuracy": 0.9990602239799514,
+   "matched_neuron_corr": 0.7198878858598974,
+   "centred_logit_fvu": 0.12806345534589805,
+   "calibrated_kl": 0.001717943306723378
+  },
+  {
    "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s0",
    "stage": "main",
    "target": "T0",
@@ -399,6 +456,25 @@
    "matched_neuron_corr": 0.8879505455937202,
    "centred_logit_fvu": 0.13972182128587143,
    "calibrated_kl": 0.07898105378330182
+  },
+  {
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s1",
+   "stage": "main",
+   "target": "T0",
+   "level": "E4",
+   "variant": "",
+   "model": "claude-haiku-5-5",
+   "seed": 1,
+   "round": 2,
+   "failed": false,
+   "cost_usd": 0.0254,
+   "seconds": 199,
+   "hs": 0.9529163502723046,
+   "kl_out": 0.08540086427468419,
+   "accuracy": 0.9788550395489075,
+   "matched_neuron_corr": 0.8882466711864214,
+   "centred_logit_fvu": 0.13947916864825988,
+   "calibrated_kl": 0.07775490738018766
   },
   {
    "run_id": "seed__T-new__E3__claudehaiku55-claudecode__tdef__s0",
@@ -1365,48 +1441,75 @@
   {
    "id": "H1",
    "verdict": "not supported",
-   "evidence": "at N=1 \u2014 not yet N=3 or N=10"
+   "evidence": "at N=1 \u2014 not yet N=3 or N=10",
+   "predicted": "HS rises and output KL falls from E1 to E4 on T0; E0 lies below E1",
+   "observed": "HS E0 0.004, E1 0.048, E2 0.899, E3 0.939, E4 0.912; KL E1 1.05e-04, E2 1.20e-05, E3 0.023, E4 0.087",
+   "matches": "partly (HS not monotone E1\u2192E4; KL does not fall E1\u2192E4)"
   },
   {
    "id": "H2",
    "verdict": "E3>W-freq: cannot tell at this N; E3>W-alg: cannot tell at this N; E3>W-role: cannot tell at this N; E4>W-scramble: not supported",
-   "evidence": "at N=1 \u2014 not yet N=3 or N=10"
+   "evidence": "at N=1 \u2014 not yet N=3 or N=10",
+   "predicted": "true explanations beat length-matched false ones on HS: E3 > W-freq, W-alg, W-role; E4 > W-scramble",
+   "observed": "HS difference E3>W-freq +0.884; E3>W-alg +0.051; E3>W-role +0.771; E4>W-scramble -0.006",
+   "matches": "partly (E4>W-scramble reversed)"
   },
   {
    "id": "H3",
    "verdict": "supported",
-   "evidence": "at N=1 \u2014 not yet N=3 or N=10"
+   "evidence": "at N=1 \u2014 not yet N=3 or N=10",
+   "predicted": "W-freq: argmax agreement \u2265 0.99, KL not above the true E2\u2013E4 range, HS below each of E2\u2013E4",
+   "observed": "W-freq: agreement 1.000, KL 9.31e-04 (true 1.20e-05\u20130.087), HS 0.055 (true 0.899\u20130.939)",
+   "matches": "yes"
   },
   {
    "id": "H4",
    "verdict": "E3: cannot tell at this N; E4: cannot tell at this N",
-   "evidence": "at N=1 \u2014 not yet N=3 or N=10"
+   "evidence": "at N=1 \u2014 not yet N=3 or N=10",
+   "predicted": "E3 and E4 beat independent retrains on HS (vs. distilled students: open question, no direction)",
+   "observed": "E3 0.939, E4 0.912; 9 retrains mean 0.119 (max 0.329); 3 students mean 0.233 (max 0.282)",
+   "matches": "yes"
   },
   {
    "id": "H4b",
    "verdict": "not supported",
-   "evidence": "deterministic"
+   "evidence": "deterministic",
+   "predicted": "planted model: HS = 1 and KL = 0 at step 0, then HS strictly falls and KL strictly rises",
+   "observed": "HS 1.000 \u2192 0.998 \u2192 0.957 \u2192 0.888; KL 0.000 \u2192 0.371 \u2192 0.040 \u2192 4.25e-04",
+   "matches": "partly (KL not strictly rising)"
   },
   {
    "id": "H5",
    "verdict": "not evaluable (local simulators stopped at chance, deviation 5)",
-   "evidence": "5 local runs, qwen3.5-4b: 0/4 above chance, qwen3.5-9b: 0/1 above chance"
+   "evidence": "5 local runs, qwen3.5-4b: 0/4 above chance, qwen3.5-9b: 0/1 above chance",
+   "predicted": "agent \u2264 reference compiler on every explanation; the gap shrinks with simulator capability",
+   "observed": "agent \u2212 compiler on T0: E2 +0.005, E3 +0.013, E4 -0.040, W-freq -0.039; agent above compiler in 7 of 15 target\u2013explanation pairs (largest +0.161, T2 E3); 5 local runs, 0 above chance",
+   "matches": "no (agent above compiler somewhere; capability trend not testable)"
   },
   {
    "id": "H6",
    "verdict": "not evaluable (local simulators stopped at chance, deviation 5)",
-   "evidence": "5 local runs, qwen3.5-4b: 0/4 above chance, qwen3.5-9b: 0/1 above chance"
+   "evidence": "5 local runs, qwen3.5-4b: 0/4 above chance, qwen3.5-9b: 0/1 above chance",
+   "predicted": "the local simulators rank E2, E3, E4, W-freq the same way",
+   "observed": "5 local runs, 0 above chance: nothing to rank",
+   "matches": "not testable"
   },
   {
    "id": "H7",
    "verdict": "cannot tell at this N",
-   "evidence": "2 E3/E4 replacements (at N=1 \u2014 not yet N=3 or N=10)"
+   "evidence": "2 E3/E4 replacements (at N=1 \u2014 not yet N=3 or N=10)",
+   "predicted": "a T0 replacement fits T0 better than any other trained or no-mechanism model (HS)",
+   "observed": "E3: HS 0.939 vs best other 0.274 (T2); E4: HS 0.912 vs best other 0.226 (T2)",
+   "matches": "yes"
   },
   {
    "id": "H8",
    "verdict": "supported",
-   "evidence": "one replacement, all checkpoints"
+   "evidence": "one replacement, all checkpoints",
+   "predicted": "HS against T0's checkpoints rises as restricted loss falls (circuit formation)",
+   "observed": "Spearman \u03c1(HS, \u2212log restricted loss) = 0.842",
+   "matches": "yes"
   }
  ],
- "key_results_md": "*Round 1, N = 1 run(s) per condition \u2014 not yet N=3 or N=10*\n\n- **Model-specific detail raises hidden-state similarity:** HS on T0 is 0.05 (E1, algorithm only), 0.90 (E2), 0.94 (E3) and 0.91 (E4); with no explanation (E0) it is 0.00. Not monotone: E4 < E3.\n- **Correct behaviour, wrong mechanism is caught by HS, not by output KL:** the wrong-frequency replacement reaches KL 9.31e-04 nats (true E3: 0.023) but HS 0.06.\n- **Copying behaviour does not copy the mechanism:** independent retrains (HS 0.12) and logit-distilled students (HS 0.23, KL 2.38e-06) stay at the random-initialisation floor (HS 0.24).\n- **Negative result:** the primary HS does not separate the Pizza explanation (W-alg, HS 0.89) or the scrambled neuron table (W-scramble, HS 0.92) from the true explanations; the secondary matched-neuron correlation separates W-scramble (0.62) from E4 (0.89).\n- **Memorisation (post hoc):** when the explanation gives no frequencies (E0, E1), the simulator's 2 replacement(s) on unpublished targets use the paper's published frequencies (mean overlap 0.80 with {14, 35, 41, 42, 52}, 0.00 with the target's own). Grading the same weights against the published checkpoint (target swap): E0: HS 0.00 against T0, 0.63 against the published checkpoint; E1: HS 0.05 against T0, 0.95 against the published checkpoint. A separate algorithm-only run on the published checkpoint scores HS 0.92: scores on published models measure memory, not the explanation.\n- **Cost:** all Claude Haiku 5.5 runs so far cost $0.86 in total."
+ "key_results_md": "*Round 1, N = 1 run(s) per condition \u2014 not yet N=3 or N=10*\n\n- **Model-specific detail raises hidden-state similarity:** HS on T0 is 0.05 (E1, algorithm only), 0.90 (E2), 0.94 (E3) and 0.91 (E4); with no explanation (E0) it is 0.00. Not monotone: E4 < E3.\n- **Correct behaviour, wrong mechanism is caught by HS, not by output KL:** the wrong-frequency replacement reaches KL 9.31e-04 nats (true E3: 0.023) but HS 0.06.\n- **Copying behaviour does not copy the mechanism:** independent retrains (HS 0.12) and logit-distilled students (HS 0.23, KL 2.38e-06) stay at the random-initialisation floor (HS 0.24).\n- **Negative result:** the primary HS does not separate the Pizza explanation (W-alg, HS 0.89) or the scrambled neuron table (W-scramble, HS 0.92) from the true explanations; the secondary matched-neuron correlation separates W-scramble (0.62) from E4 (0.89).\n- **Memorisation (post hoc):** when the explanation gives no frequencies (E0, E1), the simulator's 2 replacement(s) on unpublished targets use the paper's published frequencies (mean overlap 0.80 with {14, 35, 41, 42, 52}, 0.00 with the target's own). Grading the same weights against the published checkpoint (target swap): E0: HS 0.00 against T0, 0.63 against the published checkpoint; E1: HS 0.05 against T0, 0.95 against the published checkpoint. A separate algorithm-only run on the published checkpoint scores HS 0.92: scores on published models measure memory, not the explanation.\n- **Cost:** all Claude Haiku 5.5 runs so far cost $0.93 in total."
 }
