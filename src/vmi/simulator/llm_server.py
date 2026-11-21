@@ -22,6 +22,9 @@ import httpx  # health checks
 from vmi.config import REPO_ROOT, Settings  # paths and LLM settings
 
 
+BUDGET_MESSAGE = " I have planned enough; I will now act on this plan with my next tool call."
+
+
 def health(settings: Settings, timeout: float = 2.0) -> bool:
     """True if llama-server answers /health with 200 (model loaded)."""
     try:
@@ -44,6 +47,8 @@ def start(settings: Settings, *, gguf: Path | None = None, alias: str | None = N
     n_cpu_moe = settings.llm_n_cpu_moe if n_cpu_moe is None else n_cpu_moe
     if n_cpu_moe:
         cmd += ["--n-cpu-moe", str(n_cpu_moe)]
+    if settings.llm_reasoning_budget >= 0:  # cap thinking per turn; the message is inserted before </think>
+        cmd += ["--reasoning-budget", str(settings.llm_reasoning_budget), "--reasoning-budget-message", BUDGET_MESSAGE]
     cmd += extra or []
     proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
                             creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)

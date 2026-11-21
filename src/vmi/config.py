@@ -42,6 +42,7 @@ class Settings:
     llm_context: int  # context window in tokens
     llm_temperature: float  # default sampling temperature (preregistered 0.6)
     llm_n_cpu_moe: int  # MoE layers whose expert weights stay in system RAM (stage-0 tuning)
+    llm_reasoning_budget: int  # max thinking tokens per model turn (-1 = unlimited; stage-0 decision)
     run_timeout_s: int  # wall-clock cap per agent run
     run_max_steps: int  # agent step cap per run
 
@@ -80,6 +81,7 @@ def load() -> Settings:
         llm_context=int(v["VMI_LLM_CONTEXT"]),
         llm_temperature=float(v["VMI_LLM_TEMPERATURE"]),
         llm_n_cpu_moe=int(v.get("VMI_LLM_N_CPU_MOE", "0")),
+        llm_reasoning_budget=int(v.get("VMI_LLM_REASONING_BUDGET", "-1")),
         run_timeout_s=int(v["VMI_RUN_TIMEOUT_S"]),
         run_max_steps=int(v["VMI_RUN_MAX_STEPS"]),
     )

@@ -38,6 +38,16 @@ Newest entries at the bottom. Per-experiment learnings live in each experiment's
 - **Port 8080 could not be bound** on this machine although nothing was listed as listening (likely a WSL
   mirrored-networking reservation); llama-server moved to port 8091.
 
+## Agent behaviour (dev target only)
+
+- **Unlimited thinking stalls the agent.** In the first smoke run (dev, E3) the model read all five files, then spent
+  one turn thinking for 16,384 tokens (~13 minutes at 21 tokens/s; 47k characters) and hit OpenCode's per-turn output
+  cap without making a tool call. The reasoning itself was on track — it was designing the same kind of construction
+  as the reference compiler (Fourier dimensions in the embedding, a constant query at "=", keys modulated by
+  cos/sin of the head's frequency). Fix: llama-server `--reasoning-budget 4096` with a short message inserted before
+  the end-of-thinking tag, so each turn plans at most ~3 minutes and then acts. Decided on the dev target before the
+  protocol freeze.
+
 ## Grader and reference compiler (dev target only)
 
 - **float32 grading broke a correct replacement.** The compiled E3 model reached 100 % accuracy in the numpy self-test
