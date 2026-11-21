@@ -5,7 +5,8 @@
 #   RUN_DIR   run folder as a WSL path (e.g. /mnt/d/AI/vmi-sim/runs/<id>) holding work/, opencode.jsonc, prompt.txt
 #   PORT      TCP port of llama-server on the Windows host (reachable from WSL as 127.0.0.1 in mirrored mode)
 #   MODEL_REF OpenCode model reference, e.g. local/qwen3.6-35b-a3b
-#   MODE      "agent" (default) or "check" (run scripts/isolation_check.sh in the identical sandbox instead)
+#   MODE      "agent" (default, OpenCode), "harness" (the custom bash-only harness, src/vmi/simulator/harness.py) or
+#             "check" (run scripts/isolation_check.sh in the identical sandbox instead)
 #
 # Isolation (threat model: accidental access to the target's weights or the internet, not a malicious model):
 #   --unshare-all            new user/pid/ipc/uts/cgroup/NETWORK namespaces: only loopback exists inside
@@ -29,6 +30,7 @@ mkdir -p "$B/work" "$B/sock" "$B/state/home" "$B/state/config/opencode" "$B/stat
 cp -r "$RUN/work/." "$B/work/"
 cp "$RUN/opencode.jsonc" "$B/state/config/opencode/opencode.jsonc"
 cp "$RUN/prompt.txt" "$B/state/prompt.txt"
+[ -f "$RUN/harness.json" ] && cp "$RUN/harness.json" "$B/state/harness.json"
 cp "$HERE/isolation_check.sh" "$B/state/isolation_check.sh"
 
 # Outside relay: socket file → llama-server; logs every byte (full prompts and completions).
@@ -39,6 +41,9 @@ for _ in $(seq 50); do [ -S "$B/sock/llm.sock" ] && break; sleep 0.1; done
 
 if [ "$MODE" = "check" ]; then
   INNER='python3 /opt/vmi/relay.py tcp-to-unix 127.0.0.1 '"$PORT"' /llm/llm.sock & sleep 0.5; exec bash /state/isolation_check.sh '"$PORT"
+elif [ "$MODE" = "harness" ]; then  # custom bash-only harness (src/vmi/simulator/harness.py) instead of OpenCode
+  INNER='python3 /opt/vmi/relay.py tcp-to-unix 127.0.0.1 '"$PORT"' /llm/llm.sock & sleep 0.5
+exec python3 /opt/vmi/harness.py /state/harness.json "$(cat /state/prompt.txt)" </dev/null'
 else
   INNER='python3 /opt/vmi/relay.py tcp-to-unix 127.0.0.1 '"$PORT"' /llm/llm.sock & sleep 0.5
 exec opencode run --standalone --auto --format json --thinking --agent weights --model '"$MODEL"' "$(cat /state/prompt.txt)" </dev/null'
@@ -53,6 +58,7 @@ bwrap --die-with-parent --new-session --unshare-all --clearenv \
   --ro-bind "$HOME/.opencode/bin" /opt/oc \
   --ro-bind "$BASE/pylib" /opt/py \
   --ro-bind "$REPO/src/vmi/simulator/relay.py" /opt/vmi/relay.py \
+  --ro-bind "$REPO/src/vmi/simulator/harness.py" /opt/vmi/harness.py \
   --bind "$B/work" /work --bind "$B/state" /state --bind "$B/sock" /llm \
   --setenv PATH /opt/oc:/usr/bin:/bin --setenv HOME /state/home --setenv PYTHONPATH /opt/py \
   --setenv XDG_CONFIG_HOME /state/config --setenv XDG_DATA_HOME /state/data --setenv XDG_CACHE_HOME /state/cache \

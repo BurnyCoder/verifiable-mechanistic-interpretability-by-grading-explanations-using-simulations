@@ -28,10 +28,30 @@ PROMPT_NO_SELFTEST = ("Your current folder contains TASK.md, ARCHITECTURE.md, EX
                       "ask questions. When build_weights.py builds your weights.npz, stop.")
 
 
+def turn_output(settings: Settings) -> int:
+    """Tokens one model response may use: the thinking budget (server flag) + 8k for one whole-file write (~8k tokens;
+    smaller caps truncated it in stage-0 runs 3-5)."""
+    return max(settings.llm_reasoning_budget, 0) + 8192
+
+
+def sampling(temperature: float, seed: int) -> dict:
+    """Request sampling parameters, identical for both harnesses. Qwen3.6 model card, "thinking mode for precise
+    coding tasks": temperature 0.6, top-p 0.95, top-k 20, min-p 0, presence penalty 0 (1.5 is its general preset)."""
+    return {"temperature": temperature, "seed": seed, "presence_penalty": 0.0, "top_p": 0.95, "top_k": 20, "min_p": 0.0}
+
+
+def harness_config(settings: Settings, *, model: str, temperature: float, seed: int) -> dict:
+    """Config of the custom bash-only harness (harness.py), read inside the sandbox."""
+    return {"url": f"http://127.0.0.1:{settings.llm_port}/v1/chat/completions", "model": model,
+            "max_tokens": turn_output(settings), "sampling": sampling(temperature, seed),
+            "step_limit": settings.run_max_steps, "time_limit_s": settings.run_timeout_s - 60,  # exit before the kill
+            "request_timeout_s": settings.run_timeout_s, "command_timeout_s": 120, "cwd": "/work"}
+
+
 def opencode_config(settings: Settings, *, model: str, temperature: float, seed: int, steps: int) -> dict:
     """OpenCode v2 config: one local OpenAI-compatible provider, everything network-capable denied."""
     deny = lambda action: {"action": action, "resource": "*", "effect": "deny"}  # noqa: E731
-    turn_output = max(settings.llm_reasoning_budget, 0) + 8192  # tokens one response may use
+    out = turn_output(settings)
     return {
         "$schema": "https://opencode.ai/config.json",
         "update": "disable",
@@ -48,15 +68,11 @@ def opencode_config(settings: Settings, *, model: str, temperature: float, seed:
                          "headerTimeout": 900000, "chunkTimeout": 900000},
             "models": {model: {"modelID": model, "name": model,
                                "capabilities": {"tools": True, "temperature": True},
-                               # output per turn = thinking budget (server flag) + 8k for one whole-file write
-                               # (~8k tokens; smaller caps truncated it in stage-0 runs 3-5); input = context − output,
-                               # because OpenCode compacts when a step nears the input limit (implicit: at ~33k of 48k)
-                               "limit": {"context": settings.llm_context, "input": settings.llm_context - turn_output,
-                                         "output": turn_output},
-                               # Qwen3.6 model card, "thinking mode for precise coding tasks": temperature 0.6,
-                               # top-p 0.95, top-k 20, min-p 0, presence penalty 0 (1.5 is its general-task value)
-                               "body": {"temperature": temperature, "seed": seed, "presence_penalty": 0.0,
-                                        "top_p": 0.95, "top_k": 20, "min_p": 0.0}}},
+                               # input = context − output, because OpenCode compacts when a step nears the input
+                               # limit (left implicit, it compacted at ~33k of 48k in stage-0 run 4)
+                               "limit": {"context": settings.llm_context, "input": settings.llm_context - out,
+                                         "output": out},
+                               "body": sampling(temperature, seed)}},
         }},
         "policies": [
             {"action": "provider.use", "resource": "*", "effect": "deny"},
@@ -99,6 +115,8 @@ def prepare_run(settings: Settings, run_dir: Path, *, explanation: str, extra_fi
     temperature = settings.llm_temperature if temperature is None else temperature
     cfg = opencode_config(settings, model=model, temperature=temperature, seed=seed, steps=settings.run_max_steps)
     (run_dir / "opencode.jsonc").write_text(json.dumps(cfg, indent=2), encoding="utf-8", newline="\n")
+    hcfg = harness_config(settings, model=model, temperature=temperature, seed=seed)
+    (run_dir / "harness.json").write_text(json.dumps(hcfg, indent=2), encoding="utf-8", newline="\n")
     (run_dir / "prompt.txt").write_text(PROMPT if selftest else PROMPT_NO_SELFTEST, encoding="utf-8", newline="\n")
     (run_dir / "run.json").write_text(json.dumps({**meta, "model": model, "temperature": temperature, "seed": seed,
                                                   "selftest": selftest}, indent=2), encoding="utf-8")

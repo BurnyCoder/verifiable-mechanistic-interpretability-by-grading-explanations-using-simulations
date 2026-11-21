@@ -14,6 +14,7 @@ Sources: argparse (https://docs.python.org/3/library/argparse.html); logging (ht
 from __future__ import annotations  # postponed annotations
 
 import argparse  # CLI
+import dataclasses  # per-command settings overrides (--harness)
 import json  # results files
 import logging  # timestamped logs
 import sys  # stdout handler
@@ -117,9 +118,10 @@ def compile_and_grade(settings: Settings, target: str, levels: list[str] | None 
     return out
 
 
-def run_id(stage: str, target: str, level: str, seed: int, model: str, temperature: float, variant: str = "") -> str:
-    """Stable identifier of one agent run (also its folder and result-file name)."""
-    tag = model.replace(".", "").replace("-", "")
+def run_id(stage: str, target: str, level: str, seed: int, model: str, temperature: float, variant: str = "",
+           harness: str = "opencode") -> str:
+    """Stable identifier of one agent run (also its folder and result-file name); OpenCode runs carry no harness tag."""
+    tag = model.replace(".", "").replace("-", "") + ("" if harness == "opencode" else f"-{harness}")
     return f"{stage}__{target}__{level}{('-' + variant) if variant else ''}__{tag}__t{temperature:g}__s{seed}"
 
 
@@ -134,7 +136,7 @@ def agent_run(settings: Settings, *, stage: str, target: str, level: str, seed: 
 
     model = model or settings.llm_model
     temperature = settings.llm_temperature if temperature is None else temperature
-    rid = run_id(stage, target, level, seed, model, temperature, variant)
+    rid = run_id(stage, target, level, seed, model, temperature, variant, settings.harness)
     result_file = RESULTS / "runs" / f"{rid}.json"
     if result_file.exists():
         log.info("skip %s (result exists)", rid)
@@ -145,7 +147,7 @@ def agent_run(settings: Settings, *, stage: str, target: str, level: str, seed: 
     meta = {"run_id": rid, "stage": stage, "target": target, "level": level, "variant": variant, "round": round_}
     prepare_run(settings, run_dir, explanation=text, extra_files=extra, meta=meta, model=model,
                 temperature=temperature, seed=seed, selftest=selftest)
-    info = run_agent(settings, run_dir)
+    info = run_agent(settings, run_dir, mode="harness" if settings.harness == "mini" else "agent")
     built = run_dir / "work_out" / "build_weights.py"
     # an untouched starter writes all-zero weights; record it so such runs are not mistaken for agent constructions
     info["starter_unchanged"] = built.exists() and built.read_bytes() == (run_dir / "work" / "build_weights.py").read_bytes()
@@ -153,6 +155,7 @@ def agent_run(settings: Settings, *, stage: str, target: str, level: str, seed: 
     res = grade_npz(targets.load_model(settings, target), run_dir / "work_out" / "weights.npz")
     length = json.loads((RESULTS / "explanations" / target / exp_level / "length.json").read_text())
     res.update({**meta, "model": model, "temperature": temperature, "seed": seed, "selftest": selftest,
+                "harness": settings.harness,
                 "agent": info, "audit": au, "length": length, "finished": time.strftime("%Y-%m-%dT%H:%M:%S")})
     _dump(result_file, res)
     log.info("run %s: failed=%s acc=%.4f KL=%.3g HS=%.3f audit=%s steps=%s %ss", rid, res["failed"], res["accuracy"],
@@ -178,6 +181,7 @@ def main(argv: list[str] | None = None) -> None:
     r.add_argument("level")
     r.add_argument("seed", type=int)
     r.add_argument("--stage", default="dev")
+    r.add_argument("--harness", choices=["opencode", "mini"], default=None, help="override VMI_HARNESS")
     q = sub.add_parser("queue")
     q.add_argument("manifest", type=Path)
     s = sub.add_parser("serve")
@@ -206,6 +210,8 @@ def main(argv: list[str] | None = None) -> None:
         bad = [x for x in lines if x.startswith("FAIL")]
         log.info("isolation check: %d ok, %d FAIL %s", len(lines) - len(bad), len(bad), bad)
     elif a.cmd == "run":
+        if a.harness:
+            settings = dataclasses.replace(settings, harness=a.harness)
         agent_run(settings, stage=a.stage, target=a.target, level=a.level, seed=a.seed)
     elif a.cmd == "queue":
         queue(settings, a.manifest)

@@ -45,6 +45,7 @@ class Settings:
     llm_reasoning_budget: int  # max thinking tokens per model turn (-1 = unlimited; stage-0 decision)
     run_timeout_s: int  # wall-clock cap per agent run
     run_max_steps: int  # agent step cap per run
+    harness: str = "opencode"  # agent harness: "opencode" or "mini" (custom bash-only harness, simulator/harness.py)
 
     @property
     def runs_store(self) -> Path:
@@ -84,4 +85,5 @@ def load() -> Settings:
         llm_reasoning_budget=int(v.get("VMI_LLM_REASONING_BUDGET", "-1")),
         run_timeout_s=int(v["VMI_RUN_TIMEOUT_S"]),
         run_max_steps=int(v["VMI_RUN_MAX_STEPS"]),
+        harness=v.get("VMI_HARNESS", "opencode"),
     )
