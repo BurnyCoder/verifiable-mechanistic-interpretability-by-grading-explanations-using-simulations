@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+title: "Verifiable mechanistic interpretability by grading explanations using simulations"
+abstract: >-
+  An explanation of a trained modular-addition transformer is graded by having a weights-blind, offline local LLM
+  agent rebuild the network's weights from the explanation alone, then comparing the replacement with the original
+  by output KL divergence and symmetry-aware hidden-state similarity. Developed in a mechanistic interpretability
+  hackathon on automatically evaluating mechanistic interpretability explanations, co-organized by the authors in
+  their mechanistic interpretability community (https://mechinterp.com/).
+authors:
+  - family-names: Burian
+    given-names: Libor
+    alias: Burny
+  - family-names: Levoso
+    given-names: Victor
+repository-code: "https://github.com/BurnyCoder/verifiable-mechanistic-interpretability-by-grading-explanations-using-simulations"
+license: MIT
+date-released: "2026-11-21"
+keywords:
+  - mechanistic interpretability
+  - explanation evaluation
+  - simulation
+  - grokking
+  - modular addition
