@@ -1,0 +1,51 @@
+{
+  "wd1_s1": {
+    "max_abs_diff": 0.3903258591890335,
+    "max_rel_frobenius_diff": 1.1420063418952506,
+    "bitwise_equal": false,
+    "key_freqs_published": [
+      2,
+      3,
+      23,
+      37,
+      39
+    ],
+    "key_freqs_retrained": [
+      3,
+      6,
+      23,
+      39
+    ],
+    "kl_out": 1.780514122908602e-06,
+    "hs": 0.9000022573874036,
+    "sites": {
+      "resid_mid": 0.8759866472812192,
+      "mlp_post": 0.9048132268266242,
+      "resid_post": 0.9192068980543674
+    }
+  },
+  "wd1_s10": {
+    "max_abs_diff": 0.5160728842020035,
+    "max_rel_frobenius_diff": 1.1679718406047022,
+    "bitwise_equal": false,
+    "key_freqs_published": [
+      19,
+      31,
+      45,
+      47
+    ],
+    "key_freqs_retrained": [
+      19,
+      31,
+      45,
+      47
+    ],
+    "kl_out": 4.1532640392370015e-07,
+    "hs": 0.977952380594698,
+    "sites": {
+      "resid_mid": 0.9591347134015399,
+      "mlp_post": 0.9899059446490266,
+      "resid_post": 0.9848164837335274
+    }
+  }
+}

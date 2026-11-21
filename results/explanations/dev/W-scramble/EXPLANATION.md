@@ -1,0 +1,67 @@
+# Explanation
+
+## Algorithm ("Fourier multiplication")
+
+The network adds numbers by rotating points on circles:
+
+1. **Embedding.** Each number t is represented by cos(w_k t) and sin(w_k t) for a handful of *key frequencies* k,
+   with w_k = 2πk/113 — every number is a point on several circles, one per key frequency.
+2. **Attention.** At the "=" position the heads attend to positions 0 and 1 (almost not at all to "=" itself) and
+   move cos/sin(w_k a) and cos/sin(w_k b) into the "=" position. The attention weights themselves depend on a and b,
+   which already contributes products of these terms.
+3. **MLP.** The ReLU neurons form products and compute cos(w_k(a+b)) and sin(w_k(a+b)) using
+   cos(w(a+b)) = cos(wa)cos(wb) − sin(wa)sin(wb) and sin(w(a+b)) = sin(wa)cos(wb) + cos(wa)sin(wb).
+   Each neuron responds mainly to a single frequency.
+4. **Unembedding.** The logit of answer c is approximately
+   Σ_k α_k cos(w_k(a+b−c)) = Σ_k α_k [cos(w_k(a+b))cos(w_k c) + sin(w_k(a+b))sin(w_k c)],
+   read from the MLP output through one cos and one sin direction per key frequency. The waves of all key
+   frequencies peak together exactly at c = (a+b) mod 113 and cancel elsewhere, so that answer wins.
+
+## This model's key frequencies
+
+- Key frequencies: k ∈ {19, 31, 45, 47} (w_k = 2πk/113). All four steps above use these frequencies.
+- The model is very confident: its mean cross-entropy over all 12,769 inputs is 1.74e-07 nats.
+
+## Quantities
+
+**Logits.** Fitting logit(a, b, c) ≈ Σ_k α_k cos(w_k(a+b−c)) + β over all inputs and answers gives (fraction of logit variance explained: 0.971):
+
+| k | α_k |
+|---|---|
+| 19 | 10.9 |
+| 31 | 29.4 |
+| 45 | 11.4 |
+| 47 | 5.68 |
+
+β = -0.0113; logit standard deviation at "=": 24.3; mean log-probability of the correct answer: -1.74e-07.
+
+**Embedding.** Norm of the embedding's Fourier component (cos and sin combined, over the 128 residual dimensions) per key frequency: k=19: 6, k=31: 6.84, k=45: 5.59, k=47: 4.92.
+
+**MLP neurons.** A neuron belongs to frequency k if more than 0.85 of its activation variance is explained by the constant, linear and quadratic terms of frequency k in a and b. Neurons per frequency: k=19: 60, k=31: 86, k=45: 191, k=47: 86; 89 of the 512 neurons are not clearly single-frequency.
+
+**Attention heads.** Attention from "=" to position 0 (a) is fitted as A ≈ 0.5 + α(cos wa − cos wb) + β(sin wa − sin wb) with w = 2πk/113; attention to b is about 1 − A:
+
+| head | k | α | β | variance explained | attention to "=" |
+|---|---|---|---|---|---|
+| 0 | 31 | 0.13 | 0.219 | 0.907 | 0.0011 |
+| 1 | 45 | -0.125 | -0.269 | 0.79 | 0.183 |
+| 2 | 31 | -0.129 | -0.216 | 0.894 | 0.00112 |
+| 3 | 19 | -0.0165 | -0.279 | 0.972 | 0.00171 |
+
+What each head writes (norm of its value-output circuit applied to the embeddings, per key frequency): head 0: k=19: 30.2, k=31: 66.9, k=45: 24.2, k=47: 22.6; head 1: k=19: 1.41, k=31: 2.24, k=45: 28.8, k=47: 0.565; head 2: k=19: 31.2, k=31: 66.6, k=45: 24.7, k=47: 23.3; head 3: k=19: 40.2, k=31: 19.6, k=45: 11.7, k=47: 37.4.
+
+**Read-out.** Projecting the MLP activations onto the unembedding's cos(w_k c) and sin(w_k c) directions gives a multiple of cos(w_k(a+b)) or sin(w_k(a+b)); coefficient (fraction of variance explained): k=19 cos: 5.85e+03 (0.977); k=19 sin: 6.6e+03 (0.985); k=31 cos: 1.72e+04 (0.993); k=31 sin: 1.67e+04 (0.991); k=45 cos: 6.37e+03 (0.961); k=45 sin: 6.5e+03 (0.961); k=47 cos: 5.01e+03 (0.95); k=47 sin: 1.82e+03 (0.844).
+
+The neuron-to-logit map W_U·W_out has 1.57% of its squared norm outside the 2×(number of key frequencies) cos/sin directions of the key frequencies.
+
+## Per-neuron table (`neurons.csv`)
+
+One row per MLP neuron (0–511). `freq` is the neuron's frequency k (w = 2πk/113). The neuron's pre-activation
+(before ReLU) at the "=" position is approximately
+
+bias + a_amp·cos(w·a − a_phase) + b_amp·cos(w·b − b_phase) + sum_amp·cos(w·(a+b) − sum_phase)
+     + diff_amp·cos(w·(a−b) − diff_phase)
+
+(phases in degrees; `pre_fit_fve` = fraction of the pre-activation's variance this formula explains). The neuron's
+effect on the logit of answer c (its column of W_U·W_out) is approximately out_amp·cos(w·c − out_phase) plus a
+constant (`out_fit_fve` = fraction explained).
