@@ -203,15 +203,20 @@ def key_results(max_round: int, target: str = "T0") -> str:
         rows = [r for r in json.loads(fq.read_text())["rows"] if r["model"] == "claude-haiku-5-5" and r["variant"] == ""
                 and r["level"] in ("E0", "E1") and r["target"] != "T-paper"]
         if rows:
-            swap = "; ".join(f"{r['level']}: HS {r['hs']:.2f} against {r['target']}, {r['hs_vs_paper']:.2f} against the published checkpoint"
-                             for r in rows if "hs_vs_paper" in r)
-            out.append(f"- **Memorisation (post hoc):** when the explanation gives no frequencies (E0, E1), the simulator's "
-                       f"{len(rows)} replacement(s) on unpublished targets use the paper's published frequencies (mean overlap "
-                       f"{np.mean([r['jaccard_paper'] for r in rows]):.2f} with {{14, 35, 41, 42, 52}}, "
-                       f"{np.mean([r['jaccard_target'] for r in rows]):.2f} with the target's own). Grading the same weights "
-                       f"against the published checkpoint (target swap): {swap}. A separate algorithm-only run on the published "
-                       f"checkpoint scores HS {np.mean([r['hs'] for r in tp_e1]):.2f}: scores on published models measure "
-                       f"memory, not the explanation.")
+            def per_level(lv):  # replicates differ (round 2: some E0 runs build blocks of consecutive frequencies instead)
+                rs = [r for r in rows if r["level"] == lv]
+                if not rs:
+                    return ""
+                mem = sum(r["jaccard_paper"] >= 0.5 for r in rs)
+                swap = [r["hs_vs_paper"] for r in rs if "hs_vs_paper" in r]
+                return (f"{lv}: {mem} of {len(rs)} replacement(s) built mostly the paper's frequencies (Jaccard ≥ 0.5); mean HS "
+                        f"{np.mean([r['hs'] for r in rs]):.2f} against {rs[0]['target']} but "
+                        f"{np.mean(swap):.2f} against the published checkpoint (target swap: same weights, other target)")
+            out.append(f"- **Memorisation (post hoc):** when the explanation gives no frequencies, the simulator often builds "
+                       f"the published paper's frequencies {{14, 35, 41, 42, 52}} into its replacement. "
+                       + "; ".join(x for x in (per_level("E1"), per_level("E0")) if x)
+                       + f". A separate algorithm-only run on the published checkpoint scores HS "
+                       f"{np.mean([r['hs'] for r in tp_e1]):.2f}: scores on published models measure memory, not the explanation.")
     led = RES / "claude" / "ledger.jsonl"
     if led.exists():
         spend = sum(json.loads(x).get("cost_usd", 0.0) for x in led.read_text(encoding="utf-8").splitlines() if x.strip())
