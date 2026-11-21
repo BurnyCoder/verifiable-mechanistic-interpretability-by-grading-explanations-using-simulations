@@ -161,7 +161,9 @@ def evaluate(max_round: int) -> dict:
     if "H7" in H:  # verdict from the stored rows, with the power check (Wilcoxon over n runs: smallest p = 1/2^n)
         d = np.array([row["d"] for row in H["H7"]["rows"]], float)
         w = st.wilcoxon_greater(d)
-        H["H7"].update({"N": len(d), "label": _n_label(len(d)), "wilcoxon": w, "positive_d": int((d > 0).sum()),
+        n_cond = min(len(_select(runs, level="E3")), len(_select(runs, level="E4")))  # runs per condition, not replacements
+        H["H7"].update({"N": len(d), "label": f"{len(d)} E3/E4 replacements ({_n_label(n_cond)})", "wilcoxon": w,
+                        "positive_d": int((d > 0).sum()),
                         "verdict": st.verdict(w["p"], bool(len(d)) and float(np.median(d)) > 0, w["min_p"])})
     return out
 

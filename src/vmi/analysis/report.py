@@ -52,3 +52,13 @@ def regenerate(max_round: int) -> dict:
                "filled": {d: n for d, n in filled.items() if n}}
     (REPO_ROOT / "results" / f"report_round{max_round}.json").write_text(json.dumps(summary, indent=2), encoding="utf-8", newline="\n")
     return summary
+
+
+def build_paper() -> Path:
+    """reports/paper/paper.md → reports/paper.pdf with pandoc and XeLaTeX (fonts are set in the paper's YAML header)."""
+    import subprocess  # pandoc CLI: https://pandoc.org/MANUAL.html
+    src = REPO_ROOT / "reports" / "paper"
+    out = REPO_ROOT / "reports" / "paper.pdf"
+    subprocess.run(["pandoc", "paper.md", "-o", str(out), "--pdf-engine=xelatex", "--resource-path=.:..:../figures"],
+                   cwd=src, check=True)
+    return out

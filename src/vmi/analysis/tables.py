@@ -201,7 +201,7 @@ def key_results(max_round: int, target: str = "T0") -> str:
     if led.exists():
         spend = sum(json.loads(x).get("cost_usd", 0.0) for x in led.read_text(encoding="utf-8").splitlines() if x.strip())
         out.append(f"- **Cost:** all Claude Haiku 5.5 runs so far cost ${spend:.2f} in total.")
-    return "\n".join(out)
+    return out[0] + "\n\n" + "\n".join(out[1:])  # blank line: a markdown list must not continue the paragraph above
 
 
 def targets_table() -> str:

@@ -8,6 +8,7 @@ flowchart TB
         SP --> RC[reference/compile.py] --> RW[(compiled weights)]
         SP --> SB[simulator/sandbox.py → run folder]
         LS[llama-server b12600, GPU + RAM experts]
+        API[(api.anthropic.com)]
         GR[grader/score.py: KL_out, HS, secondary]
         T --> GR
         RW --> GR
@@ -16,9 +17,11 @@ flowchart TB
     end
     subgraph WSL[WSL2 Ubuntu]
         R1[relay.py unix-to-tcp, wire log] --- LS
+        PX[anthropic_proxy.py: key, allowlist, budget ledger, wire log] --- API
         subgraph BW[bubblewrap: no network, no /home, no /mnt, AF_VSOCK blocked]
             R2[relay.py tcp-to-unix] --- R1
-            OC[OpenCode 2.3.2 agent] --- R2
+            R2 --- PX
+            OC[agent: Claude Code + Haiku 5.5, or bash harness + Qwen] --- R2
             OC --> BWP[build_weights.py → weights.npz]
         end
     end
@@ -39,11 +42,11 @@ flowchart TB
 | `explainer/paper.py` | the published explanation (E-paper) with the paper's own numbers |
 | `reference/compile.py` | deterministic spec → weights construction (agent-free ceiling) |
 | `grader/` | activations on all 113² inputs; KL_out; cross-validated ridge HS; CKA, Procrustes, neuron matching, stitching |
-| `simulator/` | sandbox folder, WSL runner, unix-socket relay, llama-server manager, static audit |
+| `simulator/` | sandbox folder, WSL runner, unix-socket relay, Anthropic proxy (key injection, model allowlist, budget ledger), bash-only agent harness, llama-server manager, static audit |
 | `training.py` | grokviz trainer for fresh runs; small loop for distillation and continued training |
 | `nonagent.py` | random init, wrong targets, trajectory, planted calibration, baselines |
-| `manifests.py` | the 40 preregistered agent conditions and per-round manifests |
-| `analysis/` | statistical tests and hypothesis verdicts labelled with N |
+| `manifests.py` | the 44 agent conditions (amendment 2) and per-round manifests |
+| `analysis/` | statistical tests, hypothesis verdicts labelled with N, tables, figures, and `report.py` (one command refills every marked block and builds the paper) |
 | `pipeline.py` | CLI wrapper (`uv run vmi ...`) |
 
 ## Why these design choices
@@ -56,3 +59,8 @@ flowchart TB
   measures exactly what the explanation determines.
 - **bubblewrap + unix-socket relay**: no Docker, no sudo, no firewall change; the only path out of the sandbox is the
   LLM endpoint, and every byte through it is logged.
+- **Credentials outside the sandbox**: the API key is read by the pipeline and handed only to the proxy in WSL; the
+  sandbox gets a placeholder key and a loopback URL, so the agent can call the model but cannot read or exfiltrate
+  the key, and the budget is enforced per request before anything is forwarded.
+- **Socket paths**: the endpoint socket lives at a 16-character hash of the run ID because Linux limits unix socket
+  paths to 107 bytes ([man 7 unix](https://man7.org/linux/man-pages/man7/unix.7.html)).

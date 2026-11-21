@@ -1,0 +1,55 @@
+{
+  "hypotheses": "results\\hypotheses_round1.json",
+  "figures": [
+    "reports\\figures\\architecture.png",
+    "reports\\figures\\ladder_T0.png",
+    "reports\\figures\\kl_vs_hs_T0.png",
+    "reports\\figures\\planted_T0.png",
+    "reports\\figures\\trajectory_T0.png",
+    "reports\\figures\\length_T0.png",
+    "reports\\figures\\simulators_T0.png"
+  ],
+  "filled": {
+    "README.md": [
+      "hypotheses",
+      "scoreboard-T0",
+      "baselines-T0",
+      "key-results"
+    ],
+    "reports/experiments/experiments.md": [
+      "runs",
+      "cost",
+      "targets"
+    ],
+    "reports/paper/paper.md": [
+      "hypotheses",
+      "runs",
+      "scoreboard-T0",
+      "baselines-T0",
+      "controls-T0",
+      "cost",
+      "targets",
+      "key-results",
+      "compiler-T0",
+      "compiler-T1",
+      "compiler-T2",
+      "compiler-T-new",
+      "compiler-T-paper"
+    ],
+    "reports/experiments/00-stage0-dev/experiment.md": [
+      "compiler-dev"
+    ],
+    "reports/experiments/01-round1/experiment.md": [
+      "hypotheses",
+      "runs",
+      "scoreboard-T0",
+      "baselines-T0",
+      "controls-T0",
+      "compiler-T0",
+      "compiler-T1",
+      "compiler-T2",
+      "compiler-T-new",
+      "compiler-T-paper"
+    ]
+  }
+}

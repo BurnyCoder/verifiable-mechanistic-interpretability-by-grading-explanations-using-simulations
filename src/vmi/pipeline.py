@@ -260,6 +260,7 @@ def main(argv: list[str] | None = None) -> None:
     an = sub.add_parser("analyse")
     an.add_argument("round", type=int)
     sub.add_parser("regrade", help="recompute secondary metrics of graded runs from saved weights")
+    sub.add_parser("paper", help="build reports/paper.pdf from reports/paper/paper.md")
     a = ap.parse_args(argv)
     setup_logging(a.cmd)
     settings = load()
@@ -311,6 +312,9 @@ def main(argv: list[str] | None = None) -> None:
     elif a.cmd == "baselines":
         from vmi import nonagent
         nonagent.baselines(settings, a.target)
+    elif a.cmd == "paper":
+        from vmi.analysis.report import build_paper
+        log.info("wrote %s", build_paper())
     elif a.cmd == "regrade":
         log.info("regraded %d runs", regrade(settings))
     elif a.cmd == "analyse":  # hypotheses + figures + every table in README/reports/paper, from results/
