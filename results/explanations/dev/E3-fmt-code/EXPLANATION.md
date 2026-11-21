@@ -2,7 +2,9 @@
 
 ```python
 EXPLANATION = {'algorithm': "Fourier multiplication (clock): embed cos/sin(w_k t); attention moves a and b to '='; MLP "
-              'forms cos/sin(w_k(a+b)) by trig identities; logits ≈ Σ α_k cos(w_k(a+b−c))',
+              'neuron of frequency k: pre ≈ bias + A*(cos(w_k*a + phi) + cos(w_k*b + phi)), same A and phi '
+              'for a and b, phi varies across neurons; ReLU of this sum contains the products that give '
+              'cos/sin(w_k(a+b)) by trig identities; logits ≈ Σ α_k cos(w_k(a+b−c))',
  'w_k': '2*pi*k/113',
  'key_freqs': [19, 31, 45, 47],
  'logit_amplitudes_alpha': {19: 10.967, 31: 29.428, 45: 11.296, 47: 5.707},

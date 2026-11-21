@@ -36,7 +36,7 @@ def spec() -> dict:
 
 def text() -> str:
     """Paraphrase of the published explanation (algorithm in our wording; numbers as published)."""
-    from vmi.explainer.render import CLOCK_ALGO
+    from vmi.explainer.render import CLOCK_ALGO_PAPER as CLOCK_ALGO  # the paper's own wording
     t2 = "\n".join(f"| {h} | {k} | {a} | {b} | {f:.2%} |" for h, k, a, b, f in TABLE2)
     t1 = "; ".join(f"k={k} {c}: ≈ {v}·{c}(w_k(a+b)) ({f:.1%})" for k, c, v, f in TABLE1)
     return f"""# Explanation (as published by Nanda et al. 2023, "Progress measures for grokking via mechanistic interpretability")

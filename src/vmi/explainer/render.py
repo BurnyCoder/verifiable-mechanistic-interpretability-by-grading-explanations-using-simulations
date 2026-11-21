@@ -26,7 +26,8 @@ ARCHITECTURE.md, it was trained on 30% of all (a, b) pairs with cross-entropy lo
 computes (a + b) mod 113 correctly on every input.
 """
 
-CLOCK_ALGO = """## Algorithm ("Fourier multiplication")
+# the published explanation (Nanda et al. 2023); E-paper keeps this wording verbatim
+CLOCK_ALGO_PAPER = """## Algorithm ("Fourier multiplication")
 
 The network adds numbers by rotating points on circles:
 
@@ -43,6 +44,22 @@ The network adds numbers by rotating points on circles:
    read from the MLP output through one cos and one sin direction per key frequency. The waves of all key
    frequencies peak together exactly at c = (a+b) mod 113 and cancel elsewhere, so that answer wins.
 """
+_MLP_STEP_PAPER = """3. **MLP.** The ReLU neurons form products and compute cos(w_k(a+b)) and sin(w_k(a+b)) using
+   cos(w(a+b)) = cos(wa)cos(wb) − sin(wa)sin(wb) and sin(w(a+b)) = sin(wa)cos(wb) + cos(wa)sin(wb).
+   Each neuron responds mainly to a single frequency.
+"""
+# The same step stated as precisely as step 3 of the Pizza text (W-alg), so true and wrong algorithms are equally
+# implementable. Checked on the dev target: the a- and b-terms of each neuron's pre-activation have median amplitude
+# ratio 0.999 and median phase difference 0.1° (stage 0; the agent had stalled on how ReLU neurons form products).
+_MLP_STEP = """3. **MLP.** A neuron of frequency k has pre-activation (before ReLU) ≈ bias + A·[cos(w_k a + φ) + cos(w_k b + φ)]:
+   the a-term and the b-term have the same amplitude and phase. The ReLU of this sum is not linear in it; its
+   expansion contains the products cos(w_k a)cos(w_k b), sin(w_k a)sin(w_k b), sin(w_k a)cos(w_k b) and
+   cos(w_k a)sin(w_k b), hence cos(w_k(a+b)) = cos(w_k a)cos(w_k b) − sin(w_k a)sin(w_k b) and
+   sin(w_k(a+b)) = sin(w_k a)cos(w_k b) + cos(w_k a)sin(w_k b). Neurons of the same frequency differ in their phase φ.
+   Each neuron responds mainly to a single frequency.
+"""
+assert _MLP_STEP_PAPER in CLOCK_ALGO_PAPER
+CLOCK_ALGO = CLOCK_ALGO_PAPER.replace(_MLP_STEP_PAPER, _MLP_STEP)
 
 PIZZA_ALGO = """## Algorithm ("Pizza")
 
@@ -169,6 +186,8 @@ def render_format(spec: dict, fmt: str) -> tuple[str, dict[str, str]]:
                  "  " + "; ".join(f"h{h['head']}: k={h['k']}, α={h['alpha']}, β={h['beta']} (FVE {h['fve']}, A_= {h['attn_to_eq']})" for h in heads),
                  "- MLP: neuron n ∈ cluster k ⇔ > 0.85 of Var(post_n) lies in span{1, cos/sin(w_k a), cos/sin(w_k b), products}; "
                  "|cluster_k| = " + ", ".join(f"{k}: {n}" for k, n in clusters.items()) + f"; unclustered {spec['neurons_unclustered']}.",
+                 "- MLP: pre_n ≈ bias_n + A_n[cos(w_k a + φ_n) + cos(w_k b + φ_n)] (same amplitude and phase for a and b); "
+                 "ReLU(pre_n) ∋ cos(w_k a)cos(w_k b), sin(w_k a)sin(w_k b), sin(w_k a)cos(w_k b), cos(w_k a)sin(w_k b); φ_n varies across n.",
                  "- MLP output ∋ cos(w_k(a+b)), sin(w_k(a+b)) via cos(x+y) = cos x cos y − sin x sin y, sin(x+y) = sin x cos y + cos x sin y.",
                  "- Read-out coefficient (FVE): " + "; ".join(f"k={k} {c}: {v} ({f})" for k, c, v, f in readoff) + ".",
                  f"- logit(a,b,c) ≈ Σ_k α_k cos(w_k(a+b−c)) + β, FVE {round(spec['logit_fit_fve'], 3)}; α = "
@@ -178,7 +197,9 @@ def render_format(spec: dict, fmt: str) -> tuple[str, dict[str, str]]:
         return "\n".join(lines) + "\n", {}
     if fmt == "code":
         body = {"algorithm": "Fourier multiplication (clock): embed cos/sin(w_k t); attention moves a and b to '='; "
-                             "MLP forms cos/sin(w_k(a+b)) by trig identities; logits ≈ Σ α_k cos(w_k(a+b−c))",
+                             "MLP neuron of frequency k: pre ≈ bias + A*(cos(w_k*a + phi) + cos(w_k*b + phi)), same A and "
+                             "phi for a and b, phi varies across neurons; ReLU of this sum contains the products that give "
+                             "cos/sin(w_k(a+b)) by trig identities; logits ≈ Σ α_k cos(w_k(a+b−c))",
                 "w_k": "2*pi*k/113", "key_freqs": K, "logit_amplitudes_alpha": amps, "logit_offset_beta": round(spec["logit_offset"], 4),
                 "logit_fit_fve": round(spec["logit_fit_fve"], 3), "mean_cross_entropy_all_inputs": spec["loss_all_inputs"],
                 "attention_heads": heads, "attention_formula": "A_to_a ≈ 0.5 + alpha*(cos(w*a)-cos(w*b)) + beta*(sin(w*a)-sin(w*b)); A_to_b ≈ 1 - A_to_a",

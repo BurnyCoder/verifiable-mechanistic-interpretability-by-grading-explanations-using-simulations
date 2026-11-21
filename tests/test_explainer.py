@@ -60,6 +60,15 @@ def test_only_tables_for_e4_levels_and_no_numbers_in_e0_e1(specs):
             assert not any(str(k) in text.split("Algorithm")[-1] for k in K if k > 9)  # no key frequency leaks
 
 
+def test_true_and_wrong_algorithms_state_the_neuron_function_equally_precisely(specs):
+    # stage-0 finding: "neurons form products" was vaguer than the Pizza text's ReLU(cos(w a + φ) + cos(w b + φ))
+    for lv in ("E1", "E2", "E3", "E4", "W-freq", "W-role", "W-scramble", "W-alg"):
+        text = render(specs[lv])[0]
+        assert "cos(w_k a + φ) + cos(w_k b + φ)" in text, lv
+    from vmi.explainer.render import CLOCK_ALGO_PAPER
+    assert "form products" in CLOCK_ALGO_PAPER and "+ φ" not in CLOCK_ALGO_PAPER  # E-paper keeps the paper's wording
+
+
 def test_length_matched_controls(specs):
     e3 = length_stats(*render(specs["E3"]))["chars"]
     for lv in ("W-freq", "W-role"):
