@@ -432,7 +432,36 @@ T-paper:
 | E-paper | 3102 | 1.0000 | 1.60e-06 | 0.969 | 0.990 | 0.974 | 0.943 | 0.727 |
 <!-- END compiler-T-paper -->
 
-## Appendix B — Claude API cost
+## Appendix B — Hyperparameter sensitivity without new runs (grader and explainer settings, preregistration §8)
+
+Mean HS per explanation of the main simulator's T0 runs, re-scored under each preregistered grader setting; Kendall τ
+compares the ordering of explanations with the preregistered settings (1 = same order).
+
+<!-- BEGIN grader-sensitivity-T0 -->
+<!-- END grader-sensitivity-T0 -->
+
+The same for the reference compiler's builds:
+
+<!-- BEGIN grader-sensitivity-compiler-T0 -->
+<!-- END grader-sensitivity-compiler-T0 -->
+
+Explainer thresholds varied (E2–E4 re-rendered and re-compiled, no agent):
+
+<!-- BEGIN explainer-sensitivity-T0 -->
+<!-- END explainer-sensitivity-T0 -->
+
+**Reading.** The ordering of explanations by the agent runs' HS is unchanged by the number of folds, the fold seed and
+a hundredfold stronger ridge, and nearly unchanged by a hundredfold weaker one; the conclusions do not hinge on these
+settings. Single sites reorder some neighbours (the MLP site alone gives the no-mechanism explanations a small
+non-zero floor and puts E4 first), and orthogonal alignment lowers every value while keeping the pattern: the
+wrong-frequency, no-explanation and wrong-role replacements stay at the bottom, and the Pizza and scrambled-neuron
+replacements stay among the true ones, so neither blind spot is an artefact of allowing general linear maps. The
+compiler's builds are more sensitive to the ridge strength. In the explainer, the stricter key-frequency threshold
+(τ = 0.35) drops frequency 2 — a frequency with no neurons in T0 — and the compiler's HS rises for E2–E4: the
+preregistered threshold admits a weak frequency that a literal construction then builds in. *Post hoc observation;
+the preregistered threshold stays the analysis default.*
+
+## Appendix C — Claude API cost
 
 <!-- BEGIN cost -->
 | Model | runs (incl. checks) | requests | spend (USD) |
