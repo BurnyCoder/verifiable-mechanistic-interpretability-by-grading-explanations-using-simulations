@@ -32,7 +32,7 @@ preregistered before any result. First results (round 1, one run per condition �
 - **Copying behaviour does not copy the mechanism:** independent retrains (HS 0.12) and logit-distilled students (HS 0.23, KL 2.38e-06) stay at the random-initialisation floor (HS 0.24).
 - **Negative result:** the primary HS does not separate the Pizza explanation (W-alg, HS 0.89) or the scrambled neuron table (W-scramble, HS 0.92) from the true explanations; the secondary matched-neuron correlation separates W-scramble (0.62) from E4 (0.89).
 - **Memorisation (post hoc):** when the explanation gives no frequencies (E0, E1), the simulator's 2 replacement(s) on unpublished targets use the paper's published frequencies (mean overlap 0.80 with {14, 35, 41, 42, 52}, 0.00 with the target's own). Grading the same weights against the published checkpoint (target swap): E0: HS 0.00 against T0, 0.63 against the published checkpoint; E1: HS 0.05 against T0, 0.95 against the published checkpoint. A separate algorithm-only run on the published checkpoint scores HS 0.92: scores on published models measure memory, not the explanation.
-- **Cost:** all Claude Haiku 5.5 runs so far cost $0.93 in total.
+- **Cost:** all Claude Haiku 5.5 runs so far cost $0.97 in total.
 <!-- END key-results -->
 
 Output KL alone ranks a wrong-frequency explanation, independent retrains and distilled students as good as or better
@@ -360,7 +360,7 @@ published circuits from memory).
 ### 4.7 Hypotheses: predicted vs. observed (N = 1)
 
 <!-- BEGIN predictions -->
-| Hypothesis | Predicted (preregistration §5) | Observed (main simulator, T0) | Direction matches? | Formal verdict |
+| Hypothesis | Predicted (preregistration §5) | Measured with the main simulator (T0) | Direction matches? | Formal verdict |
 |---|-------|---------|-----|------|
 | H1 | HS rises and output KL falls from E1 to E4 on T0; E0 lies below E1 | HS E0 0.004, E1 0.048, E2 0.899, E3 0.939, E4 0.912; KL E1 1.05e-04, E2 1.20e-05, E3 0.023, E4 0.087 | partly (HS not monotone E1→E4; KL does not fall E1→E4) | not supported · at N=1 — not yet N=3 or N=10 |
 | H2 | true explanations beat length-matched false ones on HS: E3 > W-freq, W-alg, W-role; E4 > W-scramble | HS difference E3>W-freq +0.884; E3>W-alg +0.051; E3>W-role +0.771; E4>W-scramble -0.006 | partly (E4>W-scramble reversed) | E3>W-freq: cannot tell at this N; E3>W-alg: cannot tell at this N; E3>W-role: cannot tell at this N; E4>W-scramble: not supported · at N=1 — not yet N=3 or N=10 |
@@ -427,7 +427,7 @@ replacement, even from the per-neuron table. The capability threshold between th
 ## 6 Limitations
 
 - **Sample size.** Round 1 has one run per condition; most hypothesis tests cannot reach significance at N = 1, and
-  those verdicts are reported as "cannot tell at this N". Rounds 2 (N = 3) and 3 (N = 10) follow.
+  those verdicts are reported as "cannot tell at this N". Round 2 (N = 3) follows; round 3 (N = 10) is postponed.
 - **One task, one architecture.** All targets are one-layer modular-addition transformers. Whether HS stays informative
   for deeper networks, where linear maps across layers are less constrained, is untested.
 - **One simulator family in the main arm, and it knows the paper.** Claude Haiku 5.5 builds the paper's frequencies
@@ -621,8 +621,8 @@ the preregistered threshold stays the analysis default.*
 <!-- BEGIN cost -->
 | Model | runs (incl. checks) | requests | spend (USD) |
 |---|---|---|---|
-| claude-haiku-5-5 | 44 | 398 | 0.927 |
-| **total** | 44 | 398 | **0.927** |
+| claude-haiku-5-5 | 47 | 420 | 0.971 |
+| **total** | 47 | 420 | **0.971** |
 <!-- END cost -->
 
 ## AI statement

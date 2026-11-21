@@ -363,6 +363,25 @@
    "calibrated_kl": 1.453015474750023e-05
   },
   {
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s2",
+   "stage": "main",
+   "target": "T0",
+   "level": "E1",
+   "variant": "",
+   "model": "claude-haiku-5-5",
+   "seed": 2,
+   "round": 2,
+   "failed": false,
+   "cost_usd": 0.0134,
+   "seconds": 147,
+   "hs": 0.046219606805840086,
+   "kl_out": 0.018719867225682748,
+   "accuracy": 1.0,
+   "matched_neuron_corr": 0.028035490537299035,
+   "centred_logit_fvu": 1.103868463316551,
+   "calibrated_kl": 1.3710783012897413e-05
+  },
+  {
    "run_id": "main__T0__E2__claudehaiku55-claudecode__tdef__s0",
    "stage": "main",
    "target": "T0",
@@ -401,6 +420,25 @@
    "calibrated_kl": 1.1043139092921155e-05
   },
   {
+   "run_id": "main__T0__E2__claudehaiku55-claudecode__tdef__s2",
+   "stage": "main",
+   "target": "T0",
+   "level": "E2",
+   "variant": "",
+   "model": "claude-haiku-5-5",
+   "seed": 2,
+   "round": 2,
+   "failed": false,
+   "cost_usd": 0.0105,
+   "seconds": 118,
+   "hs": 0.8886228825348276,
+   "kl_out": 0.0003530299402541828,
+   "accuracy": 1.0,
+   "matched_neuron_corr": 0.6661768384338616,
+   "centred_logit_fvu": 2.715162335596993,
+   "calibrated_kl": 2.1244040007493915e-05
+  },
+  {
    "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s0",
    "stage": "main",
    "target": "T0",
@@ -437,6 +475,25 @@
    "matched_neuron_corr": 0.7198878858598974,
    "centred_logit_fvu": 0.12806345534589805,
    "calibrated_kl": 0.001717943306723378
+  },
+  {
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s2",
+   "stage": "main",
+   "target": "T0",
+   "level": "E3",
+   "variant": "",
+   "model": "claude-haiku-5-5",
+   "seed": 2,
+   "round": 2,
+   "failed": false,
+   "cost_usd": 0.0196,
+   "seconds": 180,
+   "hs": 0.9153374040731904,
+   "kl_out": 0.0015942819908119177,
+   "accuracy": 1.0,
+   "matched_neuron_corr": 0.729728463931005,
+   "centred_logit_fvu": 0.12328441937109975,
+   "calibrated_kl": 1.129561044242448e-05
   },
   {
    "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s0",
@@ -1511,5 +1568,5 @@
    "matches": "yes"
   }
  ],
- "key_results_md": "*Round 1, N = 1 run(s) per condition \u2014 not yet N=3 or N=10*\n\n- **Model-specific detail raises hidden-state similarity:** HS on T0 is 0.05 (E1, algorithm only), 0.90 (E2), 0.94 (E3) and 0.91 (E4); with no explanation (E0) it is 0.00. Not monotone: E4 < E3.\n- **Correct behaviour, wrong mechanism is caught by HS, not by output KL:** the wrong-frequency replacement reaches KL 9.31e-04 nats (true E3: 0.023) but HS 0.06.\n- **Copying behaviour does not copy the mechanism:** independent retrains (HS 0.12) and logit-distilled students (HS 0.23, KL 2.38e-06) stay at the random-initialisation floor (HS 0.24).\n- **Negative result:** the primary HS does not separate the Pizza explanation (W-alg, HS 0.89) or the scrambled neuron table (W-scramble, HS 0.92) from the true explanations; the secondary matched-neuron correlation separates W-scramble (0.62) from E4 (0.89).\n- **Memorisation (post hoc):** when the explanation gives no frequencies (E0, E1), the simulator's 2 replacement(s) on unpublished targets use the paper's published frequencies (mean overlap 0.80 with {14, 35, 41, 42, 52}, 0.00 with the target's own). Grading the same weights against the published checkpoint (target swap): E0: HS 0.00 against T0, 0.63 against the published checkpoint; E1: HS 0.05 against T0, 0.95 against the published checkpoint. A separate algorithm-only run on the published checkpoint scores HS 0.92: scores on published models measure memory, not the explanation.\n- **Cost:** all Claude Haiku 5.5 runs so far cost $0.93 in total."
+ "key_results_md": "*Round 1, N = 1 run(s) per condition \u2014 not yet N=3 or N=10*\n\n- **Model-specific detail raises hidden-state similarity:** HS on T0 is 0.05 (E1, algorithm only), 0.90 (E2), 0.94 (E3) and 0.91 (E4); with no explanation (E0) it is 0.00. Not monotone: E4 < E3.\n- **Correct behaviour, wrong mechanism is caught by HS, not by output KL:** the wrong-frequency replacement reaches KL 9.31e-04 nats (true E3: 0.023) but HS 0.06.\n- **Copying behaviour does not copy the mechanism:** independent retrains (HS 0.12) and logit-distilled students (HS 0.23, KL 2.38e-06) stay at the random-initialisation floor (HS 0.24).\n- **Negative result:** the primary HS does not separate the Pizza explanation (W-alg, HS 0.89) or the scrambled neuron table (W-scramble, HS 0.92) from the true explanations; the secondary matched-neuron correlation separates W-scramble (0.62) from E4 (0.89).\n- **Memorisation (post hoc):** when the explanation gives no frequencies (E0, E1), the simulator's 2 replacement(s) on unpublished targets use the paper's published frequencies (mean overlap 0.80 with {14, 35, 41, 42, 52}, 0.00 with the target's own). Grading the same weights against the published checkpoint (target swap): E0: HS 0.00 against T0, 0.63 against the published checkpoint; E1: HS 0.05 against T0, 0.95 against the published checkpoint. A separate algorithm-only run on the published checkpoint scores HS 0.92: scores on published models measure memory, not the explanation.\n- **Cost:** all Claude Haiku 5.5 runs so far cost $0.98 in total."
 }

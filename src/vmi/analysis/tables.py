@@ -268,15 +268,19 @@ def frequencies_table(max_round: int, model: str = "claude-haiku-5-5") -> str:
     return "\n".join(rows)
 
 
-def predictions_table(max_round: int) -> str:
-    """Preregistered prediction vs. observation per hypothesis (main simulator), with the formal verdict beside it."""
+def predictions_table(max_round: int, plain: bool = False) -> str:
+    """Preregistered prediction vs. observation per hypothesis (main simulator), with the formal verdict beside it.
+
+    plain=True adds the prediction in plain words (README top); the paper and reports use the expert columns only."""
     from vmi.analysis.predictions import prediction_rows
     rows = prediction_rows(max_round)
     if not rows:
         return "_not evaluated yet_"
-    out = ["| Hypothesis | Predicted (preregistration §5) | Observed (main simulator, T0) | Direction matches? | Formal verdict |",
-           "|---|-------|---------|-----|------|"]  # pandoc: dash counts set relative column widths in the PDF
-    out += [f"| {r['id']} | {r['predicted']} | {r['observed']} | {r['matches']} | {r['verdict']} · {r['evidence']} |" for r in rows]
+    head = "| Hypothesis | " + ("Expected, in plain words | " if plain else "")
+    out = [head + "Predicted (preregistration §5) | Measured with the main simulator (T0) | Direction matches? | Formal verdict |",
+           "|---|" + ("-------|" if plain else "") + "-------|---------|-----|------|"]  # pandoc: dashes set PDF column widths
+    out += [f"| {r['id']} | " + (f"{r['plain']} | " if plain else "") +
+            f"{r['predicted']} | {r['observed']} | {r['matches']} | {r['verdict']} · {r['evidence']} |" for r in rows]
     return "\n".join(out)
 
 

@@ -1,0 +1,8 @@
+{"stage": "hyper", "target": "T0", "level": "E3", "variant": "effort-low", "effort": "low", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 1, "round_": 2}
+{"stage": "hyper", "target": "T0", "level": "W-freq", "variant": "effort-low", "effort": "low", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 1, "round_": 2}
+{"stage": "hyper", "target": "T0", "level": "E3", "variant": "effort-high", "effort": "high", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 1, "round_": 2}
+{"stage": "hyper", "target": "T0", "level": "W-freq", "variant": "effort-high", "effort": "high", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 1, "round_": 2}
+{"stage": "hyper", "target": "T0", "level": "E3", "variant": "effort-low", "effort": "low", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 2, "round_": 2}
+{"stage": "hyper", "target": "T0", "level": "W-freq", "variant": "effort-low", "effort": "low", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 2, "round_": 2}
+{"stage": "hyper", "target": "T0", "level": "E3", "variant": "effort-high", "effort": "high", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 2, "round_": 2}
+{"stage": "hyper", "target": "T0", "level": "W-freq", "variant": "effort-high", "effort": "high", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 2, "round_": 2}

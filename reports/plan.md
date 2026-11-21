@@ -16,8 +16,10 @@
 | Round 1 | Results explorer on GitHub Pages; Hugging Face repo and collection | plan deliverables | README |
 | Round 1 | Post-hoc target swap: the same E0/E1 weights graded against the published checkpoint | the most direct memorisation test | `experiments/01-round1/experiment.md` |
 | Round 1 | **Local Qwen runs stopped** after 5 of 12 (4B × 4, 9B × 1), all at chance; no local conditions in rounds 2–3, so 32 conditions per round; H5/H6 not evaluable | your instruction ("stop doing Qwen runs if they don't work") | deviation 5 in `preregistration.md` |
+| Round 2 | **Round 3 (N = 10) postponed** to a later day; round 2 (N = 3) completes and its verdicts are reported as "at N = 3 — not yet N = 10" | your instruction ("Postpone N=4 - N=10 to some other day") | deviation 6 in `preregistration.md` |
 
-Rounds 2 (N = 3) and 3 (N = 10) run the 32 Claude Haiku conditions, starting after round 1's analysis and push.
+Round 2 (N = 3) runs the 32 Claude Haiku conditions; round 3 (N = 10) is postponed to a later day and starts only when
+you ask for it.
 
 
 ## Context (the plan addresses the user as "you")

@@ -5,7 +5,8 @@ Developed in a mechanistic interpretability hackathon on **automatically evaluat
 explanations**, which the authors co-organized in their mechanistic interpretability community and its Discord
 server, [mechinterp.com](https://mechinterp.com/).
 
-> **Status (2026-11-21): round 1 of 3 running (N = 1 run per condition — not yet N = 3 or N = 10).** Hypotheses,
+> **Status (2026-11-21): round 1 (N = 1) complete; round 2 (N = 3) running; round 3 (N = 10) postponed to a later
+> day.** Results below are round 1 until round 2's analysis replaces them. Hypotheses,
 > metrics and analyses were preregistered and pushed before any result
 > ([reports/preregistration.md](reports/preregistration.md)); every number below is regenerated from `results/` by
 > `vmi analyse 1`. Paper draft: [reports/paper.pdf](reports/paper.pdf). Progress: [reports/progress.md](reports/progress.md).
@@ -35,6 +36,52 @@ cross-validated ridge-regression variance explained in both directions at three 
 no-LayerNorm residual stream is defined only up to an invertible linear map, and no wider because non-linear
 alignment makes any network match any algorithm ([Sutter et al. 2025](https://arxiv.org/abs/2507.08802)).
 
+## Predicted vs. measured with Claude Haiku
+
+Before any experiment we wrote down, and pushed to GitHub, what a valid grader should show
+([preregistration](reports/preregistration.md) §5). The table puts each prediction next to what Claude Haiku 5.5 and
+the grader actually produced; it is regenerated from `results/` after every round, and the last column says how many
+runs per condition each verdict rests on.
+
+**In plain words.** The grader works where explanations differ in *which frequencies* they name, the handful of
+numbers the network uses to do the arithmetic. It clearly separates explanations that name the right frequencies
+from wrong ones, from no explanation at all, and from networks that only copy the right answers (H3, H4, H7, H8).
+Three expectations failed. Detail beyond the frequencies did not make the rebuilt network more faithful (H1). The
+grader cannot tell apart two different algorithms that use the same frequencies, or a correct list of neurons from a
+shuffled one (H2). And the AI sometimes beat our own AI-free compiler (H5). Whether stronger AIs do better (H5, H6)
+could not be tested: the small local models never built a working network. "Direction matches" only says whether
+the numbers went the predicted way; "formal verdict" adds the preregistered statistical test, which needs more runs
+per condition than one, so many verdicts still read "cannot tell at this N".
+
+<!-- BEGIN predictions-plain -->
+| Hypothesis | Expected, in plain words | Predicted (preregistration §5) | Measured with the main simulator (T0) | Direction matches? | Formal verdict |
+|---|-------|-------|---------|-----|------|
+| H1 | The more true detail an explanation gives, the more faithfully the rebuilt network should match the original. | HS rises and output KL falls from E1 to E4 on T0; E0 lies below E1 | HS E0 0.004, E1 0.048, E2 0.899, E3 0.939, E4 0.912; KL E1 1.05e-04, E2 1.20e-05, E3 0.023, E4 0.087 | partly (HS not monotone E1→E4; KL does not fall E1→E4) | not supported · at N=1 — not yet N=3 or N=10 |
+| H2 | A true explanation should beat a wrong explanation of the same length. | true explanations beat length-matched false ones on HS: E3 > W-freq, W-alg, W-role; E4 > W-scramble | HS difference E3>W-freq +0.884; E3>W-alg +0.051; E3>W-role +0.771; E4>W-scramble -0.006 | partly (E4>W-scramble reversed) | E3>W-freq: cannot tell at this N; E3>W-alg: cannot tell at this N; E3>W-role: cannot tell at this N; E4>W-scramble: not supported · at N=1 — not yet N=3 or N=10 |
+| H3 | A wrong explanation can still give all the right answers; checking only the answers is fooled, checking the insides (HS) should not be. | W-freq: argmax agreement ≥ 0.99, KL not above the true E2–E4 range, HS below each of E2–E4 | W-freq: agreement 1.000, KL 9.31e-04 (true 1.20e-05–0.087), HS 0.055 (true 0.899–0.939) | yes | supported · at N=1 — not yet N=3 or N=10 |
+| H4 | Rebuilding from an explanation should match the original's insides better than training a fresh network the same way does. | E3 and E4 beat independent retrains on HS (vs. distilled students: open question, no direction) | E3 0.939, E4 0.912; 9 retrains mean 0.119 (max 0.329); 3 students mean 0.233 (max 0.282) | yes | E3: cannot tell at this N; E4: cannot tell at this N · at N=1 — not yet N=3 or N=10 |
+| H4b | On a network whose mechanism we planted ourselves, the score should start perfect and drop as further training moves the network away from it. | planted model: HS = 1 and KL = 0 at step 0, then HS strictly falls and KL strictly rises | HS 1.000 → 0.998 → 0.957 → 0.888; KL 0.000 → 0.371 → 0.040 → 4.25e-04 | partly (KL not strictly rising) | not supported · deterministic |
+| H5 | The AI should not beat our automatic, AI-free compiler, and stronger AIs should come closer to it. | agent ≤ reference compiler on every explanation; the gap shrinks with simulator capability | agent − compiler on T0: E2 +0.005, E3 +0.013, E4 -0.040, W-freq -0.039; agent above compiler in 7 of 15 target–explanation pairs (largest +0.161, T2 E3); 5 local runs, 0 above chance | no (agent above compiler somewhere; capability trend not testable) | not evaluable (local simulators stopped at chance, deviation 5) · 5 local runs, qwen3.5-4b: 0/4 above chance, qwen3.5-9b: 0/1 above chance |
+| H6 | Different AIs should put the explanations in the same order. | the local simulators rank E2, E3, E4, W-freq the same way | 5 local runs, 0 above chance: nothing to rank | not testable | not evaluable (local simulators stopped at chance, deviation 5) · 5 local runs, qwen3.5-4b: 0/4 above chance, qwen3.5-9b: 0/1 above chance |
+| H7 | An explanation of one network should not fit a different network. | a T0 replacement fits T0 better than any other trained or no-mechanism model (HS) | E3: HS 0.939 vs best other 0.274 (T2); E4: HS 0.912 vs best other 0.226 (T2) | yes | cannot tell at this N · 2 E3/E4 replacements (at N=1 — not yet N=3 or N=10) |
+| H8 | The score should rise while the original network learns its mechanism during training. | HS against T0's checkpoints rises as restricted loss falls (circuit formation) | Spearman ρ(HS, −log restricted loss) = 0.842 | yes | supported · one replacement, all checkpoints |
+<!-- END predictions-plain -->
+
+*Labels.* **T0**: the main target network (unpublished). **E0–E4**: true explanations with increasing detail (E0 task only, E1 algorithm only, E2 + the key frequencies, E3 + per-frequency quantities, E4 + a per-neuron table). **W-freq, W-alg, W-role, W-scramble**: wrong explanations of the same length (wrong frequencies, the Pizza algorithm, wrong component roles, shuffled neurons). **HS**: hidden-state similarity, 0–1, higher means the rebuilt network computes the same intermediate quantities. **KL**: output divergence in nats, lower means the same answers with the same confidence. **Compiler**: our script that turns an explanation into weights without any AI.
+
+**In expert terms.** Where a prediction concerns the frequency level, the main simulator's results go the predicted way (H3, H4, H7, H8, and H2 for W-freq and W-role). The predictions fail where they assumed that every added level of detail helps (H1: HS gains nothing after E2 and output KL rises), that HS sees below the frequency level (H2: W-alg nearly ties, W-scramble is reversed), that the reference compiler is a ceiling (H5), or that output KL grows smoothly as a planted model drifts (H4b: KL spikes after the first optimiser steps, then falls). "Direction matches" compares directions and preregistered thresholds only; the formal verdict adds the preregistered test, which at small N mostly cannot reach significance. On the seed-sensitivity targets the gap between E3 and the wrong-frequency explanation replicates on every target and H1's monotone rise does not; where H3 fails there, the wrong-frequency replacement itself is broken (argmax agreement below the preregistered 0.99), an implementation error of the simulator rather than a property of the explanation.
+
+Replications on the seed-sensitivity targets (preregistration §5: H1–H3 re-tested per target with the same rules):
+
+<!-- BEGIN replications -->
+| Target | HS per true explanation | H1: HS rises E2→E4? | H2: HS(E3) − HS(W-freq) | H3 observed (W-freq) | H3 holds? |
+|-----|------|---|---|-------|-----|
+| T1 | E2 0.955, E3 0.917, E4 0.955 | no | +0.883 | agreement 0.806, KL 0.669 (true max 0.773), HS 0.034 | partly (agreement < 0.99) |
+| T2 | E2 0.949, E3 0.944, E4 0.934 | no | +0.855 | agreement 1.000, KL 0.005 (true max 0.112), HS 0.089 | yes |
+| T-new | E3 0.846, E4 0.984 | yes | +0.759 | agreement 0.897, KL 0.378 (true max 0.344), HS 0.087 | partly (agreement < 0.99; KL above the true range) |
+| T-paper (flagged: memorisation) | E1 0.925, E3 0.944, E4 0.929 | no | +0.852 | agreement 1.000, KL 9.56e-05 (true max 0.518), HS 0.091 | yes |
+<!-- END replications -->
+
 ## Key results so far
 
 <!-- BEGIN key-results -->
@@ -45,7 +92,7 @@ alignment makes any network match any algorithm ([Sutter et al. 2025](https://ar
 - **Copying behaviour does not copy the mechanism:** independent retrains (HS 0.12) and logit-distilled students (HS 0.23, KL 2.38e-06) stay at the random-initialisation floor (HS 0.24).
 - **Negative result:** the primary HS does not separate the Pizza explanation (W-alg, HS 0.89) or the scrambled neuron table (W-scramble, HS 0.92) from the true explanations; the secondary matched-neuron correlation separates W-scramble (0.62) from E4 (0.89).
 - **Memorisation (post hoc):** when the explanation gives no frequencies (E0, E1), the simulator's 2 replacement(s) on unpublished targets use the paper's published frequencies (mean overlap 0.80 with {14, 35, 41, 42, 52}, 0.00 with the target's own). Grading the same weights against the published checkpoint (target swap): E0: HS 0.00 against T0, 0.63 against the published checkpoint; E1: HS 0.05 against T0, 0.95 against the published checkpoint. A separate algorithm-only run on the published checkpoint scores HS 0.92: scores on published models measure memory, not the explanation.
-- **Cost:** all Claude Haiku 5.5 runs so far cost $0.93 in total.
+- **Cost:** all Claude Haiku 5.5 runs so far cost $0.97 in total.
 <!-- END key-results -->
 
 ![Scores per explanation on T0](reports/figures/ladder_T0.png)
@@ -98,36 +145,9 @@ alignment makes any network match any algorithm ([Sutter et al. 2025](https://ar
 | Weights dump | all 226,816 weights | 1 | 1.000 | 0.000 | 1.000 |
 <!-- END baselines-T0 -->
 
-### Preregistered hypotheses: predicted vs. observed
+### Preregistered hypotheses
 
-<!-- BEGIN predictions -->
-| Hypothesis | Predicted (preregistration §5) | Observed (main simulator, T0) | Direction matches? | Formal verdict |
-|---|-------|---------|-----|------|
-| H1 | HS rises and output KL falls from E1 to E4 on T0; E0 lies below E1 | HS E0 0.004, E1 0.048, E2 0.899, E3 0.939, E4 0.912; KL E1 1.05e-04, E2 1.20e-05, E3 0.023, E4 0.087 | partly (HS not monotone E1→E4; KL does not fall E1→E4) | not supported · at N=1 — not yet N=3 or N=10 |
-| H2 | true explanations beat length-matched false ones on HS: E3 > W-freq, W-alg, W-role; E4 > W-scramble | HS difference E3>W-freq +0.884; E3>W-alg +0.051; E3>W-role +0.771; E4>W-scramble -0.006 | partly (E4>W-scramble reversed) | E3>W-freq: cannot tell at this N; E3>W-alg: cannot tell at this N; E3>W-role: cannot tell at this N; E4>W-scramble: not supported · at N=1 — not yet N=3 or N=10 |
-| H3 | W-freq: argmax agreement ≥ 0.99, KL not above the true E2–E4 range, HS below each of E2–E4 | W-freq: agreement 1.000, KL 9.31e-04 (true 1.20e-05–0.087), HS 0.055 (true 0.899–0.939) | yes | supported · at N=1 — not yet N=3 or N=10 |
-| H4 | E3 and E4 beat independent retrains on HS (vs. distilled students: open question, no direction) | E3 0.939, E4 0.912; 9 retrains mean 0.119 (max 0.329); 3 students mean 0.233 (max 0.282) | yes | E3: cannot tell at this N; E4: cannot tell at this N · at N=1 — not yet N=3 or N=10 |
-| H4b | planted model: HS = 1 and KL = 0 at step 0, then HS strictly falls and KL strictly rises | HS 1.000 → 0.998 → 0.957 → 0.888; KL 0.000 → 0.371 → 0.040 → 4.25e-04 | partly (KL not strictly rising) | not supported · deterministic |
-| H5 | agent ≤ reference compiler on every explanation; the gap shrinks with simulator capability | agent − compiler on T0: E2 +0.005, E3 +0.013, E4 -0.040, W-freq -0.039; agent above compiler in 7 of 15 target–explanation pairs (largest +0.161, T2 E3); 5 local runs, 0 above chance | no (agent above compiler somewhere; capability trend not testable) | not evaluable (local simulators stopped at chance, deviation 5) · 5 local runs, qwen3.5-4b: 0/4 above chance, qwen3.5-9b: 0/1 above chance |
-| H6 | the local simulators rank E2, E3, E4, W-freq the same way | 5 local runs, 0 above chance: nothing to rank | not testable | not evaluable (local simulators stopped at chance, deviation 5) · 5 local runs, qwen3.5-4b: 0/4 above chance, qwen3.5-9b: 0/1 above chance |
-| H7 | a T0 replacement fits T0 better than any other trained or no-mechanism model (HS) | E3: HS 0.939 vs best other 0.274 (T2); E4: HS 0.912 vs best other 0.226 (T2) | yes | cannot tell at this N · 2 E3/E4 replacements (at N=1 — not yet N=3 or N=10) |
-| H8 | HS against T0's checkpoints rises as restricted loss falls (circuit formation) | Spearman ρ(HS, −log restricted loss) = 0.842 | yes | supported · one replacement, all checkpoints |
-<!-- END predictions -->
-
-Replications on the seed-sensitivity targets (preregistration §5: H1–H3 re-tested per target with the same rules):
-
-<!-- BEGIN replications -->
-| Target | HS per true explanation | H1: HS rises E2→E4? | H2: HS(E3) − HS(W-freq) | H3 observed (W-freq) | H3 holds? |
-|-----|------|---|---|-------|-----|
-| T1 | E2 0.955, E3 0.917, E4 0.955 | no | +0.883 | agreement 0.806, KL 0.669 (true max 0.773), HS 0.034 | partly (agreement < 0.99) |
-| T2 | E2 0.949, E3 0.944, E4 0.934 | no | +0.855 | agreement 1.000, KL 0.005 (true max 0.112), HS 0.089 | yes |
-| T-new | E3 0.846, E4 0.984 | yes | +0.759 | agreement 0.897, KL 0.378 (true max 0.344), HS 0.087 | partly (agreement < 0.99; KL above the true range) |
-| T-paper (flagged: memorisation) | E1 0.925, E3 0.944, E4 0.929 | no | +0.852 | agreement 1.000, KL 9.56e-05 (true max 0.518), HS 0.091 | yes |
-<!-- END replications -->
-
-**Reading.** Where a prediction concerns the frequency level, the main simulator's results go the predicted way (H3, H4, H7, H8, and H2 for W-freq and W-role). The predictions fail where they assumed that every added level of detail helps (H1: HS gains nothing after E2 and output KL rises), that HS sees below the frequency level (H2: W-alg nearly ties, W-scramble is reversed), that the reference compiler is a ceiling (H5), or that output KL grows smoothly as a planted model drifts (H4b: KL spikes after the first optimiser steps, then falls). "Direction matches" compares directions and preregistered thresholds only; the formal verdict adds the preregistered test, which at small N mostly cannot reach significance. On the seed-sensitivity targets the gap between E3 and the wrong-frequency explanation replicates on every target and H1's monotone rise does not; where H3 fails there, the wrong-frequency replacement itself is broken (argmax agreement below the preregistered 0.99), an implementation error of the simulator rather than a property of the explanation.
-
-Exact tests and falsification criteria: [reports/preregistration.md](reports/preregistration.md) §5.
+Predicted vs. measured for every hypothesis, in plain words and in expert terms: [top of this README](#predicted-vs-measured-with-claude-haiku). Exact tests and falsification criteria: [reports/preregistration.md](reports/preregistration.md) §5.
 
 ## How it works
 
@@ -160,7 +180,8 @@ README, the reports and the paper from `results/`.
 
 ## Run matrix
 
-Stage 0 (tooling, dev target only), then three rounds — **N = 1 of everything, then N = 3, then N = 10** — each running
+Stage 0 (tooling, dev target only), then three rounds — **N = 1 of everything, then N = 3, then N = 10** (round 3
+postponed to a later day, deviation 6) — each running
 main method → controls → baselines → ablations → hyperparameter sensitivity → seed sensitivity. 32 Claude Haiku
 conditions per round: main (T0 × E1–E4), controls (E0, W-freq, W-alg, W-role, W-scramble), ablations (math and code
 formats; no self-test), hyperparameter (effort low/high × {E3, W-freq}), seed sensitivity (T1, T2 × 4; T-new × 3;
@@ -271,7 +292,8 @@ docs/               usage and architecture
 - [x] Stage 0 on the dev target; protocol freeze (amendment 2: Claude Haiku 5.5 main simulator)
 - [x] Round 1 (N = 1): all 32 Claude Haiku conditions, all no-agent stages; local Qwen ablation stopped at chance
       (5 of 12 runs, deviation 5)
-- [ ] Rounds 2 (N = 3) and 3 (N = 10)
+- [ ] Round 2 (N = 3) — running
+- [ ] Round 3 (N = 10) — postponed to a later day (user decision; preregistration deviation 6)
 - [x] Hugging Face repo and collection with replacement weights, transcripts and trained models (updated after each stage)
 - [x] Interactive results explorer on GitHub Pages (regenerated by `vmi analyse`)
 - [ ] A neuron-level or causal second metric for what HS cannot see (Clock vs Pizza, per-neuron assignment)
