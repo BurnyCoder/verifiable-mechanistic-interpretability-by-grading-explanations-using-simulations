@@ -1,0 +1,16 @@
+{
+  "level": "E2",
+  "algorithm": "clock",
+  "n_key": 3,
+  "embed_freqs": [
+    11,
+    25,
+    49
+  ],
+  "mlp_freqs": [
+    11,
+    25,
+    49
+  ],
+  "loss_all_inputs": 1.3579600099803593e-07
+}

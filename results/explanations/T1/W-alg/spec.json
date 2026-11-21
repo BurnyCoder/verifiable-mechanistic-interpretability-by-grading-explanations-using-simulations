@@ -1,0 +1,38 @@
+{
+  "level": "W-alg",
+  "algorithm": "pizza",
+  "n_key": 3,
+  "embed_freqs": [
+    11,
+    25,
+    49
+  ],
+  "mlp_freqs": [
+    11,
+    25,
+    49
+  ],
+  "loss_all_inputs": 1.3579600099803593e-07,
+  "logit_amplitudes": {
+    "11": 48.89754045503839,
+    "25": 9.504012441287193,
+    "49": 24.24477791946368
+  },
+  "logit_offset": -1.1438654688025467,
+  "logit_fit_fve": 0.9837057065839304,
+  "logit_std": 39.49648331017081,
+  "mean_correct_logprob": -1.3579600099803593e-07,
+  "embedding_norm_by_freq": {
+    "11": 7.593706013965433,
+    "25": 6.142107624154944,
+    "49": 6.682543334245457
+  },
+  "neuron_clusters": {
+    "11": 154,
+    "25": 111,
+    "49": 156
+  },
+  "neurons_unclustered": 91,
+  "neuron_fve_threshold": 0.85,
+  "heads": null
+}

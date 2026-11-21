@@ -1,0 +1,61 @@
+{
+  "level": "E-paper",
+  "algorithm": "clock",
+  "embed_freqs": [
+    14,
+    35,
+    41,
+    42,
+    52
+  ],
+  "mlp_freqs": [
+    14,
+    35,
+    41,
+    42,
+    52
+  ],
+  "loss_all_inputs": 2.41e-07,
+  "neuron_clusters": {
+    "14": 44,
+    "35": 97,
+    "41": 97,
+    "42": 97,
+    "52": 97
+  },
+  "heads": [
+    {
+      "head": 0,
+      "freq": 35,
+      "alpha": -0.26,
+      "beta": -0.14,
+      "pattern_fve": 0.9903,
+      "attn_to_eq": 0.0
+    },
+    {
+      "head": 1,
+      "freq": 42,
+      "alpha": 0.27,
+      "beta": -0.04,
+      "pattern_fve": 0.9849,
+      "attn_to_eq": 0.0
+    },
+    {
+      "head": 2,
+      "freq": 52,
+      "alpha": 0.29,
+      "beta": -0.05,
+      "pattern_fve": 0.9907,
+      "attn_to_eq": 0.0
+    },
+    {
+      "head": 3,
+      "freq": 42,
+      "alpha": -0.26,
+      "beta": 0.04,
+      "pattern_fve": 0.9791,
+      "attn_to_eq": 0.0
+    }
+  ],
+  "source": "Nanda et al. 2023, arXiv:2301.05217v3"
+}

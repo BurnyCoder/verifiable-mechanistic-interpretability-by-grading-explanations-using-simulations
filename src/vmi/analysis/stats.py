@@ -112,8 +112,27 @@ def kendalls_w(rank_matrix: np.ndarray, n_perm: int = 20000) -> dict:
 
 
 def wilcoxon_greater(d: np.ndarray) -> dict:
-    """One-sided Wilcoxon signed-rank test that d > 0 (None if fewer than 2 values)."""
+    """One-sided Wilcoxon signed-rank test that d > 0 (None if fewer than 2 values); min_p = smallest p this n allows."""
     d = np.asarray(d, float)
     if len(d) < 2:
-        return {"p": None, "median": float(np.median(d)) if len(d) else None}
-    return {"p": float(stats.wilcoxon(d, alternative="greater").pvalue), "median": float(np.median(d))}
+        return {"p": None, "median": float(np.median(d)) if len(d) else None, "min_p": 1.0}
+    return {"p": float(stats.wilcoxon(d, alternative="greater").pvalue), "median": float(np.median(d)),
+            "min_p": min_p_wilcoxon(len(d))}
+
+
+def min_p_wilcoxon(n: int) -> float:
+    """Smallest one-sided exact Wilcoxon signed-rank p-value with n non-zero differences: all positive → 1/2^n."""
+    return 0.5 ** n
+
+
+def min_p_mann_whitney(n1: int, n2: int) -> float:
+    """Smallest one-sided exact Mann–Whitney p-value for group sizes n1, n2 (complete separation): 1/C(n1+n2, n1)."""
+    from math import comb
+    return 1.0 / comb(n1 + n2, n1) if n1 and n2 else 1.0
+
+
+def verdict(p: float | None, effect_positive: bool, min_p: float, alpha: float = 0.05) -> str:
+    """Preregistered verdict wording: a test whose smallest attainable p is ≥ alpha cannot decide at this N."""
+    if p is None or min_p >= alpha:
+        return "cannot tell at this N"
+    return "supported" if p < alpha and effect_positive else "not supported"

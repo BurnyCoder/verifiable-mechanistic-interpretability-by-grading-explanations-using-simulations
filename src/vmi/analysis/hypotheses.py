@@ -21,7 +21,8 @@ from vmi.analysis import stats as st  # tests
 from vmi.config import REPO_ROOT  # results folder
 
 RES = REPO_ROOT / "results"
-MAIN_MODEL, MAIN_TEMP = "qwen3.6-35b-a3b", 0.6
+MAIN_MODEL, MAIN_TEMP = "claude-haiku-5-5", None  # amendment 2: Claude Haiku 5.5 at its default sampling
+LOCAL_MODELS = ["qwen3.5-4b", "qwen3.5-9b", "qwen3.6-35b-a3b"]  # capability ablation, smallest first
 ALPHA = 0.05
 
 
@@ -35,8 +36,14 @@ def load_runs(max_round: int) -> list[dict]:
     return out
 
 
+def _same_temp(a, b) -> bool:
+    return (a is None and b is None) or (a is not None and b is not None and abs(a - b) < 1e-9)
+
+
 def _select(runs, *, target="T0", level=None, model=MAIN_MODEL, temperature=MAIN_TEMP, variant="", stage=None):
-    sel = [r for r in runs if r["target"] == target and r["model"] == model and abs(r["temperature"] - temperature) < 1e-9
+    """Runs of one condition; local models are matched at their own (preregistered 0.6) temperature."""
+    temp = temperature if model == MAIN_MODEL else 0.6
+    sel = [r for r in runs if r["target"] == target and r["model"] == model and _same_temp(r.get("temperature"), temp)
            and r.get("variant", "") == variant and (level is None or r["level"] == level) and (stage is None or r["stage"] == stage)]
     return sel
 
@@ -112,7 +119,7 @@ def evaluate(max_round: int) -> dict:
         tests = {lv: st.mann_whitney_greater(_vals(_select(runs, level=lv)), retr) for lv in ("E3", "E4")}
         adj = st.holm({k: v["p"] for k, v in tests.items()})
         n4 = min(len(_select(runs, level="E3")), len(_select(runs, level="E4")))
-        verd = {lv: ("cannot tell at this N" if adj[lv] is None else "supported" if adj[lv] < ALPHA else "not supported") for lv in tests}
+        verd = {lv: st.verdict(adj[lv], True, st.min_p_mann_whitney(len(_select(runs, level=lv)), len(retr))) for lv in tests}
         H["H4"] = {"N": n4, "label": _n_label(n4), "verdicts": verd, "tests": tests, "holm_p": adj,
                    "retrain_hs_mean": float(retr.mean()) if len(retr) else None,
                    "student_hs_mean": float(stud.mean()) if len(stud) else None,
@@ -125,9 +132,9 @@ def evaluate(max_round: int) -> dict:
         kl = [r["kl_out"] for r in rows]
         ok = abs(hs[0] - 1) < 1e-6 and kl[0] < 1e-9 and all(a > b for a, b in zip(hs, hs[1:])) and all(a < b for a, b in zip(kl, kl[1:]))
         H["H4b"] = {"N": "deterministic", "verdict": "supported" if ok else "not supported", "rows": rows}
-    # H5/H6 — simulator gap and invariance across local models
+    # H5/H6 — simulator gap and invariance across simulators of increasing capability (amendment 2: local Qwens + Haiku)
     lv4 = ("E2", "E3", "E4", "W-freq")
-    models = ["qwen3.5-4b", "qwen3.5-9b", MAIN_MODEL]
+    models = LOCAL_MODELS + [MAIN_MODEL]
     gaps, means = {}, {}
     for m in models:
         for lv in lv4:
@@ -136,7 +143,7 @@ def evaluate(max_round: int) -> dict:
             if rs and c:
                 gaps.setdefault(m, []).extend((c["hs"] - _vals(rs)).tolist())
                 means.setdefault(m, {})[lv] = float(_vals(rs).mean())
-    if len(gaps) == 3:
+    if len(gaps) == len(models):
         n5 = min(len(_select(runs, level=lv, model=m)) for m in models for lv in lv4)
         jt = st.jonckheere([-np.array(gaps[m]) for m in models])  # gap should shrink: −gap increases with capability
         exceed = {lv: means[MAIN_MODEL][lv] - compiler("T0", lv)["hs"] for lv in lv4}
@@ -151,6 +158,11 @@ def evaluate(max_round: int) -> dict:
         p = RES / "controls" / name
         if p.exists():
             H[key] = json.loads(p.read_text())
+    if "H7" in H:  # verdict from the stored rows, with the power check (Wilcoxon over n runs: smallest p = 1/2^n)
+        d = np.array([row["d"] for row in H["H7"]["rows"]], float)
+        w = st.wilcoxon_greater(d)
+        H["H7"].update({"N": len(d), "label": _n_label(len(d)), "wilcoxon": w, "positive_d": int((d > 0).sum()),
+                        "verdict": st.verdict(w["p"], bool(len(d)) and float(np.median(d)) > 0, w["min_p"])})
     return out
 
 

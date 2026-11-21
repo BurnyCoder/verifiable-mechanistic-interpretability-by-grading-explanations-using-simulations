@@ -66,8 +66,7 @@ def wrong_targets(settings: Settings, max_round: int) -> dict:
     d = np.array([x["d"] for x in rows])
     w = st.wilcoxon_greater(d) if len(d) else {"p": None, "median": None}
     n = len(rows)
-    verdict = ("cannot tell at this N" if w["p"] is None else
-               "supported" if w["p"] < 0.05 and w["median"] > 0 else "not supported")
+    verdict = st.verdict(w["p"], bool(w["median"] and w["median"] > 0), w["min_p"])
     out = {"N_runs": n, "verdict": verdict, "wilcoxon": w, "rows": rows}
     _dump(RES / "controls" / "wrong_targets_T0.json", out)
     return out
