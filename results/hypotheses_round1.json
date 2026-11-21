@@ -1,6 +1,6 @@
 {
   "round": 1,
-  "n_runs": 34,
+  "n_runs": 37,
   "hypotheses": {
     "H1": {
       "N": 1,
@@ -172,6 +172,52 @@
           "snapshot_accuracy": 1.0
         }
       ]
+    },
+    "H5": {
+      "N": 5,
+      "label": "5 local runs, qwen3.5-4b: 0/4 above chance, qwen3.5-9b: 0/1 above chance",
+      "verdict": "not evaluable (local simulators stopped at chance, deviation 5)",
+      "local": {
+        "qwen3.5-4b": {
+          "runs": 4,
+          "above_chance": 0,
+          "mean_hs": 0.0
+        },
+        "qwen3.5-9b": {
+          "runs": 1,
+          "above_chance": 0,
+          "mean_hs": 0.0
+        }
+      },
+      "agent_minus_compiler_main": {
+        "E2": 0.004604312463456162,
+        "E3": 0.012857643140726238,
+        "E4": -0.040298062402610135,
+        "W-freq": -0.03918311854390793
+      }
+    },
+    "H6": {
+      "N": 5,
+      "label": "5 local runs, qwen3.5-4b: 0/4 above chance, qwen3.5-9b: 0/1 above chance",
+      "verdict": "not evaluable (local simulators stopped at chance, deviation 5)",
+      "local": {
+        "qwen3.5-4b": {
+          "runs": 4,
+          "above_chance": 0,
+          "mean_hs": 0.0
+        },
+        "qwen3.5-9b": {
+          "runs": 1,
+          "above_chance": 0,
+          "mean_hs": 0.0
+        }
+      },
+      "agent_minus_compiler_main": {
+        "E2": 0.004604312463456162,
+        "E3": 0.012857643140726238,
+        "E4": -0.040298062402610135,
+        "W-freq": -0.03918311854390793
+      }
     },
     "H7": {
       "N_runs": 2,

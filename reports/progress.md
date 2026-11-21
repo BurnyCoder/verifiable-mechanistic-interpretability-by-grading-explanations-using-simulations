@@ -1,5 +1,45 @@
 # Progress
 
+## 2026-11-21 20:45 — round 1 complete; local Qwen runs stopped (user decision)
+
+**Done since 18:30** (N = 1 — not yet N = 3 or N = 10)
+- Local Qwen runs stopped on your instruction after five runs, all at chance (Qwen3.5-4B × 4, Qwen3.5-9B × 1);
+  rounds 2–3 have no local conditions (32 Claude Haiku conditions per round). Logged as deviation 5 (a results-driven
+  stop); H5 and H6 become "not evaluable".
+- Stitching KL regraded for all runs and the compiler (primary metrics reproduced exactly); it shares HS's invariance.
+- Post-hoc target swap confirms memorisation; round-1 review addendum; hypotheses, figures, tables, paper regenerated.
+
+**Positive results (Haiku):** HS jumps from about 0.05 (E0, E1) to about 0.9 once the key frequencies are named, close
+to the agent-free compiler; wrong frequencies score at the floor on all five targets; output KL is fooled where HS is
+not (H3 supported); HS tracks circuit formation (H8 supported); per-neuron detail (E4) raises matched-neuron correlation.
+**Negative results:** HS and stitching are blind to Clock vs Pizza and to scrambled neuron tables; no HS gain beyond E2;
+E3/E4 detail lowers task accuracy; H1 and H4b not supported as preregistered; local Qwens never above chance;
+memorisation makes scores on the published checkpoint meaningless.
+
+**Next:** merge, Hugging Face upload, then round 2 (N = 3): 64 Haiku runs, ≈ 8–9 h, ≈ $1.7.
+
+**Estimate:** about 50 % of the plan is done (round 1 of 3 complete; 37 of 325 agent runs). Round 2 finishes ≈ 06:00;
+round 3 (224 Haiku runs, ≈ 30 h) ≈ Nov 23–24. Claude spend so far $0.86 of $20.
+
+## 2026-11-21 18:30 — round 1: all Claude stages done; Qwen3.5-4B at chance; 9B and 35B running
+
+**Done since 15:30** (N = 1 — not yet N = 3 or N = 10)
+- Haiku hyperparameter and seed stages; T-new trained and graded; Hugging Face repo and collection refreshed.
+- Post-hoc memorisation check (`vmi analyse` → `results/frequencies_round1.json`): with no frequencies in the
+  explanation, Haiku builds in the published checkpoint's frequencies, so scores on T-paper are confounded.
+- Qwen3.5-4B ablation (E2, E3, E4, W-freq): all four replacements at chance (task accuracy 1/113, HS 0). E2 used all
+  60 steps; E3, E4 and W-freq hit the 60-minute cap. The smallest simulator cannot use even the most detailed
+  explanation in this harness.
+- `vmi local` serves each local model in turn and runs its pending conditions.
+
+**Now:** Qwen3.5-9B (4 conditions), then Qwen3.6-35B-A3B (4 conditions), each run up to 60 minutes. Update 20:05:
+9B E2 also at chance (accuracy 1/113, HS 0, 24 steps, hit the 60-minute cap); 9B E3 running. Post-hoc target swap:
+the same T0 E0/E1 weights score far higher against the published checkpoint than against T0.
+
+**Next:** regrade, `vmi analyse 1` (H5, H6 become evaluable), paper, round-1 review addendum, push; then round 2.
+
+**Estimate:** local runs finish by ≈ 02:30 at the latest. Round 1 is then complete; about 45 % of the plan is done.
+
 ## 2026-11-21 15:30 — round 1: main, controls, baselines done; ablations, hyperparameter and seed stages running
 
 **Done since 12:25** (all at N = 1 — not yet N = 3 or N = 10; numbers in the generated tables of

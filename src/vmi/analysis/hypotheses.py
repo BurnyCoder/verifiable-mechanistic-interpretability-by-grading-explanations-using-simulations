@@ -153,6 +153,16 @@ def evaluate(max_round: int) -> dict:
             kw = st.kendalls_w(np.array([[means[m][lv] for lv in lv4] for m in models]))
             H["H6"] = {"N": n5, "label": _n_label(n5), "verdict": "supported" if kw["p"] < ALPHA else "not supported", **kw,
                        "means": means}
+    else:  # deviation 5: the local simulators were stopped after every run was at chance, so the tests cannot run
+        local = [r for r in runs if r["model"] in LOCAL_MODELS]
+        desc = {m: {"runs": len(rs), "above_chance": sum(r["accuracy"] > 2 / 113 for r in rs),
+                    "mean_hs": float(np.mean([r["hs"] for r in rs])) if rs else None}
+                for m in LOCAL_MODELS if (rs := [r for r in local if r["model"] == m])}
+        main_gap = {lv: means[MAIN_MODEL][lv] - compiler("T0", lv)["hs"] for lv in lv4 if lv in means.get(MAIN_MODEL, {})}
+        label = f"{len(local)} local runs, " + ", ".join(f"{m}: {d['above_chance']}/{d['runs']} above chance" for m, d in desc.items())
+        for k in ("H5", "H6"):
+            H[k] = {"N": len(local), "label": label, "verdict": "not evaluable (local simulators stopped at chance, deviation 5)",
+                    "local": desc, "agent_minus_compiler_main": main_gap}
     # H7 — specificity (wrong targets), H8 — trajectory
     for key, name in (("H7", "wrong_targets_T0.json"), ("H8", "trajectory_T0.json")):
         p = RES / "controls" / name

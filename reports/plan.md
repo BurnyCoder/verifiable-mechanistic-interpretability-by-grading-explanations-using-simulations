@@ -14,9 +14,10 @@
 | Round 1 | Four post-freeze deviations: analysis code aligned with amendment 2; local Qwen ablations in parallel with later Haiku stages; one infrastructure failure re-run (unix socket path limit); NaN stitching metric repaired | bugs and pacing | end of `preregistration.md` |
 | Round 1 | Post-hoc memorisation analysis (frequencies built into each replacement) | the simulator fills gaps with the paper's published frequencies | `experiments/01-round1/experiment.md` |
 | Round 1 | Results explorer on GitHub Pages; Hugging Face repo and collection | plan deliverables | README |
+| Round 1 | Post-hoc target swap: the same E0/E1 weights graded against the published checkpoint | the most direct memorisation test | `experiments/01-round1/experiment.md` |
+| Round 1 | **Local Qwen runs stopped** after 5 of 12 (4B × 4, 9B × 1), all at chance; no local conditions in rounds 2–3, so 32 conditions per round; H5/H6 not evaluable | your instruction ("stop doing Qwen runs if they don't work") | deviation 5 in `preregistration.md` |
 
-Rounds 2 (N = 3) and 3 (N = 10) start only after every round-1 condition, including the local Qwen ablations, has
-N = 1 (your instruction: N = 1 of everything first).
+Rounds 2 (N = 3) and 3 (N = 10) run the 32 Claude Haiku conditions, starting after round 1's analysis and push.
 
 
 ## Context (the plan addresses the user as "you")

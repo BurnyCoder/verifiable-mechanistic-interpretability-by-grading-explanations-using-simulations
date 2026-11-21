@@ -219,7 +219,7 @@ Eleven agent smoke runs on the dev target `wd1_s10` (details and transcripts: `r
 `reports/progress.md`. Prompts, `TASK.md`, sandbox templates, explanation templates, harnesses, simulator settings and
 analysis code are fixed from that commit on. T-new is trained after it.
 
-### Post-freeze deviations (logged as they happen; none changes a hypothesis, metric, test or condition)
+### Post-freeze deviations (logged as they happen; 1–4 change no hypothesis, metric, test or condition; 5 removes conditions)
 
 1. **2026-11-21, round 1, after the controls stage — analysis code brought in line with amendment 2.** The frozen
    `analysis/hypotheses.py` still selected the main condition as Qwen3.6-35B-A3B at temperature 0.6 (pre-amendment)
@@ -249,3 +249,14 @@ analysis code are fixed from that commit on. T-new is trained after it.
    solve as the primary HS (`grader/metrics.py`; regression test `test_stitching_kl_is_finite_for_rank_deficient_replacements`).
    Graded runs are re-scored from their saved weights with `vmi regrade`, which recomputes only this metric and
    raises if a primary metric does not reproduce. No primary metric, hypothesis or test changes.
+5. **2026-11-21 20:17, round 1, ablations stage — local Qwen simulators stopped (user decision, results-driven).**
+   Every local run so far had produced a constant-output replacement (task accuracy exactly 1/113, HS 0): Qwen3.5-4B
+   on all four conditions (E2, E3, E4, W-freq) and Qwen3.5-9B on E2. After seeing these results the user decided to
+   stop the local runs. This is a stop on results, which §6 rules out ("stops on time, never on results"), so it is
+   disclosed as such. What was done: the running Qwen3.5-9B E3 run was interrupted 46 minutes in and is not graded;
+   Qwen3.5-9B E3, E4, W-freq and all four Qwen3.6-35B-A3B conditions never ran in round 1 (the 35B model's seven
+   stage-0 runs on the dev target, never reported as results, reached at most 2.4 % task accuracy); rounds 2 and 3
+   contain no local conditions (`manifests.LOCAL_ROUNDS`). Consequences: H5's capability trend and H6's
+   cross-simulator ranking cannot be tested and are reported as "not evaluable", with the completed local runs
+   described instead; H5's other half (main simulator ≤ compiler) is reported descriptively. Every Claude Haiku
+   condition, and therefore every other hypothesis, is unchanged. The completed local runs stay in `results/runs/`.

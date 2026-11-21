@@ -31,7 +31,7 @@ preregistered before any result. First results (round 1, one run per condition �
 - **Correct behaviour, wrong mechanism is caught by HS, not by output KL:** the wrong-frequency replacement reaches KL 9.31e-04 nats (true E3: 0.023) but HS 0.06.
 - **Copying behaviour does not copy the mechanism:** independent retrains (HS 0.12) and logit-distilled students (HS 0.23, KL 2.38e-06) stay at the random-initialisation floor (HS 0.24).
 - **Negative result:** the primary HS does not separate the Pizza explanation (W-alg, HS 0.89) or the scrambled neuron table (W-scramble, HS 0.92) from the true explanations; the secondary matched-neuron correlation separates W-scramble (0.62) from E4 (0.89).
-- **Memorisation (post hoc):** when the explanation gives no frequencies (E0, E1), the simulator's replacements on unpublished targets use the paper's published frequencies (mean overlap 0.80 with {14, 35, 41, 42, 52}, 0.00 with the target's own). On the published checkpoint the same algorithm-only explanation therefore scores HS 0.92 (on T0: 0.05): scores on published models measure memory, not the explanation.
+- **Memorisation (post hoc):** when the explanation gives no frequencies (E0, E1), the simulator's 2 replacement(s) on unpublished targets use the paper's published frequencies (mean overlap 0.80 with {14, 35, 41, 42, 52}, 0.00 with the target's own). Grading the same weights against the published checkpoint (target swap): E0: HS 0.00 against T0, 0.63 against the published checkpoint; E1: HS 0.05 against T0, 0.95 against the published checkpoint. A separate algorithm-only run on the published checkpoint scores HS 0.92: scores on published models measure memory, not the explanation.
 - **Cost:** all Claude Haiku 5.5 runs so far cost $0.86 in total.
 <!-- END key-results -->
 
@@ -149,9 +149,11 @@ budgets. The sandbox holds `TASK.md`, `EXPLANATION.md`, `ARCHITECTURE.md`, a num
 that checks shapes and accuracy against the task labels (never against M), and a starter `build_weights.py`. Training
 loops and iterative optimisation are forbidden; build scripts are audited and flagged ones reviewed by hand. Runs are
 capped at 60 minutes. Local Qwen models (Qwen3.6-35B-A3B, Qwen3.5-9B, Qwen3.5-4B) in a bash-only harness modelled on
-[mini-SWE-agent](https://github.com/SWE-agent/mini-swe-agent) form the simulator-capability ablation: in development
-none of them exceeded 5 % task accuracy, which made Haiku the main simulator by a rule fixed before any Claude run
-(preregistration amendment 2).
+[mini-SWE-agent](https://github.com/SWE-agent/mini-swe-agent) were planned as the simulator-capability ablation: in
+development none of them exceeded 5 % task accuracy, which made Haiku the main simulator by a rule fixed before any
+Claude run (preregistration amendment 2). In round 1 all five local runs that finished (Qwen3.5-4B × 4, Qwen3.5-9B × 1)
+built constant-output networks, and the remaining local runs were stopped by the first author's decision after seeing
+these results (preregistration deviation 5, a results-driven stop disclosed as such).
 
 ### 3.4 Grader
 
@@ -258,10 +260,13 @@ T0's checkpoints, HS rises during circuit formation in step with the fall of the
 | Stage | Target | Explanation | Simulator | T | Variant | N | failed | accuracy | KL_out ↓ (mean ± sd) | HS ↑ (mean ± sd) |
 |---|---|---|---|---|---|---|---|---|---|---|
 | ablations | T0 | E2 | qwen3.5-4b | 0.6 | – | 1 | 0 | 0.009 | 4.73 | 0.000 |
+| ablations | T0 | E2 | qwen3.5-9b | 0.6 | – | 1 | 0 | 0.009 | 7.63 | 0.000 |
 | ablations | T0 | E3 | claude-haiku-5-5 | default | fmt-code | 1 | 0 | 1.000 | 0.00212 | 0.918 |
 | ablations | T0 | E3 | claude-haiku-5-5 | default | fmt-math | 1 | 0 | 1.000 | 0.000716 | 0.911 |
 | ablations | T0 | E3 | claude-haiku-5-5 | default | noselftest | 1 | 0 | 1.000 | 0.00134 | 0.964 |
 | ablations | T0 | E3 | qwen3.5-4b | 0.6 | – | 1 | 0 | 0.009 | 4.73 | 0.000 |
+| ablations | T0 | E4 | qwen3.5-4b | 0.6 | – | 1 | 0 | 0.009 | 4.73 | 0.000 |
+| ablations | T0 | W-freq | qwen3.5-4b | 0.6 | – | 1 | 0 | 0.009 | 6.07 | 0.000 |
 | controls | T0 | E0 | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 0.00908 | 0.004 |
 | controls | T0 | W-freq | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 0.000931 | 0.055 |
 | controls | T0 | W-alg | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 0.0146 | 0.889 |
@@ -298,8 +303,11 @@ single runs. Low effort lowers task accuracy while E3's HS stays high: the repla
 structure but wrong details (behaviour and mechanism dissociate in this direction too). On the seed-sensitivity targets
 T1, T2 and T-new the T0 pattern repeats — E2–E4 well above the no-agent references, W-freq at the floor. On T2 the
 simulator's E3 build beats the reference compiler's (the compiler is misled by the rendered E3 there, the agent is
-not), so H5's "agent ≤ compiler" already fails in one condition. The local Qwen simulators (capability ablation) are
-added as their runs finish; so far they stay at chance.
+not), so H5's "agent ≤ compiler" already fails in one condition. Every finished local Qwen run (Qwen3.5-4B on E2, E3,
+E4 and W-freq; Qwen3.5-9B on E2) built a network with constant output: task accuracy 1/113 and HS 0, whatever the
+explanation. Each run used up its 60 steps or its 60 minutes without reaching a working build. The local runs were
+then stopped (deviation 5), so H5's capability trend and H6's cross-simulator ranking cannot be tested; with three of
+four simulators at chance they would have had nothing to rank.
 
 ### 4.6 Memorisation on the published checkpoint (post hoc)
 
@@ -308,42 +316,45 @@ each replacement built by the main simulator. Frequencies with small amplitude f
 "used" sets are lower bounds.
 
 <!-- BEGIN frequencies -->
-| Target | Explanation | frequencies used by the replacement | target's key frequencies | overlap with target (Jaccard) | overlap with paper's {14, 35, 41, 42, 52} | HS |
-|---|---|---|---|---|---|---|
-| T0 | E0 | 14, 35, 41, 52 | 2, 3, 23, 37, 39 | 0.00 | 0.80 | 0.004 |
-| T0 | E1 | 14, 35, 41, 52 | 2, 3, 23, 37, 39 | 0.00 | 0.80 | 0.048 |
-| T0 | E2 | 3, 23, 39 | 2, 3, 23, 37, 39 | 0.60 | 0.00 | 0.899 |
-| T0 | E3 | 3, 23 | 2, 3, 23, 37, 39 | 0.40 | 0.00 | 0.939 |
-| T0 | E4 | 3, 23, 39 | 2, 3, 23, 37, 39 | 0.60 | 0.00 | 0.912 |
-| T0 | W-freq | 31, 42, 52, 55 | 2, 3, 23, 37, 39 | 0.00 | 0.29 | 0.055 |
-| T0 | W-alg | 3, 23, 37, 39 | 2, 3, 23, 37, 39 | 0.80 | 0.00 | 0.889 |
-| T0 | W-role | 32, 34, 41, 54 | 2, 3, 23, 37, 39 | 0.00 | 0.12 | 0.168 |
-| T0 | W-scramble | 3, 23, 39 | 2, 3, 23, 37, 39 | 0.60 | 0.00 | 0.918 |
-| T1 | E2 | 11, 25, 49 | 11, 25, 49 | 1.00 | 0.00 | 0.955 |
-| T1 | E3 | 11, 49 | 11, 25, 49 | 0.67 | 0.00 | 0.917 |
-| T1 | E4 | 25, 49 | 11, 25, 49 | 0.67 | 0.00 | 0.955 |
-| T1 | W-freq | 38, 52 | 11, 25, 49 | 0.00 | 0.17 | 0.034 |
-| T2 | E2 | 37, 44, 45, 46, 47, 51 | 37, 44, 45, 46, 47, 51 | 1.00 | 0.00 | 0.949 |
-| T2 | E3 | 37, 45, 47, 51 | 37, 44, 45, 46, 47, 51 | 0.67 | 0.00 | 0.944 |
-| T2 | E4 | 37, 44, 45, 46, 47, 51 | 37, 44, 45, 46, 47, 51 | 1.00 | 0.00 | 0.934 |
-| T2 | W-freq | 32 | 37, 44, 45, 46, 47, 51 | 0.00 | 0.00 | 0.089 |
-| T-new | E3 | 22, 41 | 22, 37, 41, 51 | 0.50 | 0.17 | 0.846 |
-| T-new | E4 | 37, 41 | 22, 37, 41, 51 | 0.50 | 0.17 | 0.984 |
-| T-new | W-freq | 10 | 22, 37, 41, 51 | 0.00 | 0.00 | 0.087 |
-| T-paper | E1 | 42, 52 | 14, 35, 41, 42, 52 | 0.40 | 0.40 | 0.925 |
-| T-paper | E3 | 14, 35, 41, 42, 52 | 14, 35, 41, 42, 52 | 1.00 | 1.00 | 0.944 |
-| T-paper | E4 | 14, 35, 41, 42, 52 | 14, 35, 41, 42, 52 | 1.00 | 1.00 | 0.929 |
-| T-paper | W-freq | 8, 21, 39, 44, 49 | 14, 35, 41, 42, 52 | 0.00 | 0.00 | 0.091 |
-| T-paper | E-paper | 14, 35, 41, 42, 52 | 14, 35, 41, 42, 52 | 1.00 | 1.00 | 0.984 |
+| Target | Explanation | frequencies used by the replacement | target's key frequencies | overlap with target (Jaccard) | overlap with paper's {14, 35, 41, 42, 52} | HS | same weights: HS against the published checkpoint |
+|---|---|---|---|---|---|---|---|
+| T0 | E0 | 14, 35, 41, 52 | 2, 3, 23, 37, 39 | 0.00 | 0.80 | 0.004 | 0.626 |
+| T0 | E1 | 14, 35, 41, 52 | 2, 3, 23, 37, 39 | 0.00 | 0.80 | 0.048 | 0.951 |
+| T0 | E2 | 3, 23, 39 | 2, 3, 23, 37, 39 | 0.60 | 0.00 | 0.899 | – |
+| T0 | E3 | 3, 23 | 2, 3, 23, 37, 39 | 0.40 | 0.00 | 0.939 | – |
+| T0 | E4 | 3, 23, 39 | 2, 3, 23, 37, 39 | 0.60 | 0.00 | 0.912 | – |
+| T0 | W-freq | 31, 42, 52, 55 | 2, 3, 23, 37, 39 | 0.00 | 0.29 | 0.055 | – |
+| T0 | W-alg | 3, 23, 37, 39 | 2, 3, 23, 37, 39 | 0.80 | 0.00 | 0.889 | – |
+| T0 | W-role | 32, 34, 41, 54 | 2, 3, 23, 37, 39 | 0.00 | 0.12 | 0.168 | – |
+| T0 | W-scramble | 3, 23, 39 | 2, 3, 23, 37, 39 | 0.60 | 0.00 | 0.918 | – |
+| T1 | E2 | 11, 25, 49 | 11, 25, 49 | 1.00 | 0.00 | 0.955 | – |
+| T1 | E3 | 11, 49 | 11, 25, 49 | 0.67 | 0.00 | 0.917 | – |
+| T1 | E4 | 25, 49 | 11, 25, 49 | 0.67 | 0.00 | 0.955 | – |
+| T1 | W-freq | 38, 52 | 11, 25, 49 | 0.00 | 0.17 | 0.034 | – |
+| T2 | E2 | 37, 44, 45, 46, 47, 51 | 37, 44, 45, 46, 47, 51 | 1.00 | 0.00 | 0.949 | – |
+| T2 | E3 | 37, 45, 47, 51 | 37, 44, 45, 46, 47, 51 | 0.67 | 0.00 | 0.944 | – |
+| T2 | E4 | 37, 44, 45, 46, 47, 51 | 37, 44, 45, 46, 47, 51 | 1.00 | 0.00 | 0.934 | – |
+| T2 | W-freq | 32 | 37, 44, 45, 46, 47, 51 | 0.00 | 0.00 | 0.089 | – |
+| T-new | E3 | 22, 41 | 22, 37, 41, 51 | 0.50 | 0.17 | 0.846 | – |
+| T-new | E4 | 37, 41 | 22, 37, 41, 51 | 0.50 | 0.17 | 0.984 | – |
+| T-new | W-freq | 10 | 22, 37, 41, 51 | 0.00 | 0.00 | 0.087 | – |
+| T-paper | E1 | 42, 52 | 14, 35, 41, 42, 52 | 0.40 | 0.40 | 0.925 | – |
+| T-paper | E3 | 14, 35, 41, 42, 52 | 14, 35, 41, 42, 52 | 1.00 | 1.00 | 0.944 | – |
+| T-paper | E4 | 14, 35, 41, 42, 52 | 14, 35, 41, 42, 52 | 1.00 | 1.00 | 0.929 | – |
+| T-paper | W-freq | 8, 21, 39, 44, 49 | 14, 35, 41, 42, 52 | 0.00 | 0.00 | 0.091 | – |
+| T-paper | E-paper | 14, 35, 41, 42, 52 | 14, 35, 41, 42, 52 | 1.00 | 1.00 | 0.984 | – |
 <!-- END frequencies -->
 
 **Reading.** With no frequencies in the explanation (E0, E1), Haiku builds the published paper's frequencies into the
 replacement — its build scripts hard-code them (e.g. `KEY_FREQS = [14, 35, 41, 42, 52]  # choice: not specified by
 EXPLANATION.md`). On unpublished targets that yields a working adder with the wrong mechanism and near-zero HS; on the
-published checkpoint (T-paper) the algorithm-only E1 scores like a full explanation. Scores on a published model
+published checkpoint (T-paper) the algorithm-only E1 scores like a full explanation. The last column is a target
+swap, the most direct test (a counterfactual on the target, not a comparison between runs): the *same* T0 E0/E1
+weights, graded against the published checkpoint instead of T0, score far higher there than against T0, so the
+simulator built the published mechanism, not the explained one. Scores on a published model
 therefore measure what the simulator remembers, not what the explanation says; the unpublished targets (T0–T2,
 T-new), which the preregistration introduced for exactly this risk, are what make the score interpretable. This is
-an existence proof at N = 1, consistent with [Haklay et al. 2026](https://arxiv.org/abs/2603.20101) (agents reproduce
+an existence proof from two replacements at N = 1, consistent with [Haklay et al. 2026](https://arxiv.org/abs/2603.20101) (agents reproduce
 published circuits from memory).
 
 ### 4.7 Hypotheses at N = 1
@@ -356,8 +367,8 @@ published circuits from memory).
 | H3 | supported | at N=1 — not yet N=3 or N=10 |
 | H4 | E3: cannot tell at this N; E4: cannot tell at this N | at N=1 — not yet N=3 or N=10 |
 | H4b | not supported | deterministic |
-| H5 | not evaluated yet | – |
-| H6 | not evaluated yet | – |
+| H5 | not evaluable (local simulators stopped at chance, deviation 5) | 5 local runs, qwen3.5-4b: 0/4 above chance, qwen3.5-9b: 0/1 above chance |
+| H6 | not evaluable (local simulators stopped at chance, deviation 5) | 5 local runs, qwen3.5-4b: 0/4 above chance, qwen3.5-9b: 0/1 above chance |
 | H7 | cannot tell at this N | 2 E3/E4 replacements (at N=1 — not yet N=3 or N=10) |
 | H8 | supported | one replacement, all checkpoints |
 <!-- END hypotheses -->
@@ -369,16 +380,36 @@ same places. That is the level at which the paper's explanation is stated, and H
 behaviour obtained any other way. It does not measure the per-neuron assignment (W-scramble) or the non-linearity that
 distinguishes Clock from Pizza (W-alg): both preserve every frequency subspace, and a linear map over a whole site
 cannot see what is inside them. A complete grader needs a second, neuron-level or causal metric; the matched-neuron
-correlation is a candidate; a stitching test (map M̂'s hidden state into M and run the rest of M) is implemented but
-returned no value in these runs and is not yet validated.
+correlation is a candidate. The secondary stitching test (map M̂'s residual state after attention linearly into M's,
+fitted on training folds, then run M's MLP and unembedding and take the KL to M on held-out inputs; `stitching_kl` in
+`results/runs/`) is not: a linear map's predictions depend only on the subspace M̂'s state spans, so replacements that
+span the same subspace get the same stitching KL. In the table below, replacements of different explanations
+(including W-alg and W-scramble) share one value, and the agent's and the compiler's builds of an explanation often
+share it too. Like HS, stitching separates replacements built on the target's frequencies from those built on wrong
+or no frequencies; it shares HS's invariance and adds no discrimination below the frequency level (post hoc).
+
+<!-- BEGIN stitching-T0 -->
+| Explanation | HS (agent) | stitching KL (agent) | HS (compiler) | stitching KL (compiler) |
+|---|---|---|---|---|
+| E0 | 0.004 | 13.6714 | 0.051 | 12.1970 |
+| E1 | 0.048 | 13.6564 | 0.051 | 12.1970 |
+| E2 | 0.899 | 1.4185 | 0.895 | 1.4185 |
+| E3 | 0.939 | 0.0219 | 0.927 | 0.0219 |
+| E4 | 0.912 | 1.4176 | 0.952 | 0.0219 |
+| W-freq | 0.055 | 12.1942 | 0.095 | 12.1164 |
+| W-alg | 0.889 | 1.4185 | 0.921 | 1.4185 |
+| W-role | 0.168 | 1.4859 | 0.500 | 0.0219 |
+| W-scramble | 0.918 | 1.4177 | 0.859 | 0.0219 |
+<!-- END stitching-T0 -->
 
 **Why output KL fails.** A grokked model's outputs are nearly one-hot, so output KL mostly measures the replacement's
 logit scale and its few wrong answers. Many different mechanisms reach the same near-zero KL — the training recipe
 alone does — while a faithful replacement with a slightly wrong logit scale gets a larger one.
 
 **The agent versus the compiler.** Haiku's replacements reach HS close to the reference compiler's for E2–E4: the
-explanation, not the agent, is the limiting factor at this level of detail. The local Qwen models (ablation) are
-reported in Section 4.5 as they finish.
+explanation, not the agent, is the limiting factor at this level of detail. Below some capability the method does not
+work at all: the local Qwen models (4B and 9B parameters, in our harness and with 4-bit weights) never built a working
+replacement, even from the per-neuron table. The capability threshold between them and Haiku is not located.
 
 ## 6 Limitations
 
@@ -392,6 +423,8 @@ reported in Section 4.5 as they finish.
 - **Scripted explanations.** The explanations are rendered by our script, so they share its style and its errors; the
   compiler's non-monotonicity on T2 and T-paper (Appendix) shows that E3 as rendered can mislead a literal build.
 - **HS blind spots.** Per-neuron assignment and Clock-versus-Pizza (Section 5).
+- **No capability axis.** The planned local-simulator ablation was stopped after five runs at chance (deviation 5), so
+  whether the agent–compiler gap shrinks with capability (H5) and whether simulators agree on rankings (H6) is untested.
 
 ## 7 Conclusion
 

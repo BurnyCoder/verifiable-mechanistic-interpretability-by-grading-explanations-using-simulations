@@ -1,0 +1,77 @@
+{
+  "kl_out": 6.066346750371987,
+  "argmax_agreement": 0.008849557522123894,
+  "accuracy": 0.008849557522123894,
+  "target_accuracy": 1.0,
+  "sites": {
+    "resid_mid": {
+      "completeness": 0.0,
+      "soundness": 0.0,
+      "harmonic": 0.0
+    },
+    "mlp_post": {
+      "completeness": 0.0,
+      "soundness": 0.0,
+      "harmonic": 0.0
+    },
+    "resid_post": {
+      "completeness": 0.0,
+      "soundness": 0.0,
+      "harmonic": 0.0
+    }
+  },
+  "hs": 0.0,
+  "centred_logit_fvu": 1.006841800195333,
+  "calibrated_kl": 4.727384621448307,
+  "calibration_scale": 0.0003354626301756144,
+  "cka": {
+    "resid_mid": 1.8174590900723606e-32,
+    "mlp_post": 2.860436308484651e-29,
+    "resid_post": 3.218341202546967e-33
+  },
+  "procrustes": {
+    "resid_mid": 1.9999999999999998,
+    "mlp_post": 1.9999999999999905,
+    "resid_post": 2.0
+  },
+  "matched_neuron_corr": 1.4116526407589565e-16,
+  "matched_attention_distance": 0.2915977033358166,
+  "stitching_kl": 12.159819037512062,
+  "embedding_spectrum_cosine": 0.021328925017831214,
+  "failed": false,
+  "error": null,
+  "run_id": "ablations__T0__W-freq__qwen354b-mini__t0.6__s0",
+  "stage": "ablations",
+  "target": "T0",
+  "level": "W-freq",
+  "variant": "",
+  "round": 1,
+  "model": "qwen3.5-4b",
+  "temperature": 0.6,
+  "seed": 0,
+  "selftest": true,
+  "harness": "mini",
+  "effort": null,
+  "agent": {
+    "exit_code": 124,
+    "seconds": 3600,
+    "timeout_s": 3600,
+    "events": 160,
+    "steps": 31,
+    "tool_calls": 31,
+    "errors": 0,
+    "wsl_returncode": 0,
+    "starter_unchanged": false
+  },
+  "audit": {
+    "flagged": false,
+    "reasons": [],
+    "suspicious_terms": []
+  },
+  "length": {
+    "chars": 3724,
+    "gzip_bytes": 1779,
+    "numbers": 126
+  },
+  "finished": "2026-11-21T18:29:14"
+}

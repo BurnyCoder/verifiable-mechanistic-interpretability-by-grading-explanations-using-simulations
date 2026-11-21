@@ -29,3 +29,22 @@ def test_tables_render_from_committed_results():
     for text in (tables.scoreboard(1), tables.baselines_table(), tables.controls_table(), tables.cost_table(), tables.runs_table(1)):
         assert isinstance(text, str) and text  # never raises on default-temperature (Claude) runs
     assert tables._t(None) == "default" and tables._t(0.6) == "0.6"
+
+
+def test_h5_h6_marked_not_evaluable_when_local_ablation_incomplete():
+    from vmi.analysis import hypotheses
+    H = hypotheses.evaluate(1)["hypotheses"]
+    local = [r for r in hypotheses.load_runs(1) if r["model"] in hypotheses.LOCAL_MODELS]
+    complete = all(len([r for r in local if r["model"] == m]) >= 4 for m in hypotheses.LOCAL_MODELS)
+    if local and not complete:  # deviation 5: stopped early, so no test statistic, only a description
+        for k in ("H5", "H6"):
+            assert H[k]["verdict"].startswith("not evaluable") and "above chance" in H[k]["label"]
+
+
+def test_key_results_report_the_target_swap_when_present():
+    import json
+    fq = tables.RES / "frequencies_round1.json"
+    rows = json.loads(fq.read_text())["rows"] if fq.exists() else []
+    text = tables.key_results(1)
+    if any("hs_vs_paper" in r for r in rows):  # memorisation evidence: same weights, graded against the published model
+        assert "target swap" in text and "against the published checkpoint" in text

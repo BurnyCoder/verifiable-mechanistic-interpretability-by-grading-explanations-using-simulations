@@ -28,8 +28,9 @@ A script with weights access renders explanations at five levels of true detail 
 frequencies → per-frequency quantities → per-neuron table) plus length-matched wrong explanations (wrong frequencies,
 the Pizza algorithm of [Zhong et al. 2023](https://arxiv.org/abs/2306.17844), misattributed components, scrambled
 neurons). **Claude Haiku 5.5 in Claude Code**, offline in a bubblewrap sandbox with no path to the weights, writes
-`weights.npz` for a replacement of the same architecture; local Qwen models in a bash-only harness are the
-simulator-capability ablation. The score is **output KL** over all 113² inputs and **hidden-state similarity (HS)**:
+`weights.npz` for a replacement of the same architecture. Local Qwen models in a bash-only harness were tried as a
+simulator-capability ablation; every one of their runs built a constant-output network (chance), so they were stopped
+after round 1's first five runs. The score is **output KL** over all 113² inputs and **hidden-state similarity (HS)**:
 cross-validated ridge-regression variance explained in both directions at three sites — linear because the
 no-LayerNorm residual stream is defined only up to an invertible linear map, and no wider because non-linear
 alignment makes any network match any algorithm ([Sutter et al. 2025](https://arxiv.org/abs/2507.08802)).
@@ -43,7 +44,7 @@ alignment makes any network match any algorithm ([Sutter et al. 2025](https://ar
 - **Correct behaviour, wrong mechanism is caught by HS, not by output KL:** the wrong-frequency replacement reaches KL 9.31e-04 nats (true E3: 0.023) but HS 0.06.
 - **Copying behaviour does not copy the mechanism:** independent retrains (HS 0.12) and logit-distilled students (HS 0.23, KL 2.38e-06) stay at the random-initialisation floor (HS 0.24).
 - **Negative result:** the primary HS does not separate the Pizza explanation (W-alg, HS 0.89) or the scrambled neuron table (W-scramble, HS 0.92) from the true explanations; the secondary matched-neuron correlation separates W-scramble (0.62) from E4 (0.89).
-- **Memorisation (post hoc):** when the explanation gives no frequencies (E0, E1), the simulator's replacements on unpublished targets use the paper's published frequencies (mean overlap 0.80 with {14, 35, 41, 42, 52}, 0.00 with the target's own). On the published checkpoint the same algorithm-only explanation therefore scores HS 0.92 (on T0: 0.05): scores on published models measure memory, not the explanation.
+- **Memorisation (post hoc):** when the explanation gives no frequencies (E0, E1), the simulator's 2 replacement(s) on unpublished targets use the paper's published frequencies (mean overlap 0.80 with {14, 35, 41, 42, 52}, 0.00 with the target's own). Grading the same weights against the published checkpoint (target swap): E0: HS 0.00 against T0, 0.63 against the published checkpoint; E1: HS 0.05 against T0, 0.95 against the published checkpoint. A separate algorithm-only run on the published checkpoint scores HS 0.92: scores on published models measure memory, not the explanation.
 - **Cost:** all Claude Haiku 5.5 runs so far cost $0.86 in total.
 <!-- END key-results -->
 
@@ -63,7 +64,8 @@ alignment makes any network match any algorithm ([Sutter et al. 2025](https://ar
   The secondary matched-neuron correlation catches the scrambled table.
 - **A trap the design caught (post hoc):** when an explanation leaves the frequencies open, the agent fills them in
   with the *published paper's* frequencies from memory. On the paper's own checkpoint even an algorithm-only
-  explanation then scores like a full one; on our unpublished targets it scores at the floor. Scores on published
+  explanation then scores like a full one; on our unpublished targets it scores at the floor. The very same
+  replacement weights score near the floor against our target and high against the published checkpoint. Scores on published
   models measure memory, so the study's conclusions rest on the unpublished targets.
 - **Not yet decided:** with one run per condition most preregistered tests cannot reach significance; they are
   reported as "cannot tell at this N" until rounds 2 and 3.
@@ -106,8 +108,8 @@ alignment makes any network match any algorithm ([Sutter et al. 2025](https://ar
 | H3 | supported | at N=1 — not yet N=3 or N=10 |
 | H4 | E3: cannot tell at this N; E4: cannot tell at this N | at N=1 — not yet N=3 or N=10 |
 | H4b | not supported | deterministic |
-| H5 | not evaluated yet | – |
-| H6 | not evaluated yet | – |
+| H5 | not evaluable (local simulators stopped at chance, deviation 5) | 5 local runs, qwen3.5-4b: 0/4 above chance, qwen3.5-9b: 0/1 above chance |
+| H6 | not evaluable (local simulators stopped at chance, deviation 5) | 5 local runs, qwen3.5-4b: 0/4 above chance, qwen3.5-9b: 0/1 above chance |
 | H7 | cannot tell at this N | 2 E3/E4 replacements (at N=1 — not yet N=3 or N=10) |
 | H8 | supported | one replacement, all checkpoints |
 <!-- END hypotheses -->
@@ -151,10 +153,12 @@ README, the reports and the paper from `results/`.
 ## Run matrix
 
 Stage 0 (tooling, dev target only), then three rounds — **N = 1 of everything, then N = 3, then N = 10** — each running
-main method → controls → baselines → ablations → hyperparameter sensitivity → seed sensitivity. 44 agent conditions
-per round: main (T0 × E1–E4), controls (E0, W-freq, W-alg, W-role, W-scramble), ablations (3 Qwen simulators ×
-{E2, E3, E4, W-freq}; math and code formats; no self-test), hyperparameter (effort low/high × {E3, W-freq}), seed
-sensitivity (T1, T2 × 4; T-new × 3; T-paper × 5 incl. the published explanation). Full table:
+main method → controls → baselines → ablations → hyperparameter sensitivity → seed sensitivity. 32 Claude Haiku
+conditions per round: main (T0 × E1–E4), controls (E0, W-freq, W-alg, W-role, W-scramble), ablations (math and code
+formats; no self-test), hyperparameter (effort low/high × {E3, W-freq}), seed sensitivity (T1, T2 × 4; T-new × 3;
+T-paper × 5 incl. the published explanation). Round 1 also planned 12 local Qwen conditions (3 simulators ×
+{E2, E3, E4, W-freq}); after five runs at chance they were stopped and dropped from rounds 2–3 (preregistration,
+deviation 5). Full table:
 [reports/planned-runs.md](reports/planned-runs.md); all runs so far: [reports/experiments/experiments.md](reports/experiments/experiments.md).
 
 ## Novelty and related work
@@ -257,8 +261,8 @@ docs/               usage and architecture
 - [x] Literature and state-of-the-art review; preregistration (pushed before any result)
 - [x] Targets, explainer, reference compiler, grader, offline sandbox, harnesses (test-first)
 - [x] Stage 0 on the dev target; protocol freeze (amendment 2: Claude Haiku 5.5 main simulator)
-- [ ] Round 1 (N = 1): main, controls, baselines, Haiku ablations done; local Qwen ablations, hyperparameter and seed
-      stages running
+- [x] Round 1 (N = 1): all 32 Claude Haiku conditions, all no-agent stages; local Qwen ablation stopped at chance
+      (5 of 12 runs, deviation 5)
 - [ ] Rounds 2 (N = 3) and 3 (N = 10)
 - [x] Hugging Face repo and collection with replacement weights, transcripts and trained models (updated after each stage)
 - [x] Interactive results explorer on GitHub Pages (regenerated by `vmi analyse`)

@@ -36,7 +36,7 @@
   },
   "matched_neuron_corr": 0.8047346490685041,
   "matched_attention_distance": 0.03872557986240765,
-  "stitching_kl": NaN,
+  "stitching_kl": 0.02195004469189515,
   "embedding_spectrum_cosine": 0.8944276371811544,
   "failed": false,
   "error": null,
