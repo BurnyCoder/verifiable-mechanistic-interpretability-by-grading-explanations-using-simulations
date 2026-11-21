@@ -45,7 +45,8 @@ class Settings:
     llm_reasoning_budget: int  # max thinking tokens per model turn (-1 = unlimited; stage-0 decision)
     run_timeout_s: int  # wall-clock cap per agent run
     run_max_steps: int  # agent step cap per run
-    harness: str = "opencode"  # agent harness: "opencode" or "mini" (custom bash-only harness, simulator/harness.py)
+    harness: str = "opencode"  # agent harness: "opencode", "mini" (simulator/harness.py) or "claudecode"
+    claude_cap_usd: float = 20.0  # total API spend allowed for Claude runs (user decision 2026-11-21)
 
     @property
     def runs_store(self) -> Path:
@@ -86,4 +87,13 @@ def load() -> Settings:
         run_timeout_s=int(v["VMI_RUN_TIMEOUT_S"]),
         run_max_steps=int(v["VMI_RUN_MAX_STEPS"]),
         harness=v.get("VMI_HARNESS", "opencode"),
+        claude_cap_usd=float(v.get("VMI_CLAUDE_CAP_USD", "20")),
     )
+
+
+def anthropic_key() -> str:
+    """The Anthropic API key from .env, read only for Claude runs (passed to the proxy outside the sandbox)."""
+    key = dotenv_values(REPO_ROOT / ".env").get("ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_API_KEY")
+    if not key:
+        raise KeyError("ANTHROPIC_API_KEY is not set in .env")
+    return key

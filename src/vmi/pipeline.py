@@ -122,7 +122,8 @@ def run_id(stage: str, target: str, level: str, seed: int, model: str, temperatu
            harness: str = "opencode") -> str:
     """Stable identifier of one agent run (also its folder and result-file name); OpenCode runs carry no harness tag."""
     tag = model.replace(".", "").replace("-", "") + ("" if harness == "opencode" else f"-{harness}")
-    return f"{stage}__{target}__{level}{('-' + variant) if variant else ''}__{tag}__t{temperature:g}__s{seed}"
+    temp = "tdef" if temperature is None else f"t{temperature:g}"  # tdef: the model's default sampling (Claude)
+    return f"{stage}__{target}__{level}{('-' + variant) if variant else ''}__{tag}__{temp}__s{seed}"
 
 
 def agent_run(settings: Settings, *, stage: str, target: str, level: str, seed: int, model: str | None = None,
@@ -136,6 +137,8 @@ def agent_run(settings: Settings, *, stage: str, target: str, level: str, seed: 
 
     model = model or settings.llm_model
     temperature = settings.llm_temperature if temperature is None else temperature
+    if model.startswith("claude-"):  # Claude 5.5 models reject non-default sampling parameters
+        temperature = None
     rid = run_id(stage, target, level, seed, model, temperature, variant, settings.harness)
     result_file = RESULTS / "runs" / f"{rid}.json"
     if result_file.exists():
@@ -147,7 +150,15 @@ def agent_run(settings: Settings, *, stage: str, target: str, level: str, seed: 
     meta = {"run_id": rid, "stage": stage, "target": target, "level": level, "variant": variant, "round": round_}
     prepare_run(settings, run_dir, explanation=text, extra_files=extra, meta=meta, model=model,
                 temperature=temperature, seed=seed, selftest=selftest)
-    info = run_agent(settings, run_dir, mode="harness" if settings.harness == "mini" else "agent")
+    mode = {"mini": "harness", "claudecode": "claude"}.get(settings.harness, "agent")
+    if mode == "claude" and not model.startswith("claude-"):
+        raise ValueError(f"the claudecode harness needs a Claude model id, got {model}")
+    info = run_agent(settings, run_dir, mode=mode)
+    if mode == "claude":  # API spend of this run, from the proxy's ledger
+        from vmi.simulator.anthropic_proxy import spent
+        from vmi.simulator.sandbox import CLAUDE_LEDGER
+        info["cost_usd"] = round(spent(str(CLAUDE_LEDGER), rid), 4)
+        info["total_claude_spend_usd"] = round(spent(str(CLAUDE_LEDGER)), 4)
     built = run_dir / "work_out" / "build_weights.py"
     # an untouched starter writes all-zero weights; record it so such runs are not mistaken for agent constructions
     info["starter_unchanged"] = built.exists() and built.read_bytes() == (run_dir / "work" / "build_weights.py").read_bytes()
@@ -181,7 +192,8 @@ def main(argv: list[str] | None = None) -> None:
     r.add_argument("level")
     r.add_argument("seed", type=int)
     r.add_argument("--stage", default="dev")
-    r.add_argument("--harness", choices=["opencode", "mini"], default=None, help="override VMI_HARNESS")
+    r.add_argument("--harness", choices=["opencode", "mini", "claudecode"], default=None, help="override VMI_HARNESS")
+    r.add_argument("--model", default=None, help="model alias (llama-server) or Claude model id (claudecode)")
     q = sub.add_parser("queue")
     q.add_argument("manifest", type=Path)
     s = sub.add_parser("serve")
@@ -212,7 +224,7 @@ def main(argv: list[str] | None = None) -> None:
     elif a.cmd == "run":
         if a.harness:
             settings = dataclasses.replace(settings, harness=a.harness)
-        agent_run(settings, stage=a.stage, target=a.target, level=a.level, seed=a.seed)
+        agent_run(settings, stage=a.stage, target=a.target, level=a.level, seed=a.seed, model=a.model)
     elif a.cmd == "queue":
         queue(settings, a.manifest)
     elif a.cmd == "serve":

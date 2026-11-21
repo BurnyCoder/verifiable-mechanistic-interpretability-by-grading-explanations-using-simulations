@@ -48,6 +48,20 @@ def harness_config(settings: Settings, *, model: str, temperature: float, seed: 
             "request_timeout_s": settings.run_timeout_s, "command_timeout_s": 120, "cwd": "/work"}
 
 
+CLAUDE_RUN_CAPS_USD = {"claude-haiku-5-5": 2.0, "claude-sonnet-5-5": 6.0, "claude-opus-5-5": 10.0}  # per run
+CLAUDE_LEDGER = REPO_ROOT / "results" / "claude" / "ledger.jsonl"  # every priced request of every Claude run
+
+
+def claude_config(settings: Settings, *, model: str, run_id: str) -> dict:
+    """Config of the outside proxy for one Claude Code run (paths as seen from WSL, where the proxy runs)."""
+    from vmi.simulator.runner import to_wsl
+
+    CLAUDE_LEDGER.parent.mkdir(parents=True, exist_ok=True)
+    return {"upstream": "https://api.anthropic.com", "run_id": run_id, "ledger": to_wsl(CLAUDE_LEDGER),
+            "models": sorted({model, "claude-haiku-5-5"}),  # Claude Code's background calls use the small model
+            "cap_usd": settings.claude_cap_usd, "run_cap_usd": CLAUDE_RUN_CAPS_USD[model], "reserve_usd": 0.5}
+
+
 def opencode_config(settings: Settings, *, model: str, temperature: float, seed: int, steps: int) -> dict:
     """OpenCode v2 config: one local OpenAI-compatible provider, everything network-capable denied."""
     deny = lambda action: {"action": action, "resource": "*", "effect": "deny"}  # noqa: E731
@@ -112,11 +126,15 @@ def prepare_run(settings: Settings, run_dir: Path, *, explanation: str, extra_fi
     for name, content in extra_files.items():
         (work / name).write_text(content, encoding="utf-8", newline="\n")
     model = model or settings.llm_model
-    temperature = settings.llm_temperature if temperature is None else temperature
+    claude = model.startswith("claude-")
+    temperature = None if claude else (settings.llm_temperature if temperature is None else temperature)
     cfg = opencode_config(settings, model=model, temperature=temperature, seed=seed, steps=settings.run_max_steps)
     (run_dir / "opencode.jsonc").write_text(json.dumps(cfg, indent=2), encoding="utf-8", newline="\n")
     hcfg = harness_config(settings, model=model, temperature=temperature, seed=seed)
     (run_dir / "harness.json").write_text(json.dumps(hcfg, indent=2), encoding="utf-8", newline="\n")
+    if model.startswith("claude-"):  # Claude Code: sampling is the model's default (Claude 5.5 rejects custom values)
+        ccfg = claude_config(settings, model=model, run_id=run_dir.name)
+        (run_dir / "claude.json").write_text(json.dumps(ccfg, indent=2), encoding="utf-8", newline="\n")
     (run_dir / "prompt.txt").write_text(PROMPT if selftest else PROMPT_NO_SELFTEST, encoding="utf-8", newline="\n")
     (run_dir / "run.json").write_text(json.dumps({**meta, "model": model, "temperature": temperature, "seed": seed,
                                                   "selftest": selftest}, indent=2), encoding="utf-8")

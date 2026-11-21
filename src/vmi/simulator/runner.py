@@ -14,6 +14,7 @@ from __future__ import annotations  # postponed annotations
 
 import json  # NDJSON events
 import logging  # timestamped run log
+import os  # environment for the Claude proxy key
 import subprocess  # wsl.exe
 import threading  # live tailing of the event stream
 import time  # polling interval, timestamps
@@ -38,9 +39,36 @@ def _wsl_home() -> str:
                           text=True, check=True).stdout.strip()
 
 
+def _describe_claude(ev: dict) -> str:
+    """One readable block per Claude Code stream-json event (assistant/user messages, result)."""
+    t = ev["type"]
+    if t == "result":
+        return (f"[result] {ev.get('subtype')} turns={ev.get('num_turns')} cost=${ev.get('total_cost_usd')} "
+                f"error={ev.get('is_error')}\n{ev.get('result', '')}")
+    blocks = []
+    for b in (ev.get("message") or {}).get("content") or []:
+        kind = b.get("type")
+        if kind == "text":
+            blocks.append(f"[text] {b.get('text', '')}")
+        elif kind == "thinking":
+            blocks.append(f"[reasoning] {b.get('thinking', '')}")
+        elif kind == "tool_use":
+            blocks.append(f"[tool {b.get('name')}] input: {json.dumps(b.get('input'), ensure_ascii=False)}")
+        elif kind == "tool_result":
+            content = b.get("content")
+            text = content if isinstance(content, str) else "\n".join(c.get("text", "") for c in content or [])
+            blocks.append(f"[tool result] {text}")
+        else:
+            blocks.append(f"[{kind}] {json.dumps(b, ensure_ascii=False)}")
+    usage = (ev.get("message") or {}).get("usage")
+    return "\n".join(blocks + ([f"[step_finish] tokens={json.dumps(usage)}"] if t == "assistant" and usage else []))
+
+
 def _describe(ev: dict) -> str:
-    """One readable block per OpenCode event (unknown shapes are printed as JSON, never dropped)."""
+    """One readable block per OpenCode / harness / Claude Code event (unknown shapes are printed as JSON, never dropped)."""
     t = ev.get("type", "?")
+    if t in ("assistant", "user", "result") and "part" not in ev:
+        return _describe_claude(ev)
     part = ev.get("part") or {}
     if t in ("text", "reasoning"):
         return f"[{t}] {part.get('text', ev.get('text', ''))}"
@@ -91,9 +119,12 @@ def write_transcript(run_dir: Path) -> dict:
         stamp = time.strftime("%H:%M:%S", time.localtime(ts / 1000)) if isinstance(ts, (int, float)) else ""
         lines.append(f"`{stamp}` {_describe(ev)}\n")
     (run_dir / "logs" / "transcript.md").write_text("\n".join(lines), encoding="utf-8")
-    steps = sum(e.get("type") == "step_finish" for e in events)
-    tools = sum(e.get("type") == "tool_use" for e in events)
-    errors = sum(e.get("type") == "error" for e in events)
+    steps = sum(e.get("type") in ("step_finish", "assistant") for e in events)
+    tools = sum(e.get("type") == "tool_use" for e in events) + sum(
+        b.get("type") == "tool_use" for e in events if e.get("type") == "assistant"
+        for b in (e.get("message") or {}).get("content") or [])
+    errors = sum(e.get("type") == "error" for e in events) + sum(
+        bool(e.get("is_error")) for e in events if e.get("type") == "result")
     return {"events": len(events), "steps": steps, "tool_calls": tools, "errors": errors}
 
 
@@ -117,10 +148,16 @@ def run_agent(settings: Settings, run_dir: Path, mode: str = "agent") -> dict:
     tailer = threading.Thread(target=_tail, args=(live, stop, sink), daemon=True)
     tailer.start()
     sink(f"start mode={mode}")
+    model = json.loads((run_dir / "run.json").read_text())["model"]
+    env = None
+    if mode == "claude":  # the key goes only to the proxy outside the sandbox (WSLENV forwards it to WSL)
+        from vmi.config import anthropic_key
+        env = {**os.environ, "VMI_ANTHROPIC_KEY": anthropic_key(),
+               "WSLENV": ":".join(filter(None, [os.environ.get("WSLENV", ""), "VMI_ANTHROPIC_KEY/u"]))}
     t0 = time.time()
     proc = subprocess.run(["wsl.exe", "-d", WSL_DISTRO, "--", "bash", script, to_wsl(run_dir), str(settings.llm_port),
-                           str(settings.run_timeout_s), f"local/{json.loads((run_dir / 'run.json').read_text())['model']}", mode],
-                          capture_output=True, text=True, encoding="utf-8", errors="replace")
+                           str(settings.run_timeout_s), model if mode == "claude" else f"local/{model}", mode],
+                          capture_output=True, text=True, encoding="utf-8", errors="replace", env=env)
     stop.set()
     tailer.join(timeout=5)
     sink(f"finished in {time.time() - t0:.0f}s (wsl exit {proc.returncode})")

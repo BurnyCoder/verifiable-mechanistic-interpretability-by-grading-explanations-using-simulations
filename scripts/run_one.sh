@@ -5,8 +5,9 @@
 #   RUN_DIR   run folder as a WSL path (e.g. /mnt/d/AI/vmi-sim/runs/<id>) holding work/, opencode.jsonc, prompt.txt
 #   PORT      TCP port of llama-server on the Windows host (reachable from WSL as 127.0.0.1 in mirrored mode)
 #   MODEL_REF OpenCode model reference, e.g. local/qwen3.6-35b-a3b
-#   MODE      "agent" (default, OpenCode), "harness" (the custom bash-only harness, src/vmi/simulator/harness.py) or
-#             "check" (run scripts/isolation_check.sh in the identical sandbox instead)
+#   MODE      "agent" (default, OpenCode), "harness" (the custom bash-only harness, src/vmi/simulator/harness.py),
+#             "claude" (Claude Code via src/vmi/simulator/anthropic_proxy.py; needs RUN_DIR/claude.json and the API key in
+#             VMI_ANTHROPIC_KEY, passed through WSLENV) or "check" (run scripts/isolation_check.sh in the identical sandbox)
 #
 # Isolation (threat model: accidental access to the target's weights or the internet, not a malicious model):
 #   --unshare-all            new user/pid/ipc/uts/cgroup/NETWORK namespaces: only loopback exists inside
@@ -33,9 +34,17 @@ cp "$RUN/prompt.txt" "$B/state/prompt.txt"
 [ -f "$RUN/harness.json" ] && cp "$RUN/harness.json" "$B/state/harness.json"
 cp "$HERE/isolation_check.sh" "$B/state/isolation_check.sh"
 
-# Outside relay: socket file → llama-server; logs every byte (full prompts and completions).
-python3 "$REPO/src/vmi/simulator/relay.py" unix-to-tcp "$B/sock/llm.sock" 127.0.0.1 "$PORT" "$B/out/wire.log" &
+if [ "$MODE" = "claude" ]; then
+  # Outside proxy: socket file → https://api.anthropic.com. It adds the API key (which never enters the sandbox),
+  # enforces the dollar budget from claude.json and logs full request/response bodies (headers are not logged).
+  python3 "$REPO/src/vmi/simulator/anthropic_proxy.py" "unix:$B/sock/llm.sock" "$RUN/claude.json" "$B/out/wire.log"     >"$B/out/proxy.log" 2>&1 &
+  RUN_CAP="$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["run_cap_usd"])' "$RUN/claude.json")"
+else
+  # Outside relay: socket file → llama-server; logs every byte (full prompts and completions).
+  python3 "$REPO/src/vmi/simulator/relay.py" unix-to-tcp "$B/sock/llm.sock" 127.0.0.1 "$PORT" "$B/out/wire.log" &
+fi
 RELAY=$!
+unset VMI_ANTHROPIC_KEY  # only the proxy needed it
 trap 'kill $RELAY 2>/dev/null' EXIT
 for _ in $(seq 50); do [ -S "$B/sock/llm.sock" ] && break; sleep 0.1; done
 
@@ -44,10 +53,18 @@ if [ "$MODE" = "check" ]; then
 elif [ "$MODE" = "harness" ]; then  # custom bash-only harness (src/vmi/simulator/harness.py) instead of OpenCode
   INNER='python3 /opt/vmi/relay.py tcp-to-unix 127.0.0.1 '"$PORT"' /llm/llm.sock & sleep 0.5
 exec python3 /opt/vmi/harness.py /state/harness.json "$(cat /state/prompt.txt)" </dev/null'
+elif [ "$MODE" = "claude" ]; then  # Claude Code with placeholder credentials; the outside proxy adds the real key
+  INNER='python3 /opt/vmi/relay.py tcp-to-unix 127.0.0.1 '"$PORT"' /llm/llm.sock & sleep 0.5
+export ANTHROPIC_BASE_URL=http://127.0.0.1:'"$PORT"' ANTHROPIC_API_KEY=sandbox-placeholder-not-a-key   ANTHROPIC_SMALL_FAST_MODEL=claude-haiku-5-5 ANTHROPIC_DEFAULT_HAIKU_MODEL=claude-haiku-5-5 DISABLE_AUTOUPDATER=1   DISABLE_TELEMETRY=1 DISABLE_ERROR_REPORTING=1 CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+exec /opt/cc/claude --bare -p "$(cat /state/prompt.txt)" --model '"$MODEL"' --output-format stream-json --verbose   --dangerously-skip-permissions --disallowedTools WebFetch WebSearch --no-session-persistence   --max-budget-usd '"$RUN_CAP"' </dev/null'
 else
   INNER='python3 /opt/vmi/relay.py tcp-to-unix 127.0.0.1 '"$PORT"' /llm/llm.sock & sleep 0.5
 exec opencode run --standalone --auto --format json --thinking --agent weights --model '"$MODEL"' "$(cat /state/prompt.txt)" </dev/null'
 fi
+
+EXTRA=()  # the Claude Code binary (read-only) when installed; harmless in other modes (no network without the proxy)
+CLAUDE_BIN="$(readlink -f "$HOME/.local/bin/claude" 2>/dev/null)"
+[ -n "$CLAUDE_BIN" ] && [ -f "$CLAUDE_BIN" ] && EXTRA+=(--ro-bind "$CLAUDE_BIN" /opt/cc/claude)
 
 START=$(date +%s)
 timeout --signal=TERM --kill-after=30 "$TIMEOUT" \
@@ -58,7 +75,7 @@ bwrap --die-with-parent --new-session --unshare-all --clearenv \
   --ro-bind "$HOME/.opencode/bin" /opt/oc \
   --ro-bind "$BASE/pylib" /opt/py \
   --ro-bind "$REPO/src/vmi/simulator/relay.py" /opt/vmi/relay.py \
-  --ro-bind "$REPO/src/vmi/simulator/harness.py" /opt/vmi/harness.py \
+  --ro-bind "$REPO/src/vmi/simulator/harness.py" /opt/vmi/harness.py   "${EXTRA[@]}" \
   --bind "$B/work" /work --bind "$B/state" /state --bind "$B/sock" /llm \
   --setenv PATH /opt/oc:/usr/bin:/bin --setenv HOME /state/home --setenv PYTHONPATH /opt/py \
   --setenv XDG_CONFIG_HOME /state/config --setenv XDG_DATA_HOME /state/data --setenv XDG_CACHE_HOME /state/cache \
