@@ -53,6 +53,8 @@ PLAIN = {  # the same predictions in plain words, for readers outside the field 
 def _f(x, nd: int = 3) -> str:
     if x is None:
         return "–"
+    if isinstance(x, int):
+        return str(x)
     return f"{x:.2e}" if x != 0 and (abs(x) < 1e-3 or abs(x) >= 1e4) else f"{x:.{nd}f}"
 
 
@@ -145,6 +147,82 @@ def prediction_rows(max_round: int) -> list[dict]:
     if "H8" in H:
         rho = H["H8"]["spearman_hs_vs_neglog_restricted_loss"]
         add("H8", f"Spearman ρ(HS, −log restricted loss) = {_f(rho)}", _match({"ρ ≤ 0": rho > 0}))
+    return out
+
+
+def highlight_rows(max_round: int, target: str = "T0") -> list[dict]:
+    """Concrete examples of what works (✅) and what does not (❌), every number read from results/ (README top)."""
+    runs = load_runs(max_round)
+
+    def m(lv, key="hs", t=target, **kw):
+        rs = [r for r in _select(runs, target=t, level=lv, **kw) if r.get(key) is not None]
+        return float(np.mean([r[key] for r in rs])) if rs else None
+
+    out = []
+
+    def add(ok, title, evidence, means):
+        if None not in evidence[1]:
+            out.append({"ok": ok, "title": title, "evidence": evidence[0].format(*[_f(x) for x in evidence[1]]), "means": means})
+
+    c = {lv: compiler(target, lv) for lv in ("E2", "E3", "E4")}
+    add(True, "Naming the key frequencies is what makes the rebuild faithful",
+        ("HS {} with the algorithm only (E1) → {} once the frequencies are named (E2); the AI-free compiler gets {} from E2",
+         [m("E1"), m("E2"), c["E2"] and c["E2"]["hs"]]),
+        "The score rewards the part of the explanation that pins down this network's mechanism.")
+    add(True, "Right answers, wrong mechanism: caught by HS, missed by output KL",
+        ("wrong-frequency explanation: accuracy {}, output KL {} (true E3: {}), but HS {} (true E3: {})",
+         [m("W-freq", "accuracy"), m("W-freq", "kl_out"), m("E3", "kl_out"), m("W-freq"), m("E3")]),
+        "Checking only the answers would rate a wrong explanation as good as a true one.")
+    b = RES / "baselines" / f"{target}.json"
+    ri = RES / "controls" / f"random_init_{target}.json"
+    if b.exists() and ri.exists():
+        st, rnd = json.loads(b.read_text())["students"], json.loads(ri.read_text())
+        best_kl = min((r["kl_out"] for r in runs if r["target"] == target and not r.get("failed")), default=None)
+        add(True, "Copying the outputs does not copy the mechanism",
+            ("networks trained to copy the target's outputs: KL {} (best explanation-built network: {}), HS {}; "
+             "random networks: HS {}",
+             [np.mean([x["kl_out"] for x in st]), best_kl, np.mean([x["hs"] for x in st]), np.mean([x["hs"] for x in rnd])]),
+            "HS measures how the answer is computed, not the answer itself.")
+    p = RES / f"hypotheses_round{max_round}.json"
+    H = json.loads(p.read_text())["hypotheses"] if p.exists() else {}
+    if "H7" in H and H["H7"]["rows"]:
+        rows = H["H7"]["rows"]
+        add(True, "An explanation of one network does not fit another",
+            ("T0's E3/E4 rebuilds: HS {} against T0, at most {} against any other trained or untrained network",
+             [np.mean([r["hs_T0"] for r in rows]), max(max(r["hs_wrong"].values()) for r in rows)]),
+            "The score is specific to the network that was explained.")
+    add(True, "Holds on a network trained after the protocol was frozen",
+        ("T-new: HS {} (E4) vs {} (wrong frequencies)", [m("E4", t="T-new"), m("W-freq", t="T-new")]),
+        "The method was not tuned to the networks it was developed on.")
+    add(False, "Cannot tell the Clock algorithm from the Pizza algorithm",
+        ("Pizza explanation (W-alg): HS {}; true explanation (E3): HS {}", [m("W-alg"), m("E3")]),
+        "Both use the same frequencies; HS sees which frequencies, not what is done with them.")
+    add(False, "Cannot tell a correct neuron table from a shuffled one",
+        ("shuffled table (W-scramble): HS {}; true table (E4): HS {}; matched-neuron correlation {} vs {} does separate them",
+         [m("W-scramble"), m("E4"), m("W-scramble", "matched_neuron_corr"), m("E4", "matched_neuron_corr")]),
+        "Neuron-level detail needs a neuron-level metric.")
+    kls = [m(lv, "kl_out") for lv in ("E2", "E3", "E4")]
+    backwards = None not in kls and _mono(kls)  # the title states only what the numbers show
+    add(False, "Output KL ranks the explanations backwards" if backwards else "Output KL does not rank the explanations",
+        ("E2 → E3 → E4: output KL {} → {} → {}, while HS {} → {} → {}",
+         [m("E2", "kl_out"), m("E3", "kl_out"), m("E4", "kl_out"), m("E2"), m("E3"), m("E4")]),
+         "Long per-neuron tables give the AI more ways to get answers slightly wrong; grading by outputs alone would "
+         "punish the most detailed true explanation.")
+    fq = RES / f"frequencies_round{max_round}.json"
+    if fq.exists():
+        e1 = [r for r in json.loads(fq.read_text())["rows"] if r["level"] == "E1" and r["target"] == target
+              and r["model"] == MAIN_MODEL and r["variant"] == "" and "hs_vs_paper" in r]
+        if e1:
+            add(False, "The AI fills gaps from memory of the published paper",
+                ("algorithm-only rebuilds of T0: HS {} against T0 but {} against the published checkpoint (same weights)",
+                 [np.mean([r["hs"] for r in e1]), np.mean([r["hs_vs_paper"] for r in e1])]),
+                "Scores on famous, published networks measure what the AI remembers, not the explanation.")
+    local = [r for r in runs if r["model"] in LOCAL_MODELS]
+    if local:
+        add(False, "Small local AI models cannot do the task at all",
+            ("{} local runs (Qwen3.5-4B, 9B): task accuracy {} (chance = 1/113), HS {}",
+             [len(local), np.mean([r["accuracy"] for r in local]), np.mean([r["hs"] for r in local])]),
+            "Rebuilding a network from an explanation needs a capable coding agent.")
     return out
 
 

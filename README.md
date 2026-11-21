@@ -49,6 +49,50 @@ accounting, and no-, wrong-explanation, wrong-target and planted-mechanism contr
 [Novelty and related work](#novelty-and-related-work)). *Stack:* Python 3.12, PyTorch, Claude Code with Claude Haiku
 5.5, bubblewrap in WSL2, uv, Hugging Face Hub, GitHub Pages ([Features](#features), [Technologies](#technologies)).
 
+## What works and what doesn't: highlighted examples
+
+Each row is one concrete comparison from the experiments, with its numbers read from `results/` (✅ the grader does
+what a valid grader should; ❌ it fails, or a trap the experiments exposed). HS = hidden-state similarity (0–1, higher
+= the rebuilt network computes the same intermediate quantities); KL = output divergence (lower = same answers).
+
+<!-- BEGIN highlights -->
+<!-- END highlights -->
+
+### Concrete outputs, next to the ground truth
+
+What the networks answer on a few inputs (answer ✓/✗ and the probability it gives that answer; ground truth =
+(a + b) mod 113). The three fixed sums are ordinary, wrap-around and the largest input; the other rows are the first
+inputs on which an explanation-built network answers wrongly. All working networks give the same answers, so the
+answers alone cannot tell a faithful rebuild from an unfaithful one; the last row (HS) can.
+
+<!-- BEGIN outputs-T0 -->
+<!-- END outputs-T0 -->
+
+The same on all 12,769 inputs, outputs on top and insides below. Top: probability of the true answer (dark = 1, the
+ground truth). Bottom: for each network, the neuron that best matches one of the target's neurons. The faithful
+rebuilds (E3, E4) and the Pizza rebuild (W-alg) contain a matching neuron (r ≈ 1); the wrong-frequency,
+algorithm-only and independently trained networks do not (r ≈ 0), although their answers are just as correct.
+
+![Outputs vs. internals](reports/figures/outputs_T0.png)
+
+### What the agent did: successes and failure modes, from its own transcripts
+
+One run per case, chosen by the rule in the second column (not by reading transcripts first). The line shown is from
+the `build_weights.py` the agent wrote; the quote is the first sentence of its closing message. Longer excerpts:
+[reports/agent-examples.md](reports/agent-examples.md); every run's full transcript is linked.
+
+<!-- BEGIN agent-examples -->
+<!-- END agent-examples -->
+
+
+**Output examples: which frequencies each network actually built**, against the target's own spectrum (the ground
+truth). The true-explanation replacement (E3) builds the target's frequencies; the algorithm-only replacement (E1)
+builds the *published paper's* frequencies from memory; the wrong-frequency replacement builds the wrong ones; the
+Pizza replacement (W-alg) builds the *same* frequencies as the true ones, which is why HS cannot separate it; an
+independent retrain picks other frequencies; a random network has no structure.
+
+![Frequencies built by each network](reports/figures/examples_T0.png)
+
 ## Predicted vs. measured with Claude Haiku
 
 Before any experiment we wrote down, and pushed to GitHub, what a valid grader should show
@@ -116,14 +160,6 @@ Replications on the seed-sensitivity targets (preregistration §5: H1–H3 re-te
 ![Scores per explanation on T0](reports/figures/ladder_T0.png)
 
 ![Behaviour (output KL) against mechanism (HS)](reports/figures/kl_vs_hs_T0.png)
-
-**Output examples: which frequencies each network actually built**, against the target's own spectrum (the ground
-truth). The true-explanation replacement (E3) builds the target's frequencies; the algorithm-only replacement (E1)
-builds the *published paper's* frequencies from memory; the wrong-frequency replacement builds the wrong ones; the
-Pizza replacement (W-alg) builds the *same* frequencies as the true ones, which is why HS cannot separate it; an
-independent retrain picks other frequencies; a random network has no structure.
-
-![Frequencies built by each network](reports/figures/examples_T0.png)
 
 | Calibration on a planted mechanism (H4b): HS falls steadily, output KL does not | Score against the target's training checkpoints (H8) |
 |---|---|

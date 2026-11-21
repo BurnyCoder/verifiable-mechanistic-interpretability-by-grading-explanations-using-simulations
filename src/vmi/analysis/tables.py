@@ -310,6 +310,60 @@ def predictions_table(max_round: int, plain: bool = False) -> str:
     return "\n".join(out)
 
 
+def highlights_table(max_round: int) -> str:
+    """What works (✅) and what does not (❌): concrete examples with numbers from results/ (README top)."""
+    from vmi.analysis.hypotheses import _select, load_runs
+    from vmi.analysis.predictions import highlight_rows
+    rows = highlight_rows(max_round)
+    if not rows:
+        return "_no results yet_"
+    n = len(_select(load_runs(max_round), level="E3"))
+    out = [f"*Main simulator Claude Haiku 5.5, target T0 unless stated; means over {n} run(s) per condition (round {max_round}).*", "",
+           "| | Example | Measured | What it means |", "|---|---|---|---|"]
+    out += [f"| {'✅' if r['ok'] else '❌'} | **{r['title']}** | {r['evidence']} | {r['means']} |" for r in rows]
+    return "\n".join(out)
+
+
+def outputs_table(max_round: int, target: str = "T0") -> str:
+    """Concrete answers of each example network on a few inputs, next to the true answer (README highlights)."""
+    from vmi.analysis.examples import output_rows, panel_models
+    from vmi.config import P
+    panels = panel_models(max_round, target)
+    inputs, answers, acc = output_rows(panels)
+    names = [p["name"] for p in panels]
+    out = ["| Input | True answer | " + " | ".join(n.replace("agent, ", "agent ") for n in names) + " |",
+           "|---|---|" + "---|" * len(names)]
+    for i, (a, b) in enumerate(inputs):
+        truth = (a + b) % P
+        cells = [f"{ans} {'✓' if ans == truth else '✗'} ({pr:.2f})" for ans, pr in (answers[n][i] for n in names)]
+        out.append(f"| {a} + {b} | {truth} | " + " | ".join(cells) + " |")
+    out.append(f"| **accuracy, all {P * P:,} inputs** | 1.000 | " + " | ".join(f"{acc[n]:.3f}" for n in names) + " |")
+    out.append("| **HS (insides vs. target)** | – | " + " | ".join("1 (itself)" if p["kind"] == "target" else f"{p['hs']:.2f}"
+                                                              for p in panels) + " |")
+    return "\n".join(out)
+
+
+def agent_examples_table(max_round: int) -> str:
+    """What the agent did in example runs chosen by rule: process, a line it wrote, its own words, the result."""
+    from vmi.analysis import agent_examples
+    rows = agent_examples.rows(max_round)
+    if not rows:
+        return "_no agent runs on this machine_"
+    esc = lambda s: s.replace("|", "\\|")  # noqa: E731  markdown table cells
+    out = ["| | Case (run chosen by rule) | What the agent did (its log) | A line it wrote | In its own words (closing message) | Result |",
+           "|---|---|---|---|---|---|"]
+    for x in rows:
+        line = " ".join((x["freq_lines"] or x["choices"] or ["–"])[0].split())
+        line = line if len(line) <= 90 else line[:89] + "…"
+        process = (f"{x['tool_calls']} tool calls, {x['selftest_runs']} self-tests, {x['errors']} errors, {x['minutes']} min"
+                   + (f"; harness: {', '.join(dict.fromkeys(x['harness_errors']))}" if x["harness_errors"] else ""))
+        first = agent_examples.first_sentence(x["final"])
+        result = f"accuracy {x['accuracy']:.4f}, HS {x['hs']:.2f}" + (f" (compiler {x['compiler_hs']:.2f})" if x["compiler_hs"] is not None else "")
+        out.append(f"| {x['kind']} | **{x['label']}**<br>[{x['target']} · {x['level']} · {x['model']}]({x['url']}) | {esc(process)} | "
+                   f"`{esc(line)}` | {esc(first)} | {result} |")
+    return "\n".join(out)
+
+
 def replications_table(max_round: int) -> str:
     """H1–H3 re-checked on the seed-sensitivity targets (preregistered replications)."""
     from vmi.analysis.predictions import replication_rows
