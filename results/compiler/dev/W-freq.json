@@ -1,41 +1,41 @@
 {
-  "kl_out": 0.023861042909090358,
+  "kl_out": 0.019599600671207463,
   "argmax_agreement": 1.0,
   "accuracy": 1.0,
   "target_accuracy": 1.0,
   "sites": {
     "resid_mid": {
-      "completeness": 0.20660641745496877,
-      "soundness": 0.05910457482657505,
-      "harmonic": 0.09191478572462507
+      "completeness": 0.21941742396393682,
+      "soundness": 0.058924294435478974,
+      "harmonic": 0.0929003166918184
     },
     "mlp_post": {
-      "completeness": 0.1216117231148901,
-      "soundness": 0.40832370774712456,
-      "harmonic": 0.18740754739502732
+      "completeness": 0.11529228152001103,
+      "soundness": 0.39158136299892465,
+      "harmonic": 0.17813634316579696
     },
     "resid_post": {
-      "completeness": 0.006465642480942724,
-      "soundness": 0.13138627858595853,
-      "harmonic": 0.012324771358479328
+      "completeness": 0.007783253549021429,
+      "soundness": 0.17726441620806954,
+      "harmonic": 0.014911767312474353
     }
   },
-  "hs": 0.09721570149271057,
-  "centred_logit_fvu": 1.9540071068114304,
-  "calibrated_kl": 8.955059192962192e-05,
-  "calibration_scale": 5.586283358191751,
+  "hs": 0.0953161423900299,
+  "centred_logit_fvu": 1.9541755973261064,
+  "calibrated_kl": 7.472736929196535e-05,
+  "calibration_scale": 4.752790255322253,
   "cka": {
-    "resid_mid": 0.016477658170982293,
-    "mlp_post": 0.00092489979365261,
-    "resid_post": 6.64651158749428e-05
+    "resid_mid": 0.01644268879662739,
+    "mlp_post": 0.0009055281677408393,
+    "resid_post": 8.149690092769065e-05
   },
   "procrustes": {
-    "resid_mid": 1.8040283725839918,
-    "mlp_post": 1.9390258381511916,
-    "resid_post": 1.983082359866148
+    "resid_mid": 1.804251425164791,
+    "mlp_post": 1.940072172755874,
+    "resid_post": 1.980909089228624
   },
-  "matched_neuron_corr": 0.02033810831626212,
-  "matched_attention_distance": 0.21442589500934148,
+  "matched_neuron_corr": 0.019987392163645312,
+  "matched_attention_distance": 0.213512270002046,
   "stitching_kl": NaN,
   "embedding_spectrum_cosine": 0.06471813525030416,
   "target": "dev",

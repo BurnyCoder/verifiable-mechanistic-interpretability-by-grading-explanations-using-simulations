@@ -1,13 +1,13 @@
 {
   "kl_out": 4.727384820913616,
-  "argmax_agreement": 0.009162816195473412,
-  "accuracy": 0.009162816195473412,
+  "argmax_agreement": 0.010102592215521967,
+  "accuracy": 0.010102592215521967,
   "target_accuracy": 1.0,
   "sites": {
     "resid_mid": {
-      "completeness": 0.9749069007616903,
-      "soundness": 0.9603065041965048,
-      "harmonic": 0.9675516254577947
+      "completeness": 0.9891867725139777,
+      "soundness": 0.9760375769670405,
+      "harmonic": 0.9825681845101882
     },
     "mlp_post": {
       "completeness": 0.0,
@@ -15,27 +15,27 @@
       "harmonic": 0.0
     },
     "resid_post": {
-      "completeness": 0.5498488910070871,
-      "soundness": 0.9536404181956103,
-      "harmonic": 0.697521589485008
+      "completeness": 0.5544364012307714,
+      "soundness": 0.9604901367857482,
+      "harmonic": 0.703044908770797
     }
   },
-  "hs": 0.5550244049809342,
-  "centred_logit_fvu": 1.000000000000019,
+  "hs": 0.5618710310936618,
+  "centred_logit_fvu": 1.0000000000000202,
   "calibrated_kl": 4.727384820913613,
-  "calibration_scale": 0.19928733749827643,
+  "calibration_scale": 0.18681410906217993,
   "cka": {
-    "resid_mid": 0.8335452390669241,
+    "resid_mid": 0.8626112623934284,
     "mlp_post": 0.0,
-    "resid_post": 0.06402395454938163
+    "resid_post": 0.06714220362274478
   },
   "procrustes": {
-    "resid_mid": 0.23110042007931275,
+    "resid_mid": 0.1928837388527871,
     "mlp_post": 2.0,
-    "resid_post": 1.34071558018621
+    "resid_post": 1.326849986712757
   },
   "matched_neuron_corr": 0.0,
-  "matched_attention_distance": 0.14515808175424566,
+  "matched_attention_distance": 0.0697032800380451,
   "stitching_kl": NaN,
   "embedding_spectrum_cosine": 0.9823575015169552,
   "target": "dev",

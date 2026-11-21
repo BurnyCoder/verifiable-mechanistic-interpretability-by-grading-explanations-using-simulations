@@ -1,5 +1,5 @@
 {
-  "kl_out": 0.025041409051732997,
+  "kl_out": 0.025164690177626917,
   "argmax_agreement": 1.0,
   "accuracy": 1.0,
   "target_accuracy": 1.0,
@@ -10,31 +10,31 @@
       "harmonic": 0.9410286545644521
     },
     "mlp_post": {
-      "completeness": 0.9523981283603854,
-      "soundness": 0.9911325146318622,
-      "harmonic": 0.9713793351250734
+      "completeness": 0.9572135084568166,
+      "soundness": 0.9913439888883667,
+      "harmonic": 0.9739798378895956
     },
     "resid_post": {
-      "completeness": 0.8244897016514887,
-      "soundness": 0.9763804413990673,
-      "harmonic": 0.8940296133332769
+      "completeness": 0.8244899094224672,
+      "soundness": 0.976468061623552,
+      "harmonic": 0.8940664653204864
     }
   },
-  "hs": 0.9354792010076007,
-  "centred_logit_fvu": 0.24627559117325795,
-  "calibrated_kl": 7.464884788206619e-06,
-  "calibration_scale": 4.864594097200169,
+  "hs": 0.936358319258178,
+  "centred_logit_fvu": 0.24635034954341722,
+  "calibrated_kl": 7.48048833375021e-06,
+  "calibration_scale": 4.874620141940656,
   "cka": {
     "resid_mid": 0.8713586136840941,
-    "mlp_post": 0.6520590283966965,
-    "resid_post": 0.7956975335339841
+    "mlp_post": 0.6481086194869922,
+    "resid_post": 0.7955690055884984
   },
   "procrustes": {
     "resid_mid": 0.15231368638165987,
-    "mlp_post": 0.2503564631711219,
-    "resid_post": 0.2632031598187303
+    "mlp_post": 0.2514651614914356,
+    "resid_post": 0.26364573017179094
   },
-  "matched_neuron_corr": 0.7602192790735407,
+  "matched_neuron_corr": 0.7730418066888319,
   "matched_attention_distance": 0.1810313843431531,
   "stitching_kl": NaN,
   "embedding_spectrum_cosine": 0.9823575015169552,

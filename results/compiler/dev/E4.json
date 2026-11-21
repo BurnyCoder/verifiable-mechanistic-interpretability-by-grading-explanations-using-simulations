@@ -1,41 +1,41 @@
 {
-  "kl_out": 3.7208854467233616e-07,
+  "kl_out": 3.451567896129136e-07,
   "argmax_agreement": 1.0,
   "accuracy": 1.0,
   "target_accuracy": 1.0,
   "sites": {
     "resid_mid": {
-      "completeness": 0.9749069007616903,
-      "soundness": 0.9603065041965048,
-      "harmonic": 0.9675516254577947
+      "completeness": 0.9891867725139777,
+      "soundness": 0.9760375769670405,
+      "harmonic": 0.9825681845101882
     },
     "mlp_post": {
-      "completeness": 0.9935021538095199,
-      "soundness": 0.9938854746418033,
-      "harmonic": 0.9936937772588267
+      "completeness": 0.9942877056878635,
+      "soundness": 0.9946761407900636,
+      "harmonic": 0.9944818853092071
     },
     "resid_post": {
-      "completeness": 0.9880721520553165,
-      "soundness": 0.9894664583667562,
-      "harmonic": 0.9887688136681456
+      "completeness": 0.9888954096280309,
+      "soundness": 0.9832219734611071,
+      "harmonic": 0.986050530803678
     }
   },
-  "hs": 0.9833380721282556,
-  "centred_logit_fvu": 0.029134376878766632,
-  "calibrated_kl": 3.1320437740243676e-07,
-  "calibration_scale": 0.948534887218244,
+  "hs": 0.9877002002076911,
+  "centred_logit_fvu": 0.028440193944529818,
+  "calibrated_kl": 2.808383481209737e-07,
+  "calibration_scale": 0.9458870430964379,
   "cka": {
-    "resid_mid": 0.8335452390669241,
-    "mlp_post": 0.9747736692145272,
-    "resid_post": 0.6865899196359827
+    "resid_mid": 0.8626112623934284,
+    "mlp_post": 0.9914030361450656,
+    "resid_post": 0.6167432202147897
   },
   "procrustes": {
-    "resid_mid": 0.23110042007931275,
-    "mlp_post": 0.04610659803992667,
-    "resid_post": 0.41650998377796267
+    "resid_mid": 0.1928837388527871,
+    "mlp_post": 0.02085394019301834,
+    "resid_post": 0.5066501951848967
   },
-  "matched_neuron_corr": 0.8617779899030994,
-  "matched_attention_distance": 0.14515808175424566,
+  "matched_neuron_corr": 0.9693774050085944,
+  "matched_attention_distance": 0.0697032800380451,
   "stitching_kl": NaN,
   "embedding_spectrum_cosine": 0.9823575015169552,
   "target": "dev",

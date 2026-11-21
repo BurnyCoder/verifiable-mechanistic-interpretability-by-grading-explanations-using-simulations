@@ -1,0 +1,15 @@
+[
+  {
+    "n_cpu_moe": 40,
+    "gpu_mem_mib": 6886,
+    "gpu_mem_before_mib": 1745,
+    "prompt_tokens": 1281,
+    "prompt_tps": 3.874814982121858,
+    "gen_tokens": 1,
+    "gen_tps": 0.0,
+    "wall_s": 330.7676770687103,
+    "model": "Qwen3.6-35B-A3B-UD-IQ4_XS",
+    "ctx": 65536,
+    "note": "first request after load (cold mmap); free RAM ~1.3 GB during the request"
+  }
+]

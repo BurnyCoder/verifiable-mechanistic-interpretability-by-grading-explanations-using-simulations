@@ -20,4 +20,4 @@ The network adds numbers by rotating points on circles:
 ## This model's key frequencies
 
 - Key frequencies: k ∈ {19, 31, 45, 47} (w_k = 2πk/113). All four steps above use these frequencies.
-- The model is very confident: its mean cross-entropy over all 12,769 inputs is 1.74e-07 nats.
+- The model is very confident: its mean cross-entropy over all 12,769 inputs is 1.77e-07 nats.

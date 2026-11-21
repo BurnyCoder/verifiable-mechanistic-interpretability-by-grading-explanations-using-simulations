@@ -1,41 +1,41 @@
 {
-  "kl_out": 4.431951354327664e-07,
+  "kl_out": 4.3584193564056935e-07,
   "argmax_agreement": 1.0,
   "accuracy": 1.0,
   "target_accuracy": 1.0,
   "sites": {
     "resid_mid": {
-      "completeness": 0.9749069007616903,
-      "soundness": 0.9603065041965048,
-      "harmonic": 0.9675516254577947
+      "completeness": 0.9891867725139777,
+      "soundness": 0.9760375769670405,
+      "harmonic": 0.9825681845101882
     },
     "mlp_post": {
-      "completeness": 0.9960398357261767,
-      "soundness": 0.990773152586658,
-      "harmonic": 0.9933995136425352
+      "completeness": 0.9960854545673689,
+      "soundness": 0.9912259164779172,
+      "harmonic": 0.9936497440504645
     },
     "resid_post": {
-      "completeness": 0.9872435435360601,
-      "soundness": 0.9922521938494016,
-      "harmonic": 0.9897415320845009
+      "completeness": 0.9874757841773754,
+      "soundness": 0.9921803348676458,
+      "harmonic": 0.9898224694614427
     }
   },
-  "hs": 0.983564223728277,
-  "centred_logit_fvu": 0.029866798344148786,
-  "calibrated_kl": 3.2017319437477235e-07,
-  "calibration_scale": 0.9235426711613937,
+  "hs": 0.9886801326740318,
+  "centred_logit_fvu": 0.029717632058625782,
+  "calibrated_kl": 3.162596780470502e-07,
+  "calibration_scale": 0.9246947282961131,
   "cka": {
-    "resid_mid": 0.8335452390669241,
-    "mlp_post": 0.836248438244405,
-    "resid_post": 0.7417683043197053
+    "resid_mid": 0.8626112623934284,
+    "mlp_post": 0.819153979512085,
+    "resid_post": 0.788679618280726
   },
   "procrustes": {
-    "resid_mid": 0.23110042007931275,
-    "mlp_post": 0.14019618505894327,
-    "resid_post": 0.3607211762206295
+    "resid_mid": 0.1928837388527871,
+    "mlp_post": 0.148821072459985,
+    "resid_post": 0.2909215559630769
   },
-  "matched_neuron_corr": 0.7357832129695541,
-  "matched_attention_distance": 0.14515808175424566,
+  "matched_neuron_corr": 0.7331621848550834,
+  "matched_attention_distance": 0.0697032800380451,
   "stitching_kl": NaN,
   "embedding_spectrum_cosine": 0.9823575015169552,
   "target": "dev",

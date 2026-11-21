@@ -1,41 +1,41 @@
 {
-  "kl_out": 6.51023908845292e-07,
+  "kl_out": 5.949689563438262e-07,
   "argmax_agreement": 1.0,
   "accuracy": 1.0,
   "target_accuracy": 1.0,
   "sites": {
     "resid_mid": {
-      "completeness": 0.9749069007616903,
-      "soundness": 0.9603065041965048,
-      "harmonic": 0.9675516254577947
+      "completeness": 0.9891867725139777,
+      "soundness": 0.9760375769670405,
+      "harmonic": 0.9825681845101882
     },
     "mlp_post": {
-      "completeness": 0.9523016915212569,
-      "soundness": 0.9911307909090276,
-      "harmonic": 0.9713283453214346
+      "completeness": 0.9564141716147945,
+      "soundness": 0.9913487342198519,
+      "harmonic": 0.9735681643592675
     },
     "resid_post": {
-      "completeness": 0.9832195249329182,
-      "soundness": 0.9850959438406836,
-      "harmonic": 0.9841568399803977
+      "completeness": 0.9581662183777842,
+      "soundness": 0.980270115505877,
+      "harmonic": 0.9690921420990981
     }
   },
-  "hs": 0.9743456035865424,
-  "centred_logit_fvu": 0.03416346996193855,
-  "calibrated_kl": 5.931583288474866e-07,
-  "calibration_scale": 1.0454601769456608,
+  "hs": 0.9750761636561847,
+  "centred_logit_fvu": 0.032858204420791265,
+  "calibrated_kl": 5.465931778038998e-07,
+  "calibration_scale": 1.0417127637763597,
   "cka": {
-    "resid_mid": 0.8335452390669241,
-    "mlp_post": 0.6520580491256951,
-    "resid_post": 0.4534825355364539
+    "resid_mid": 0.8626112623934284,
+    "mlp_post": 0.6481095061513578,
+    "resid_post": 0.052044876438438734
   },
   "procrustes": {
-    "resid_mid": 0.23110042007931275,
-    "mlp_post": 0.25035817840457386,
-    "resid_post": 0.7262528459104685
+    "resid_mid": 0.1928837388527871,
+    "mlp_post": 0.25146409759988475,
+    "resid_post": 1.4184922382236214
   },
-  "matched_neuron_corr": 0.7602181557888599,
-  "matched_attention_distance": 0.14515808175424566,
+  "matched_neuron_corr": 0.7730431237517859,
+  "matched_attention_distance": 0.0697032800380451,
   "stitching_kl": NaN,
   "embedding_spectrum_cosine": 0.9823575015169552,
   "target": "dev",

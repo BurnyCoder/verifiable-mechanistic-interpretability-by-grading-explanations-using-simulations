@@ -151,6 +151,44 @@ constant (`out_fit_fve` = fraction explained).
     return "\n".join(parts), extra
 
 
+def render_format(spec: dict, fmt: str) -> tuple[str, dict[str, str]]:
+    """Format ablation: the same E3 content as compact math ("math") or as a Python data structure ("code")."""
+    K = spec["embed_freqs"]
+    amps = {int(k): round(float(v), 3) for k, v in spec["logit_amplitudes"].items()}
+    heads = [{"head": h["head"], "k": int(h["freq"]), "alpha": round(h["alpha"], 3), "beta": round(h["beta"], 3),
+              "fve": round(h["pattern_fve"], 3), "attn_to_eq": round(h["attn_to_eq"], 4)} for h in spec["heads"]]
+    clusters = {int(k): int(v) for k, v in spec["neuron_clusters"].items()}
+    readoff = [(int(r["freq"]), r["component"], round(r["coef_unit_dir"], 1), round(r["fve"], 3)) for r in spec["readoff"]]
+    if fmt == "math":
+        lines = ["# Explanation (mathematical summary)\n",
+                 "Notation: w_k = 2πk/113; a, b inputs; c candidate answer; A_h = attention from \"=\" to position 0.\n",
+                 f"- K = {{{', '.join(map(str, K))}}}.",
+                 "- Embedding: E(t) ∈ span{cos(w_k t), sin(w_k t) : k ∈ K}.",
+                 "- Attention (\"=\" query): A_h ≈ 0.5 + α_h(cos w_{k_h}a − cos w_{k_h}b) + β_h(sin w_{k_h}a − sin w_{k_h}b); "
+                 "to b ≈ 1 − A_h; to \"=\" ≈ 0.",
+                 "  " + "; ".join(f"h{h['head']}: k={h['k']}, α={h['alpha']}, β={h['beta']} (FVE {h['fve']}, A_= {h['attn_to_eq']})" for h in heads),
+                 "- MLP: neuron n ∈ cluster k ⇔ > 0.85 of Var(post_n) lies in span{1, cos/sin(w_k a), cos/sin(w_k b), products}; "
+                 "|cluster_k| = " + ", ".join(f"{k}: {n}" for k, n in clusters.items()) + f"; unclustered {spec['neurons_unclustered']}.",
+                 "- MLP output ∋ cos(w_k(a+b)), sin(w_k(a+b)) via cos(x+y) = cos x cos y − sin x sin y, sin(x+y) = sin x cos y + cos x sin y.",
+                 "- Read-out coefficient (FVE): " + "; ".join(f"k={k} {c}: {v} ({f})" for k, c, v, f in readoff) + ".",
+                 f"- logit(a,b,c) ≈ Σ_k α_k cos(w_k(a+b−c)) + β, FVE {round(spec['logit_fit_fve'], 3)}; α = "
+                 + ", ".join(f"α_{k} = {v}" for k, v in amps.items()) + f"; β = {round(spec['logit_offset'], 4)}.",
+                 f"- ‖W_L − proj_K W_L‖² / ‖W_L‖² = {round(100 * spec['wl_residual_sq_frac'], 2)}%; mean CE over all inputs "
+                 f"= {spec['loss_all_inputs']:.3g}."]
+        return "\n".join(lines) + "\n", {}
+    if fmt == "code":
+        body = {"algorithm": "Fourier multiplication (clock): embed cos/sin(w_k t); attention moves a and b to '='; "
+                             "MLP forms cos/sin(w_k(a+b)) by trig identities; logits ≈ Σ α_k cos(w_k(a+b−c))",
+                "w_k": "2*pi*k/113", "key_freqs": K, "logit_amplitudes_alpha": amps, "logit_offset_beta": round(spec["logit_offset"], 4),
+                "logit_fit_fve": round(spec["logit_fit_fve"], 3), "mean_cross_entropy_all_inputs": spec["loss_all_inputs"],
+                "attention_heads": heads, "attention_formula": "A_to_a ≈ 0.5 + alpha*(cos(w*a)-cos(w*b)) + beta*(sin(w*a)-sin(w*b)); A_to_b ≈ 1 - A_to_a",
+                "neurons_per_freq": clusters, "neurons_unclustered": spec["neurons_unclustered"],
+                "readoff_coef_unit_dir_and_fve": readoff, "WL_sq_norm_outside_key_dirs": round(spec["wl_residual_sq_frac"], 4)}
+        import pprint
+        return "# Explanation (as a Python data structure)\n\n```python\nEXPLANATION = " + pprint.pformat(body, width=110, sort_dicts=False) + "\n```\n", {}
+    raise ValueError(fmt)
+
+
 def length_stats(text: str, extra: dict[str, str]) -> dict:
     """Description length of an explanation: characters, gzip bytes and count of numbers (all files together)."""
     full = text + "".join(extra.values())

@@ -18,23 +18,23 @@ The network adds numbers using midpoints of points on circles:
 ## This model's key frequencies
 
 - Key frequencies: k ∈ {19, 31, 45, 47} (w_k = 2πk/113). All four steps above use these frequencies.
-- The model is very confident: its mean cross-entropy over all 12,769 inputs is 1.74e-07 nats.
+- The model is very confident: its mean cross-entropy over all 12,769 inputs is 1.77e-07 nats.
 
 ## Quantities
 
-**Logits.** Fitting logit(a, b, c) ≈ Σ_k α_k cos(w_k(a+b−c)) + β over all inputs and answers gives (fraction of logit variance explained: 0.971):
+**Logits.** Fitting logit(a, b, c) ≈ Σ_k α_k cos(w_k(a+b−c)) + β over all inputs and answers gives (fraction of logit variance explained: 0.97):
 
 | k | α_k |
 |---|---|
-| 19 | 10.9 |
+| 19 | 11 |
 | 31 | 29.4 |
-| 45 | 11.4 |
-| 47 | 5.68 |
+| 45 | 11.3 |
+| 47 | 5.71 |
 
-β = -0.0113; logit standard deviation at "=": 24.3; mean log-probability of the correct answer: -1.74e-07.
+β = -0.0079; logit standard deviation at "=": 24.3; mean log-probability of the correct answer: -1.77e-07.
 
-**Embedding.** Norm of the embedding's Fourier component (cos and sin combined, over the 128 residual dimensions) per key frequency: k=19: 6, k=31: 6.84, k=45: 5.59, k=47: 4.92.
+**Embedding.** Norm of the embedding's Fourier component (cos and sin combined, over the 128 residual dimensions) per key frequency: k=19: 6, k=31: 6.85, k=45: 5.61, k=47: 4.92.
 
-**MLP neurons.** A neuron belongs to frequency k if more than 0.85 of its activation variance is explained by the constant, linear and quadratic terms of frequency k in a and b. Neurons per frequency: k=19: 60, k=31: 86, k=45: 191, k=47: 86; 89 of the 512 neurons are not clearly single-frequency.
+**MLP neurons.** A neuron belongs to frequency k if more than 0.85 of its activation variance is explained by the constant, linear and quadratic terms of frequency k in a and b. Neurons per frequency: k=19: 80, k=31: 81, k=45: 189, k=47: 79; 83 of the 512 neurons are not clearly single-frequency.
 
 **Attention heads.** All four heads attend 0.5 to a and 0.5 to b.

@@ -37,7 +37,7 @@ def setup_logging(name: str) -> Path:
 
 def _dump(path: Path, obj) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(obj, indent=2, default=float), encoding="utf-8")
+    path.write_text(json.dumps(obj, indent=2, default=float), encoding="utf-8", newline="\n")  # LF, as in git
 
 
 def explain(settings: Settings, target: str) -> dict:
@@ -62,6 +62,15 @@ def explain(settings: Settings, target: str) -> dict:
         for name, content in extra.items():
             (d / name).write_text(content, encoding="utf-8", newline="\n")
         _dump(d / "spec.json", spec)
+        _dump(d / "length.json", length_stats(text, extra))
+    from vmi.explainer.render import render_format
+    for fmt in ("math", "code"):  # format ablation: E3 content in other notations
+        spec = make_spec(an, "E3", target)
+        text, extra = render_format(spec, fmt)
+        d = out / f"E3-fmt-{fmt}"
+        d.mkdir(parents=True, exist_ok=True)
+        (d / "EXPLANATION.md").write_text(text, encoding="utf-8", newline="\n")
+        _dump(d / "spec.json", {**spec, "format": fmt})
         _dump(d / "length.json", length_stats(text, extra))
     return an
 
