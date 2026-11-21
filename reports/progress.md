@@ -11,7 +11,9 @@
   explanation in this harness.
 - `vmi local` serves each local model in turn and runs its pending conditions.
 
-**Now:** Qwen3.5-9B (4 conditions), then Qwen3.6-35B-A3B (4 conditions), each run up to 60 minutes.
+**Now:** Qwen3.5-9B (4 conditions), then Qwen3.6-35B-A3B (4 conditions), each run up to 60 minutes. Update 20:05:
+9B E2 also at chance (accuracy 1/113, HS 0, 24 steps, hit the 60-minute cap); 9B E3 running. Post-hoc target swap:
+the same T0 E0/E1 weights score far higher against the published checkpoint than against T0.
 
 **Next:** regrade, `vmi analyse 1` (H5, H6 become evaluable), paper, round-1 review addendum, push; then round 2.
 

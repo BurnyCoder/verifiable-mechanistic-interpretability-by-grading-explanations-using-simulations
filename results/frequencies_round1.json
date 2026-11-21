@@ -85,6 +85,27 @@
       "hs": 0.0
     },
     {
+      "run_id": "ablations__T0__E2__qwen359b-mini__t0.6__s0",
+      "target": "T0",
+      "level": "E2",
+      "variant": "",
+      "model": "qwen3.5-9b",
+      "used_freqs": [
+        23,
+        37
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.4,
+      "jaccard_paper": 0.0,
+      "hs": 0.0
+    },
+    {
       "run_id": "ablations__T0__E3-fmt-code__claudehaiku55-claudecode__tdef__s0",
       "target": "T0",
       "level": "E3",

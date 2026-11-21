@@ -38,6 +38,7 @@
       "grader-sensitivity-compiler-T0",
       "explainer-sensitivity-T0",
       "frequencies",
+      "stitching-T0",
       "compiler-T0",
       "compiler-T1",
       "compiler-T2",

@@ -180,9 +180,27 @@ frequencies. The same happened on T0 for E0 and E1 and on the dev target in stag
 
 **How it was checked.** Not only by reading scripts: the key-frequency rule used for the targets was applied to every
 replacement's weights (`analysis/frequencies.py`), giving the overlap of the frequencies actually built in with the
-target's and with the paper's sets (table in `01-round1/experiment.md`).
+target's and with the paper's sets (table in `01-round1/experiment.md`). Then by a target swap, which needs no
+frequency threshold: the same T0 E0/E1 weights were graded against the published checkpoint, where they score far
+higher than against T0. Comparing two runs (E1 on T0 vs. E1 on T-paper) mixes agent randomness with target choice;
+re-grading one set of weights against two targets isolates the target.
 
 **Learning.** Weights-blind does not mean knowledge-blind. Any simulation score on a published model is confounded by
 memorisation; unpublished targets (and a held-out target trained after the freeze) are necessary, not optional. The
 same applies to any LLM-based interpretability evaluation on famous models ([Haklay et al. 2026](https://arxiv.org/abs/2603.20101)).
 
+## Round 1 — small local simulators never build a working network (2026-11-21)
+
+**What happened.** Qwen3.5-4B (E2, E3, E4, W-freq) and Qwen3.5-9B (E2) all ended with a network whose output is the
+same for every input (task accuracy exactly 1/113, HS 0). They used up the 60-step or 60-minute budget editing
+`build_weights.py` and re-running the self-test (Python exceptions in 4 of the 5 event logs), and the final weights
+never passed it. Extra explanation detail did
+not help: E4, with the full per-neuron table, failed like E2.
+
+**Decision.** The user stopped the remaining local runs (9B E3–W-freq, all four 35B conditions) and dropped local
+conditions from rounds 2–3. That is a stop on results, which the preregistration rules out, so it is logged as
+deviation 5 with its consequence: H5's capability trend and H6's cross-simulator ranking become untestable.
+
+**Learning.** The method has a capability floor: the simulator must write about a hundred lines of correct numpy from a
+page of maths, and the 4–9B models (4-bit, in this harness) cannot. A capability axis needs simulators on both sides
+of that floor, for example Haiku, Sonnet and Opus, rather than models that all sit below it.

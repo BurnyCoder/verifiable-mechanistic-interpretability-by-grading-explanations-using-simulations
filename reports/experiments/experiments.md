@@ -63,9 +63,9 @@ except T-new (trained here after the protocol freeze with the same recipe) and T
 | Simulator | Harness | Sampling | Limits | Role |
 |---|---|---|---|---|
 | Claude Haiku 5.5 (`claude-haiku-5-5`) | Claude Code 2.1.330, `--bare`, offline sandbox, API via a key-injecting proxy outside the sandbox | model default (Claude 5.5 rejects non-default sampling); effort `medium` | 60 min, $2 per run, $20 total | main simulator (preregistration amendment 2) |
-| Qwen3.6-35B-A3B (UD-IQ4_XS) | custom bash-only harness (mini-SWE-agent design), llama-server | Qwen3.6 coding preset: T 0.6, top-p 0.95, top-k 20 | 60 min, 80k context, 16k thinking tokens per turn | capability ablation |
-| Qwen3.5-9B (Q4_K_M) | same | same | same | capability ablation |
-| Qwen3.5-4B (Q4_K_M) | same | same | same | capability ablation |
+| Qwen3.6-35B-A3B (UD-IQ4_XS) | custom bash-only harness (mini-SWE-agent design), llama-server | Qwen3.6 coding preset: T 0.6, top-p 0.95, top-k 20 | 60 min, 80k context, 16k thinking tokens per turn | capability ablation; round 1 not run (stopped, deviation 5) |
+| Qwen3.5-9B (Q4_K_M) | same | same | same | capability ablation; 1 run (E2), at chance, then stopped |
+| Qwen3.5-4B (Q4_K_M) | same | same | same | capability ablation; 4 runs, all at chance |
 
 Why these settings: the Qwen preset is the model card's coding preset; the context and thinking budgets were the
 smallest that removed the truncation and compaction failures seen in stage 0 (`learnings.md`). Claude Haiku was
@@ -85,10 +85,13 @@ scripts are reviewed by hand (`results/audit_reviews.json`).
 | Stage | Target | Explanation | Simulator | T | Variant | N | failed | accuracy | KL_out ↓ (mean ± sd) | HS ↑ (mean ± sd) |
 |---|---|---|---|---|---|---|---|---|---|---|
 | ablations | T0 | E2 | qwen3.5-4b | 0.6 | – | 1 | 0 | 0.009 | 4.73 | 0.000 |
+| ablations | T0 | E2 | qwen3.5-9b | 0.6 | – | 1 | 0 | 0.009 | 7.63 | 0.000 |
 | ablations | T0 | E3 | claude-haiku-5-5 | default | fmt-code | 1 | 0 | 1.000 | 0.00212 | 0.918 |
 | ablations | T0 | E3 | claude-haiku-5-5 | default | fmt-math | 1 | 0 | 1.000 | 0.000716 | 0.911 |
 | ablations | T0 | E3 | claude-haiku-5-5 | default | noselftest | 1 | 0 | 1.000 | 0.00134 | 0.964 |
 | ablations | T0 | E3 | qwen3.5-4b | 0.6 | – | 1 | 0 | 0.009 | 4.73 | 0.000 |
+| ablations | T0 | E4 | qwen3.5-4b | 0.6 | – | 1 | 0 | 0.009 | 4.73 | 0.000 |
+| ablations | T0 | W-freq | qwen3.5-4b | 0.6 | – | 1 | 0 | 0.009 | 6.07 | 0.000 |
 | controls | T0 | E0 | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 0.00908 | 0.004 |
 | controls | T0 | W-freq | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 0.000931 | 0.055 |
 | controls | T0 | W-alg | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 0.0146 | 0.889 |
