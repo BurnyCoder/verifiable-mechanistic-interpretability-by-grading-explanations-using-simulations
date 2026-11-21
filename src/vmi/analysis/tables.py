@@ -268,6 +268,19 @@ def frequencies_table(max_round: int, model: str = "claude-haiku-5-5") -> str:
     return "\n".join(rows)
 
 
+def stitching_table(max_round: int, target: str = "T0") -> str:
+    """Secondary causal metric: stitching KL of the main simulator's and the compiler's replacements, next to HS."""
+    from vmi.analysis.hypotheses import _select, compiler, load_runs
+    runs = load_runs(max_round)
+    rows = ["| Explanation | HS (agent) | stitching KL (agent) | HS (compiler) | stitching KL (compiler) |", "|---|---|---|---|---|"]
+    for lv in LEVEL_ORDER:
+        rs, c = _select(runs, target=target, level=lv), compiler(target, lv)
+        if rs or c:
+            rows.append(f"| {lv} | {_ms([r['hs'] for r in rs])} | {_ms([r.get('stitching_kl') for r in rs], 4)} | "
+                        f"{_f(c and c['hs'])} | {_f(c and c.get('stitching_kl'), 4)} |")
+    return "\n".join(rows)
+
+
 def targets_table() -> str:
     """The trained target networks: run, role, key frequencies, neurons per frequency cluster, logit-fit quality."""
     from vmi import targets
