@@ -31,6 +31,16 @@ def test_tables_render_from_committed_results():
     assert tables._t(None) == "default" and tables._t(0.6) == "0.6"
 
 
+def test_h5_h6_marked_not_evaluable_when_local_ablation_incomplete():
+    from vmi.analysis import hypotheses
+    H = hypotheses.evaluate(1)["hypotheses"]
+    local = [r for r in hypotheses.load_runs(1) if r["model"] in hypotheses.LOCAL_MODELS]
+    complete = all(len([r for r in local if r["model"] == m]) >= 4 for m in hypotheses.LOCAL_MODELS)
+    if local and not complete:  # deviation 5: stopped early, so no test statistic, only a description
+        for k in ("H5", "H6"):
+            assert H[k]["verdict"].startswith("not evaluable") and "above chance" in H[k]["label"]
+
+
 def test_key_results_report_the_target_swap_when_present():
     import json
     fq = tables.RES / "frequencies_round1.json"

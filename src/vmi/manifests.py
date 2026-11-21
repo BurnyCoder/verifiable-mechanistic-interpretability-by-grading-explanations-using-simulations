@@ -20,10 +20,11 @@ ROUND_SEEDS = {1: [0], 2: [1, 2], 3: [3, 4, 5, 6, 7, 8, 9]}
 # local Qwen models (custom harness, llama-server aliases) form the simulator-capability ablation
 MAIN = {"model": "claude-haiku-5-5", "harness": "claudecode"}
 LOCAL_MODELS = ("qwen3.6-35b-a3b", "qwen3.5-9b", "qwen3.5-4b")
+LOCAL_ROUNDS = (1,)  # deviation 5: all local runs were at chance, so the user stopped them; rounds 2-3 are Claude-only
 
 
-def conditions(stage: str) -> list[dict]:
-    """Agent conditions of one stage (without seeds)."""
+def conditions(stage: str, round_: int = 1) -> list[dict]:
+    """Agent conditions of one stage (without seeds); local Qwen conditions exist only in LOCAL_ROUNDS."""
     if stage == "main":
         return [{"stage": "main", "target": "T0", "level": lv, **MAIN} for lv in ("E1", "E2", "E3", "E4")]
     if stage == "controls":
@@ -31,7 +32,7 @@ def conditions(stage: str) -> list[dict]:
                 for lv in ("E0", "W-freq", "W-alg", "W-role", "W-scramble")]
     if stage == "ablations":
         out = [{"stage": "ablations", "target": "T0", "level": lv, "model": m, "harness": "mini"} for m in LOCAL_MODELS
-               for lv in ("E2", "E3", "E4", "W-freq")]
+               for lv in ("E2", "E3", "E4", "W-freq") if round_ in LOCAL_ROUNDS]
         out += [{"stage": "ablations", "target": "T0", "level": "E3", "variant": v, **MAIN} for v in ("fmt-math", "fmt-code")]
         out.append({"stage": "ablations", "target": "T0", "level": "E3", "variant": "noselftest", "selftest": False, **MAIN})
         return out
@@ -53,7 +54,7 @@ def write_round(r: int, out_dir: Path | None = None) -> list[Path]:
     paths = []
     for stage in STAGES:
         p = out_dir / f"round{r}_{stage}.jsonl"
-        rows = [{**c, "seed": s, "round_": r} for s in ROUND_SEEDS[r] for c in conditions(stage)]
+        rows = [{**c, "seed": s, "round_": r} for s in ROUND_SEEDS[r] for c in conditions(stage, r)]
         p.write_text("\n".join(json.dumps(x) for x in rows) + "\n", encoding="utf-8", newline="\n")
         paths.append(p)
     return paths
