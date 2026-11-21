@@ -1,16 +1,16 @@
-{"stage": "seed", "target": "T1", "level": "E2", "seed": 0, "round_": 1}
-{"stage": "seed", "target": "T1", "level": "E3", "seed": 0, "round_": 1}
-{"stage": "seed", "target": "T1", "level": "E4", "seed": 0, "round_": 1}
-{"stage": "seed", "target": "T1", "level": "W-freq", "seed": 0, "round_": 1}
-{"stage": "seed", "target": "T2", "level": "E2", "seed": 0, "round_": 1}
-{"stage": "seed", "target": "T2", "level": "E3", "seed": 0, "round_": 1}
-{"stage": "seed", "target": "T2", "level": "E4", "seed": 0, "round_": 1}
-{"stage": "seed", "target": "T2", "level": "W-freq", "seed": 0, "round_": 1}
-{"stage": "seed", "target": "T-new", "level": "E3", "seed": 0, "round_": 1}
-{"stage": "seed", "target": "T-new", "level": "E4", "seed": 0, "round_": 1}
-{"stage": "seed", "target": "T-new", "level": "W-freq", "seed": 0, "round_": 1}
-{"stage": "seed", "target": "T-paper", "level": "E-paper", "seed": 0, "round_": 1}
-{"stage": "seed", "target": "T-paper", "level": "E1", "seed": 0, "round_": 1}
-{"stage": "seed", "target": "T-paper", "level": "E3", "seed": 0, "round_": 1}
-{"stage": "seed", "target": "T-paper", "level": "E4", "seed": 0, "round_": 1}
-{"stage": "seed", "target": "T-paper", "level": "W-freq", "seed": 0, "round_": 1}
+{"stage": "seed", "target": "T1", "level": "E2", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 0, "round_": 1}
+{"stage": "seed", "target": "T1", "level": "E3", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 0, "round_": 1}
+{"stage": "seed", "target": "T1", "level": "E4", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 0, "round_": 1}
+{"stage": "seed", "target": "T1", "level": "W-freq", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 0, "round_": 1}
+{"stage": "seed", "target": "T2", "level": "E2", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 0, "round_": 1}
+{"stage": "seed", "target": "T2", "level": "E3", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 0, "round_": 1}
+{"stage": "seed", "target": "T2", "level": "E4", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 0, "round_": 1}
+{"stage": "seed", "target": "T2", "level": "W-freq", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 0, "round_": 1}
+{"stage": "seed", "target": "T-new", "level": "E3", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 0, "round_": 1}
+{"stage": "seed", "target": "T-new", "level": "E4", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 0, "round_": 1}
+{"stage": "seed", "target": "T-new", "level": "W-freq", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 0, "round_": 1}
+{"stage": "seed", "target": "T-paper", "level": "E-paper", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 0, "round_": 1}
+{"stage": "seed", "target": "T-paper", "level": "E1", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 0, "round_": 1}
+{"stage": "seed", "target": "T-paper", "level": "E3", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 0, "round_": 1}
+{"stage": "seed", "target": "T-paper", "level": "E4", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 0, "round_": 1}
+{"stage": "seed", "target": "T-paper", "level": "W-freq", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 0, "round_": 1}

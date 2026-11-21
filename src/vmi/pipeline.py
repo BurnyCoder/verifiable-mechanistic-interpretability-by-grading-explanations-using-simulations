@@ -228,6 +228,8 @@ def main(argv: list[str] | None = None) -> None:
     c.add_argument("round", type=int)
     b = sub.add_parser("baselines")
     b.add_argument("target")
+    tr = sub.add_parser("train", help="train fresh runs with the paper recipe (e.g. new_s11 = T-new, after the freeze)")
+    tr.add_argument("run_ids", nargs="+")
     an = sub.add_parser("analyse")
     an.add_argument("round", type=int)
     a = ap.parse_args(argv)
@@ -262,6 +264,10 @@ def main(argv: list[str] | None = None) -> None:
             proc.wait()
         except KeyboardInterrupt:
             llm_server.stop(proc)
+    elif a.cmd == "train":
+        from vmi.training import train_fresh
+        train_fresh(settings, a.run_ids)
+        log.info("trained %s into %s", a.run_ids, settings.data_dir / "trained")
     elif a.cmd == "manifests":
         from vmi.manifests import write_round
         for p in write_round(a.round):

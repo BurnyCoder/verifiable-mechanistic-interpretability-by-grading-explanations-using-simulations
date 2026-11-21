@@ -1,5 +1,23 @@
 # Progress
 
+## 2026-11-21 12:25 — protocol frozen; round 1 started
+
+**Protocol freeze:** tag `protocol-freeze` = commit `801edf013db7239f8994e6780c5873e1890f5103` (preregistration
+amendment 2). Main simulator: Claude Haiku 5.5 in Claude Code; local Qwens are the capability ablation.
+
+**Stage 0 outcome (dev target, never reported):** all local Qwen runs stayed at chance; Claude Haiku 5.5 met the
+stage-0 rule in its first run (E4: accuracy 100 %, KL 3.6·10⁻⁷, HS 0.985, $0.02). Haiku across the dev ladder:
+HS 0.166 (E0), 0.069 (E1), 0.944 (E2), 0.953 (E3), 0.985 (E4), 0.096 (W-freq) with accuracy ≥ 98 % everywhere.
+Claude spend so far: $0.13 of $20.
+
+**Now:** round 1 (N = 1), main stage: T0 explained and compiled (compiler HS: E1 0.05, E2 0.895, E3 0.927,
+E4 0.952, W-freq 0.095); Haiku runs T0 × {E1, E2, E3, E4} (≈ 2–8 min each).
+
+**Next:** controls stage (5 Haiku runs + no-agent controls incl. planted-calibration training), baselines (retrains,
+distilled students, Fourier-restricted, weights dump), ablations (3 Haiku + 12 local Qwen runs ≈ 12 h GPU), hyper
+(4 Haiku), seed sensitivity (T-new trained now that the protocol is frozen; 16 Haiku runs); then hypotheses at N = 1,
+README, site, paper.
+
 ## 2026-11-21 11:15 — stage 0: no local agent above chance yet; Claude prepared
 
 **Done since 07:00**

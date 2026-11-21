@@ -1,11 +1,15 @@
-{"stage": "ablations", "target": "T0", "level": "E2", "model": "qwen3.5-9b", "seed": 0, "round_": 1}
-{"stage": "ablations", "target": "T0", "level": "E3", "model": "qwen3.5-9b", "seed": 0, "round_": 1}
-{"stage": "ablations", "target": "T0", "level": "E4", "model": "qwen3.5-9b", "seed": 0, "round_": 1}
-{"stage": "ablations", "target": "T0", "level": "W-freq", "model": "qwen3.5-9b", "seed": 0, "round_": 1}
-{"stage": "ablations", "target": "T0", "level": "E2", "model": "qwen3.5-4b", "seed": 0, "round_": 1}
-{"stage": "ablations", "target": "T0", "level": "E3", "model": "qwen3.5-4b", "seed": 0, "round_": 1}
-{"stage": "ablations", "target": "T0", "level": "E4", "model": "qwen3.5-4b", "seed": 0, "round_": 1}
-{"stage": "ablations", "target": "T0", "level": "W-freq", "model": "qwen3.5-4b", "seed": 0, "round_": 1}
-{"stage": "ablations", "target": "T0", "level": "E3", "variant": "fmt-math", "seed": 0, "round_": 1}
-{"stage": "ablations", "target": "T0", "level": "E3", "variant": "fmt-code", "seed": 0, "round_": 1}
-{"stage": "ablations", "target": "T0", "level": "E3", "variant": "noselftest", "selftest": false, "seed": 0, "round_": 1}
+{"stage": "ablations", "target": "T0", "level": "E2", "model": "qwen3.6-35b-a3b", "harness": "mini", "seed": 0, "round_": 1}
+{"stage": "ablations", "target": "T0", "level": "E3", "model": "qwen3.6-35b-a3b", "harness": "mini", "seed": 0, "round_": 1}
+{"stage": "ablations", "target": "T0", "level": "E4", "model": "qwen3.6-35b-a3b", "harness": "mini", "seed": 0, "round_": 1}
+{"stage": "ablations", "target": "T0", "level": "W-freq", "model": "qwen3.6-35b-a3b", "harness": "mini", "seed": 0, "round_": 1}
+{"stage": "ablations", "target": "T0", "level": "E2", "model": "qwen3.5-9b", "harness": "mini", "seed": 0, "round_": 1}
+{"stage": "ablations", "target": "T0", "level": "E3", "model": "qwen3.5-9b", "harness": "mini", "seed": 0, "round_": 1}
+{"stage": "ablations", "target": "T0", "level": "E4", "model": "qwen3.5-9b", "harness": "mini", "seed": 0, "round_": 1}
+{"stage": "ablations", "target": "T0", "level": "W-freq", "model": "qwen3.5-9b", "harness": "mini", "seed": 0, "round_": 1}
+{"stage": "ablations", "target": "T0", "level": "E2", "model": "qwen3.5-4b", "harness": "mini", "seed": 0, "round_": 1}
+{"stage": "ablations", "target": "T0", "level": "E3", "model": "qwen3.5-4b", "harness": "mini", "seed": 0, "round_": 1}
+{"stage": "ablations", "target": "T0", "level": "E4", "model": "qwen3.5-4b", "harness": "mini", "seed": 0, "round_": 1}
+{"stage": "ablations", "target": "T0", "level": "W-freq", "model": "qwen3.5-4b", "harness": "mini", "seed": 0, "round_": 1}
+{"stage": "ablations", "target": "T0", "level": "E3", "variant": "fmt-math", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 0, "round_": 1}
+{"stage": "ablations", "target": "T0", "level": "E3", "variant": "fmt-code", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 0, "round_": 1}
+{"stage": "ablations", "target": "T0", "level": "E3", "variant": "noselftest", "selftest": false, "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 0, "round_": 1}
