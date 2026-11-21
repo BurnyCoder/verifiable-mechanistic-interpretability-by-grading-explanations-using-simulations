@@ -17,12 +17,14 @@ Your network is compared with the original on all 12,769 inputs:
    same *quantities* to be computed in the same places.
 
 So a network that merely gets the right answers in a different way scores worse than one that follows the
-explanation. If the explanation leaves something unspecified, make a reasonable choice and state it in a comment.
+explanation. If the explanation leaves something unspecified, make a reasonable choice and note it in a one-line
+comment.
 
 ## Rules
 
-- Write a Python script `build_weights.py` in this folder that creates `weights.npz` (11 arrays, shapes in
-  `ARCHITECTURE.md`). Use only Python 3 and numpy. It must finish in under 60 seconds.
+- Complete the starter script `build_weights.py` in this folder; it must create `weights.npz` (11 arrays, shapes in
+  `ARCHITECTURE.md`; the starter already saves all-zero arrays of the right shapes). Use only Python 3 and numpy. It
+  must finish in under 60 seconds.
 - **No training.** Do not use gradient descent, optimisers, or any loop that updates weights to reduce a loss.
   Direct construction is expected. Closed-form linear algebra (for example `np.linalg.lstsq` for one linear layer)
   is allowed.
@@ -30,5 +32,12 @@ explanation. If the explanation leaves something unspecified, make a reasonable 
   them. Run `python3 build_weights.py` and then `python3 selftest.py` and fix problems until the self-test passes and
   the accuracy is as high as you can get it.
 - There is no internet access. Work only inside this folder.
+
+## Working within your budget
+
+You have about {MINUTES} minutes and {STEPS} steps, and you produce text slowly (roughly 15–20 tokens per second), so a long
+message costs minutes. Do your planning while thinking, not in code comments; keep comments short. Change
+`build_weights.py` in small pieces — one section per edit, at most about 100 lines per tool call — and run the
+script and the self-test after each piece, so that a working `weights.npz` exists early and then improves.
 
 When you are done, `build_weights.py` and `weights.npz` must exist in this folder. Then stop.

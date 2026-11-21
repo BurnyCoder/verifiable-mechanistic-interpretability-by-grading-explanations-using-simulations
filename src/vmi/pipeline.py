@@ -146,7 +146,10 @@ def agent_run(settings: Settings, *, stage: str, target: str, level: str, seed: 
     prepare_run(settings, run_dir, explanation=text, extra_files=extra, meta=meta, model=model,
                 temperature=temperature, seed=seed, selftest=selftest)
     info = run_agent(settings, run_dir)
-    au = audit(run_dir / "work_out" / "build_weights.py")
+    built = run_dir / "work_out" / "build_weights.py"
+    # an untouched starter writes all-zero weights; record it so such runs are not mistaken for agent constructions
+    info["starter_unchanged"] = built.exists() and built.read_bytes() == (run_dir / "work" / "build_weights.py").read_bytes()
+    au = audit(built)
     res = grade_npz(targets.load_model(settings, target), run_dir / "work_out" / "weights.npz")
     length = json.loads((RESULTS / "explanations" / target / exp_level / "length.json").read_text())
     res.update({**meta, "model": model, "temperature": temperature, "seed": seed, "selftest": selftest,

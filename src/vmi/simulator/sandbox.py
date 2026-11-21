@@ -20,12 +20,12 @@ from pathlib import Path  # paths
 from vmi.config import REPO_ROOT, Settings  # paths and LLM settings
 
 TEMPLATE = REPO_ROOT / "sandbox_template"
-PROMPT = ("Your current folder contains TASK.md, ARCHITECTURE.md, EXPLANATION.md, forward.py and selftest.py. "
-          "Read TASK.md and complete the task it describes. Work autonomously and do not ask questions. "
-          "When build_weights.py and weights.npz exist and selftest.py passes, stop.")
-PROMPT_NO_SELFTEST = ("Your current folder contains TASK.md, ARCHITECTURE.md, EXPLANATION.md and forward.py. "
-                      "Read TASK.md and complete the task it describes. Work autonomously and do not ask questions. "
-                      "When build_weights.py and weights.npz exist, stop.")
+PROMPT = ("Your current folder contains TASK.md, ARCHITECTURE.md, EXPLANATION.md, forward.py, selftest.py and a "
+          "starter build_weights.py. Read TASK.md and complete the task it describes. Work autonomously and do not ask "
+          "questions. When build_weights.py builds your weights.npz and selftest.py passes, stop.")
+PROMPT_NO_SELFTEST = ("Your current folder contains TASK.md, ARCHITECTURE.md, EXPLANATION.md, forward.py and a starter "
+                      "build_weights.py. Read TASK.md and complete the task it describes. Work autonomously and do not "
+                      "ask questions. When build_weights.py builds your weights.npz, stop.")
 
 
 def opencode_config(settings: Settings, *, model: str, temperature: float, seed: int, steps: int) -> dict:
@@ -76,12 +76,17 @@ def prepare_run(settings: Settings, run_dir: Path, *, explanation: str, extra_fi
         shutil.rmtree(run_dir)
     work = run_dir / "work"
     work.mkdir(parents=True)
-    for name in ("ARCHITECTURE.md", "forward.py") + (("selftest.py",) if selftest else ()):
+    # build_weights.py is a starter that saves all-zero arrays of the right shapes: it lets the agent fill in the
+    # weights through small edits instead of one long file write (stage-0 run 3 hit the output cap three times)
+    for name in ("ARCHITECTURE.md", "forward.py", "build_weights.py") + (("selftest.py",) if selftest else ()):
         shutil.copy(TEMPLATE / name, work / name)
     task = (TEMPLATE / "TASK.md").read_text(encoding="utf-8")
+    # the budget the agent is told about is the one the runner enforces
+    task = task.replace("{MINUTES}", str(settings.run_timeout_s // 60)).replace("{STEPS}", str(settings.run_max_steps))
     if not selftest:  # self-test ablation: drop the tool and every mention of it
         task = task.replace("`forward.py` (reference forward pass) and `selftest.py` (checks shapes and task accuracy) are provided; do not edit\n  them. Run `python3 build_weights.py` and then `python3 selftest.py` and fix problems until the self-test passes and\n  the accuracy is as high as you can get it.",
-                            "`forward.py` (reference forward pass) is provided; do not edit it. Run `python3 build_weights.py` and fix\n  problems until it runs.")
+                            "`forward.py` (reference forward pass) is provided; do not edit it. Run `python3 build_weights.py` and fix\n  problems until it runs.").replace("script and the self-test after each piece", "script after each piece")
+        assert "selftest" not in task and "self-test" not in task, "self-test ablation still mentions the self-test"
     (work / "TASK.md").write_text(task, encoding="utf-8", newline="\n")
     (work / "EXPLANATION.md").write_text(explanation, encoding="utf-8", newline="\n")
     for name, content in extra_files.items():

@@ -52,3 +52,27 @@ def test_selftest_reports_shapes_and_accuracy(tmp_path):
     out = subprocess.run([sys.executable, str(TEMPLATE / "selftest.py"), str(tmp_path / "bad.npz")],
                          capture_output=True, text=True, cwd=TEMPLATE)
     assert out.returncode == 1 and "W_U" in out.stdout
+
+
+def test_starter_build_script_writes_valid_zero_weights(tmp_path):
+    out = subprocess.run([sys.executable, str(TEMPLATE / "build_weights.py")], capture_output=True, text=True,
+                         cwd=tmp_path)
+    assert out.returncode == 0
+    w = weights.load_npz(tmp_path / "weights.npz")  # raises if a name or shape is wrong
+    assert all(not v.any() for v in w.values())
+
+
+def test_prepare_run_fills_budget_and_strips_selftest_in_ablation(tmp_path):
+    from vmi.config import load
+    from vmi.simulator.sandbox import prepare_run
+
+    settings = load()
+    full = prepare_run(settings, tmp_path / "full", explanation="x", extra_files={}, meta={})
+    task = (full / "work" / "TASK.md").read_text(encoding="utf-8")
+    assert "{" not in task and f"{settings.run_timeout_s // 60} minutes" in task
+    assert (full / "work" / "build_weights.py").exists() and (full / "work" / "selftest.py").exists()
+    ablated = prepare_run(settings, tmp_path / "noself", explanation="x", extra_files={}, meta={}, selftest=False)
+    task = (ablated / "work" / "TASK.md").read_text(encoding="utf-8").lower()
+    assert "selftest" not in task and "self-test" not in task
+    assert not (ablated / "work" / "selftest.py").exists()
+    assert "selftest" not in (ablated / "prompt.txt").read_text(encoding="utf-8")

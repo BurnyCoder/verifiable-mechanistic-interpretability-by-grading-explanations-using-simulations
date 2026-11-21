@@ -1,0 +1,17 @@
+[
+  "ok no-external-ip",
+  "ok no-dns",
+  "ok dns-fails",
+  "ok only-loopback",
+  "ok no-windows-drives",
+  "ok home-hidden",
+  "ok no-interop-socket",
+  "ok no-interop-env",
+  "ok no-windows-exe",
+  "ok usr-readonly",
+  "ok vsock-blocked",
+  "ok llm-reachable",
+  "ok numpy 2.4.3",
+  "ok opencode opencode v2.3.2",
+  "ok work-writable"
+]

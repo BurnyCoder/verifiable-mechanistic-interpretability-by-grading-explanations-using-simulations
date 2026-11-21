@@ -52,6 +52,17 @@ Newest entries at the bottom. Per-experiment learnings live in each experiment's
   (so the tool call arrived truncated with empty input). Fix: `presence_penalty` 1.5 in every request (the default
   Ollama ships for Qwen 3.5, checked with `ollama show qwen3.5:9b`; Qwen recommends 0–2 against endless repetition) and
   an 8,192-token per-turn output cap so a loop costs ~6 minutes instead of ~13.
+- **Reasoning moved into code comments, and the whole script into one tool call.** In the third smoke run there was
+  no repetition loop: after its thinking was cut at the 4,096-token budget, the model kept designing *inside* the
+  `write` call (a 504-line `build_weights.py`, 386 distinct lines, ending in paragraphs of comments weighing which head
+  should carry k = 47). Three such writes hit the 8,192-token cap; OpenCode drops truncated responses from the
+  history, so each retry started from the same context, and after the third OpenCode ended the session
+  ("Response still truncated after two output token limit continuations"; 6 steps, 30 minutes, no weights). Fix,
+  identical for every condition: a starter `build_weights.py` that already saves all-zero arrays of the right shapes,
+  and a TASK.md section stating the time and step budget and asking for planning in thinking, short comments, and
+  edits of at most ~100 lines with the self-test run after each. Runs that leave the starter untouched are recorded
+  (`starter_unchanged`) and score as the all-zero model. The k = 47 confusion itself was the agent's: E3 says the heads
+  move every key frequency; the table's k is the frequency of each head's attention pattern.
 
 ## Grader and reference compiler (dev target only)
 
