@@ -14,8 +14,8 @@
       "scoreboard-T0",
       "baselines-T0",
       "key-results",
-      "predictions",
-      "replications"
+      "replications",
+      "predictions-plain"
     ],
     "reports/summary.md": [
       "key-results",

@@ -34,6 +34,22 @@ PREDICTED = {  # wording follows preregistration §5; thresholds are the preregi
 }
 
 
+PLAIN = {  # the same predictions in plain words, for readers outside the field (README top)
+    "H1": "The more true detail an explanation gives, the more faithfully the rebuilt network should match the original.",
+    "H2": "A true explanation should beat a wrong explanation of the same length.",
+    "H3": "A wrong explanation can still give all the right answers; checking only the answers is fooled, checking the "
+          "insides (HS) should not be.",
+    "H4": "Rebuilding from an explanation should match the original's insides better than training a fresh network the "
+          "same way does.",
+    "H4b": "On a network whose mechanism we planted ourselves, the score should start perfect and drop as further "
+           "training moves the network away from it.",
+    "H5": "The AI should not beat our automatic, AI-free compiler, and stronger AIs should come closer to it.",
+    "H6": "Different AIs should put the explanations in the same order.",
+    "H7": "An explanation of one network should not fit a different network.",
+    "H8": "The score should rise while the original network learns its mechanism during training.",
+}
+
+
 def _f(x, nd: int = 3) -> str:
     if x is None:
         return "–"
@@ -71,7 +87,7 @@ def prediction_rows(max_round: int) -> list[dict]:
 
     def add(k, observed, matches):
         h = H.get(k, {})
-        out.append({"id": k, "predicted": PREDICTED[k], "observed": observed, "matches": matches,
+        out.append({"id": k, "plain": PLAIN[k], "predicted": PREDICTED[k], "observed": observed, "matches": matches,
                     "verdict": _verdict(h) or "not evaluated yet", "evidence": str(h.get("label", h.get("N", "–")))})
 
     if "H1" in H:
