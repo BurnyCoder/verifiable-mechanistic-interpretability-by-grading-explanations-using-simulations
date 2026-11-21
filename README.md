@@ -84,6 +84,13 @@ the `build_weights.py` the agent wrote; the quote is the first sentence of its c
 <!-- BEGIN agent-examples -->
 <!-- END agent-examples -->
 
+**In the agent's own words.** The messages Claude Haiku wrote between its tool calls in the same runs: its plan, its
+reaction to the first self-test result, and its closing line, with the self-test accuracy after each self-test it
+ran. (The model's hidden thinking is not returned by the API; these are its visible messages, quoted verbatim.)
+
+<!-- BEGIN agent-words -->
+<!-- END agent-words -->
+
 
 **Output examples: which frequencies each network actually built**, against the target's own spectrum (the ground
 truth). The true-explanation replacement (E3) builds the target's frequencies; the algorithm-only replacement (E1)

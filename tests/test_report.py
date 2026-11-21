@@ -75,14 +75,17 @@ def test_agent_examples_quote_whole_sentences_and_parse_both_log_formats():
               {"type": "user", "message": {"content": [{"type": "tool_result", "content": "accuracy on all 12769 inputs: 1.0"}]}},
               {"type": "assistant", "message": {"content": [{"type": "text", "text": "Done. It works."}]}},
               {"type": "result", "total_cost_usd": 0.01}]
-    calls, results, final, cost, _ = ae._claude_events(claude)
+    calls, results, final, cost, _, says = ae._claude_events(claude)
     assert calls == ["python3 selftest.py"] and "accuracy" in results[0] and final == "Done. It works." and cost == 0.01
+    assert says == [(1, "Done. It works.")]  # narration keeps its position among the tool calls
     harness = [{"type": "tool_use", "part": {"state": {"input": {"command": "ls"}, "output": "x"}}},
                {"type": "error", "part": {"error": {"type": "output-limit"}}},
                {"type": "text", "part": {"text": "[harness] exit status: TimeExceeded"}},
-               {"type": "text", "part": {"text": "[harness] prompt: do the task"}}]
-    calls, _, _, _, errors = ae._harness_events(harness)
+               {"type": "text", "part": {"text": "[harness] prompt: do the task"}},
+               {"type": "text", "part": {"text": "THOUGHT: check the files.\n\n```bash\nls\n```"}}]
+    calls, _, _, _, errors, says = ae._harness_events(harness)
     assert calls == ["ls"] and errors == ["output-limit", "exit status: TimeExceeded"]  # the prompt is not an error
+    assert says == [(1, "check the files.")]  # the model's words without its command block
 
 
 def test_key_results_report_the_target_swap_when_present():

@@ -56,7 +56,7 @@ def pick_runs(max_round: int) -> list[tuple[tuple, dict]]:
 
 
 def _claude_events(ev):
-    calls, results, final, cost = [], [], "", None
+    calls, results, final, cost, says = [], [], "", None, []
     for e in ev:
         if e.get("type") == "assistant":
             for c in e["message"].get("content", []):
@@ -64,6 +64,7 @@ def _claude_events(ev):
                     calls.append(c.get("input", {}).get("command") or json.dumps(c.get("input", {}))[:200])
                 elif c.get("type") == "text" and c.get("text", "").strip():
                     final = c["text"]
+                    says.append((len(calls), c["text"]))  # narration between tool calls (thinking is not returned)
         elif e.get("type") == "user":
             for c in e.get("message", {}).get("content", []):
                 if isinstance(c, dict) and c.get("type") == "tool_result":
@@ -71,11 +72,11 @@ def _claude_events(ev):
                     results.append(body if isinstance(body, str) else " ".join(x.get("text", "") for x in body or [] if isinstance(x, dict)))
         elif e.get("type") == "result":
             cost = e.get("total_cost_usd")
-    return calls, results, final, cost, []
+    return calls, results, final, cost, [], says
 
 
 def _harness_events(ev):
-    calls, results, final, errors = [], [], "", []
+    calls, results, final, errors, says = [], [], "", [], []
     for e in ev:
         part = e.get("part", {})
         if e.get("type") == "tool_use":
@@ -83,12 +84,14 @@ def _harness_events(ev):
             calls.append(st.get("input", {}).get("command", ""))
             results.append(st.get("output", ""))
         elif e.get("type") == "text" and not part.get("text", "").startswith("[harness]"):
-            final = part.get("text", "")
+            final = re.sub(r"```.*?(```|$)", "", part.get("text", ""), flags=re.S).replace("THOUGHT:", "").strip()
+            if final:
+                says.append((len(calls), final))  # the model's words without the command block
         elif e.get("type") == "text" and "exit status" in part.get("text", ""):
             errors.append(part["text"].replace("[harness] ", ""))  # e.g. "exit status: TimeExceeded"
         elif e.get("type") == "error":
             errors.append(part.get("error", {}).get("type", "error"))  # e.g. "output-limit": reply cut off, nothing ran
-    return calls, results, final, None, errors
+    return calls, results, final, None, errors, says
 
 
 def first_sentence(text: str, n: int = 220) -> str:
@@ -111,8 +114,13 @@ def extract(r: dict) -> dict:
     """Parsed facts about one run, all read from its own event log, build script and result record."""
     run = load().runs_dir / r["run_id"]
     ev = [json.loads(x) for x in (run / "logs" / "events.ndjson").read_text(encoding="utf-8").splitlines() if x.strip()]
-    calls, results, final, cost, harness_errors = (_claude_events if r.get("harness") == "claudecode" else _harness_events)(ev)
+    calls, results, final, cost, harness_errors, says = (_claude_events if r.get("harness") == "claudecode" else _harness_events)(ev)
     selftests = [i for i, c in enumerate(calls) if "selftest" in (c or "")]
+    accs = [float(m.group(1)) for i in selftests if i < len(results)
+            for m in [re.search(r"accuracy[^:\n]*:\s*([0-9]*\.[0-9]+)", results[i])] if m]  # self-test accuracy, in order
+    talk = [s for n, s in says if s.strip() and s != final]
+    plan = talk[0] if talk else ""
+    reaction = next((s for n, s in says if selftests and n > selftests[0] and s != final and s != plan), "")
     last_st = next((results[i] for i in reversed(selftests) if i < len(results) and "ccuracy" in results[i]), "")
     acc_line = next((ln.strip() for ln in last_st.splitlines() if "ccuracy" in ln), "")
     script = run / "work_out" / "build_weights.py"
@@ -125,7 +133,8 @@ def extract(r: dict) -> dict:
             "harness_errors": harness_errors, "last_selftest": acc_line,
             "choices": [ln.strip() for ln in lines if CHOICE.search(ln)][:3],
             "freq_lines": ([ln.strip() for ln in lines if INT_LIST.search(ln)] or [ln.strip() for ln in lines if FREQS.search(ln)])[:2],
-            "final": _short(final, 420),
+            "final": _short(final, 420), "plan": _short(plan, 330), "reaction": _short(reaction, 330), "accs": accs,
+            "said": [_short(s, 600) for _, s in says],
             "accuracy": r["accuracy"], "hs": r["hs"], "compiler_hs": c["hs"] if c else None, "url": HF_RUNS + r["run_id"]}
 
 
@@ -156,7 +165,12 @@ def write_doc(max_round: int) -> str:
             parts.append("- **Harness events:** " + ", ".join(f"{e} ×{n}" if n > 1 else e for e, n in counts.items()))
         if x["freq_lines"] or x["choices"]:
             parts += ["- **Lines it wrote in `build_weights.py`:**", "", "```python", *x["freq_lines"], *x["choices"], "```"]
-        parts += ["", f"**Its closing message (excerpt):** {x['final'] or '(none)'}", "", f"[Full transcript and weights]({x['url']})", ""]
+        if x["accs"]:
+            parts.append("- **Self-test accuracy over the run:** " + " → ".join(f"{a:.4f}" for a in x["accs"]))
+        parts += ["", "**What it said, in order** (its messages between tool calls; the model's hidden thinking is not "
+                  "returned by the API):", ""]
+        parts += [f"{i}. {s}" for i, s in enumerate(x["said"], 1)] or ["(nothing)"]
+        parts += ["", f"[Full transcript and weights]({x['url']})", ""]
     path = REPO_ROOT / "reports" / "agent-examples.md"
     path.write_text("\n".join(parts), encoding="utf-8", newline="\n")
     return str(path)
