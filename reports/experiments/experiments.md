@@ -39,7 +39,7 @@ correct answers?
 | **E-paper** | The published explanation of the paper's own checkpoint (T-paper only). |
 | **Reference compiler** | A deterministic script that turns an explanation's parameter file into weights — the agent-free ceiling for what each explanation contains. |
 | **Simulator** | The agent that writes the weights: Claude Haiku 5.5 in Claude Code (main), or local Qwen models in a bash-only harness (capability ablation). |
-| **N** | Agent runs per condition (seeds). Round 1: N = 1; round 2: N = 3; round 3: N = 10. |
+| **N** | Agent runs per condition (replicates; for the local models the index is the sampling seed, Claude cannot be seeded). Round 1: N = 1; round 2: N = 3; round 3: N = 10. |
 
 ## Networks (targets)
 

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grading mechanistic explanations by weights-blind simulation — results explorer</title>
+<!-- Results explorer. Every number is read from data.json, which `vmi analyse` writes from results/. Charts are plain
+     SVG with hover tooltips; colours: blue = true explanation, orange = control explanation, aqua = no-agent reference;
+     marker shape separates agent runs (circles) from the agent-free reference compiler (diamonds). -->
+<style>
+.viz-root { color-scheme: light; --surface-1:#fcfcfb; --surface-2:#f2f1ee; --text-primary:#0b0b0b; --text-secondary:#52514e;
+  --grid:#e6e5e1; --true:#2a78d6; --ctrl:#eb6834; --ref:#1baf7a; --border:#d9d8d3; }
+@media (prefers-color-scheme: dark) { :root:where(:not([data-theme="light"])) .viz-root { color-scheme: dark;
+  --surface-1:#1a1a19; --surface-2:#242423; --text-primary:#f0efec; --text-secondary:#c3c2b7; --grid:#33332f;
+  --true:#3987e5; --ctrl:#d95926; --ref:#199e70; --border:#3a3a36; } }
+:root[data-theme="dark"] .viz-root { color-scheme: dark; --surface-1:#1a1a19; --surface-2:#242423; --text-primary:#f0efec;
+  --text-secondary:#c3c2b7; --grid:#33332f; --true:#3987e5; --ctrl:#d95926; --ref:#199e70; --border:#3a3a36; }
+body { margin:0; }
+.viz-root { background:var(--surface-1); color:var(--text-primary); font:15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+  min-height:100vh; padding:24px max(16px, calc((100vw - 1100px)/2)); box-sizing:border-box; }
+a { color:var(--true); } h1 { font-size:26px; margin:0 0 6px; } h2 { font-size:19px; margin:32px 0 8px; }
+.muted { color:var(--text-secondary); } .card { background:var(--surface-2); border:1px solid var(--border); border-radius:8px; padding:12px 16px; }
+.filters { display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin:12px 0; }
+select, button { font:inherit; color:var(--text-primary); background:var(--surface-1); border:1px solid var(--border); border-radius:6px; padding:4px 8px; }
+svg text { fill:var(--text-secondary); font-size:12px; } .axis line, .axis path { stroke:var(--grid); }
+#tip { position:fixed; pointer-events:none; background:var(--surface-2); border:1px solid var(--border); border-radius:6px;
+  padding:6px 9px; font-size:13px; line-height:1.35; display:none; max-width:360px; z-index:10; color:var(--text-primary); }
+table { border-collapse:collapse; width:100%; font-size:13px; } th, td { border-bottom:1px solid var(--border); padding:4px 6px; text-align:left; }
+th { cursor:pointer; color:var(--text-secondary); font-weight:600; } td.num { font-variant-numeric:tabular-nums; text-align:right; }
+.legend { display:flex; flex-wrap:wrap; gap:16px; font-size:13px; color:var(--text-secondary); margin:4px 0 0; }
+.legend span { display:inline-flex; align-items:center; gap:6px; }
+.tablewrap { max-height:460px; overflow:auto; }
+</style>
+</head>
+<body>
+<div class="viz-root">
+<h1>Grading mechanistic explanations by weights-blind simulation</h1>
+<div class="muted">Libor "Burny" Burian, <a href="https://scholar.google.com/citations?user=BBGcEigAAAAJ&hl=en">Victor Levoso</a>.
+Developed in a mechanistic interpretability hackathon on automatically evaluating mechanistic interpretability explanations,
+co-organized by the authors in their community and its Discord server, <a href="https://mechinterp.com/">mechinterp.com</a>.</div>
+<p>An LLM agent that has never seen the network and has no internet access reads an explanation of a one-layer
+modular-addition transformer (<a href="https://arxiv.org/abs/2301.05217">Nanda et al. 2023</a>) and writes every weight of a
+replacement. The replacement is scored against the original by <b>output KL</b> (behaviour) and <b>hidden-state similarity (HS)</b>
+(cross-validated linear regression between the two networks' internal activations). Does the score track explanation quality?
+<a href="https://github.com/BurnyCoder/verifiable-mechanistic-interpretability-by-grading-explanations-using-simulations">Code and preregistration</a> ·
+<a href="https://github.com/BurnyCoder/verifiable-mechanistic-interpretability-by-grading-explanations-using-simulations/blob/main/reports/paper.pdf">paper (PDF)</a> ·
+<a href="https://huggingface.co/BurnyCoder/grading-explanations-by-simulation">replacement networks and transcripts</a></p>
+
+<h2>Key results</h2>
+<div class="card" id="keyres">loading…</div>
+
+<h2>Scores per explanation</h2>
+<div class="filters">
+  <label>Target <select id="target"></select></label>
+  <label>Metric <select id="metric">
+    <option value="hs">Hidden-state similarity (HS) ↑</option><option value="kl_out">Output KL, nats (log) ↓</option>
+    <option value="matched_neuron_corr">Matched-neuron correlation ↑</option><option value="accuracy">Task accuracy ↑</option>
+    <option value="centred_logit_fvu">Centred-logit FVU ↓</option></select></label>
+  <label>Simulator <select id="model"></select></label>
+  <label><input type="checkbox" id="variants"> include ablation and effort variants</label>
+</div>
+<svg id="ladder" width="100%" height="380" role="img" aria-label="Scores per explanation"></svg>
+<div class="legend">
+  <span><svg width="12" height="12"><circle cx="6" cy="6" r="5" fill="var(--true)"/></svg>agent run, true explanation</span>
+  <span><svg width="12" height="12"><circle cx="6" cy="6" r="5" fill="var(--ctrl)"/></svg>agent run, control explanation</span>
+  <span><svg width="14" height="14"><rect x="3" y="3" width="8" height="8" transform="rotate(45 7 7)" fill="none" stroke="var(--text-secondary)" stroke-width="2"/></svg>reference compiler (no agent)</span>
+  <span><svg width="18" height="10"><line x1="0" y1="5" x2="18" y2="5" stroke="var(--ref)" stroke-dasharray="4 3" stroke-width="2"/></svg>no-agent reference (mean; T0 only)</span>
+</div>
+
+<h2>Behaviour (output KL) vs mechanism (HS)</h2>
+<svg id="scatter" width="100%" height="380" role="img" aria-label="Output KL against HS"></svg>
+<div class="legend">
+  <span><svg width="12" height="12"><circle cx="6" cy="6" r="5" fill="var(--true)"/></svg>true explanation</span>
+  <span><svg width="12" height="12"><circle cx="6" cy="6" r="5" fill="var(--ctrl)"/></svg>control explanation</span>
+  <span><svg width="12" height="12"><rect x="2" y="2" width="8" height="8" fill="var(--ref)"/></svg>no-agent reference model (retrain, distilled student, random init)</span>
+</div>
+
+<h2>Preregistered hypotheses</h2>
+<div class="tablewrap"><table id="hyp"></table></div>
+
+<h2>All agent runs (table view)</h2>
+<div class="tablewrap"><table id="runs"></table></div>
+
+<h2>Static figures</h2>
+<p class="muted">Generated by <code>vmi analyse</code>: <a href="https://github.com/BurnyCoder/verifiable-mechanistic-interpretability-by-grading-explanations-using-simulations/tree/main/reports/figures">reports/figures</a>.</p>
+<div id="tip"></div>
+</div>
+<script>
+const TRUE_LEVELS = new Set(["E1","E2","E3","E4","E-paper"]);
+const ORDER = ["E0","E1","E2","E3","E4","E-paper","W-freq","W-alg","W-role","W-scramble"];
+const fmt = v => v == null ? "–" : (Math.abs(v) > 0 && (Math.abs(v) < 1e-3 || Math.abs(v) >= 1e4) ? v.toExponential(2) : v.toFixed(3));
+const tip = document.getElementById("tip");
+function showTip(ev, html) { tip.innerHTML = html; tip.style.display = "block";
+  tip.style.left = Math.min(ev.clientX + 14, innerWidth - 380) + "px"; tip.style.top = (ev.clientY + 14) + "px"; }
+function hideTip() { tip.style.display = "none"; }
+function el(tag, attrs, parent) { const e = document.createElementNS("http://www.w3.org/2000/svg", tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+function md(s) { return s.split("\n").filter(l => l.trim()).map(l => {
+  const h = l.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/^\*(.+)\*$/, "<i>$1</i>");
+  return l.startsWith("- ") ? "<li>" + h.slice(2) + "</li>" : "<p>" + h + "</p>"; }).join("").replace(/(<li>.*<\/li>)/s, "<ul>$1</ul>"); }
+
+fetch("data.json").then(r => r.json()).then(D => {
+  document.getElementById("keyres").innerHTML = md(D.key_results_md);
+  const targets = [...new Set(D.runs.map(r => r.target).concat(D.compiler.map(c => c.target)))].filter(t => t !== "dev").sort();
+  const tsel = document.getElementById("target"); targets.forEach(t => tsel.add(new Option(t, t))); tsel.value = "T0";
+  const msel = document.getElementById("model"); msel.add(new Option("all", "all"));
+  [...new Set(D.runs.map(r => r.model))].sort().forEach(m => msel.add(new Option(m, m)));
+  if ([...msel.options].some(o => o.value === "claude-haiku-5-5")) msel.value = "claude-haiku-5-5";  // main simulator first
+  ["target","metric","model","variants"].forEach(id => document.getElementById(id).addEventListener("change", draw));
+  drawHyp(D); drawTable(D); draw();
+
+  function selected() { const t = tsel.value, m = msel.value, v = document.getElementById("variants").checked;
+    return D.runs.filter(r => r.target === t && (m === "all" || r.model === m) && (v || r.variant === "")); }
+
+  function draw() { drawLadder(); drawScatter(); }
+
+  function drawLadder() {
+    const svg = document.getElementById("ladder"); svg.innerHTML = ""; const W = svg.clientWidth || 900, H = 380, L = 70, R = 20, T = 16, B = 46;
+    const key = document.getElementById("metric").value, log = key === "kl_out", t = tsel.value;
+    const runs = selected().filter(r => r[key] != null), comp = D.compiler.filter(c => c.target === t && c[key] != null);
+    const levels = ORDER.filter(lv => runs.some(r => r.level === lv) || comp.some(c => c.level === lv));
+    const vals = runs.map(r => r[key]).concat(comp.map(c => c[key])).filter(v => !log || v > 0);
+    const refs = t === "T0" ? D.references.filter(x => x[key] != null) : [];
+    let lo = log ? Math.min(...vals, ...refs.map(x => x[key])) : 0, hi = log ? Math.max(...vals, ...refs.map(x => x[key])) : (key === "centred_logit_fvu" ? Math.max(1.05, ...vals) : 1.02);
+    if (log) { lo = Math.pow(10, Math.floor(Math.log10(lo))); hi = Math.pow(10, Math.ceil(Math.log10(hi))); }
+    const y = v => log ? T + (H - T - B) * (1 - (Math.log10(Math.max(v, lo)) - Math.log10(lo)) / (Math.log10(hi) - Math.log10(lo))) : T + (H - T - B) * (1 - (v - lo) / (hi - lo));
+    const x = i => L + (W - L - R) * (i + 0.5) / Math.max(levels.length, 1);
+    const ticks = log ? Array.from({length: Math.log10(hi) - Math.log10(lo) + 1}, (_, i) => lo * Math.pow(10, i)) : [0, 0.25, 0.5, 0.75, 1].filter(v => v <= hi);
+    ticks.forEach(v => { el("line", {x1: L, x2: W - R, y1: y(v), y2: y(v), stroke: "var(--grid)"}, svg);
+      el("text", {x: L - 8, y: y(v) + 4, "text-anchor": "end"}, svg).textContent = log ? v.toExponential(0) : v; });
+    levels.forEach((lv, i) => { el("text", {x: x(i), y: H - B + 18, "text-anchor": "middle"}, svg).textContent = lv; });
+    const kinds = [...new Set(refs.map(r => r.kind))]; let lastLabelY = -1e9;
+    const refMeans = kinds.map(k => { const rs = refs.filter(r => r.kind === k); return [k, log ? Math.exp(rs.reduce((a, r) => a + Math.log(r[key]), 0) / rs.length) : rs.reduce((a, r) => a + r[key], 0) / rs.length]; }).sort((a, b) => y(b[1]) - y(a[1]));
+    refMeans.forEach(([k, m]) => { let ly = y(m) - 4; if (Math.abs(lastLabelY - ly) < 12) ly = lastLabelY - 12; lastLabelY = ly;  // stagger near-equal labels
+      el("text", {x: W - R, y: ly, "text-anchor": "end"}, svg).textContent = k + " (no agent)"; });
+    kinds.forEach(k => { const rs = refs.filter(r => r.kind === k); const m = log ? Math.exp(rs.reduce((a, r) => a + Math.log(r[key]), 0) / rs.length) : rs.reduce((a, r) => a + r[key], 0) / rs.length;
+      const ln = el("line", {x1: L, x2: W - R, y1: y(m), y2: y(m), stroke: "var(--ref)", "stroke-dasharray": "4 3", "stroke-width": 1.5}, svg);
+      const hit = el("line", {x1: L, x2: W - R, y1: y(m), y2: y(m), stroke: "transparent", "stroke-width": 10}, svg);
+      hit.addEventListener("mousemove", e => showTip(e, `<b>${k}</b> (n=${rs.length}, no agent)<br>mean ${fmt(m)}`)); hit.addEventListener("mouseleave", hideTip); });
+    levels.forEach((lv, i) => {
+      const col = TRUE_LEVELS.has(lv) ? "var(--true)" : "var(--ctrl)";
+      const rs = runs.filter(r => r.level === lv);
+      rs.forEach((r, j) => { const cx = x(i) - 10 + (rs.length > 1 ? 20 * j / (rs.length - 1) : 10) - 10;
+        const c = el("circle", {cx, cy: y(r[key]), r: 5.5, fill: col, stroke: "var(--surface-1)", "stroke-width": 2}, svg);
+        const hit = el("circle", {cx, cy: y(r[key]), r: 11, fill: "transparent"}, svg);
+        hit.addEventListener("mousemove", e => showTip(e, `<b>${r.run_id}</b><br>simulator ${r.model}${r.variant ? ", variant " + r.variant : ""}<br>HS ${fmt(r.hs)} · KL ${fmt(r.kl_out)} · accuracy ${fmt(r.accuracy)}<br>matched-neuron corr ${fmt(r.matched_neuron_corr)}${r.cost_usd != null ? "<br>cost $" + r.cost_usd.toFixed(3) : ""}`));
+        hit.addEventListener("mouseleave", hideTip); });
+      comp.filter(c => c.level === lv).forEach(c => { const cx = x(i) + 16;
+        el("rect", {x: cx - 5, y: y(c[key]) - 5, width: 10, height: 10, transform: `rotate(45 ${cx} ${y(c[key])})`, fill: "none", stroke: col, "stroke-width": 2}, svg);
+        const hit = el("circle", {cx, cy: y(c[key]), r: 11, fill: "transparent"}, svg);
+        hit.addEventListener("mousemove", e => showTip(e, `<b>reference compiler</b> (${t}, ${lv}, no agent)<br>HS ${fmt(c.hs)} · KL ${fmt(c.kl_out)} · accuracy ${fmt(c.accuracy)}`));
+        hit.addEventListener("mouseleave", hideTip); });
+    });
+  }
+
+  function drawScatter() {
+    const svg = document.getElementById("scatter"); svg.innerHTML = ""; const W = svg.clientWidth || 900, H = 380, L = 70, R = 20, T = 16, B = 46;
+    const t = tsel.value, runs = selected().filter(r => r.kl_out > 0 && r.hs != null), refs = t === "T0" ? D.references.filter(r => r.kl_out > 0) : [];
+    const kls = runs.map(r => r.kl_out).concat(refs.map(r => r.kl_out)); if (!kls.length) return;
+    const lo = Math.pow(10, Math.floor(Math.log10(Math.min(...kls)))), hi = Math.pow(10, Math.ceil(Math.log10(Math.max(...kls))));
+    const x = v => L + (W - L - R) * (Math.log10(v) - Math.log10(lo)) / (Math.log10(hi) - Math.log10(lo)), y = v => T + (H - T - B) * (1 - v / 1.02);
+    for (let e = Math.log10(lo); e <= Math.log10(hi); e++) { el("line", {x1: x(10 ** e), x2: x(10 ** e), y1: T, y2: H - B, stroke: "var(--grid)"}, svg);
+      el("text", {x: x(10 ** e), y: H - B + 18, "text-anchor": "middle"}, svg).textContent = "1e" + e; }
+    [0, 0.25, 0.5, 0.75, 1].forEach(v => { el("line", {x1: L, x2: W - R, y1: y(v), y2: y(v), stroke: "var(--grid)"}, svg);
+      el("text", {x: L - 8, y: y(v) + 4, "text-anchor": "end"}, svg).textContent = v; });
+    el("text", {x: (L + W - R) / 2, y: H - 6, "text-anchor": "middle"}, svg).textContent = "output KL(M ‖ M̂), nats (log) — left is better behaviour";
+    el("text", {x: 14, y: (T + H - B) / 2, transform: `rotate(-90 14 ${(T + H - B) / 2})`, "text-anchor": "middle"}, svg).textContent = "HS — up is better mechanism";
+    refs.forEach(r => { el("rect", {x: x(r.kl_out) - 4.5, y: y(r.hs) - 4.5, width: 9, height: 9, fill: "var(--ref)", stroke: "var(--surface-1)", "stroke-width": 1.5}, svg);
+      const hit = el("circle", {cx: x(r.kl_out), cy: y(r.hs), r: 10, fill: "transparent"}, svg);
+      hit.addEventListener("mousemove", e => showTip(e, `<b>${r.kind}</b> (no agent)<br>HS ${fmt(r.hs)} · KL ${fmt(r.kl_out)}`)); hit.addEventListener("mouseleave", hideTip); });
+    runs.forEach(r => { const col = TRUE_LEVELS.has(r.level) ? "var(--true)" : "var(--ctrl)";
+      el("circle", {cx: x(r.kl_out), cy: y(r.hs), r: 5.5, fill: col, stroke: "var(--surface-1)", "stroke-width": 2}, svg);
+      el("text", {x: x(r.kl_out) + 8, y: y(r.hs) - 6}, svg).textContent = r.level + (r.variant ? "·" + r.variant : "");
+      const hit = el("circle", {cx: x(r.kl_out), cy: y(r.hs), r: 11, fill: "transparent"}, svg);
+      hit.addEventListener("mousemove", e => showTip(e, `<b>${r.run_id}</b><br>HS ${fmt(r.hs)} · KL ${fmt(r.kl_out)} · accuracy ${fmt(r.accuracy)}`)); hit.addEventListener("mouseleave", hideTip); });
+  }
+
+  function drawHyp(D) { const t = document.getElementById("hyp");
+    t.innerHTML = "<tr><th>Hypothesis</th><th>Verdict</th><th>Evidence size</th></tr>" + D.hypotheses.map(h => `<tr><td>${h.id}</td><td>${h.verdict}</td><td>${h.evidence}</td></tr>`).join(""); }
+
+  function drawTable(D) { const cols = ["stage","target","level","variant","model","seed","accuracy","kl_out","hs","matched_neuron_corr","cost_usd"];
+    let sortKey = "stage", asc = true; const t = document.getElementById("runs");
+    function render() { const rows = [...D.runs].sort((a, b) => { const va = a[sortKey], vb = b[sortKey]; return (va > vb ? 1 : va < vb ? -1 : 0) * (asc ? 1 : -1); });
+      t.innerHTML = "<tr>" + cols.map(c => `<th data-k="${c}">${c}${c === sortKey ? (asc ? " ▲" : " ▼") : ""}</th>`).join("") + "</tr>" +
+        rows.map(r => "<tr>" + cols.map(c => typeof r[c] === "number" && c !== "seed" ? `<td class="num">${fmt(r[c])}</td>` : `<td>${r[c] ?? ""}</td>`).join("") + "</tr>").join("");
+      t.querySelectorAll("th").forEach(th => th.onclick = () => { const k = th.dataset.k; asc = sortKey === k ? !asc : true; sortKey = k; render(); }); }
+    render(); }
+  addEventListener("resize", draw);
+});
+</script>
+</body>
+</html>

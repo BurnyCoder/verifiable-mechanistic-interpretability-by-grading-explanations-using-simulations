@@ -261,6 +261,9 @@ def main(argv: list[str] | None = None) -> None:
     an.add_argument("round", type=int)
     sub.add_parser("regrade", help="recompute secondary metrics of graded runs from saved weights")
     sub.add_parser("paper", help="build reports/paper.pdf from reports/paper/paper.md")
+    sub.add_parser("sensitivity", help="grader and explainer sensitivity analyses (no agent)").add_argument("round", type=int)
+    pub = sub.add_parser("publish", help="export artefacts (redacted, scanned) and upload them to the Hugging Face Hub")
+    pub.add_argument("--dry-run", action="store_true", help="export and scan only")
     a = ap.parse_args(argv)
     setup_logging(a.cmd)
     settings = load()
@@ -312,6 +315,18 @@ def main(argv: list[str] | None = None) -> None:
     elif a.cmd == "baselines":
         from vmi import nonagent
         nonagent.baselines(settings, a.target)
+    elif a.cmd == "publish":
+        from vmi import publish
+        folder = publish.export(settings)
+        log.info("exported %s (scan clean)", folder)
+        if not a.dry_run:
+            log.info("collection %s", publish.upload(folder, f"Update after {time.strftime('%Y-%m-%d %H:%M')}"))
+    elif a.cmd == "sensitivity":
+        from vmi import sensitivity
+        g = sensitivity.grader_sensitivity(settings, a.round)
+        log.info("grader sensitivity: %s", {k: v["kendall_tau_vs_preregistered"] for k, v in g["summary"]["agent"].items()})
+        e = sensitivity.explainer_sensitivity(settings)
+        log.info("explainer sensitivity: %d compiler builds graded", len(e["rows"]))
     elif a.cmd == "paper":
         from vmi.analysis.report import build_paper
         log.info("wrote %s", build_paper())

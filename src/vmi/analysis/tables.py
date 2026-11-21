@@ -204,6 +204,39 @@ def key_results(max_round: int, target: str = "T0") -> str:
     return out[0] + "\n\n" + "\n".join(out[1:])  # blank line: a markdown list must not continue the paragraph above
 
 
+def grader_sensitivity_table(max_round: int, target: str = "T0", kind: str = "agent") -> str:
+    """Mean HS per explanation under each preregistered grader variant, and Kendall τ of the ordering vs. default."""
+    p = RES / "sensitivity" / f"grader_{target}_round{max_round}.json"
+    if not p.exists():
+        return "_not run yet_"
+    d = json.loads(p.read_text())
+    S = d["summary"][kind]
+    levels = [lv for lv in LEVEL_ORDER if any(lv in v["means"] for v in S.values())]
+    rows = ["| Grader setting | " + " | ".join(levels) + " | Kendall τ vs. preregistered |", "|---" * (len(levels) + 2) + "|"]
+    for name, v in S.items():
+        rows.append(f"| {name} | " + " | ".join(_f(v["means"].get(lv), 2) for lv in levels) + f" | {_f(v['kendall_tau_vs_preregistered'], 2)} |")
+    return "\n".join(rows)
+
+
+def explainer_sensitivity_table(target: str = "T0") -> str:
+    """Reference-compiler HS of E2–E4 when the explainer's thresholds change (no agent)."""
+    p = RES / "sensitivity" / f"explainer_{target}.json"
+    if not p.exists():
+        return "_not run yet_"
+    rows = json.loads(p.read_text())["rows"]
+    out = ["| key-frequency τ | neuron FVE threshold | key frequencies found | compiler HS E2 | E3 | E4 |", "|---|---|---|---|---|---|"]
+    seen = []
+    for r in rows:
+        k = (r["tau"], r["neuron_fve"])
+        if k in seen:
+            continue
+        seen.append(k)
+        hs = {x["level"]: x["hs"] for x in rows if (x["tau"], x["neuron_fve"]) == k}
+        out.append(f"| {r['tau']} | {r['neuron_fve']} | {', '.join(map(str, r['key_freqs']))} | {_f(hs.get('E2'))} | "
+                   f"{_f(hs.get('E3'))} | {_f(hs.get('E4'))} |")
+    return "\n".join(out)
+
+
 def targets_table() -> str:
     """The trained target networks: run, role, key frequencies, neurons per frequency cluster, logit-fit quality."""
     from vmi import targets

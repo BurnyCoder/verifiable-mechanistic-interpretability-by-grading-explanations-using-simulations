@@ -145,3 +145,14 @@ def test_stitching_kl_is_finite_for_rank_deficient_replacements(base):
     kl_def = mt.stitching_kl(m, deficient, acts.resid_mid, acts.logits)
     assert np.isfinite(kl_self) and kl_self < 1e-6  # M stitched into itself reproduces M
     assert np.isfinite(kl_def) and kl_def >= kl_self
+
+
+def test_orthogonal_cv_r2_is_one_for_rotations_and_lower_for_general_maps():
+    """Orthogonal (similarity) alignment recovers a scaled rotation exactly but not a general invertible linear map."""
+    from vmi.sensitivity import cv_r2_orth
+    g = torch.Generator().manual_seed(0)
+    X = torch.randn(2000, 16, generator=g, dtype=torch.float64)
+    Q, _ = torch.linalg.qr(torch.randn(16, 16, generator=g, dtype=torch.float64))
+    assert cv_r2_orth(X, 3.0 * X @ Q + 1.0) > 0.999
+    A = torch.randn(16, 16, generator=g, dtype=torch.float64) + 3 * torch.diag(torch.linspace(0.1, 5, 16, dtype=torch.float64))
+    assert mt.cv_r2(X, X @ A) > 0.999 and cv_r2_orth(X, X @ A) < 0.99

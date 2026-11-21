@@ -226,8 +226,9 @@ analysis code are fixed from that commit on. T-new is trained after it.
    and returned "not supported" when a test could not reach p < 0.05 at the current N. Fixed: the main simulator is
    Claude Haiku 5.5 at its default sampling; H5/H6 use the four simulators named in amendment 2 item 7; and every
    rank test whose smallest attainable p-value at the current N is ≥ 0.05 (exact Mann–Whitney 1/C(n₁+n₂, n₁), exact
-   Wilcoxon 1/2ⁿ) returns "cannot tell at this N", as §6's N-label rule requires. No result had been analysed with
-   the old code. Diff: commit after `26ff262`.
+   Wilcoxon 1/2ⁿ) returns "cannot tell at this N", as §6's N-label rule requires. No hypothesis had been evaluated with
+   either version; the per-run scores of the round-1 main and controls stages had been seen (they are printed when a
+   run finishes). Both changes follow from amendment 2 and §6, not from those scores. Diff: commit `56c25cb`.
 2. **Stage ordering in round 1.** The local Qwen ablation runs (≈ 12 GPU-hours) run in parallel with the later Haiku
    stages (hyperparameter and seed sensitivity) instead of strictly before them. Stages are graded independently, so
    the ordering changes no result; the planned order was for pacing and pushes.

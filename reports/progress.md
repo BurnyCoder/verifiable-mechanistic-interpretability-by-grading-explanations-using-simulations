@@ -1,5 +1,35 @@
 # Progress
 
+## 2026-11-21 15:30 — round 1: main, controls, baselines done; ablations, hyperparameter and seed stages running
+
+**Done since 12:25** (all at N = 1 — not yet N = 3 or N = 10; numbers in the generated tables of
+[experiments/01-round1/experiment.md](experiments/01-round1/experiment.md))
+- Main stage (Haiku, T0 × E1–E4), controls stage (E0, W-*, random init, wrong targets, planted calibration, training
+  trajectory), baselines stage (independent retrains, logit-distilled students, Fourier-restricted model, weights dump),
+  reference compiler on all five targets.
+- Haiku ablations: math and code explanation formats and the no-self-test variant all build working replacements.
+- One-command report generator (`vmi analyse`): hypotheses, figures, and every table in README, reports and paper; the
+  paper draft builds to `reports/paper.pdf` (`vmi paper`).
+- Fixes, each logged as a post-freeze deviation in the preregistration: analysis code aligned with amendment 2 and
+  power-aware verdicts; a unix socket path over Linux's length limit (one infrastructure failure, archived and re-run);
+  a NaN secondary stitching metric.
+
+**Positive results so far:** naming the key frequencies lifts HS from the floor to near the agent-free compiler; output
+KL is fooled by a wrong-frequency explanation, independent retrains and distilled students, HS is not (H3 supported at
+N = 1); the planted-mechanism HS falls monotonically; the score tracks circuit formation (H8).
+**Negative results so far:** HS does not separate the Pizza explanation or the scrambled neuron table from the true
+ones; output KL does not rank the ladder; on the planted mechanism KL is not monotone (H4b not supported as
+preregistered); E4 < E3 in the single run.
+
+**Now:** Haiku hyperparameter (effort low/high) and seed-sensitivity runs (≈ 16 runs, ≈ 80 min); Qwen3.5-4B ablation
+runs on the GPU (each up to 60 min), then Qwen3.5-9B and Qwen3.6-35B-A3B (4 runs each).
+
+**Next:** regrade the stitching metric, `vmi analyse 1`, round-1 review in `reports/reviews/`, Hugging Face upload,
+then round 2 (N = 3).
+
+**Estimate:** Haiku stages finish ≈ 17:00; the local Qwen ablations need up to ≈ 10 more GPU-hours (finish ≈ 01:00).
+About 40 % of the plan is done. Claude spend so far is in the generated cost table (well under $1 of the $20 cap).
+
 ## 2026-11-21 12:25 — protocol frozen; round 1 started
 
 **Protocol freeze:** tag `protocol-freeze` = commit `801edf013db7239f8994e6780c5873e1890f5103` (preregistration

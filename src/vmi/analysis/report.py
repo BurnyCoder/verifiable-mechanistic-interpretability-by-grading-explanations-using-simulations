@@ -24,7 +24,10 @@ def blocks(max_round: int) -> dict[str, str]:
     out = {"hypotheses": tables.hypotheses_table(max_round), "runs": tables.runs_table(max_round),
            "scoreboard-T0": tables.scoreboard(max_round, "T0"), "baselines-T0": tables.baselines_table("T0"),
            "controls-T0": tables.controls_table("T0"), "cost": tables.cost_table(), "targets": tables.targets_table(),
-           "key-results": tables.key_results(max_round)}
+           "key-results": tables.key_results(max_round),
+           "grader-sensitivity-T0": tables.grader_sensitivity_table(max_round, "T0", "agent"),
+           "grader-sensitivity-compiler-T0": tables.grader_sensitivity_table(max_round, "T0", "compiler"),
+           "explainer-sensitivity-T0": tables.explainer_sensitivity_table("T0")}
     for t in TARGETS:
         if (REPO_ROOT / "results" / "compiler" / t).exists():
             out[f"compiler-{t}"] = tables.compiler_table(t)
@@ -48,6 +51,8 @@ def regenerate(max_round: int) -> dict:
     figs = figures.make_all(max_round)
     gen = blocks(max_round)
     filled = {d: inject_all(REPO_ROOT / d, gen) for d in DOCS}
+    from vmi.analysis import site  # interactive GitHub Pages explorer reads docs/data.json
+    site.build(max_round)
     summary = {"hypotheses": str(hyp.relative_to(REPO_ROOT)), "figures": [str(p.relative_to(REPO_ROOT)) for p in figs],
                "filled": {d: n for d, n in filled.items() if n}}
     (REPO_ROOT / "results" / f"report_round{max_round}.json").write_text(json.dumps(summary, indent=2), encoding="utf-8", newline="\n")

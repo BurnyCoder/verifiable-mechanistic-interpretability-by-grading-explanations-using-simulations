@@ -144,6 +144,8 @@ def fig_planted(target: str = "T0") -> Path | None:
         ax.set_xticks(list(x), [f"{r['step']:,}" for r in rows])
         ax.set_xlabel("further training steps (snapshots)")
         ax.set_title(title, loc="left")
+        if key == "hs":
+            ax.set_ylim(-0.02, 1.02)  # full HS range, as in every other figure (no truncated axis)
     fig.suptitle(f"Planted-mechanism calibration ({target} compiled E3 model as ground truth)", x=0.01, y=1.04, ha="left")
     return _save(fig, f"planted_{target}")
 

@@ -167,7 +167,7 @@ further and graded against its own snapshots (planted mechanism, H4b); T0 replac
 checkpoints next to the paper's restricted loss (H8). Baselines: independent retrains (other seeds of the same
 recipe), three students distilled on M's full logits, the reference compiler for every explanation, M with only its
 key-frequency Fourier components kept in the embedding and unembedding, and the weights themselves. Every condition
-runs in three rounds (N = 1, 3, 10 seeds); every hypothesis is evaluated after every round with Jonckheere–Terpstra
+runs in three rounds (N = 1, 3, 10 replicate runs; Claude's sampling cannot be seeded, so a run's seed index labels a replicate, while for the local models it is the sampling seed); every hypothesis is evaluated after every round with Jonckheere–Terpstra
 and Spearman trend tests (H1), one-sided Mann–Whitney tests with Holm correction (H2, H4), Kendall's W (H6) and
 Wilcoxon signed-rank tests (H7). A test whose smallest attainable p-value at the current N is ≥ 0.05 returns
 "cannot tell at this N". The preregistration, two dated amendments and every post-freeze deviation are in

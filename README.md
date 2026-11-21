@@ -9,6 +9,8 @@ server, [mechinterp.com](https://mechinterp.com/).
 > metrics and analyses were preregistered and pushed before any result
 > ([reports/preregistration.md](reports/preregistration.md)); every number below is regenerated from `results/` by
 > `vmi analyse 1`. Paper draft: [reports/paper.pdf](reports/paper.pdf). Progress: [reports/progress.md](reports/progress.md).
+> Replacement networks, agent transcripts and trained models: [Hugging Face](https://huggingface.co/BurnyCoder/grading-explanations-by-simulation)
+> ([collection](https://huggingface.co/collections/BurnyCoder/grading-mechanistic-explanations-by-simulation-6b01ab93022d76813a8b5c02)).
 
 ## In one paragraph
 
@@ -251,7 +253,8 @@ docs/               usage and architecture
 - [ ] Round 1 (N = 1): main, controls, baselines, Haiku ablations done; local Qwen ablations, hyperparameter and seed
       stages running
 - [ ] Rounds 2 (N = 3) and 3 (N = 10)
-- [ ] Interactive results site on GitHub Pages; Hugging Face collection with replacement weights and transcripts
+- [x] Hugging Face repo and collection with replacement weights, transcripts and trained models (updated after each stage)
+- [ ] Interactive results site on GitHub Pages
 - [ ] A neuron-level or causal second metric for what HS cannot see (Clock vs Pizza, per-neuron assignment)
 - [ ] Other toy models (Clock/Pizza p = 59, the paper's 2-layer and LayerNorm variants, ARENA monthly problems)
 
