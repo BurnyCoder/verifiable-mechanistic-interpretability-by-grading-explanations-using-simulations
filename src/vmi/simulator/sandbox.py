@@ -47,8 +47,12 @@ def opencode_config(settings: Settings, *, model: str, temperature: float, seed:
                          "headerTimeout": 900000, "chunkTimeout": 900000},
             "models": {model: {"modelID": model, "name": model,
                                "capabilities": {"tools": True, "temperature": True},
-                               "limit": {"context": settings.llm_context, "output": 16384},
-                               "body": {"temperature": temperature, "seed": seed}}},
+                               # 8k output per turn: with a 4k thinking budget, longer turns were repetition loops
+                               "limit": {"context": settings.llm_context, "output": 8192},
+                               # presence_penalty 1.5: Qwen's recommendation against endless repetition in quantized
+                               # models (stage-0 run 2 looped on one paragraph inside a file write)
+                               "body": {"temperature": temperature, "seed": seed, "presence_penalty": 1.5,
+                                        "top_p": 0.95, "top_k": 20, "min_p": 0.0}}},
         }},
         "policies": [
             {"action": "provider.use", "resource": "*", "effect": "deny"},

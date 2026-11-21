@@ -47,6 +47,11 @@ Newest entries at the bottom. Per-experiment learnings live in each experiment's
   cos/sin of the head's frequency). Fix: llama-server `--reasoning-budget 4096` with a short message inserted before
   the end-of-thinking tag, so each turn plans at most ~3 minutes and then acts. Decided on the dev target before the
   protocol freeze.
+- **Repetition loops inside tool calls.** In the second smoke run the model wrote `build_weights.py` through a single
+  `write` call whose content degenerated into the same comment paragraph repeated until the 16,384-token output cap
+  (so the tool call arrived truncated with empty input). Fix: `presence_penalty` 1.5 in every request (the default
+  Ollama ships for Qwen 3.5, checked with `ollama show qwen3.5:9b`; Qwen recommends 0–2 against endless repetition) and
+  an 8,192-token per-turn output cap so a loop costs ~6 minutes instead of ~13.
 
 ## Grader and reference compiler (dev target only)
 
