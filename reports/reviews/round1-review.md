@@ -64,9 +64,15 @@ is not a valid explanation score here; HS is valid for frequency-level content, 
 
 10. **Contamination.** Claude may know Nanda et al. E0/E1 show that priors yield a working adder with near-zero HS on
     T0, so priors do not supply T0's mechanism. T-paper results (seed stage) must be read with the contamination flag.
+    *Update after the seed stage:* the priors are specific: with no frequencies given, the replacements carry the
+    published checkpoint's frequencies, and the same T0 E0/E1 weights score high when graded against the published
+    checkpoint (target swap, post hoc). So T-paper scores are confounded by memory and are excluded from every
+    validity claim; the unpublished targets carry the conclusions.
 
 11. **Grader sensitivity not yet reported** at the time of writing. *Action:* `vmi sensitivity 1` (ridge × 10^±2, 3/10
     folds, fold seeds, single sites, orthogonal alignment; explainer thresholds) — tables in the round-1 report.
+    *Done:* the ordering of conditions is stable across ridge, folds and fold seeds; both blind spots (W-alg,
+    W-scramble) remain under orthogonal alignment, so they are not an artefact of allowing general linear maps.
 
 ## Presentation
 

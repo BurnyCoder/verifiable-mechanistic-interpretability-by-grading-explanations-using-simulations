@@ -340,10 +340,13 @@ each replacement built by the main simulator. Frequencies with small amplitude f
 **Reading.** With no frequencies in the explanation (E0, E1), Haiku builds the published paper's frequencies into the
 replacement — its build scripts hard-code them (e.g. `KEY_FREQS = [14, 35, 41, 42, 52]  # choice: not specified by
 EXPLANATION.md`). On unpublished targets that yields a working adder with the wrong mechanism and near-zero HS; on the
-published checkpoint (T-paper) the algorithm-only E1 scores like a full explanation. Scores on a published model
+published checkpoint (T-paper) the algorithm-only E1 scores like a full explanation. The last column is a target
+swap, the most direct test (a counterfactual on the target, not a comparison between runs): the *same* T0 E0/E1
+weights, graded against the published checkpoint instead of T0, score far higher there than against T0, so the
+simulator built the published mechanism, not the explained one. Scores on a published model
 therefore measure what the simulator remembers, not what the explanation says; the unpublished targets (T0–T2,
 T-new), which the preregistration introduced for exactly this risk, are what make the score interpretable. This is
-an existence proof at N = 1, consistent with [Haklay et al. 2026](https://arxiv.org/abs/2603.20101) (agents reproduce
+an existence proof from two replacements at N = 1, consistent with [Haklay et al. 2026](https://arxiv.org/abs/2603.20101) (agents reproduce
 published circuits from memory).
 
 ### 4.7 Hypotheses at N = 1

@@ -30,8 +30,10 @@ def used_frequencies(settings: Settings, max_round: int) -> dict:
     from grokviz import metrics as gm
     from grokviz.fourier import fourier_basis
 
-    from vmi import weights
+    from vmi import targets, weights
+    from vmi.grader.score import grade_npz
     F, _ = fourier_basis(113)
+    paper = None  # published checkpoint, loaded only if an E0/E1 replacement of another target needs cross-grading
     rows = []
     for p in sorted((RES / "runs").glob("*.json")):
         r = json.loads(p.read_text(encoding="utf-8"))
@@ -41,9 +43,15 @@ def used_frequencies(settings: Settings, max_round: int) -> dict:
         model = weights.to_model(weights.load_npz(Path(npz))).double()
         used = gm.key_frequencies(model, F)
         tgt = json.loads((RES / "explanations" / r["target"] / "analysis.json").read_text())["key_freqs"]
-        rows.append({"run_id": r["run_id"], "target": r["target"], "level": r["level"], "variant": r.get("variant", ""),
-                     "model": r["model"], "used_freqs": used, "target_freqs": tgt, "jaccard_target": _jaccard(used, tgt),
-                     "jaccard_paper": _jaccard(used, PAPER_FREQS), "hs": r["hs"]})
+        row = {"run_id": r["run_id"], "target": r["target"], "level": r["level"], "variant": r.get("variant", ""),
+               "model": r["model"], "used_freqs": used, "target_freqs": tgt, "jaccard_target": _jaccard(used, tgt),
+               "jaccard_paper": _jaccard(used, PAPER_FREQS), "hs": r["hs"]}
+        if r["level"] in ("E0", "E1") and r["target"] != "T-paper":
+            # Target swap: the SAME replacement graded against the published checkpoint. If its HS there is far above
+            # its HS against its own target, the agent built the published mechanism, not the explained one.
+            paper = paper or targets.load_model(settings, "T-paper")
+            row["hs_vs_paper"] = grade_npz(paper, Path(npz), secondary=False)["hs"]
+        rows.append(row)
     out = {"round": max_round, "paper_freqs": PAPER_FREQS, "rule": "W_L Fourier norm >= 0.25 max (grokviz key_frequencies)",
            "rows": rows}
     (RES / f"frequencies_round{max_round}.json").write_text(json.dumps(out, indent=2), encoding="utf-8", newline="\n")

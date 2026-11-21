@@ -203,12 +203,15 @@ def key_results(max_round: int, target: str = "T0") -> str:
         rows = [r for r in json.loads(fq.read_text())["rows"] if r["model"] == "claude-haiku-5-5" and r["variant"] == ""
                 and r["level"] in ("E0", "E1") and r["target"] != "T-paper"]
         if rows:
+            swap = "; ".join(f"{r['level']}: HS {r['hs']:.2f} against {r['target']}, {r['hs_vs_paper']:.2f} against the published checkpoint"
+                             for r in rows if "hs_vs_paper" in r)
             out.append(f"- **Memorisation (post hoc):** when the explanation gives no frequencies (E0, E1), the simulator's "
-                       f"replacements on unpublished targets use the paper's published frequencies (mean overlap "
+                       f"{len(rows)} replacement(s) on unpublished targets use the paper's published frequencies (mean overlap "
                        f"{np.mean([r['jaccard_paper'] for r in rows]):.2f} with {{14, 35, 41, 42, 52}}, "
-                       f"{np.mean([r['jaccard_target'] for r in rows]):.2f} with the target's own). On the published "
-                       f"checkpoint the same algorithm-only explanation therefore scores HS {np.mean([r['hs'] for r in tp_e1]):.2f} "
-                       f"(on {target}: {m('E1'):.2f}): scores on published models measure memory, not the explanation.")
+                       f"{np.mean([r['jaccard_target'] for r in rows]):.2f} with the target's own). Grading the same weights "
+                       f"against the published checkpoint (target swap): {swap}. A separate algorithm-only run on the published "
+                       f"checkpoint scores HS {np.mean([r['hs'] for r in tp_e1]):.2f}: scores on published models measure "
+                       f"memory, not the explanation.")
     led = RES / "claude" / "ledger.jsonl"
     if led.exists():
         spend = sum(json.loads(x).get("cost_usd", 0.0) for x in led.read_text(encoding="utf-8").splitlines() if x.strip())
@@ -255,13 +258,13 @@ def frequencies_table(max_round: int, model: str = "claude-haiku-5-5") -> str:
     if not p.exists():
         return "_not computed yet_"
     d = json.loads(p.read_text())
-    rows = ["| Target | Explanation | frequencies used by the replacement | target's key frequencies | overlap with target (Jaccard) | overlap with paper's {14, 35, 41, 42, 52} | HS |",
-            "|---|---|---|---|---|---|---|"]
+    rows = ["| Target | Explanation | frequencies used by the replacement | target's key frequencies | overlap with target (Jaccard) | overlap with paper's {14, 35, 41, 42, 52} | HS | same weights: HS against the published checkpoint |",
+            "|---|---|---|---|---|---|---|---|"]
     order = {t: i for i, t in enumerate(["T0", "T1", "T2", "T-new", "T-paper"])}
     for r in sorted((x for x in d["rows"] if x["model"] == model and x["variant"] == ""),
                     key=lambda x: (order.get(x["target"], 9), LEVEL_ORDER.index(x["level"]) if x["level"] in LEVEL_ORDER else 99)):
         rows.append(f"| {r['target']} | {r['level']} | {', '.join(map(str, r['used_freqs']))} | {', '.join(map(str, r['target_freqs']))} | "
-                    f"{r['jaccard_target']:.2f} | {r['jaccard_paper']:.2f} | {r['hs']:.3f} |")
+                    f"{r['jaccard_target']:.2f} | {r['jaccard_paper']:.2f} | {r['hs']:.3f} | {_f(r.get('hs_vs_paper'), 3)} |")
     return "\n".join(rows)
 
 

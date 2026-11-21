@@ -29,3 +29,12 @@ def test_tables_render_from_committed_results():
     for text in (tables.scoreboard(1), tables.baselines_table(), tables.controls_table(), tables.cost_table(), tables.runs_table(1)):
         assert isinstance(text, str) and text  # never raises on default-temperature (Claude) runs
     assert tables._t(None) == "default" and tables._t(0.6) == "0.6"
+
+
+def test_key_results_report_the_target_swap_when_present():
+    import json
+    fq = tables.RES / "frequencies_round1.json"
+    rows = json.loads(fq.read_text())["rows"] if fq.exists() else []
+    text = tables.key_results(1)
+    if any("hs_vs_paper" in r for r in rows):  # memorisation evidence: same weights, graded against the published model
+        assert "target swap" in text and "against the published checkpoint" in text

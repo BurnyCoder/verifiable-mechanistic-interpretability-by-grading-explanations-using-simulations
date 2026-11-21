@@ -63,7 +63,8 @@ alignment makes any network match any algorithm ([Sutter et al. 2025](https://ar
   The secondary matched-neuron correlation catches the scrambled table.
 - **A trap the design caught (post hoc):** when an explanation leaves the frequencies open, the agent fills them in
   with the *published paper's* frequencies from memory. On the paper's own checkpoint even an algorithm-only
-  explanation then scores like a full one; on our unpublished targets it scores at the floor. Scores on published
+  explanation then scores like a full one; on our unpublished targets it scores at the floor. The very same
+  replacement weights score near the floor against our target and high against the published checkpoint. Scores on published
   models measure memory, so the study's conclusions rest on the unpublished targets.
 - **Not yet decided:** with one run per condition most preregistered tests cannot reach significance; they are
   reported as "cannot tell at this N" until rounds 2 and 3.

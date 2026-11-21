@@ -16,6 +16,10 @@
       "baselines-T0",
       "key-results"
     ],
+    "reports/summary.md": [
+      "hypotheses",
+      "key-results"
+    ],
     "reports/experiments/experiments.md": [
       "runs",
       "cost",

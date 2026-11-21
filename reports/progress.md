@@ -1,5 +1,22 @@
 # Progress
 
+## 2026-11-21 18:30 — round 1: all Claude stages done; Qwen3.5-4B at chance; 9B and 35B running
+
+**Done since 15:30** (N = 1 — not yet N = 3 or N = 10)
+- Haiku hyperparameter and seed stages; T-new trained and graded; Hugging Face repo and collection refreshed.
+- Post-hoc memorisation check (`vmi analyse` → `results/frequencies_round1.json`): with no frequencies in the
+  explanation, Haiku builds in the published checkpoint's frequencies, so scores on T-paper are confounded.
+- Qwen3.5-4B ablation (E2, E3, E4, W-freq): all four replacements at chance (task accuracy 1/113, HS 0). E2 used all
+  60 steps; E3, E4 and W-freq hit the 60-minute cap. The smallest simulator cannot use even the most detailed
+  explanation in this harness.
+- `vmi local` serves each local model in turn and runs its pending conditions.
+
+**Now:** Qwen3.5-9B (4 conditions), then Qwen3.6-35B-A3B (4 conditions), each run up to 60 minutes.
+
+**Next:** regrade, `vmi analyse 1` (H5, H6 become evaluable), paper, round-1 review addendum, push; then round 2.
+
+**Estimate:** local runs finish by ≈ 02:30 at the latest. Round 1 is then complete; about 45 % of the plan is done.
+
 ## 2026-11-21 15:30 — round 1: main, controls, baselines done; ablations, hyperparameter and seed stages running
 
 **Done since 12:25** (all at N = 1 — not yet N = 3 or N = 10; numbers in the generated tables of
