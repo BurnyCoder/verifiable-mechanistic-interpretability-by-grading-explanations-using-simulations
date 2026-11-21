@@ -63,6 +63,13 @@ def explain(settings: Settings, target: str) -> dict:
             (d / name).write_text(content, encoding="utf-8", newline="\n")
         _dump(d / "spec.json", spec)
         _dump(d / "length.json", length_stats(text, extra))
+    if target == "T-paper":  # the published explanation, as written (numbers from the paper, not measured here)
+        from vmi.explainer import paper
+        d = out / "E-paper"
+        d.mkdir(parents=True, exist_ok=True)
+        (d / "EXPLANATION.md").write_text(paper.text(), encoding="utf-8", newline="\n")
+        _dump(d / "spec.json", paper.spec())
+        _dump(d / "length.json", length_stats(paper.text(), {}))
     from vmi.explainer.render import render_format
     for fmt in ("math", "code"):  # format ablation: E3 content in other notations
         spec = make_spec(an, "E3", target)
@@ -94,7 +101,9 @@ def compile_and_grade(settings: Settings, target: str, levels: list[str] | None 
 
     model = targets.load_model(settings, target)
     out = {}
-    for level in levels or list(LEVELS):
+    if levels is None:
+        levels = list(LEVELS) + (["E-paper"] if target == "T-paper" else [])
+    for level in levels:
         spec, _, _ = load_explanation(target, level)
         arrays = compile_spec(spec)
         res = grade_models(model, weights.to_model(weights.validate(arrays)))
@@ -170,6 +179,16 @@ def main(argv: list[str] | None = None) -> None:
     q.add_argument("manifest", type=Path)
     s = sub.add_parser("serve")
     s.add_argument("--n-cpu-moe", type=int, default=None)
+    s.add_argument("--gguf", type=Path, default=None)
+    s.add_argument("--alias", default=None)
+    m = sub.add_parser("manifests")
+    m.add_argument("round", type=int)
+    c = sub.add_parser("controls")
+    c.add_argument("round", type=int)
+    b = sub.add_parser("baselines")
+    b.add_argument("target")
+    an = sub.add_parser("analyse")
+    an.add_argument("round", type=int)
     a = ap.parse_args(argv)
     setup_logging(a.cmd)
     settings = load()
@@ -189,12 +208,30 @@ def main(argv: list[str] | None = None) -> None:
         queue(settings, a.manifest)
     elif a.cmd == "serve":
         from vmi.simulator import llm_server
-        proc = llm_server.start(settings, n_cpu_moe=a.n_cpu_moe)
+        proc = llm_server.start(settings, n_cpu_moe=a.n_cpu_moe, gguf=a.gguf, alias=a.alias)
         log.info("llama-server healthy (pid %d); Ctrl+C to stop", proc.pid)
         try:
             proc.wait()
         except KeyboardInterrupt:
             llm_server.stop(proc)
+    elif a.cmd == "manifests":
+        from vmi.manifests import write_round
+        for p in write_round(a.round):
+            log.info("wrote %s", p)
+    elif a.cmd == "controls":  # no-agent controls of the controls stage (planted, random init, wrong targets, trajectory)
+        from vmi import nonagent
+        if not (RESULTS / "controls" / "planted_calibration_T0.json").exists():
+            nonagent.planted(settings)
+        if not (RESULTS / "controls" / "random_init_T0.json").exists():
+            nonagent.random_init(settings)
+        nonagent.wrong_targets(settings, a.round)
+        nonagent.trajectory(settings, a.round)
+    elif a.cmd == "baselines":
+        from vmi import nonagent
+        nonagent.baselines(settings, a.target)
+    elif a.cmd == "analyse":
+        from vmi.analysis.hypotheses import write
+        log.info("wrote %s", write(a.round))
 
 
 if __name__ == "__main__":

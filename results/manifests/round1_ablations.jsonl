@@ -1,0 +1,11 @@
+{"stage": "ablations", "target": "T0", "level": "E2", "model": "qwen3.5-9b", "seed": 0, "round_": 1}
+{"stage": "ablations", "target": "T0", "level": "E3", "model": "qwen3.5-9b", "seed": 0, "round_": 1}
+{"stage": "ablations", "target": "T0", "level": "E4", "model": "qwen3.5-9b", "seed": 0, "round_": 1}
+{"stage": "ablations", "target": "T0", "level": "W-freq", "model": "qwen3.5-9b", "seed": 0, "round_": 1}
+{"stage": "ablations", "target": "T0", "level": "E2", "model": "qwen3.5-4b", "seed": 0, "round_": 1}
+{"stage": "ablations", "target": "T0", "level": "E3", "model": "qwen3.5-4b", "seed": 0, "round_": 1}
+{"stage": "ablations", "target": "T0", "level": "E4", "model": "qwen3.5-4b", "seed": 0, "round_": 1}
+{"stage": "ablations", "target": "T0", "level": "W-freq", "model": "qwen3.5-4b", "seed": 0, "round_": 1}
+{"stage": "ablations", "target": "T0", "level": "E3", "variant": "fmt-math", "seed": 0, "round_": 1}
+{"stage": "ablations", "target": "T0", "level": "E3", "variant": "fmt-code", "seed": 0, "round_": 1}
+{"stage": "ablations", "target": "T0", "level": "E3", "variant": "noselftest", "selftest": false, "seed": 0, "round_": 1}

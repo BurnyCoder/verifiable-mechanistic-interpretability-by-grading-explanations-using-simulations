@@ -39,21 +39,25 @@ def main() -> None:
             continue
         try:
             mem = gpu_mem_mib()
-            t0 = time.time()
-            r = httpx.post(f"http://127.0.0.1:{s.llm_port}/completion", timeout=900,
-                           json={"prompt": PROMPT, "n_predict": 256, "temperature": 0.6, "seed": 0, "cache_prompt": False}).json()
-            tm = r.get("timings", {})
-            row = {"n_cpu_moe": n, "gpu_mem_mib": mem, "gpu_mem_before_mib": base, "prompt_tokens": tm.get("prompt_n"),
-                   "prompt_tps": tm.get("prompt_per_second"), "gen_tokens": tm.get("predicted_n"),
-                   "gen_tps": tm.get("predicted_per_second"), "wall_s": time.time() - t0}
-            results.append(row)
-            print(row, flush=True)
+            for attempt in ("cold", "warm"):  # the first request pages the memory-mapped weights in
+                t0 = time.time()
+                r = httpx.post(f"http://127.0.0.1:{s.llm_port}/completion", timeout=1800,
+                               json={"prompt": PROMPT, "n_predict": 256, "temperature": 0.6, "seed": 0,
+                                     "cache_prompt": False, "ignore_eos": True}).json()
+                tm = r.get("timings", {})
+                row = {"model": Path(str(s.llm_gguf)).name, "ctx": s.llm_context, "n_cpu_moe": n, "attempt": attempt,
+                       "gpu_mem_mib": mem, "gpu_mem_before_mib": base, "prompt_tokens": tm.get("prompt_n"),
+                       "prompt_tps": tm.get("prompt_per_second"), "gen_tokens": tm.get("predicted_n"),
+                       "gen_tps": tm.get("predicted_per_second"), "wall_s": time.time() - t0}
+                results.append(row)
+                print(row, flush=True)
         finally:
             llm_server.stop(proc)
             time.sleep(5)
     out = config.REPO_ROOT / "results" / "stage0" / "llm_tuning.json"
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(results, indent=2))
+    old = json.loads(out.read_text()) if out.exists() else []  # append: keep earlier measurements
+    out.write_text(json.dumps(old + results, indent=2), newline="\n")
 
 
 if __name__ == "__main__":

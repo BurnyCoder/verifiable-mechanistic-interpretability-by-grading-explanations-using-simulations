@@ -1,0 +1,4 @@
+{"stage": "hyper", "target": "T0", "level": "E3", "temperature": 0.2, "seed": 0, "round_": 1}
+{"stage": "hyper", "target": "T0", "level": "W-freq", "temperature": 0.2, "seed": 0, "round_": 1}
+{"stage": "hyper", "target": "T0", "level": "E3", "temperature": 1.0, "seed": 0, "round_": 1}
+{"stage": "hyper", "target": "T0", "level": "W-freq", "temperature": 1.0, "seed": 0, "round_": 1}
