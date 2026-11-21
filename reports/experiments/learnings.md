@@ -29,6 +29,12 @@ Newest entries at the bottom. Per-experiment learnings live in each experiment's
   (`scripts/make_seccomp.py`); the isolation check confirms `socket(AF_VSOCK)` fails inside the sandbox.
 - **Git Bash mangles `/mnt/c/...` arguments** passed to `wsl.exe`; set `MSYS_NO_PATHCONV=1` (the Python runner passes
   arguments directly and is unaffected).
+- **The first throughput measurement was a page-in artefact.** With all MoE expert weights memory-mapped from the
+  D: drive, the first request after loading Qwen3.6-35B-A3B ran at 3.5–3.9 prompt tokens/s (the OS was paging the
+  17.7 GB file in, with ~1–8 GB of free RAM next to the user's other applications). The same configuration warm
+  (second request, 32k context) ran at 150 prompt tokens/s and 21.6 generated tokens/s, above the preregistered
+  8 tokens/s threshold, so the main simulator was kept. Lesson: measure warm, and keep the server running for a whole
+  batch of agent runs. At 64k context the non-expert weights plus KV cache used 5.1 GB of VRAM; at 32k, 2.9 GB.
 - **Port 8080 could not be bound** on this machine although nothing was listed as listening (likely a WSL
   mirrored-networking reservation); llama-server moved to port 8091.
 

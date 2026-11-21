@@ -7,7 +7,7 @@
 | Setting | Value |
 |---|---|
 | Architecture (target and replacement) | 1-layer transformer, p = 113, d_model 128, 4 heads × 32, d_mlp 512, ReLU, no LayerNorm (paper layout, `grokviz` `d52a898`) |
-| Main simulator | OpenCode 2.3.2 + Qwen3.6-35B-A3B UD-IQ4_XS (rev `a483e9e`), llama.cpp b12600, 64k context, temperature 0.6, per-run seed |
+| Main simulator | OpenCode 2.3.2 + Qwen3.6-35B-A3B UD-IQ4_XS (rev `a483e9e`), llama.cpp b12600, 48k context (amendment 1), `--n-cpu-moe 34`, temperature 0.6, per-run seed |
 | Sandbox | WSL2 + bubblewrap, no network, only the run folder writable, numpy only, no access to any target file |
 | Agent inputs | `TASK.md`, `EXPLANATION.md` (+ CSV for E4), `ARCHITECTURE.md`, `forward.py`, `selftest.py` |
 | Agent output | `build_weights.py` + `weights.npz` (11 named arrays in the paper layout) |

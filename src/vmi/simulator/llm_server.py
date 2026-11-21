@@ -41,7 +41,8 @@ def start(settings: Settings, *, gguf: Path | None = None, alias: str | None = N
            "-ngl", "99", "-fa", "on", "-ctk", "q8_0", "-ctv", "q8_0", "-np", "1", "--jinja", "--no-webui",
            "--temp", str(settings.llm_temperature), "--top-p", "0.95", "--top-k", "20", "--min-p", "0",
            "--log-file", str(log_file)]
-    if n_cpu_moe is not None:
+    n_cpu_moe = settings.llm_n_cpu_moe if n_cpu_moe is None else n_cpu_moe
+    if n_cpu_moe:
         cmd += ["--n-cpu-moe", str(n_cpu_moe)]
     cmd += extra or []
     proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
