@@ -130,3 +130,18 @@ def test_cv_r2_detects_unrelated_states():
     x = torch.tensor(rng.normal(size=(2000, 30)))
     assert mt.cv_r2(x, torch.tensor(rng.normal(size=(2000, 30)))) < 0.05  # independent noise: nothing explained
     assert mt.cv_r2(x, x @ torch.tensor(rng.normal(size=(30, 10)))) > 0.999  # exact linear function: everything
+
+
+def test_stitching_kl_is_finite_for_rank_deficient_replacements(base):
+    """Stitching must work when the replacement's residual stream spans only a subspace (agent builds often do);
+    torch.linalg.lstsq's only CUDA driver ('gels') assumes full rank and returned NaN there."""
+    from vmi.grader.activations import collect
+    dev = "cuda" if torch.cuda.is_available() else "cpu"
+    m = base.double().to(dev)
+    acts = collect(m, dev)
+    deficient = acts.resid_mid.clone()
+    deficient[:, 64:] = 0.0  # half the residual dimensions unused
+    kl_self = mt.stitching_kl(m, acts.resid_mid, acts.resid_mid, acts.logits)
+    kl_def = mt.stitching_kl(m, deficient, acts.resid_mid, acts.logits)
+    assert np.isfinite(kl_self) and kl_self < 1e-6  # M stitched into itself reproduces M
+    assert np.isfinite(kl_def) and kl_def >= kl_self

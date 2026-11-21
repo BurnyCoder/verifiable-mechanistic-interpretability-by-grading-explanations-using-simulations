@@ -242,3 +242,9 @@ analysis code are fixed from that commit on. T-new is trained after it.
    if the agent received at least one model response; runs that never reached the model are infrastructure failures,
    archived and re-run. Two later conditions (`hyper` W-freq effort low/high) would have hit the same limit and ran
    with the fix.
+4. **2026-11-21, round 1 — secondary stitching metric repaired.** `stitching_kl` (secondary, §4) returned NaN for
+   every GPU-graded run: it solved the stitching map with `torch.linalg.lstsq`, whose only CUDA driver (`gels`)
+   assumes a full-rank matrix, and replacement residual streams are often rank-deficient. It now uses the same ridge
+   solve as the primary HS (`grader/metrics.py`; regression test `test_stitching_kl_is_finite_for_rank_deficient_replacements`).
+   Graded runs are re-scored from their saved weights with `vmi regrade`, which recomputes only this metric and
+   raises if a primary metric does not reproduce. No primary metric, hypothesis or test changes.

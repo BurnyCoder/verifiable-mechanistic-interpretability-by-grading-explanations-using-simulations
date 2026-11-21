@@ -177,6 +177,29 @@ def agent_run(settings: Settings, *, stage: str, target: str, level: str, seed: 
     return res
 
 
+def regrade(settings: Settings, keys: tuple[str, ...] = ("stitching_kl",)) -> int:
+    """Recompute secondary metrics `keys` for every graded run from its saved weights (deviation 4: stitching fix).
+
+    Grading is deterministic, so the primary metrics must reproduce; a mismatch raises instead of overwriting."""
+    from vmi import targets
+    from vmi.grader.score import grade_npz
+    models, n = {}, 0
+    for p in sorted((RESULTS / "runs").glob("*.json")):
+        r = json.loads(p.read_text(encoding="utf-8"))
+        npz = settings.runs_dir / r["run_id"] / "work_out" / "weights.npz"
+        if r.get("failed") or not npz.exists():
+            continue
+        m = models.setdefault(r["target"], targets.load_model(settings, r["target"]))
+        g = grade_npz(m, npz)
+        if abs(g["hs"] - r["hs"]) > 1e-9 or abs(g["kl_out"] - r["kl_out"]) > 1e-9 * max(1.0, r["kl_out"]):
+            raise RuntimeError(f"{r['run_id']}: primary metrics did not reproduce ({g['hs']} vs {r['hs']})")
+        r.update({k: g[k] for k in keys})
+        _dump(p, r)
+        n += 1
+        log.info("regraded %s: %s", r["run_id"], {k: g[k] for k in keys})
+    return n
+
+
 def served_model(settings: Settings) -> str | None:
     """Alias of the model llama-server is serving now (None if no server answers)."""
     import httpx
@@ -236,6 +259,7 @@ def main(argv: list[str] | None = None) -> None:
     tr.add_argument("run_ids", nargs="+")
     an = sub.add_parser("analyse")
     an.add_argument("round", type=int)
+    sub.add_parser("regrade", help="recompute secondary metrics of graded runs from saved weights")
     a = ap.parse_args(argv)
     setup_logging(a.cmd)
     settings = load()
@@ -287,6 +311,8 @@ def main(argv: list[str] | None = None) -> None:
     elif a.cmd == "baselines":
         from vmi import nonagent
         nonagent.baselines(settings, a.target)
+    elif a.cmd == "regrade":
+        log.info("regraded %d runs", regrade(settings))
     elif a.cmd == "analyse":  # hypotheses + figures + every table in README/reports/paper, from results/
         from vmi.analysis.report import regenerate
         log.info("report: %s", json.dumps(regenerate(a.round)))

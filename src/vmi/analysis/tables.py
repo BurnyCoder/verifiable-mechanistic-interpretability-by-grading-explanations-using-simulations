@@ -166,6 +166,65 @@ def controls_table(target: str = "T0") -> str:
     return "\n".join(out) if out else "_not run yet_"
 
 
+def key_results(max_round: int, target: str = "T0") -> str:
+    """Headline sentences for the abstract, README and summary, with every number read from results/."""
+    from vmi.analysis.hypotheses import _select, load_runs
+    runs = [r for r in load_runs(max_round) if not r.get("failed")]
+    m = lambda lv, k="hs": (lambda rs: float(np.mean([r[k] for r in rs])) if rs else None)(_select(runs, target=target, level=lv))  # noqa: E731
+    n = min((len(_select(runs, target=target, level=lv)) for lv in ("E1", "E2", "E3", "E4")), default=0)
+    out = [f"*Round {max_round}, N = {n} run(s) per condition"
+           + (" — not yet N=3 or N=10*" if n == 1 else " — not yet N=10*" if n == 3 else "*")]
+    if all(m(lv) is not None for lv in ("E1", "E2", "E3", "E4")):
+        lv4 = ("E1", "E2", "E3", "E4")
+        inv = [f"{b} < {a}" for a, b in zip(lv4, lv4[1:]) if m(b) < m(a)]  # order violations along the ladder
+        out.append(f"- **Model-specific detail raises hidden-state similarity:** HS on {target} is {m('E1'):.2f} (E1, algorithm "
+                   f"only), {m('E2'):.2f} (E2), {m('E3'):.2f} (E3) and {m('E4'):.2f} (E4); with no explanation (E0) it is "
+                   f"{_f(m('E0'), 2)}. " + (f"Not monotone: {', '.join(inv)}." if inv else "Monotone along the ladder."))
+    if m("W-freq") is not None:
+        out.append(f"- **Correct behaviour, wrong mechanism is caught by HS, not by output KL:** the wrong-frequency "
+                   f"replacement reaches KL {_f(m('W-freq', 'kl_out'))} nats (true E3: {_f(m('E3', 'kl_out'))}) but HS "
+                   f"{m('W-freq'):.2f}.")
+    b = RES / "baselines" / f"{target}.json"
+    ri = RES / "controls" / f"random_init_{target}.json"
+    if b.exists() and ri.exists():
+        d, r0 = json.loads(b.read_text()), json.loads(ri.read_text())
+        hs = lambda rs: float(np.mean([x["hs"] for x in rs]))  # noqa: E731
+        out.append(f"- **Copying behaviour does not copy the mechanism:** independent retrains (HS {hs(d['retrains']):.2f}) and "
+                   f"logit-distilled students (HS {hs(d['students']):.2f}, KL {_f(float(np.mean([x['kl_out'] for x in d['students']])))}) "
+                   f"stay at the random-initialisation floor (HS {hs(r0):.2f}).")
+    if m("W-alg") is not None and m("W-scramble") is not None:
+        out.append(f"- **Negative result:** the primary HS does not separate the Pizza explanation (W-alg, HS {m('W-alg'):.2f}) "
+                   f"or the scrambled neuron table (W-scramble, HS {m('W-scramble'):.2f}) from the true explanations; the "
+                   f"secondary matched-neuron correlation separates W-scramble ({_f(m('W-scramble', 'matched_neuron_corr'), 2)}) "
+                   f"from E4 ({_f(m('E4', 'matched_neuron_corr'), 2)}).")
+    led = RES / "claude" / "ledger.jsonl"
+    if led.exists():
+        spend = sum(json.loads(x).get("cost_usd", 0.0) for x in led.read_text(encoding="utf-8").splitlines() if x.strip())
+        out.append(f"- **Cost:** all Claude Haiku 5.5 runs so far cost ${spend:.2f} in total.")
+    return "\n".join(out)
+
+
+def targets_table() -> str:
+    """The trained target networks: run, role, key frequencies, neurons per frequency cluster, logit-fit quality."""
+    from vmi import targets
+    roles = {"T0": "main target", "T1": "seed sensitivity (fewest frequencies)", "T2": "seed sensitivity (most frequencies)",
+             "T-new": "held-out, trained after the protocol freeze", "T-paper": "published checkpoint (contamination-flagged)",
+             "dev": "development only (never reported)"}
+    rows = ["| Target | run | role | key frequencies | neurons per key frequency | unclustered neurons | logit fit FVE | loss (all 113² inputs) |",
+            "|---|---|---|---|---|---|---|---|"]
+    for t, role in roles.items():
+        a = RES / "explanations" / t / "analysis.json"
+        if not a.exists():
+            continue
+        d = json.loads(a.read_text())
+        cl = d["neuron_clusters"]
+        n_un = d["neurons_unclustered"]
+        rows.append(f"| {t} | `{targets.resolve(t).run_id}` | {role} | {', '.join(map(str, d['key_freqs']))} | "
+                    f"{', '.join(str(len(cl[str(k)]) if isinstance(cl[str(k)], list) else cl[str(k)]) for k in d['key_freqs'])} | "
+                    f"{len(n_un) if isinstance(n_un, list) else n_un} | {_f(d['logit_fit_fve'])} | {_f(d['loss_all_inputs'])} |")
+    return "\n".join(rows)
+
+
 def cost_table() -> str:
     """Claude API spend from the proxy's request ledger (every request, priced at the published rates)."""
     led = RES / "claude" / "ledger.jsonl"

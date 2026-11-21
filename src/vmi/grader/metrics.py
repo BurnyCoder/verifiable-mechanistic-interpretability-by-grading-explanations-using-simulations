@@ -184,10 +184,16 @@ def stitching_kl(target_model, resid_r: torch.Tensor, resid_m: torch.Tensor, log
         test = torch.as_tensor(test_idx, device=resid_r.device)
         mask = torch.ones(resid_r.shape[0], dtype=torch.bool, device=resid_r.device)
         mask[test] = False
-        Xtr = torch.cat([resid_r[mask], torch.ones(int(mask.sum()), 1, dtype=resid_r.dtype, device=resid_r.device)], 1)
-        A = torch.linalg.lstsq(Xtr, resid_m[mask]).solution  # affine stitching map
-        Xte = torch.cat([resid_r[test], torch.ones(len(test), 1, dtype=resid_r.dtype, device=resid_r.device)], 1)
-        r = Xte @ A  # stitched residual in M's basis
+        # Affine stitching map by the same ridge solve as cv_r2 (centred, λ = RIDGE_REL·tr(G)/d): torch.linalg.lstsq's
+        # only CUDA driver ('gels') assumes full rank and returned NaN for rank-deficient replacement residuals
+        # (https://pytorch.org/docs/stable/generated/torch.linalg.lstsq.html).
+        Xtr, Ytr = resid_r[mask].double(), resid_m[mask].double()
+        mx, my = Xtr.mean(0), Ytr.mean(0)
+        Xc = Xtr - mx
+        G = Xc.T @ Xc
+        lam = RIDGE_REL * float(torch.trace(G)) / max(G.shape[0], 1) + 1e-12
+        A = torch.linalg.solve(G + lam * torch.eye(G.shape[0], dtype=G.dtype, device=G.device), Xc.T @ (Ytr - my))
+        r = (resid_r[test].double() - mx) @ A + my  # stitched residual in M's basis
         post = torch.relu(r @ W_in.T + b_in)
         out[test] = (r + post @ W_out.T + b_out) @ W_U
     return kl_out(logits_m, out)

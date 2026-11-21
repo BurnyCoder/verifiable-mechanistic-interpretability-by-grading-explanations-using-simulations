@@ -23,7 +23,8 @@ def blocks(max_round: int) -> dict[str, str]:
     """Every generated block, keyed by marker name."""
     out = {"hypotheses": tables.hypotheses_table(max_round), "runs": tables.runs_table(max_round),
            "scoreboard-T0": tables.scoreboard(max_round, "T0"), "baselines-T0": tables.baselines_table("T0"),
-           "controls-T0": tables.controls_table("T0"), "cost": tables.cost_table()}
+           "controls-T0": tables.controls_table("T0"), "cost": tables.cost_table(), "targets": tables.targets_table(),
+           "key-results": tables.key_results(max_round)}
     for t in TARGETS:
         if (REPO_ROOT / "results" / "compiler" / t).exists():
             out[f"compiler-{t}"] = tables.compiler_table(t)

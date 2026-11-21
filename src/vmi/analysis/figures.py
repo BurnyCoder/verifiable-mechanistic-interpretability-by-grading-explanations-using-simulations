@@ -231,8 +231,56 @@ def fig_simulators(max_round: int, target: str = "T0") -> Path | None:
     return _save(fig, f"simulators_{target}")
 
 
+def fig_architecture() -> Path:
+    """Pipeline diagram (no data): explainer → weights-blind offline agent → grader, with the agent-free compiler path."""
+    from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
+    fig, ax = plt.subplots(figsize=(11, 5))
+    ax.set_xlim(0, 100)
+    ax.set_ylim(0, 54)
+    ax.axis("off")
+
+    def box(x, y, w, h, text, edge=INK2, dashed=False, size=7.5):
+        ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.3,rounding_size=1.0", linewidth=1.3,
+                                    edgecolor=edge, facecolor=SURFACE, linestyle=(0, (4, 3)) if dashed else "solid"))
+        ax.text(x + w / 2, y + h / 2, text, ha="center", va="center", fontsize=size, color=INK, linespacing=1.3)
+
+    def arrow(a, b, text="", color=INK2, dx=0.0, dy=1.2):
+        ax.add_patch(FancyArrowPatch(a, b, arrowstyle="-|>", mutation_scale=10, linewidth=1.2, color=color))
+        if text:
+            ax.text((a[0] + b[0]) / 2 + dx, (a[1] + b[1]) / 2 + dy, text, ha="center", fontsize=7, color=INK2)
+
+    # top row: target → explainer → explanation → [sandbox: agent → weights] → grader
+    box(0.5, 31, 12, 10, "Target model M\n(trained weights)")
+    box(16, 31, 14, 10, "Explainer script\n(weights access:\nFourier analysis)")
+    box(33.5, 31, 13, 10, "EXPLANATION.md\nE0–E4 (true)\nW-* (wrong)")
+    ax.add_patch(FancyBboxPatch((50, 21.5), 29, 24, boxstyle="round,pad=0.3,rounding_size=1.2", linewidth=1.3,
+                                edgecolor=CTRL, facecolor="none", linestyle=(0, (4, 3))))
+    ax.text(64.5, 43.6, "offline sandbox: no network, no path to M", ha="center", fontsize=7, color=CTRL)
+    box(51.5, 31, 11, 10, "LLM agent\n(Claude Code or\nbash harness)", edge=TRUE)
+    box(65.5, 31, 12, 10, "build_weights.py\n↓\nweights.npz = M̂", edge=TRUE)
+    box(65.5, 23, 12, 5.5, "TASK.md, forward.py,\nselftest.py", size=6.5)
+    box(83, 31, 16, 10, "Grader\nKL_out on 12,769 inputs\nHS at 3 sites (CV ridge)")
+    # below the sandbox: the model endpoint; bottom row: the agent-free reference compiler
+    box(50, 12, 29, 6, "LLM endpoint outside the sandbox: API proxy\n(key, budget ledger) or llama-server", size=6.5)
+    box(33.5, 1, 13, 8, "spec.json\n(explanation's\nparameters)", dashed=True)
+    box(50, 2, 29, 6, "reference compiler (no agent): spec → weights", edge=REF)
+    arrow((13, 36), (15.5, 36))
+    arrow((30.5, 36), (33, 36))
+    arrow((47, 36), (51, 36))
+    arrow((63, 36), (65, 36))
+    arrow((78, 36), (82.5, 36), "M̂")
+    arrow((56.5, 18.5), (56.5, 30.5), "unix socket", dx=3.8, dy=-3)
+    arrow((23, 30.5), (40, 9.5))
+    arrow((47, 5), (49.5, 5))
+    arrow((79.5, 5), (91, 30.5), color=REF)
+    ax.plot([6.5, 6.5, 91, 91], [41.5, 50, 50, 44], color=INK2, linewidth=1.2)  # M goes to the grader only, around the sandbox
+    ax.add_patch(FancyArrowPatch((91, 44), (91, 41.5), arrowstyle="-|>", mutation_scale=10, linewidth=1.2, color=INK2))
+    ax.text(48.75, 51, "M (to the grader only)", ha="center", fontsize=7, color=INK2)
+    return _save(fig, "architecture")
+
+
 def make_all(max_round: int) -> list[Path]:
     """Every figure whose inputs exist (missing inputs are skipped, never faked)."""
-    figs = [fig_ladder(max_round), fig_kl_vs_hs(max_round), fig_planted(), fig_trajectory(), fig_length(max_round),
-            fig_simulators(max_round)]
+    figs = [fig_architecture(), fig_ladder(max_round), fig_kl_vs_hs(max_round), fig_planted(), fig_trajectory(),
+            fig_length(max_round), fig_simulators(max_round)]
     return [p for p in figs if p]
