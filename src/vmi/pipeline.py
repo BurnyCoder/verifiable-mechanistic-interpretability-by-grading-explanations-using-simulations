@@ -177,6 +177,33 @@ def agent_run(settings: Settings, *, stage: str, target: str, level: str, seed: 
     return res
 
 
+LOCAL_SERVE = {  # alias → (GGUF file in VMI_MODELS_DIR, --n-cpu-moe); stage-0 settings (amendment 1, learnings.md)
+    "qwen3.5-4b": ("Qwen3.5-4B-Q4_K_M.gguf", 0),  # fits on the GPU entirely
+    "qwen3.5-9b": ("Qwen3.5-9B-Q4_K_M.gguf", 0),
+    "qwen3.6-35b-a3b": (None, None),  # None → VMI_LLM_GGUF and VMI_LLM_N_CPU_MOE (experts in system RAM)
+}
+
+
+def local_queue(settings: Settings, manifest: Path) -> None:
+    """Serve each local model in turn (smallest first), run its pending conditions of `manifest`, stop the server.
+
+    Lets the capability ablation run unattended across model switches; a model with nothing pending is not served."""
+    from vmi.simulator import llm_server
+    conds = [json.loads(x) for x in manifest.read_text(encoding="utf-8").splitlines() if x.strip()]
+    for alias, (gguf, n_cpu_moe) in LOCAL_SERVE.items():
+        pending = [c for c in conds if c.get("model") == alias and not (RESULTS / "runs" / (run_id(
+            c["stage"], c["target"], c["level"], c["seed"], c["model"], c.get("temperature", settings.llm_temperature),
+            c.get("variant", ""), c.get("harness", settings.harness)) + ".json")).exists()]
+        if not pending:
+            continue
+        log.info("serving %s for %d pending condition(s)", alias, len(pending))
+        proc = llm_server.start(settings, gguf=settings.models_dir / gguf if gguf else None, alias=alias, n_cpu_moe=n_cpu_moe)
+        try:
+            queue(settings, manifest, only_model=alias)
+        finally:
+            llm_server.stop(proc)
+
+
 def regrade(settings: Settings, keys: tuple[str, ...] = ("stitching_kl",)) -> int:
     """Recompute secondary metrics `keys` for every graded run from its saved weights (deviation 4: stitching fix).
 
@@ -245,6 +272,7 @@ def main(argv: list[str] | None = None) -> None:
     q = sub.add_parser("queue")
     q.add_argument("manifest", type=Path)
     q.add_argument("--only-model", default=None, help="run only this simulator's conditions")
+    sub.add_parser("local", help="serve each local model in turn and run its pending conditions").add_argument("manifest", type=Path)
     s = sub.add_parser("serve")
     s.add_argument("--n-cpu-moe", type=int, default=None)
     s.add_argument("--gguf", type=Path, default=None)
@@ -286,6 +314,8 @@ def main(argv: list[str] | None = None) -> None:
         if a.harness:
             settings = dataclasses.replace(settings, harness=a.harness)
         agent_run(settings, stage=a.stage, target=a.target, level=a.level, seed=a.seed, model=a.model)
+    elif a.cmd == "local":
+        local_queue(settings, a.manifest)
     elif a.cmd == "queue":
         queue(settings, a.manifest, a.only_model)
     elif a.cmd == "serve":
