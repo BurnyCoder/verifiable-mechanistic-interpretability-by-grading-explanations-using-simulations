@@ -31,12 +31,14 @@ preregistered before any result. First results (round 1, one run per condition �
 - **Correct behaviour, wrong mechanism is caught by HS, not by output KL:** the wrong-frequency replacement reaches KL 9.31e-04 nats (true E3: 0.023) but HS 0.06.
 - **Copying behaviour does not copy the mechanism:** independent retrains (HS 0.12) and logit-distilled students (HS 0.23, KL 2.38e-06) stay at the random-initialisation floor (HS 0.24).
 - **Negative result:** the primary HS does not separate the Pizza explanation (W-alg, HS 0.89) or the scrambled neuron table (W-scramble, HS 0.92) from the true explanations; the secondary matched-neuron correlation separates W-scramble (0.62) from E4 (0.89).
-- **Cost:** all Claude Haiku 5.5 runs so far cost $0.42 in total.
+- **Memorisation (post hoc):** when the explanation gives no frequencies (E0, E1), the simulator's replacements on unpublished targets use the paper's published frequencies (mean overlap 0.80 with {14, 35, 41, 42, 52}, 0.00 with the target's own). On the published checkpoint the same algorithm-only explanation therefore scores HS 0.92 (on T0: 0.05): scores on published models measure memory, not the explanation.
+- **Cost:** all Claude Haiku 5.5 runs so far cost $0.86 in total.
 <!-- END key-results -->
 
 Output KL alone ranks a wrong-frequency explanation, independent retrains and distilled students as good as or better
 than true explanations; HS does not. HS is blind to the per-neuron frequency assignment and to the Clock-versus-Pizza
-distinction, both of which keep the key frequencies.
+distinction, both of which keep the key frequencies. On the published checkpoint the simulator rebuilds the paper's
+mechanism from memory even from an algorithm-only explanation, so only unpublished targets give interpretable scores.
 
 ## 1 Introduction
 
@@ -61,7 +63,9 @@ transformer, with an output metric and a symmetry-aware hidden-state metric. (ii
 scripted ladder of true explanations, length-matched wrong explanations, explanation-free baselines, wrong-target,
 planted-mechanism and training-trajectory controls, and an agent-free reference compiler that separates what an
 explanation contains from what the agent makes of it. (iii) Evidence that output KL is not a valid score on this task
-and that HS is, for frequency-level content, with two documented blind spots.
+and that HS is, for frequency-level content, with two documented blind spots. (iv) An existence proof that a
+weights-blind simulator fills gaps in an explanation with a memorised published mechanism, which inflates scores on
+published models.
 
 This project was developed in a mechanistic interpretability hackathon on automatically evaluating mechanistic
 interpretability explanations, which the authors co-organized in their mechanistic interpretability community and
@@ -257,6 +261,7 @@ T0's checkpoints, HS rises during circuit formation in step with the fall of the
 | ablations | T0 | E3 | claude-haiku-5-5 | default | fmt-code | 1 | 0 | 1.000 | 0.00212 | 0.918 |
 | ablations | T0 | E3 | claude-haiku-5-5 | default | fmt-math | 1 | 0 | 1.000 | 0.000716 | 0.911 |
 | ablations | T0 | E3 | claude-haiku-5-5 | default | noselftest | 1 | 0 | 1.000 | 0.00134 | 0.964 |
+| ablations | T0 | E3 | qwen3.5-4b | 0.6 | – | 1 | 0 | 0.009 | 4.73 | 0.000 |
 | controls | T0 | E0 | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 0.00908 | 0.004 |
 | controls | T0 | W-freq | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 0.000931 | 0.055 |
 | controls | T0 | W-alg | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 0.0146 | 0.889 |
@@ -264,14 +269,84 @@ T0's checkpoints, HS rises during circuit formation in step with the fall of the
 | controls | T0 | W-scramble | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 0.00283 | 0.918 |
 | hyper | T0 | E3 | claude-haiku-5-5 | default | effort-high | 1 | 0 | 1.000 | 0.00152 | 0.923 |
 | hyper | T0 | E3 | claude-haiku-5-5 | default | effort-low | 1 | 0 | 0.562 | 1.97 | 0.922 |
+| hyper | T0 | W-freq | claude-haiku-5-5 | default | effort-high | 1 | 0 | 1.000 | 0.00169 | 0.098 |
 | hyper | T0 | W-freq | claude-haiku-5-5 | default | effort-low | 1 | 0 | 0.770 | 1.03 | 0.114 |
 | main | T0 | E1 | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 0.000105 | 0.048 |
 | main | T0 | E2 | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 1.2e-05 | 0.899 |
 | main | T0 | E3 | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 0.0229 | 0.939 |
 | main | T0 | E4 | claude-haiku-5-5 | default | – | 1 | 0 | 0.979 | 0.0872 | 0.912 |
+| seed | T-new | E3 | claude-haiku-5-5 | default | – | 1 | 0 | 0.910 | 0.344 | 0.846 |
+| seed | T-new | E4 | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 2.15e-05 | 0.984 |
+| seed | T-new | W-freq | claude-haiku-5-5 | default | – | 1 | 0 | 0.897 | 0.378 | 0.087 |
+| seed | T-paper | E1 | claude-haiku-5-5 | default | – | 1 | 0 | 0.994 | 1.43 | 0.925 |
+| seed | T-paper | E3 | claude-haiku-5-5 | default | – | 1 | 0 | 0.989 | 0.0321 | 0.944 |
+| seed | T-paper | E4 | claude-haiku-5-5 | default | – | 1 | 0 | 0.867 | 0.518 | 0.929 |
+| seed | T-paper | W-freq | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 9.56e-05 | 0.091 |
+| seed | T-paper | E-paper | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 0.00342 | 0.984 |
+| seed | T1 | E2 | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 0.00308 | 0.955 |
+| seed | T1 | E3 | claude-haiku-5-5 | default | – | 1 | 0 | 0.922 | 0.296 | 0.917 |
+| seed | T1 | E4 | claude-haiku-5-5 | default | – | 1 | 0 | 0.837 | 0.773 | 0.955 |
+| seed | T1 | W-freq | claude-haiku-5-5 | default | – | 1 | 0 | 0.806 | 0.669 | 0.034 |
+| seed | T2 | E2 | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 4.69e-05 | 0.949 |
+| seed | T2 | E3 | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 7.41e-05 | 0.944 |
+| seed | T2 | E4 | claude-haiku-5-5 | default | – | 1 | 0 | 0.980 | 0.112 | 0.934 |
+| seed | T2 | W-freq | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 0.00478 | 0.089 |
 <!-- END runs -->
 
-### 4.6 Hypotheses at N = 1
+**Reading.** Presenting E3 as math or as code, or removing the self-test, does not lower the simulator's HS in these
+single runs. Low effort lowers task accuracy while E3's HS stays high: the replacement has the right frequency
+structure but wrong details (behaviour and mechanism dissociate in this direction too). On the seed-sensitivity targets
+T1, T2 and T-new the T0 pattern repeats — E2–E4 well above the no-agent references, W-freq at the floor. On T2 the
+simulator's E3 build beats the reference compiler's (the compiler is misled by the rendered E3 there, the agent is
+not), so H5's "agent ≤ compiler" already fails in one condition. The local Qwen simulators (capability ablation) are
+added as their runs finish; so far they stay at chance.
+
+### 4.6 Memorisation on the published checkpoint (post hoc)
+
+The same key-frequency rule used for the targets (Fourier norm of W_L = W_U·W_out ≥ 0.25 of its maximum), applied to
+each replacement built by the main simulator. Frequencies with small amplitude fall below the threshold, so the
+"used" sets are lower bounds.
+
+<!-- BEGIN frequencies -->
+| Target | Explanation | frequencies used by the replacement | target's key frequencies | overlap with target (Jaccard) | overlap with paper's {14, 35, 41, 42, 52} | HS |
+|---|---|---|---|---|---|---|
+| T0 | E0 | 14, 35, 41, 52 | 2, 3, 23, 37, 39 | 0.00 | 0.80 | 0.004 |
+| T0 | E1 | 14, 35, 41, 52 | 2, 3, 23, 37, 39 | 0.00 | 0.80 | 0.048 |
+| T0 | E2 | 3, 23, 39 | 2, 3, 23, 37, 39 | 0.60 | 0.00 | 0.899 |
+| T0 | E3 | 3, 23 | 2, 3, 23, 37, 39 | 0.40 | 0.00 | 0.939 |
+| T0 | E4 | 3, 23, 39 | 2, 3, 23, 37, 39 | 0.60 | 0.00 | 0.912 |
+| T0 | W-freq | 31, 42, 52, 55 | 2, 3, 23, 37, 39 | 0.00 | 0.29 | 0.055 |
+| T0 | W-alg | 3, 23, 37, 39 | 2, 3, 23, 37, 39 | 0.80 | 0.00 | 0.889 |
+| T0 | W-role | 32, 34, 41, 54 | 2, 3, 23, 37, 39 | 0.00 | 0.12 | 0.168 |
+| T0 | W-scramble | 3, 23, 39 | 2, 3, 23, 37, 39 | 0.60 | 0.00 | 0.918 |
+| T1 | E2 | 11, 25, 49 | 11, 25, 49 | 1.00 | 0.00 | 0.955 |
+| T1 | E3 | 11, 49 | 11, 25, 49 | 0.67 | 0.00 | 0.917 |
+| T1 | E4 | 25, 49 | 11, 25, 49 | 0.67 | 0.00 | 0.955 |
+| T1 | W-freq | 38, 52 | 11, 25, 49 | 0.00 | 0.17 | 0.034 |
+| T2 | E2 | 37, 44, 45, 46, 47, 51 | 37, 44, 45, 46, 47, 51 | 1.00 | 0.00 | 0.949 |
+| T2 | E3 | 37, 45, 47, 51 | 37, 44, 45, 46, 47, 51 | 0.67 | 0.00 | 0.944 |
+| T2 | E4 | 37, 44, 45, 46, 47, 51 | 37, 44, 45, 46, 47, 51 | 1.00 | 0.00 | 0.934 |
+| T2 | W-freq | 32 | 37, 44, 45, 46, 47, 51 | 0.00 | 0.00 | 0.089 |
+| T-new | E3 | 22, 41 | 22, 37, 41, 51 | 0.50 | 0.17 | 0.846 |
+| T-new | E4 | 37, 41 | 22, 37, 41, 51 | 0.50 | 0.17 | 0.984 |
+| T-new | W-freq | 10 | 22, 37, 41, 51 | 0.00 | 0.00 | 0.087 |
+| T-paper | E1 | 42, 52 | 14, 35, 41, 42, 52 | 0.40 | 0.40 | 0.925 |
+| T-paper | E3 | 14, 35, 41, 42, 52 | 14, 35, 41, 42, 52 | 1.00 | 1.00 | 0.944 |
+| T-paper | E4 | 14, 35, 41, 42, 52 | 14, 35, 41, 42, 52 | 1.00 | 1.00 | 0.929 |
+| T-paper | W-freq | 8, 21, 39, 44, 49 | 14, 35, 41, 42, 52 | 0.00 | 0.00 | 0.091 |
+| T-paper | E-paper | 14, 35, 41, 42, 52 | 14, 35, 41, 42, 52 | 1.00 | 1.00 | 0.984 |
+<!-- END frequencies -->
+
+**Reading.** With no frequencies in the explanation (E0, E1), Haiku builds the published paper's frequencies into the
+replacement — its build scripts hard-code them (e.g. `KEY_FREQS = [14, 35, 41, 42, 52]  # choice: not specified by
+EXPLANATION.md`). On unpublished targets that yields a working adder with the wrong mechanism and near-zero HS; on the
+published checkpoint (T-paper) the algorithm-only E1 scores like a full explanation. Scores on a published model
+therefore measure what the simulator remembers, not what the explanation says; the unpublished targets (T0–T2,
+T-new), which the preregistration introduced for exactly this risk, are what make the score interpretable. This is
+an existence proof at N = 1, consistent with [Haklay et al. 2026](https://arxiv.org/abs/2603.20101) (agents reproduce
+published circuits from memory).
+
+### 4.7 Hypotheses at N = 1
 
 <!-- BEGIN hypotheses -->
 | Hypothesis | Verdict | Evidence size |
@@ -311,8 +386,9 @@ reported in Section 4.5 as they finish.
   those verdicts are reported as "cannot tell at this N". Rounds 2 (N = 3) and 3 (N = 10) follow.
 - **One task, one architecture.** All targets are one-layer modular-addition transformers. Whether HS stays informative
   for deeper networks, where linear maps across layers are less constrained, is untested.
-- **One simulator family in the main arm.** Claude Haiku 5.5 may know the paper; T-paper is flagged, E0/E1 measure what
-  the simulator brings without model-specific information, and T0–T2 and T-new are unpublished.
+- **One simulator family in the main arm, and it knows the paper.** Claude Haiku 5.5 builds the paper's frequencies
+  into replacements whenever an explanation leaves them open (Section 4.6), so T-paper scores are not evidence about
+  the explanation; T0–T2 and T-new are unpublished, and E0/E1 measure what the simulator brings by itself.
 - **Scripted explanations.** The explanations are rendered by our script, so they share its style and its errors; the
   compiler's non-monotonicity on T2 and T-paper (Appendix) shows that E3 as rendered can mislead a literal build.
 - **HS blind spots.** Per-neuron assignment and Clock-versus-Pizza (Section 5).
@@ -438,16 +514,49 @@ Mean HS per explanation of the main simulator's T0 runs, re-scored under each pr
 compares the ordering of explanations with the preregistered settings (1 = same order).
 
 <!-- BEGIN grader-sensitivity-T0 -->
+| Grader setting | E0 | E1 | E2 | E3 | E4 | W-freq | W-alg | W-role | W-scramble | Kendall τ vs. preregistered |
+|---|---|---|---|---|---|---|---|---|---|---|
+| preregistered (λ 1e-6, 5 folds, seed 0, 3 sites, general linear) | 0.00 | 0.05 | 0.90 | 0.94 | 0.91 | 0.06 | 0.89 | 0.17 | 0.92 | 1.00 |
+| ridge λ × 100 | 0.00 | 0.05 | 0.87 | 0.91 | 0.89 | 0.05 | 0.86 | 0.16 | 0.91 | 1.00 |
+| ridge λ / 100 | 0.00 | 0.05 | 0.92 | 0.94 | 0.93 | 0.06 | 0.91 | 0.19 | 0.92 | 0.94 |
+| 3 folds | 0.00 | 0.05 | 0.90 | 0.94 | 0.91 | 0.05 | 0.89 | 0.17 | 0.92 | 1.00 |
+| 10 folds | 0.00 | 0.05 | 0.90 | 0.94 | 0.91 | 0.06 | 0.89 | 0.17 | 0.92 | 1.00 |
+| fold seed 1 | 0.00 | 0.05 | 0.90 | 0.94 | 0.91 | 0.06 | 0.89 | 0.17 | 0.92 | 1.00 |
+| fold seed 2 | 0.00 | 0.05 | 0.90 | 0.94 | 0.91 | 0.05 | 0.89 | 0.17 | 0.92 | 1.00 |
+| resid_mid only | 0.01 | 0.01 | 0.88 | 0.91 | 0.88 | 0.00 | 0.88 | 0.32 | 0.94 | 0.83 |
+| mlp_post only | 0.00 | 0.13 | 0.94 | 0.98 | 0.99 | 0.17 | 0.94 | 0.10 | 0.97 | 0.78 |
+| resid_post only | 0.00 | 0.00 | 0.87 | 0.93 | 0.87 | 0.00 | 0.84 | 0.09 | 0.84 | 0.78 |
+| orthogonal alignment (with scale) | 0.00 | 0.00 | 0.62 | 0.79 | 0.68 | 0.00 | 0.58 | 0.06 | 0.76 | 0.96 |
 <!-- END grader-sensitivity-T0 -->
 
 The same for the reference compiler's builds:
 
 <!-- BEGIN grader-sensitivity-compiler-T0 -->
+| Grader setting | E0 | E1 | E2 | E3 | E4 | W-freq | W-alg | W-role | W-scramble | Kendall τ vs. preregistered |
+|---|---|---|---|---|---|---|---|---|---|---|
+| preregistered (λ 1e-6, 5 folds, seed 0, 3 sites, general linear) | 0.05 | 0.05 | 0.89 | 0.93 | 0.95 | 0.09 | 0.92 | 0.50 | 0.86 | 1.00 |
+| ridge λ × 100 | 0.04 | 0.04 | 0.87 | 0.79 | 0.87 | 0.08 | 0.90 | 0.46 | 0.75 | 0.77 |
+| ridge λ / 100 | 0.05 | 0.05 | 0.91 | 0.96 | 0.96 | 0.10 | 0.92 | 0.51 | 0.93 | 0.89 |
+| 3 folds | 0.05 | 0.05 | 0.89 | 0.93 | 0.95 | 0.09 | 0.92 | 0.50 | 0.86 | 1.00 |
+| 10 folds | 0.05 | 0.05 | 0.89 | 0.93 | 0.95 | 0.10 | 0.92 | 0.50 | 0.86 | 1.00 |
+| fold seed 1 | 0.05 | 0.05 | 0.89 | 0.93 | 0.95 | 0.09 | 0.92 | 0.50 | 0.86 | 1.00 |
+| fold seed 2 | 0.05 | 0.05 | 0.89 | 0.93 | 0.95 | 0.09 | 0.92 | 0.50 | 0.86 | 1.00 |
+| resid_mid only | 0.00 | 0.00 | 0.88 | 0.91 | 0.91 | 0.07 | 0.88 | 0.91 | 0.91 | 0.64 |
+| mlp_post only | 0.15 | 0.15 | 0.94 | 0.97 | 0.99 | 0.20 | 0.97 | 0.00 | 0.97 | 0.71 |
+| resid_post only | 0.00 | 0.00 | 0.86 | 0.89 | 0.95 | 0.01 | 0.91 | 0.59 | 0.69 | 0.94 |
+| orthogonal alignment (with scale) | 0.00 | 0.00 | 0.71 | 0.52 | 0.57 | 0.00 | 0.77 | 0.26 | 0.49 | 0.74 |
 <!-- END grader-sensitivity-compiler-T0 -->
 
 Explainer thresholds varied (E2–E4 re-rendered and re-compiled, no agent):
 
 <!-- BEGIN explainer-sensitivity-T0 -->
+| key-frequency τ | neuron FVE threshold | key frequencies found | compiler HS E2 | E3 | E4 |
+|---|---|---|---|---|---|
+| 0.25 | 0.85 | 2, 3, 23, 37, 39 | 0.895 | 0.927 | 0.952 |
+| 0.15 | 0.85 | 2, 3, 23, 37, 39 | 0.895 | 0.927 | 0.952 |
+| 0.35 | 0.85 | 3, 23, 37, 39 | 0.949 | 0.948 | 0.974 |
+| 0.25 | 0.75 | 2, 3, 23, 37, 39 | 0.895 | 0.900 | 0.952 |
+| 0.25 | 0.9 | 2, 3, 23, 37, 39 | 0.895 | 0.898 | 0.952 |
 <!-- END explainer-sensitivity-T0 -->
 
 **Reading.** The ordering of explanations by the agent runs' HS is unchanged by the number of folds, the fold seed and
@@ -466,8 +575,8 @@ the preregistered threshold stays the analysis default.*
 <!-- BEGIN cost -->
 | Model | runs (incl. checks) | requests | spend (USD) |
 |---|---|---|---|
-| claude-haiku-5-5 | 23 | 176 | 0.424 |
-| **total** | 23 | 176 | **0.424** |
+| claude-haiku-5-5 | 39 | 368 | 0.859 |
+| **total** | 39 | 368 | **0.859** |
 <!-- END cost -->
 
 ## AI statement

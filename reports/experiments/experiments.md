@@ -88,6 +88,7 @@ scripts are reviewed by hand (`results/audit_reviews.json`).
 | ablations | T0 | E3 | claude-haiku-5-5 | default | fmt-code | 1 | 0 | 1.000 | 0.00212 | 0.918 |
 | ablations | T0 | E3 | claude-haiku-5-5 | default | fmt-math | 1 | 0 | 1.000 | 0.000716 | 0.911 |
 | ablations | T0 | E3 | claude-haiku-5-5 | default | noselftest | 1 | 0 | 1.000 | 0.00134 | 0.964 |
+| ablations | T0 | E3 | qwen3.5-4b | 0.6 | – | 1 | 0 | 0.009 | 4.73 | 0.000 |
 | controls | T0 | E0 | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 0.00908 | 0.004 |
 | controls | T0 | W-freq | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 0.000931 | 0.055 |
 | controls | T0 | W-alg | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 0.0146 | 0.889 |
@@ -95,11 +96,28 @@ scripts are reviewed by hand (`results/audit_reviews.json`).
 | controls | T0 | W-scramble | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 0.00283 | 0.918 |
 | hyper | T0 | E3 | claude-haiku-5-5 | default | effort-high | 1 | 0 | 1.000 | 0.00152 | 0.923 |
 | hyper | T0 | E3 | claude-haiku-5-5 | default | effort-low | 1 | 0 | 0.562 | 1.97 | 0.922 |
+| hyper | T0 | W-freq | claude-haiku-5-5 | default | effort-high | 1 | 0 | 1.000 | 0.00169 | 0.098 |
 | hyper | T0 | W-freq | claude-haiku-5-5 | default | effort-low | 1 | 0 | 0.770 | 1.03 | 0.114 |
 | main | T0 | E1 | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 0.000105 | 0.048 |
 | main | T0 | E2 | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 1.2e-05 | 0.899 |
 | main | T0 | E3 | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 0.0229 | 0.939 |
 | main | T0 | E4 | claude-haiku-5-5 | default | – | 1 | 0 | 0.979 | 0.0872 | 0.912 |
+| seed | T-new | E3 | claude-haiku-5-5 | default | – | 1 | 0 | 0.910 | 0.344 | 0.846 |
+| seed | T-new | E4 | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 2.15e-05 | 0.984 |
+| seed | T-new | W-freq | claude-haiku-5-5 | default | – | 1 | 0 | 0.897 | 0.378 | 0.087 |
+| seed | T-paper | E1 | claude-haiku-5-5 | default | – | 1 | 0 | 0.994 | 1.43 | 0.925 |
+| seed | T-paper | E3 | claude-haiku-5-5 | default | – | 1 | 0 | 0.989 | 0.0321 | 0.944 |
+| seed | T-paper | E4 | claude-haiku-5-5 | default | – | 1 | 0 | 0.867 | 0.518 | 0.929 |
+| seed | T-paper | W-freq | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 9.56e-05 | 0.091 |
+| seed | T-paper | E-paper | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 0.00342 | 0.984 |
+| seed | T1 | E2 | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 0.00308 | 0.955 |
+| seed | T1 | E3 | claude-haiku-5-5 | default | – | 1 | 0 | 0.922 | 0.296 | 0.917 |
+| seed | T1 | E4 | claude-haiku-5-5 | default | – | 1 | 0 | 0.837 | 0.773 | 0.955 |
+| seed | T1 | W-freq | claude-haiku-5-5 | default | – | 1 | 0 | 0.806 | 0.669 | 0.034 |
+| seed | T2 | E2 | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 4.69e-05 | 0.949 |
+| seed | T2 | E3 | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 7.41e-05 | 0.944 |
+| seed | T2 | E4 | claude-haiku-5-5 | default | – | 1 | 0 | 0.980 | 0.112 | 0.934 |
+| seed | T2 | W-freq | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 0.00478 | 0.089 |
 <!-- END runs -->
 
 ## Claude API spend
@@ -107,6 +125,6 @@ scripts are reviewed by hand (`results/audit_reviews.json`).
 <!-- BEGIN cost -->
 | Model | runs (incl. checks) | requests | spend (USD) |
 |---|---|---|---|
-| claude-haiku-5-5 | 23 | 176 | 0.424 |
-| **total** | 23 | 176 | **0.424** |
+| claude-haiku-5-5 | 39 | 368 | 0.859 |
+| **total** | 39 | 368 | **0.859** |
 <!-- END cost -->

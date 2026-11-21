@@ -170,3 +170,19 @@ content, so the fix was swapped in by atomic rename without touching the two run
 
 **Learning.** Separate "the agent failed" from "the infrastructure failed" by a mechanical rule (did the agent get at
 least one model response?) and archive, never delete, the failed record.
+
+## Round 1 — the simulator fills gaps from memory (2026-11-21)
+
+**What happened.** On the published checkpoint (T-paper), the algorithm-only explanation E1 produced a replacement
+that scored like a full explanation, while E1 on the unpublished T0 scored at the floor. The build script hard-coded
+`KEY_FREQS = [14, 35, 41, 42, 52]` with the comment "choice: not specified by EXPLANATION.md" — the paper's published
+frequencies. The same happened on T0 for E0 and E1 and on the dev target in stage 0.
+
+**How it was checked.** Not only by reading scripts: the key-frequency rule used for the targets was applied to every
+replacement's weights (`analysis/frequencies.py`), giving the overlap of the frequencies actually built in with the
+target's and with the paper's sets (table in `01-round1/experiment.md`).
+
+**Learning.** Weights-blind does not mean knowledge-blind. Any simulation score on a published model is confounded by
+memorisation; unpublished targets (and a held-out target trained after the freeze) are necessary, not optional. The
+same applies to any LLM-based interpretability evaluation on famous models ([Haklay et al. 2026](https://arxiv.org/abs/2603.20101)).
+

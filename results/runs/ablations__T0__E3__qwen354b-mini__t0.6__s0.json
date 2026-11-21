@@ -1,0 +1,77 @@
+{
+  "kl_out": 4.727384480759269,
+  "argmax_agreement": 0.008849557522123894,
+  "accuracy": 0.008849557522123894,
+  "target_accuracy": 1.0,
+  "sites": {
+    "resid_mid": {
+      "completeness": 0.0,
+      "soundness": 0.0,
+      "harmonic": 0.0
+    },
+    "mlp_post": {
+      "completeness": 0.0,
+      "soundness": 0.0,
+      "harmonic": 0.0
+    },
+    "resid_post": {
+      "completeness": 0.0,
+      "soundness": 0.0,
+      "harmonic": 0.0
+    }
+  },
+  "hs": 0.0,
+  "centred_logit_fvu": 1.0,
+  "calibrated_kl": 4.727384480759269,
+  "calibration_scale": 2980.9579870348393,
+  "cka": {
+    "resid_mid": 1.817459090072361e-32,
+    "mlp_post": 0.0,
+    "resid_post": 3.218341202546967e-33
+  },
+  "procrustes": {
+    "resid_mid": 1.9999999999999998,
+    "mlp_post": 2.0,
+    "resid_post": 2.0
+  },
+  "matched_neuron_corr": 0.0,
+  "matched_attention_distance": 0.2915977033358166,
+  "stitching_kl": NaN,
+  "embedding_spectrum_cosine": 0.9650265237215893,
+  "failed": false,
+  "error": null,
+  "run_id": "ablations__T0__E3__qwen354b-mini__t0.6__s0",
+  "stage": "ablations",
+  "target": "T0",
+  "level": "E3",
+  "variant": "",
+  "round": 1,
+  "model": "qwen3.5-4b",
+  "temperature": 0.6,
+  "seed": 0,
+  "selftest": true,
+  "harness": "mini",
+  "effort": null,
+  "agent": {
+    "exit_code": 0,
+    "seconds": 3890,
+    "timeout_s": 3600,
+    "events": 135,
+    "steps": 26,
+    "tool_calls": 24,
+    "errors": 2,
+    "wsl_returncode": 0,
+    "starter_unchanged": false
+  },
+  "audit": {
+    "flagged": false,
+    "reasons": [],
+    "suspicious_terms": []
+  },
+  "length": {
+    "chars": 3712,
+    "gzip_bytes": 1772,
+    "numbers": 126
+  },
+  "finished": "2026-11-21T16:28:59"
+}

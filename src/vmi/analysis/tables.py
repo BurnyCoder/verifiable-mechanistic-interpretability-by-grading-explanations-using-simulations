@@ -197,6 +197,18 @@ def key_results(max_round: int, target: str = "T0") -> str:
                    f"or the scrambled neuron table (W-scramble, HS {m('W-scramble'):.2f}) from the true explanations; the "
                    f"secondary matched-neuron correlation separates W-scramble ({_f(m('W-scramble', 'matched_neuron_corr'), 2)}) "
                    f"from E4 ({_f(m('E4', 'matched_neuron_corr'), 2)}).")
+    fq = RES / f"frequencies_round{max_round}.json"
+    tp_e1 = [r for r in runs if r["target"] == "T-paper" and r["level"] == "E1" and r.get("variant", "") == "" and r["model"] == "claude-haiku-5-5"]
+    if fq.exists() and tp_e1 and m("E1") is not None:
+        rows = [r for r in json.loads(fq.read_text())["rows"] if r["model"] == "claude-haiku-5-5" and r["variant"] == ""
+                and r["level"] in ("E0", "E1") and r["target"] != "T-paper"]
+        if rows:
+            out.append(f"- **Memorisation (post hoc):** when the explanation gives no frequencies (E0, E1), the simulator's "
+                       f"replacements on unpublished targets use the paper's published frequencies (mean overlap "
+                       f"{np.mean([r['jaccard_paper'] for r in rows]):.2f} with {{14, 35, 41, 42, 52}}, "
+                       f"{np.mean([r['jaccard_target'] for r in rows]):.2f} with the target's own). On the published "
+                       f"checkpoint the same algorithm-only explanation therefore scores HS {np.mean([r['hs'] for r in tp_e1]):.2f} "
+                       f"(on {target}: {m('E1'):.2f}): scores on published models measure memory, not the explanation.")
     led = RES / "claude" / "ledger.jsonl"
     if led.exists():
         spend = sum(json.loads(x).get("cost_usd", 0.0) for x in led.read_text(encoding="utf-8").splitlines() if x.strip())
@@ -235,6 +247,22 @@ def explainer_sensitivity_table(target: str = "T0") -> str:
         out.append(f"| {r['tau']} | {r['neuron_fve']} | {', '.join(map(str, r['key_freqs']))} | {_f(hs.get('E2'))} | "
                    f"{_f(hs.get('E3'))} | {_f(hs.get('E4'))} |")
     return "\n".join(out)
+
+
+def frequencies_table(max_round: int, model: str = "claude-haiku-5-5") -> str:
+    """Post hoc: frequencies each replacement uses vs. the target's and the paper's (memorisation check)."""
+    p = RES / f"frequencies_round{max_round}.json"
+    if not p.exists():
+        return "_not computed yet_"
+    d = json.loads(p.read_text())
+    rows = ["| Target | Explanation | frequencies used by the replacement | target's key frequencies | overlap with target (Jaccard) | overlap with paper's {14, 35, 41, 42, 52} | HS |",
+            "|---|---|---|---|---|---|---|"]
+    order = {t: i for i, t in enumerate(["T0", "T1", "T2", "T-new", "T-paper"])}
+    for r in sorted((x for x in d["rows"] if x["model"] == model and x["variant"] == ""),
+                    key=lambda x: (order.get(x["target"], 9), LEVEL_ORDER.index(x["level"]) if x["level"] in LEVEL_ORDER else 99)):
+        rows.append(f"| {r['target']} | {r['level']} | {', '.join(map(str, r['used_freqs']))} | {', '.join(map(str, r['target_freqs']))} | "
+                    f"{r['jaccard_target']:.2f} | {r['jaccard_paper']:.2f} | {r['hs']:.3f} |")
+    return "\n".join(rows)
 
 
 def targets_table() -> str:

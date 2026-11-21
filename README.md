@@ -43,7 +43,8 @@ alignment makes any network match any algorithm ([Sutter et al. 2025](https://ar
 - **Correct behaviour, wrong mechanism is caught by HS, not by output KL:** the wrong-frequency replacement reaches KL 9.31e-04 nats (true E3: 0.023) but HS 0.06.
 - **Copying behaviour does not copy the mechanism:** independent retrains (HS 0.12) and logit-distilled students (HS 0.23, KL 2.38e-06) stay at the random-initialisation floor (HS 0.24).
 - **Negative result:** the primary HS does not separate the Pizza explanation (W-alg, HS 0.89) or the scrambled neuron table (W-scramble, HS 0.92) from the true explanations; the secondary matched-neuron correlation separates W-scramble (0.62) from E4 (0.89).
-- **Cost:** all Claude Haiku 5.5 runs so far cost $0.42 in total.
+- **Memorisation (post hoc):** when the explanation gives no frequencies (E0, E1), the simulator's replacements on unpublished targets use the paper's published frequencies (mean overlap 0.80 with {14, 35, 41, 42, 52}, 0.00 with the target's own). On the published checkpoint the same algorithm-only explanation therefore scores HS 0.92 (on T0: 0.05): scores on published models measure memory, not the explanation.
+- **Cost:** all Claude Haiku 5.5 runs so far cost $0.86 in total.
 <!-- END key-results -->
 
 ![Scores per explanation on T0](reports/figures/ladder_T0.png)
@@ -60,6 +61,10 @@ alignment makes any network match any algorithm ([Sutter et al. 2025](https://ar
 - **Worse than hoped (negative result):** HS cannot tell the true Clock explanation from a Pizza explanation with the
   same frequencies, nor a correct per-neuron table from a scrambled one; both keep every frequency subspace intact.
   The secondary matched-neuron correlation catches the scrambled table.
+- **A trap the design caught (post hoc):** when an explanation leaves the frequencies open, the agent fills them in
+  with the *published paper's* frequencies from memory. On the paper's own checkpoint even an algorithm-only
+  explanation then scores like a full one; on our unpublished targets it scores at the floor. Scores on published
+  models measure memory, so the study's conclusions rest on the unpublished targets.
 - **Not yet decided:** with one run per condition most preregistered tests cannot reach significance; they are
   reported as "cannot tell at this N" until rounds 2 and 3.
 

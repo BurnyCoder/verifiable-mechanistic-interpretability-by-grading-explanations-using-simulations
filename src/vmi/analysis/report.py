@@ -27,7 +27,8 @@ def blocks(max_round: int) -> dict[str, str]:
            "key-results": tables.key_results(max_round),
            "grader-sensitivity-T0": tables.grader_sensitivity_table(max_round, "T0", "agent"),
            "grader-sensitivity-compiler-T0": tables.grader_sensitivity_table(max_round, "T0", "compiler"),
-           "explainer-sensitivity-T0": tables.explainer_sensitivity_table("T0")}
+           "explainer-sensitivity-T0": tables.explainer_sensitivity_table("T0"),
+           "frequencies": tables.frequencies_table(max_round)}
     for t in TARGETS:
         if (REPO_ROOT / "results" / "compiler" / t).exists():
             out[f"compiler-{t}"] = tables.compiler_table(t)
@@ -47,6 +48,11 @@ def inject_all(path: Path, generated: dict[str, str]) -> list[str]:
 
 def regenerate(max_round: int) -> dict:
     """Hypotheses, figures and all document tables for one round; returns what was written."""
+    from vmi.analysis import frequencies  # post-hoc memorisation check needs the saved replacement weights
+    from vmi.config import load
+    settings = load()
+    if settings.runs_dir.exists():
+        frequencies.used_frequencies(settings, max_round)
     hyp = hypotheses.write(max_round)
     figs = figures.make_all(max_round)
     gen = blocks(max_round)
