@@ -1,0 +1,79 @@
+{
+  "kl_out": 0.020202215413257077,
+  "argmax_agreement": 0.9946746025530582,
+  "accuracy": 0.9946746025530582,
+  "target_accuracy": 1.0,
+  "sites": {
+    "resid_mid": {
+      "completeness": 0.0,
+      "soundness": 0.13605007710285022,
+      "harmonic": 0.0
+    },
+    "mlp_post": {
+      "completeness": 0.32608009452969633,
+      "soundness": 0.27169972621664074,
+      "harmonic": 0.29641640394552476
+    },
+    "resid_post": {
+      "completeness": 0.0,
+      "soundness": 0.10795193469942577,
+      "harmonic": 0.0
+    }
+  },
+  "hs": 0.09880546798184159,
+  "centred_logit_fvu": 1.9022205867548663,
+  "calibrated_kl": 0.01989600250600695,
+  "calibration_scale": 0.891678659904788,
+  "cka": {
+    "resid_mid": 0.00040070868018393327,
+    "mlp_post": 0.008235264030298527,
+    "resid_post": 0.00025428569492488596
+  },
+  "procrustes": {
+    "resid_mid": 1.9663101833021441,
+    "mlp_post": 1.8596806184892265,
+    "resid_post": 1.9685831756079188
+  },
+  "matched_neuron_corr": 0.0673664791205007,
+  "matched_attention_distance": 0.16804010117198742,
+  "stitching_kl": 11.81967878697201,
+  "embedding_spectrum_cosine": 0.024896369314928918,
+  "failed": false,
+  "error": null,
+  "run_id": "seed__T-paper__W-freq__claudehaiku55-claudecode__tdef__s1",
+  "stage": "seed",
+  "target": "T-paper",
+  "level": "W-freq",
+  "variant": "",
+  "round": 2,
+  "model": "claude-haiku-5-5",
+  "temperature": null,
+  "seed": 1,
+  "selftest": true,
+  "harness": "claudecode",
+  "effort": "medium",
+  "agent": {
+    "exit_code": 0,
+    "seconds": 405,
+    "timeout_s": 3600,
+    "events": 274,
+    "steps": 59,
+    "tool_calls": 20,
+    "errors": 0,
+    "wsl_returncode": 0,
+    "cost_usd": 0.0482,
+    "total_claude_spend_usd": 1.9113,
+    "starter_unchanged": false
+  },
+  "audit": {
+    "flagged": false,
+    "reasons": [],
+    "suspicious_terms": []
+  },
+  "length": {
+    "chars": 3725,
+    "gzip_bytes": 1776,
+    "numbers": 128
+  },
+  "finished": "2026-11-21T23:25:08"
+}
