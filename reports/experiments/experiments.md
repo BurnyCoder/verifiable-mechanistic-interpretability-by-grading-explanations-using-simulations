@@ -7,9 +7,9 @@ no within-condition spread, so they rest on directions and on the deterministic 
 | # | Experiment | Status | Report |
 |---|---|---|---|
 | 00 | Stage 0 — tooling and smoke tests on the dev target (never reported as results) | done | [00-stage0-dev/experiment.md](00-stage0-dev/experiment.md) |
-| 01 | Round 1 (N = 1) — main method → controls → baselines → ablations → hyperparameter → seed sensitivity | running | [01-round1/experiment.md](01-round1/experiment.md) |
-| 02 | Round 2 (N = 3) | planned | – |
-| 03 | Round 3 (N = 10) | planned | – |
+| 01 | Round 1 (N = 1) — main method → controls → baselines → ablations → hyperparameter → seed sensitivity | done | [01-round1/experiment.md](01-round1/experiment.md) |
+| 02 | Round 2 (N = 3) | running | – |
+| 03 | Round 3 (N = 10) | postponed to a later day (user decision, deviation 6) | – |
 
 Learnings across experiments: [learnings.md](learnings.md).
 

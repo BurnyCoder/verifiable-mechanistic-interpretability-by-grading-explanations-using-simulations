@@ -1,0 +1,8 @@
+{"stage": "main", "target": "T0", "level": "E1", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 1, "round_": 2}
+{"stage": "main", "target": "T0", "level": "E2", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 1, "round_": 2}
+{"stage": "main", "target": "T0", "level": "E3", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 1, "round_": 2}
+{"stage": "main", "target": "T0", "level": "E4", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 1, "round_": 2}
+{"stage": "main", "target": "T0", "level": "E1", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 2, "round_": 2}
+{"stage": "main", "target": "T0", "level": "E2", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 2, "round_": 2}
+{"stage": "main", "target": "T0", "level": "E3", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 2, "round_": 2}
+{"stage": "main", "target": "T0", "level": "E4", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 2, "round_": 2}

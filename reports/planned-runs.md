@@ -35,7 +35,7 @@
 | Ablations | E3 math-format, E3 code-format; E3 self-test off (Haiku). Round 1 only: Qwen3.6-35B-A3B, Qwen3.5-9B, Qwen3.5-4B (local) × {E2, E3, E4, W-freq}, stopped after 5 runs at chance (deviation 5) | 15 planned, 8 run / 6 / 21 | — |
 | Hyperparameter sensitivity | effort low, high × {E3, W-freq} (amendment 2: Claude 5.5 rejects custom temperature) | 4 / 8 / 28 | grader and explainer settings re-scored |
 | Seed sensitivity | T1, T2 × {E2, E3, E4, W-freq}; T-new × {E3, E4, W-freq}; T-paper × {E-paper, E1, E3, E4, W-freq} | 16 / 32 / 112 | T-new trained (after freeze); redrawn W-freq/W-scramble; grader fold seeds |
-| **Total agent runs** | 32 Haiku conditions (+ 12 local in round 1) | **37 run / 64 / 224** (325 total; 320 Haiku, 5 local) | |
+| **Total agent runs** | 32 Haiku conditions (+ 12 local in round 1) | **37 run / 64 / 224 postponed** (101 through round 2; round 3 postponed to a later day, deviation 6) | |
 
 Cost and time (amendment 2): Haiku runs took 2–8 minutes and ~$0.02 each on the dev target (≈ $7 for all three
 rounds, inside the $20 cap); local runs took up to 60 minutes of GPU time each and were dropped after round 1's first

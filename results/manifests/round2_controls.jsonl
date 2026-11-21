@@ -1,0 +1,10 @@
+{"stage": "controls", "target": "T0", "level": "E0", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 1, "round_": 2}
+{"stage": "controls", "target": "T0", "level": "W-freq", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 1, "round_": 2}
+{"stage": "controls", "target": "T0", "level": "W-alg", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 1, "round_": 2}
+{"stage": "controls", "target": "T0", "level": "W-role", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 1, "round_": 2}
+{"stage": "controls", "target": "T0", "level": "W-scramble", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 1, "round_": 2}
+{"stage": "controls", "target": "T0", "level": "E0", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 2, "round_": 2}
+{"stage": "controls", "target": "T0", "level": "W-freq", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 2, "round_": 2}
+{"stage": "controls", "target": "T0", "level": "W-alg", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 2, "round_": 2}
+{"stage": "controls", "target": "T0", "level": "W-role", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 2, "round_": 2}
+{"stage": "controls", "target": "T0", "level": "W-scramble", "model": "claude-haiku-5-5", "harness": "claudecode", "seed": 2, "round_": 2}

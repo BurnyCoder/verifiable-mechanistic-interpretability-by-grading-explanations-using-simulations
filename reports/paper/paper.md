@@ -427,7 +427,7 @@ replacement, even from the per-neuron table. The capability threshold between th
 ## 6 Limitations
 
 - **Sample size.** Round 1 has one run per condition; most hypothesis tests cannot reach significance at N = 1, and
-  those verdicts are reported as "cannot tell at this N". Rounds 2 (N = 3) and 3 (N = 10) follow.
+  those verdicts are reported as "cannot tell at this N". Round 2 (N = 3) follows; round 3 (N = 10) is postponed.
 - **One task, one architecture.** All targets are one-layer modular-addition transformers. Whether HS stays informative
   for deeper networks, where linear maps across layers are less constrained, is untested.
 - **One simulator family in the main arm, and it knows the paper.** Claude Haiku 5.5 builds the paper's frequencies

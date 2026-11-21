@@ -77,7 +77,8 @@ Replications on the seed-sensitivity targets (preregistration §5: H1–H3 re-te
 ## Status and next steps
 
 Round 1 (N = 1 per condition) is complete. The local Qwen capability ablation was stopped after five runs, all at
-chance (user decision; preregistration deviation 5), so H5 and H6 cannot be tested. Rounds 2 (N = 3) and 3 (N = 10)
-run the 32 Claude Haiku conditions, then a second metric for sub-frequency structure. Details:
+chance (user decision; preregistration deviation 5), so H5 and H6 cannot be tested. Round 2 (N = 3)
+runs the 32 Claude Haiku conditions; round 3 (N = 10) is postponed to a later day. Open: a second metric for
+sub-frequency structure. Details:
 [paper](paper.pdf), [round-1 report](experiments/01-round1/experiment.md), [self-review](reviews/round1-review.md),
 [results explorer](https://burnycoder.github.io/verifiable-mechanistic-interpretability-by-grading-explanations-using-simulations/).

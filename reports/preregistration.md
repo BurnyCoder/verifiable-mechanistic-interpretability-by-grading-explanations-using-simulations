@@ -260,3 +260,9 @@ analysis code are fixed from that commit on. T-new is trained after it.
    cross-simulator ranking cannot be tested and are reported as "not evaluable", with the completed local runs
    described instead; H5's other half (main simulator ≤ compiler) is reported descriptively. Every Claude Haiku
    condition, and therefore every other hypothesis, is unchanged. The completed local runs stay in `results/runs/`.
+6. **2026-11-21 21:00, round 2, main stage — round 3 (N = 10) postponed (user decision).** The user postponed
+   replicates 3–9 to a later day. Round 2 (N = 3) completes for every condition; the reported verdicts are those at
+   N = 3, labelled "at N = 3 — not yet N = 10", as §6's stopping rule prescribes for a study that ends before round 3.
+   Round 3 is not cancelled: its manifests are written by `vmi manifests 3` unchanged when it resumes, and nothing in
+   the protocol or analysis changes in between. The decision was made during round 2's main stage, after round 1's
+   results and five round-2 runs had been seen; it concerns scheduling, removes no condition and changes no test.
