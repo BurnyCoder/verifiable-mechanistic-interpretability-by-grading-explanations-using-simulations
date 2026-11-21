@@ -26,10 +26,27 @@ def gpu_mem_mib() -> int:
     return int(out.stdout.strip().splitlines()[0])
 
 
+def measure(s, n: int, attempt: str, mem: int, base: int | None) -> dict:
+    """Time one fixed prompt + 256-token generation on the running server; return a result row."""
+    t0 = time.time()
+    r = httpx.post(f"http://127.0.0.1:{s.llm_port}/completion", timeout=1800,
+                   json={"prompt": PROMPT, "n_predict": 256, "temperature": 0.6, "seed": 0,
+                         "cache_prompt": False, "ignore_eos": True}).json()
+    tm = r.get("timings", {})
+    row = {"model": Path(str(s.llm_gguf)).name, "ctx": s.llm_context, "n_cpu_moe": n, "attempt": attempt,
+           "gpu_mem_mib": mem, "gpu_mem_before_mib": base, "prompt_tokens": tm.get("prompt_n"),
+           "prompt_tps": tm.get("prompt_per_second"), "gen_tokens": tm.get("predicted_n"),
+           "gen_tps": tm.get("predicted_per_second"), "wall_s": time.time() - t0}
+    print(row, flush=True)
+    return row
+
+
 def main() -> None:
     s = config.load()
     results = []
-    for n in [int(x) for x in sys.argv[1:]] or [40, 32, 26, 22, 18]:
+    if sys.argv[1:] == ["--attach"]:  # measure the already-running server (configured by .env) without restarting it
+        results.append(measure(s, s.llm_n_cpu_moe, "warm-attached", gpu_mem_mib(), None))
+    for n in [] if sys.argv[1:] == ["--attach"] else [int(x) for x in sys.argv[1:]] or [40, 32, 26, 22, 18]:
         base = gpu_mem_mib()
         try:
             proc = llm_server.start(s, n_cpu_moe=n, wait_s=900)
@@ -40,17 +57,7 @@ def main() -> None:
         try:
             mem = gpu_mem_mib()
             for attempt in ("cold", "warm"):  # the first request pages the memory-mapped weights in
-                t0 = time.time()
-                r = httpx.post(f"http://127.0.0.1:{s.llm_port}/completion", timeout=1800,
-                               json={"prompt": PROMPT, "n_predict": 256, "temperature": 0.6, "seed": 0,
-                                     "cache_prompt": False, "ignore_eos": True}).json()
-                tm = r.get("timings", {})
-                row = {"model": Path(str(s.llm_gguf)).name, "ctx": s.llm_context, "n_cpu_moe": n, "attempt": attempt,
-                       "gpu_mem_mib": mem, "gpu_mem_before_mib": base, "prompt_tokens": tm.get("prompt_n"),
-                       "prompt_tps": tm.get("prompt_per_second"), "gen_tokens": tm.get("predicted_n"),
-                       "gen_tps": tm.get("predicted_per_second"), "wall_s": time.time() - t0}
-                results.append(row)
-                print(row, flush=True)
+                results.append(measure(s, n, attempt, mem, base))
         finally:
             llm_server.stop(proc)
             time.sleep(5)

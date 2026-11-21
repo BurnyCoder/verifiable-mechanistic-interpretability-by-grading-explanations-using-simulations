@@ -1,7 +1,6 @@
 """Starter build script: creates weights.npz with the 11 arrays of ARCHITECTURE.md, all zeros for now.
 
-Replace the zeros with your construction, one section at a time (small edits), and re-run this script and
-selftest.py after each change.
+Replace the zeros with your construction in stages, and re-run this script and selftest.py after each stage.
 """
 
 import numpy as np

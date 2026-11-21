@@ -47,8 +47,13 @@ def opencode_config(settings: Settings, *, model: str, temperature: float, seed:
                          "headerTimeout": 900000, "chunkTimeout": 900000},
             "models": {model: {"modelID": model, "name": model,
                                "capabilities": {"tools": True, "temperature": True},
-                               # 8k output per turn: with a 4k thinking budget, longer turns were repetition loops
-                               "limit": {"context": settings.llm_context, "output": 8192},
+                               # 16k output per turn: ≤4k thinking (server budget) plus one whole-file write; the
+                               # model rewrites build_weights.py in one call (~8k tokens), which an 8k cap truncated
+                               # in stage-0 runs 3 and 4
+                               # input = context − output: OpenCode compacts when a step's tokens near the input
+                               # limit; leaving it implicit compacted at ~33k of 48k (stage-0 run 4)
+                               "limit": {"context": settings.llm_context, "input": settings.llm_context - 16384,
+                                         "output": 16384},
                                # presence_penalty 1.5: Qwen's recommendation against endless repetition in quantized
                                # models (stage-0 run 2 looped on one paragraph inside a file write)
                                "body": {"temperature": temperature, "seed": seed, "presence_penalty": 1.5,
@@ -85,7 +90,7 @@ def prepare_run(settings: Settings, run_dir: Path, *, explanation: str, extra_fi
     task = task.replace("{MINUTES}", str(settings.run_timeout_s // 60)).replace("{STEPS}", str(settings.run_max_steps))
     if not selftest:  # self-test ablation: drop the tool and every mention of it
         task = task.replace("`forward.py` (reference forward pass) and `selftest.py` (checks shapes and task accuracy) are provided; do not edit\n  them. Run `python3 build_weights.py` and then `python3 selftest.py` and fix problems until the self-test passes and\n  the accuracy is as high as you can get it.",
-                            "`forward.py` (reference forward pass) is provided; do not edit it. Run `python3 build_weights.py` and fix\n  problems until it runs.").replace("script and the self-test after each piece", "script after each piece")
+                            "`forward.py` (reference forward pass) is provided; do not edit it. Run `python3 build_weights.py` and fix\n  problems until it runs.").replace("script and the self-test after each stage", "script after each stage")
         assert "selftest" not in task and "self-test" not in task, "self-test ablation still mentions the self-test"
     (work / "TASK.md").write_text(task, encoding="utf-8", newline="\n")
     (work / "EXPLANATION.md").write_text(explanation, encoding="utf-8", newline="\n")

@@ -36,8 +36,8 @@ comment.
 ## Working within your budget
 
 You have about {MINUTES} minutes and {STEPS} steps, and you produce text slowly (roughly 15–20 tokens per second), so a long
-message costs minutes. Do your planning while thinking, not in code comments; keep comments short. Change
-`build_weights.py` in small pieces — one section per edit, at most about 100 lines per tool call — and run the
-script and the self-test after each piece, so that a working `weights.npz` exists early and then improves.
+message costs minutes. Do your planning while thinking, not in code comments; keep comments short. Build up
+`build_weights.py` in stages and run the script and the self-test after each stage, so that a working
+`weights.npz` exists early and then improves.
 
 When you are done, `build_weights.py` and `weights.npz` must exist in this folder. Then stop.
