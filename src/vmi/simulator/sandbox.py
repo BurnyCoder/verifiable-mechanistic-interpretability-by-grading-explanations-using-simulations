@@ -31,6 +31,7 @@ PROMPT_NO_SELFTEST = ("Your current folder contains TASK.md, ARCHITECTURE.md, EX
 def opencode_config(settings: Settings, *, model: str, temperature: float, seed: int, steps: int) -> dict:
     """OpenCode v2 config: one local OpenAI-compatible provider, everything network-capable denied."""
     deny = lambda action: {"action": action, "resource": "*", "effect": "deny"}  # noqa: E731
+    turn_output = max(settings.llm_reasoning_budget, 0) + 8192  # tokens one response may use
     return {
         "$schema": "https://opencode.ai/config.json",
         "update": "disable",
@@ -47,16 +48,14 @@ def opencode_config(settings: Settings, *, model: str, temperature: float, seed:
                          "headerTimeout": 900000, "chunkTimeout": 900000},
             "models": {model: {"modelID": model, "name": model,
                                "capabilities": {"tools": True, "temperature": True},
-                               # 16k output per turn: ≤4k thinking (server budget) plus one whole-file write; the
-                               # model rewrites build_weights.py in one call (~8k tokens), which an 8k cap truncated
-                               # in stage-0 runs 3 and 4
-                               # input = context − output: OpenCode compacts when a step's tokens near the input
-                               # limit; leaving it implicit compacted at ~33k of 48k (stage-0 run 4)
-                               "limit": {"context": settings.llm_context, "input": settings.llm_context - 16384,
-                                         "output": 16384},
-                               # presence_penalty 1.5: Qwen's recommendation against endless repetition in quantized
-                               # models (stage-0 run 2 looped on one paragraph inside a file write)
-                               "body": {"temperature": temperature, "seed": seed, "presence_penalty": 1.5,
+                               # output per turn = thinking budget (server flag) + 8k for one whole-file write
+                               # (~8k tokens; smaller caps truncated it in stage-0 runs 3-5); input = context − output,
+                               # because OpenCode compacts when a step nears the input limit (implicit: at ~33k of 48k)
+                               "limit": {"context": settings.llm_context, "input": settings.llm_context - turn_output,
+                                         "output": turn_output},
+                               # Qwen3.6 model card, "thinking mode for precise coding tasks": temperature 0.6,
+                               # top-p 0.95, top-k 20, min-p 0, presence penalty 0 (1.5 is its general-task value)
+                               "body": {"temperature": temperature, "seed": seed, "presence_penalty": 0.0,
                                         "top_p": 0.95, "top_k": 20, "min_p": 0.0}}},
         }},
         "policies": [

@@ -63,6 +63,30 @@ Newest entries at the bottom. Per-experiment learnings live in each experiment's
   edits of at most ~100 lines with the self-test run after each. Runs that leave the starter untouched are recorded
   (`starter_unchanged`) and score as the all-zero model. The k = 47 confusion itself was the agent's: E3 says the heads
   move every key frequency; the table's k is the frequency of each head's attention pattern.
+- **The model rewrites whole files, and the context filled with its own thinking.** In the fourth smoke run the agent
+  ran the starter, then tried to replace it with a 362-line implementation in one `edit` (failed: old string did not
+  match), then in one `write` (24,762 characters, truncated at 8,192 tokens) — the 100-line guidance was ignored.
+  Every turn's thinking stays in the prompt (prompt tokens grew by the full completion of each turn, e.g.
+  9,688 → 14,068 after a 4,206-token turn), and OpenCode compacted the conversation at ~29k and ~33k tokens of a 48k
+  window; after each compaction the agent re-read all files. It eventually wrote the script through a shell heredoc:
+  first graded agent replacement (accuracy 1.4 %, KL 2.5·10³ nats, HS 0.34, 13 steps, 40-minute cap). Fixes: a 16k
+  per-turn output cap so a whole-file write fits next to ≤4k thinking; context 80k with OpenCode's model input limit set
+  explicitly to context − output; the TASK.md guidance now says "build up in stages" instead of a line limit.
+  Throughput at 80k is unchanged once warm (260–309 prompt / 21 generated tokens/s, 6.9–7.1 GB VRAM); 96k peaked at
+  7.4 GB VRAM and was slower, so it was not used (`results/stage0/llm_tuning.json`). The machine has < 1 GB of free RAM
+  while the server holds ~13.6 GB of the memory-mapped experts, so the first requests after each server start are slow
+  (pages read from disk) — the server is kept running across a batch of runs.
+- **The thinking budget, not the output cap, was the root cause — and the presence penalty was the wrong preset.**
+  The fifth smoke run thought for its full 4,096 tokens (ending mid-question about how to set the embedding norm), then
+  wrote 718 lines (537 distinct) of mostly comment-reasoning until the new 16k cap. Raising the cap only made each
+  failure longer. Re-reading the [Qwen3.6-35B-A3B model card](https://huggingface.co/Qwen/Qwen3.6-35B-A3B) ("Best
+  Practices"): it recommends ≥32,768 output tokens for most queries, and for thinking-mode precise coding
+  temperature 0.6, top-p 0.95, top-k 20, min-p 0 **and presence penalty 0.0** (1.5 is its general-task preset with
+  temperature 1.0; the 1.5 chosen after run 2 came from Ollama's general default and was a mistake for this task).
+  A 4k thinking budget is far outside the model's trained regime, and forcing the end of thinking moved the unfinished
+  design into the code. New settings: presence penalty 0.0, thinking budget 16,384, per-turn output 24,576 (thinking +
+  8k for one whole-file write), OpenCode input limit 57,344 of the 80k context, and a 60-minute run cap (one full turn
+  at ~21 tokens/s takes ~20 minutes; at 40 minutes a run had room for about one and a half turns).
 
 ## Grader and reference compiler (dev target only)
 
