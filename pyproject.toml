@@ -1,0 +1,56 @@
+# pyproject.toml — project metadata, dependencies and tool configuration for the `vmi` pipeline.
+# Global context: managed by uv (https://docs.astral.sh/uv/concepts/projects/config/). `uv sync` builds the
+# local .venv; torch comes from the PyTorch CUDA 13.0 index because the RTX 5070 (Blackwell, sm_120) needs a
+# CUDA >= 12.8 build (https://pytorch.org/get-started/locally/). The target models, their training code and the
+# paper's Fourier analysis are reused from the MIT-licensed `grokviz` package, pinned to an exact commit.
+[project]
+name = "vmi"
+version = "0.1.0"
+description = "Verifiable mechanistic interpretability: grade explanations of a modular-addition transformer by having a weights-blind local LLM agent rebuild the model from the explanation, then comparing outputs (KL) and hidden states."
+readme = "README.md"
+authors = [
+    { name = "Libor Burian (BurnyCoder)" },
+    { name = "Victor Levoso" },
+]
+license = "MIT"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    # Paper-faithful model, training loop, run store and Fourier analysis (pinned commit; MIT).
+    "grokviz @ git+https://github.com/BurnyCoder/visualizing-grokking-modular-addition-in-transformer@d52a8981cc4f491f65c56240694e17ccb2d076aa",
+    "torch>=2.14.1",
+    "numpy>=2.3",
+    "scipy>=1.16",              # Hungarian matching (linear_sum_assignment), stats tests
+    "safetensors>=0.6",
+    "huggingface-hub>=1.0",
+    "python-dotenv>=1.1",
+    "matplotlib>=3.10",         # paper figures
+    "httpx>=0.28",              # health checks against the local llama-server
+]
+
+[project.scripts]
+vmi = "vmi.pipeline:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4",
+]
+
+[build-system]
+requires = ["uv_build>=0.13.6,<0.14.0"]
+build-backend = "uv_build"
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu130" }
+
+[[tool.uv.index]]
+name = "pytorch-cu130"
+url = "https://download.pytorch.org/whl/cu130"
+explicit = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+markers = [
+    "slow: needs downloaded target runs or the GPU",
+    "wsl: needs WSL with bubblewrap",
+]

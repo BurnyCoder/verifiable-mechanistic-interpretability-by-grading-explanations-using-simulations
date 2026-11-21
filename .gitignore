@@ -1,0 +1,54 @@
+# .gitignore — keeps secrets, large binaries and machine-local state out of git.
+# Global context: the repo is public from the first push, so .env (API keys) must never be committed;
+# model weights, checkpoints and agent sandboxes live on D:\AI\vmi-sim and are published to Hugging Face instead.
+
+# --- secrets (never commit) ---
+.env
+.env.*
+!.env.example
+*.credentials.json
+.credentials.json
+
+# --- Python / uv ---
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+build/
+dist/
+
+# --- large or machine-local artefacts (published to Hugging Face, not git) ---
+*.gguf
+*.safetensors
+*.pth
+*.pt
+*.npz
+!tests/fixtures/**/*.npz
+data/
+runs/
+sandboxes/
+llama.cpp/
+
+# --- logs: raw per-run logs are large; curated copies go to results/ ---
+logs/*
+!logs/.gitkeep
+
+# --- LaTeX build by-products (paper.pdf itself is committed) ---
+reports/paper/*.aux
+reports/paper/*.log
+reports/paper/*.out
+reports/paper/*.bbl
+reports/paper/*.blg
+reports/paper/*.toc
+reports/paper/*.fls
+reports/paper/*.fdb_latexmk
+reports/paper/*.synctex.gz
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
