@@ -29,6 +29,11 @@ def _f(x, nd=3):
     return f"{x:.{nd}f}" if isinstance(x, float) else str(x)
 
 
+def _t(temp) -> str:
+    """Sampling temperature as text; None means the simulator's default sampling (Claude 5.5 accepts no other)."""
+    return "default" if temp is None else f"{temp:g}"
+
+
 def compiler_table(target: str) -> str:
     """Reference-compiler scores for every level of one target."""
     d = RES / "compiler" / target
@@ -54,7 +59,7 @@ def runs_table(max_round: int) -> str:
         r = json.loads(p.read_text())
         if r.get("stage") == "dev" or int(r.get("round", 0)) > max_round:
             continue
-        groups[(r["stage"], r["target"], r["level"], r["model"], r["temperature"], r.get("variant", ""))].append(r)
+        groups[(r["stage"], r["target"], r["level"], r["model"], _t(r["temperature"]), r.get("variant", ""))].append(r)
     rows = ["| Stage | Target | Explanation | Simulator | T | Variant | N | failed | accuracy | KL_out ↓ (mean ± sd) | HS ↑ (mean ± sd) |",
             "|---|---|---|---|---|---|---|---|---|---|---|"]
     for k in sorted(groups, key=lambda k: (k[0], k[1], LEVEL_ORDER.index(k[2]) if k[2] in LEVEL_ORDER else 99, k[3], k[4], k[5])):
@@ -63,7 +68,7 @@ def runs_table(max_round: int) -> str:
         kl = np.array([r["kl_out"] for r in rs])
         acc = np.array([r["accuracy"] for r in rs])
         sd = lambda a: f" ± {a.std(ddof=1):.3g}" if len(a) > 1 else ""  # noqa: E731
-        rows.append(f"| {k[0]} | {k[1]} | {k[2]} | {k[3]} | {k[4]:g} | {k[5] or '–'} | {len(rs)} | {sum(r['failed'] for r in rs)} | "
+        rows.append(f"| {k[0]} | {k[1]} | {k[2]} | {k[3]} | {k[4]} | {k[5] or '–'} | {len(rs)} | {sum(r['failed'] for r in rs)} | "
                     f"{acc.mean():.3f} | {kl.mean():.3g}{sd(kl)} | {hs.mean():.3f}{sd(hs)} |")
     return "\n".join(rows)
 
@@ -82,6 +87,100 @@ def hypotheses_table(max_round: int) -> str:
         h = H[k]
         v = h.get("verdict") or "; ".join(f"{a}: {b}" for a, b in h.get("verdicts", {}).items())
         rows.append(f"| {k} | {v} | {h.get('label', h.get('N', h.get('N_runs', '–')))} |")
+    return "\n".join(rows)
+
+
+def _ms(vals, nd=3) -> str:
+    """'mean ± sd' (sample sd, ddof=1) for ≥ 2 values, the value itself for one, '–' for none."""
+    a = np.asarray([v for v in vals if v is not None], float)
+    if not len(a):
+        return "–"
+    m = _f(float(a.mean()), nd)
+    return f"{m} ± {_f(float(a.std(ddof=1)), nd)}" if len(a) > 1 else m
+
+
+def _chars(target: str, level: str):
+    L = RES / "explanations" / target / level / "length.json"
+    return json.loads(L.read_text())["chars"] if L.exists() else None
+
+
+def scoreboard(max_round: int, target: str = "T0") -> str:
+    """Main simulator's runs next to the agent-free reference compiler, per explanation of one target.
+
+    Rows are the main method (true ladder) and the agent controls (no / wrong explanation) at the main simulator's
+    preregistered settings; the compiler columns show what the same explanation yields with no agent at all."""
+    from vmi.analysis.hypotheses import _select, load_runs  # same condition selection as the hypothesis tests
+    runs = [r for r in load_runs(max_round) if not r.get("failed")]
+    rows = ["| Explanation | role | chars | N | agent accuracy | agent KL_out ↓ | agent HS ↑ | agent matched-neuron corr ↑ "
+            "| compiler KL_out ↓ | compiler HS ↑ |", "|---|---|---|---|---|---|---|---|---|---|"]
+    roles = {"E0": "control: no mechanism", "E1": "method", "E2": "method", "E3": "method", "E4": "method",
+             "W-freq": "control: wrong frequencies", "W-alg": "control: wrong algorithm (Pizza)",
+             "W-role": "control: wrong component roles", "W-scramble": "control: scrambled neurons", "E-paper": "published text"}
+    for lv in LEVEL_ORDER:
+        rs = _select(runs, target=target, level=lv)
+        c = (RES / "compiler" / target / f"{lv}.json")
+        c = json.loads(c.read_text()) if c.exists() else None
+        if not rs and not c:
+            continue
+        rows.append(f"| {lv} | {roles.get(lv, '')} | {_chars(target, lv)} | {len(rs)} | {_ms([r['accuracy'] for r in rs])} | "
+                    f"{_ms([r['kl_out'] for r in rs])} | {_ms([r['hs'] for r in rs])} | {_ms([r.get('matched_neuron_corr') for r in rs])} | "
+                    f"{_f(c['kl_out']) if c else '–'} | {_f(c['hs']) if c else '–'} |")
+    return "\n".join(rows)
+
+
+def baselines_table(target: str = "T0") -> str:
+    """No-agent reference points (preregistration §7): what you get without an agent or without an explanation."""
+    rows = ["| Reference point | what it has | n | task accuracy | KL_out ↓ | HS ↑ |", "|---|---|---|---|---|---|"]
+    b = RES / "baselines" / f"{target}.json"
+    ri = RES / "controls" / f"random_init_{target}.json"
+    entries = []
+    if ri.exists():
+        entries.append(("Random initialisation", "nothing (floor)", json.loads(ri.read_text())))
+    if b.exists():
+        d = json.loads(b.read_text())
+        entries += [("Independent retrains", "same recipe, other seeds", d["retrains"]),
+                    ("Logit-distilled students", "M's full output logits, no explanation", d["students"]),
+                    ("Fourier-restricted M", "M's weights, key frequencies only in W_E/W_U", [d["fourier_restricted"]]),
+                    ("Weights dump", f"all {d['weights_dump_length']['numbers']:,} weights", [d["weights_dump"]])]
+    for name, has, rs in entries:
+        rows.append(f"| {name} | {has} | {len(rs)} | {_ms([r['accuracy'] for r in rs])} | {_ms([r['kl_out'] for r in rs])} | "
+                    f"{_ms([r['hs'] for r in rs])} |")
+    return "\n".join(rows)
+
+
+def controls_table(target: str = "T0") -> str:
+    """Deterministic no-agent controls: planted-mechanism calibration (H4b) and wrong-target specificity (H7)."""
+    out = []
+    pc = RES / "controls" / f"planted_calibration_{target}.json"
+    if pc.exists():
+        out += ["| Planted model trained further (steps) | HS ↑ | KL_out | snapshot task accuracy |", "|---|---|---|---|"]
+        out += [f"| {r['step']} | {_f(r['hs'])} | {_f(r['kl_out'])} | {_f(r['snapshot_accuracy'], 4)} |"
+                for r in json.loads(pc.read_text())["rows"]]
+    wt = RES / "controls" / f"wrong_targets_{target}.json"
+    if wt.exists():
+        rows = json.loads(wt.read_text())["rows"]
+        out += ["", "| Replacement | HS vs T0 | best wrong target (HS) | d = HS(T0) − max HS(wrong) |", "|---|---|---|---|"]
+        for r in rows:
+            k = max(r["hs_wrong"], key=r["hs_wrong"].get)
+            out.append(f"| {r['level']} | {_f(r['hs_T0'])} | {k} ({_f(r['hs_wrong'][k])}) | {_f(r['d'])} |")
+    return "\n".join(out) if out else "_not run yet_"
+
+
+def cost_table() -> str:
+    """Claude API spend from the proxy's request ledger (every request, priced at the published rates)."""
+    led = RES / "claude" / "ledger.jsonl"
+    if not led.exists():
+        return "_no Claude runs_"
+    spend, reqs, runs = defaultdict(float), defaultdict(int), defaultdict(set)
+    for line in led.read_text(encoding="utf-8").splitlines():
+        if line.strip():
+            d = json.loads(line)
+            spend[d["model"]] += d.get("cost_usd", 0.0)
+            reqs[d["model"]] += 1
+            runs[d["model"]].add(d["run_id"])
+    rows = ["| Model | runs (incl. checks) | requests | spend (USD) |", "|---|---|---|---|"]
+    rows += [f"| {m} | {len(runs[m])} | {reqs[m]} | {spend[m]:.3f} |" for m in sorted(spend)]
+    rows.append(f"| **total** | {len(set().union(*runs.values()))} | {sum(reqs.values())} | **{sum(spend.values()):.3f}** |")
     return "\n".join(rows)
 
 

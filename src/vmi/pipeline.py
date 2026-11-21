@@ -186,14 +186,17 @@ def served_model(settings: Settings) -> str | None:
         return None
 
 
-def queue(settings: Settings, manifest: Path) -> None:
+def queue(settings: Settings, manifest: Path, only_model: str | None = None) -> None:
     """Run every condition in a JSONL manifest (one JSON object of agent_run kwargs per line) without a result yet.
     Local-model conditions run only while llama-server serves that model; the others are skipped and picked up by
-    a later call with the right server (the queue is resumable)."""
+    a later call with the right server (the queue is resumable). `only_model` restricts the call to one simulator, so
+    a local-model queue and a Claude queue can run side by side without both picking up the same condition."""
     for line in manifest.read_text(encoding="utf-8").splitlines():
         if not line.strip():
             continue
         cond = json.loads(line)
+        if only_model and cond.get("model") != only_model:
+            continue
         if cond.get("harness", settings.harness) != "claudecode":
             want, have = cond.get("model", settings.llm_model), served_model(settings)
             if want != have:
@@ -218,6 +221,7 @@ def main(argv: list[str] | None = None) -> None:
     r.add_argument("--model", default=None, help="model alias (llama-server) or Claude model id (claudecode)")
     q = sub.add_parser("queue")
     q.add_argument("manifest", type=Path)
+    q.add_argument("--only-model", default=None, help="run only this simulator's conditions")
     s = sub.add_parser("serve")
     s.add_argument("--n-cpu-moe", type=int, default=None)
     s.add_argument("--gguf", type=Path, default=None)
@@ -255,7 +259,7 @@ def main(argv: list[str] | None = None) -> None:
             settings = dataclasses.replace(settings, harness=a.harness)
         agent_run(settings, stage=a.stage, target=a.target, level=a.level, seed=a.seed, model=a.model)
     elif a.cmd == "queue":
-        queue(settings, a.manifest)
+        queue(settings, a.manifest, a.only_model)
     elif a.cmd == "serve":
         from vmi.simulator import llm_server
         proc = llm_server.start(settings, n_cpu_moe=a.n_cpu_moe, gguf=a.gguf, alias=a.alias)
@@ -283,9 +287,9 @@ def main(argv: list[str] | None = None) -> None:
     elif a.cmd == "baselines":
         from vmi import nonagent
         nonagent.baselines(settings, a.target)
-    elif a.cmd == "analyse":
-        from vmi.analysis.hypotheses import write
-        log.info("wrote %s", write(a.round))
+    elif a.cmd == "analyse":  # hypotheses + figures + every table in README/reports/paper, from results/
+        from vmi.analysis.report import regenerate
+        log.info("report: %s", json.dumps(regenerate(a.round)))
 
 
 if __name__ == "__main__":

@@ -25,8 +25,12 @@ REPO="$(dirname "$HERE")"
 BASE="$HOME/vmi-sim"
 ID="$(basename "$RUN")"
 B="$BASE/sandboxes/$ID"
-rm -rf "$B"
-mkdir -p "$B/work" "$B/sock" "$B/state/home" "$B/state/config/opencode" "$B/state/data" "$B/state/cache" \
+# Socket dir on a short hashed path: a unix socket path must fit in 107 bytes (sun_path, man 7 unix), and long
+# run IDs under $B overflowed it ("AF_UNIX path too long"). Inside the sandbox it is still /llm/llm.sock.
+K="$BASE/k/$(printf %s "$ID" | md5sum | cut -c1-16)"
+rm -rf "$B" "$K"
+mkdir -p "$K"
+mkdir -p "$B/work" "$B/state/home" "$B/state/config/opencode" "$B/state/data" "$B/state/cache" \
          "$B/state/st" "$B/state/tmp" "$B/out" "$RUN/logs"
 cp -r "$RUN/work/." "$B/work/"
 cp "$RUN/opencode.jsonc" "$B/state/config/opencode/opencode.jsonc"
@@ -37,17 +41,17 @@ cp "$HERE/isolation_check.sh" "$B/state/isolation_check.sh"
 if [ "$MODE" = "claude" ]; then
   # Outside proxy: socket file → https://api.anthropic.com. It adds the API key (which never enters the sandbox),
   # enforces the dollar budget from claude.json and logs full request/response bodies (headers are not logged).
-  python3 "$REPO/src/vmi/simulator/anthropic_proxy.py" "unix:$B/sock/llm.sock" "$RUN/claude.json" "$B/out/wire.log"     >"$B/out/proxy.log" 2>&1 &
+  python3 "$REPO/src/vmi/simulator/anthropic_proxy.py" "unix:$K/llm.sock" "$RUN/claude.json" "$B/out/wire.log"     >"$B/out/proxy.log" 2>&1 &
   RUN_CAP="$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["run_cap_usd"])' "$RUN/claude.json")"
   EFFORT="$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1])).get("effort", "medium"))' "$RUN/claude.json")"
 else
   # Outside relay: socket file → llama-server; logs every byte (full prompts and completions).
-  python3 "$REPO/src/vmi/simulator/relay.py" unix-to-tcp "$B/sock/llm.sock" 127.0.0.1 "$PORT" "$B/out/wire.log" &
+  python3 "$REPO/src/vmi/simulator/relay.py" unix-to-tcp "$K/llm.sock" 127.0.0.1 "$PORT" "$B/out/wire.log" &
 fi
 RELAY=$!
 unset VMI_ANTHROPIC_KEY  # only the proxy needed it
 trap 'kill $RELAY 2>/dev/null' EXIT
-for _ in $(seq 50); do [ -S "$B/sock/llm.sock" ] && break; sleep 0.1; done
+for _ in $(seq 50); do [ -S "$K/llm.sock" ] && break; sleep 0.1; done
 
 if [ "$MODE" = "check" ]; then
   INNER='python3 /opt/vmi/relay.py tcp-to-unix 127.0.0.1 '"$PORT"' /llm/llm.sock & sleep 0.5; exec bash /state/isolation_check.sh '"$PORT"
@@ -77,7 +81,7 @@ bwrap --die-with-parent --new-session --unshare-all --clearenv \
   --ro-bind "$BASE/pylib" /opt/py \
   --ro-bind "$REPO/src/vmi/simulator/relay.py" /opt/vmi/relay.py \
   --ro-bind "$REPO/src/vmi/simulator/harness.py" /opt/vmi/harness.py   "${EXTRA[@]}" \
-  --bind "$B/work" /work --bind "$B/state" /state --bind "$B/sock" /llm \
+  --bind "$B/work" /work --bind "$B/state" /state --bind "$K" /llm \
   --setenv PATH /opt/oc:/usr/bin:/bin --setenv HOME /state/home --setenv PYTHONPATH /opt/py \
   --setenv XDG_CONFIG_HOME /state/config --setenv XDG_DATA_HOME /state/data --setenv XDG_CACHE_HOME /state/cache \
   --setenv XDG_STATE_HOME /state/st --setenv TMPDIR /state/tmp --setenv LANG C.UTF-8 \
@@ -93,5 +97,5 @@ cp -r "$B/work/." "$RUN/work_out/"
 cp "$B/out/"* "$RUN/logs/"
 [ -d "$B/state/data/opencode" ] && cp -r "$B/state/data/opencode" "$RUN/logs/opencode_data"
 gzip -f "$RUN/logs/wire.log" 2>/dev/null || true
-rm -rf "$B"
+rm -rf "$B" "$K"
 exit 0

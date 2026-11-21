@@ -231,3 +231,14 @@ analysis code are fixed from that commit on. T-new is trained after it.
 2. **Stage ordering in round 1.** The local Qwen ablation runs (≈ 12 GPU-hours) run in parallel with the later Haiku
    stages (hyperparameter and seed sensitivity) instead of strictly before them. Stages are graded independently, so
    the ordering changes no result; the planned order was for pacing and pushes.
+3. **2026-11-21, round 1, ablations stage — infrastructure failure excluded and re-run.** The run
+   `ablations__T0__E3-noselftest__…__s0` never reached the model: the API proxy outside the sandbox could not bind
+   its unix socket because the socket path built from the long run ID was 108 bytes, over Linux's 107-byte limit
+   (`OSError: AF_UNIX path too long`, [man 7 unix](https://man7.org/linux/man-pages/man7/unix.7.html)); Claude Code
+   retried 10 times without a single response and the run produced no weights. Fix: the socket directory now lives at
+   a 16-character hash of the run ID (`scripts/run_one.sh`); inside the sandbox the agent still sees `/llm/llm.sock`,
+   so nothing the agent sees changed. The failed record and its proxy log are kept in `results/runs_infra_failed/`
+   and the condition was re-run with the same seed. Rule applied from here on: a run counts as an agent failure only
+   if the agent received at least one model response; runs that never reached the model are infrastructure failures,
+   archived and re-run. Two later conditions (`hyper` W-freq effort low/high) would have hit the same limit and ran
+   with the fix.

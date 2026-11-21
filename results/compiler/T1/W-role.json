@@ -1,0 +1,44 @@
+{
+  "kl_out": 4.727417095414648,
+  "argmax_agreement": 0.013078549612342392,
+  "accuracy": 0.013078549612342392,
+  "target_accuracy": 1.0,
+  "sites": {
+    "resid_mid": {
+      "completeness": 0.9935611763370427,
+      "soundness": 0.9800047852099374,
+      "harmonic": 0.9867364214630916
+    },
+    "mlp_post": {
+      "completeness": 0.0,
+      "soundness": 0.0,
+      "harmonic": 0.0
+    },
+    "resid_post": {
+      "completeness": 0.5803846772031771,
+      "soundness": 0.9655384478832272,
+      "harmonic": 0.7249826479834082
+    }
+  },
+  "hs": 0.5705730231488332,
+  "centred_logit_fvu": 1.000000031958564,
+  "calibrated_kl": 4.727385371541054,
+  "calibration_scale": 0.040902090763799366,
+  "cka": {
+    "resid_mid": 0.8890963736188139,
+    "mlp_post": 0.0,
+    "resid_post": 0.052893097164688686
+  },
+  "procrustes": {
+    "resid_mid": 0.17236787730865677,
+    "mlp_post": 2.0,
+    "resid_post": 1.4141088750959163
+  },
+  "matched_neuron_corr": 0.0,
+  "matched_attention_distance": 0.07904174351718181,
+  "stitching_kl": NaN,
+  "embedding_spectrum_cosine": 0.9640656771562764,
+  "target": "T1",
+  "level": "W-role",
+  "kind": "reference_compiler"
+}

@@ -1,0 +1,44 @@
+{
+  "kl_out": 6.190598712416188e-06,
+  "argmax_agreement": 1.0,
+  "accuracy": 1.0,
+  "target_accuracy": 1.0,
+  "sites": {
+    "resid_mid": {
+      "completeness": 0.9870473356426059,
+      "soundness": 0.9935352761677906,
+      "harmonic": 0.9902806793925732
+    },
+    "mlp_post": {
+      "completeness": 0.9570952903491682,
+      "soundness": 0.9900400307049732,
+      "harmonic": 0.9732889547007791
+    },
+    "resid_post": {
+      "completeness": 0.46797590968960656,
+      "soundness": 0.9969598168307908,
+      "harmonic": 0.6369606102972966
+    }
+  },
+  "hs": 0.866843414796883,
+  "centred_logit_fvu": 0.053238766328993485,
+  "calibrated_kl": 1.600857557633605e-06,
+  "calibration_scale": 1.2612607396747657,
+  "cka": {
+    "resid_mid": 0.9273665575078404,
+    "mlp_post": 0.8328590143879337,
+    "resid_post": 0.0338013609739409
+  },
+  "procrustes": {
+    "resid_mid": 0.16578681534938688,
+    "mlp_post": 0.15561172645960397,
+    "resid_post": 1.6991146206401382
+  },
+  "matched_neuron_corr": 0.773679025779247,
+  "matched_attention_distance": 0.04466787925766434,
+  "stitching_kl": NaN,
+  "embedding_spectrum_cosine": 0.9670711083527201,
+  "target": "T-paper",
+  "level": "E3",
+  "kind": "reference_compiler"
+}

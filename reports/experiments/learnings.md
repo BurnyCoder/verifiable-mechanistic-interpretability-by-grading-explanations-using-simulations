@@ -150,3 +150,23 @@ Newest entries at the bottom. Per-experiment learnings live in each experiment's
   model; `wd1_s1` learned {3, 6, 23, 39} instead of {2, 3, 23, 37, 39} (HS = 0.900). This gives a useful reference:
   two independently trained models with the same frequencies score HS ≈ 0.98
   (`results/training/reproduction_check.json`).
+
+## Round 1 — a unix socket path limit failed one Claude run (2026-11-21)
+
+**What happened.** The no-self-test ablation run ended in 3 minutes with no weights. The transcript showed Claude
+Code retrying the API ten times with `error_status: null` — no HTTP response at all — and the proxy log showed why:
+`OSError: AF_UNIX path too long`. The proxy listens on a unix socket inside the run's sandbox folder, whose name is the
+run ID; `ablations__T0__E3-noselftest__claudehaiku55-claudecode__tdef__s0` made the path 108 bytes, and Linux allows
+107 (`sun_path` is 108 bytes including the terminating NUL; [man 7 unix](https://man7.org/linux/man-pages/man7/unix.7.html)).
+
+**Fix.** The socket now lives in `~/vmi-sim/k/<first 16 hex chars of md5(run ID)>/llm.sock` (≈ 47 bytes for any ID),
+bound to the same `/llm` inside the sandbox. Run IDs with seed ≥ 10 (round 3) would have pushed more conditions over
+the limit, so this would have recurred.
+
+**Swapping a running bash script.** Two runs were executing `run_one.sh` when it had to change. Bash re-reads a script
+file by byte offset as it executes, so editing it in place can make a running script execute shifted lines. A
+10-second experiment confirmed that `mv new run_one.sh` from WSL onto `/mnt/c` keeps the running process on the old
+content, so the fix was swapped in by atomic rename without touching the two runs in progress.
+
+**Learning.** Separate "the agent failed" from "the infrastructure failed" by a mechanical rule (did the agent get at
+least one model response?) and archive, never delete, the failed record.

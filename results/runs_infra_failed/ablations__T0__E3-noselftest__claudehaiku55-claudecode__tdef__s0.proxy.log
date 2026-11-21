@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/mnt/c/Users/Happy/Documents/projects/verifiable-mechanistic-interpretability-by-grading-explanations-using-simulations/src/vmi/simulator/anthropic_proxy.py", line 221, in <module>
+    main()
+  File "/mnt/c/Users/Happy/Documents/projects/verifiable-mechanistic-interpretability-by-grading-explanations-using-simulations/src/vmi/simulator/anthropic_proxy.py", line 215, in main
+    serve(listen, cfg, key, wire_path, workspace)
+  File "/mnt/c/Users/Happy/Documents/projects/verifiable-mechanistic-interpretability-by-grading-explanations-using-simulations/src/vmi/simulator/anthropic_proxy.py", line 199, in serve
+    srv = socketserver.ThreadingUnixStreamServer(listen[5:], handler)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/usr/lib/python3.12/socketserver.py", line 473, in server_bind
+    self.socket.bind(self.server_address)
+OSError: AF_UNIX path too long

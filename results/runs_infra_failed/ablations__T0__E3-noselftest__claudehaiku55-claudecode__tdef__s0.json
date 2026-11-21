@@ -1,0 +1,79 @@
+{
+  "kl_out": 4.727384480759269,
+  "argmax_agreement": 0.008849557522123894,
+  "accuracy": 0.008849557522123894,
+  "target_accuracy": 1.0,
+  "sites": {
+    "resid_mid": {
+      "completeness": 0.0,
+      "soundness": 0.0,
+      "harmonic": 0.0
+    },
+    "mlp_post": {
+      "completeness": 0.0,
+      "soundness": 0.0,
+      "harmonic": 0.0
+    },
+    "resid_post": {
+      "completeness": 0.0,
+      "soundness": 0.0,
+      "harmonic": 0.0
+    }
+  },
+  "hs": 0.0,
+  "centred_logit_fvu": 1.0,
+  "calibrated_kl": 4.727384480759269,
+  "calibration_scale": 2980.9579870348393,
+  "cka": {
+    "resid_mid": 0.0,
+    "mlp_post": 0.0,
+    "resid_post": 0.0
+  },
+  "procrustes": {
+    "resid_mid": 2.0,
+    "mlp_post": 2.0,
+    "resid_post": 2.0
+  },
+  "matched_neuron_corr": 0.0,
+  "matched_attention_distance": 0.2915977033358166,
+  "stitching_kl": NaN,
+  "embedding_spectrum_cosine": 0.0,
+  "failed": true,
+  "error": "no weights.npz produced",
+  "run_id": "ablations__T0__E3-noselftest__claudehaiku55-claudecode__tdef__s0",
+  "stage": "ablations",
+  "target": "T0",
+  "level": "E3",
+  "variant": "noselftest",
+  "round": 1,
+  "model": "claude-haiku-5-5",
+  "temperature": null,
+  "seed": 0,
+  "selftest": false,
+  "harness": "claudecode",
+  "effort": "medium",
+  "agent": {
+    "exit_code": 1,
+    "seconds": 195,
+    "timeout_s": 3600,
+    "events": 14,
+    "steps": 1,
+    "tool_calls": 0,
+    "errors": 1,
+    "wsl_returncode": 0,
+    "cost_usd": 0.0,
+    "total_claude_spend_usd": 0.3141,
+    "starter_unchanged": true
+  },
+  "audit": {
+    "flagged": false,
+    "reasons": [],
+    "suspicious_terms": []
+  },
+  "length": {
+    "chars": 3712,
+    "gzip_bytes": 1772,
+    "numbers": 126
+  },
+  "finished": "2026-11-21T15:05:05"
+}
