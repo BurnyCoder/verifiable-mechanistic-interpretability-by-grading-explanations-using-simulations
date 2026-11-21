@@ -1,0 +1,75 @@
+{
+  "kl_out": 43.243741027728746,
+  "argmax_agreement": 0.005403712115279191,
+  "accuracy": 0.005403712115279191,
+  "target_accuracy": 1.0,
+  "sites": {
+    "resid_mid": {
+      "completeness": 0.7653728815702325,
+      "soundness": 0.9950589041422513,
+      "harmonic": 0.8652321629005815
+    },
+    "mlp_post": {
+      "completeness": 0.0,
+      "soundness": 0.0,
+      "harmonic": 0.0
+    },
+    "resid_post": {
+      "completeness": 0.043341830319701735,
+      "soundness": 0.9968545170275047,
+      "harmonic": 0.08307181512532806
+    }
+  },
+  "hs": 0.3161013260086365,
+  "centred_logit_fvu": 2.00877287714996,
+  "calibrated_kl": 4.727417497320581,
+  "calibration_scale": 0.00033546262791391533,
+  "cka": {
+    "resid_mid": 0.895671629065262,
+    "mlp_post": 0.0,
+    "resid_post": 0.040112933043397386
+  },
+  "procrustes": {
+    "resid_mid": 0.27452813963012446,
+    "mlp_post": 2.0,
+    "resid_post": 1.5854256725319207
+  },
+  "matched_neuron_corr": 0.0,
+  "matched_attention_distance": 0.27918430092732444,
+  "stitching_kl": NaN,
+  "embedding_spectrum_cosine": 0.989299534748496,
+  "failed": false,
+  "error": null,
+  "run_id": "dev__dev__E3__qwen3635ba3b__t0.6__s4",
+  "stage": "dev",
+  "target": "dev",
+  "level": "E3",
+  "variant": "",
+  "round": 0,
+  "model": "qwen3.6-35b-a3b",
+  "temperature": 0.6,
+  "seed": 4,
+  "selftest": true,
+  "agent": {
+    "exit_code": 124,
+    "seconds": 2611,
+    "timeout_s": 2400,
+    "events": 35,
+    "steps": 7,
+    "tool_calls": 12,
+    "errors": 0,
+    "wsl_returncode": 0,
+    "starter_unchanged": false
+  },
+  "audit": {
+    "flagged": false,
+    "reasons": [],
+    "suspicious_terms": []
+  },
+  "length": {
+    "chars": 3275,
+    "gzip_bytes": 1606,
+    "numbers": 113
+  },
+  "finished": "2026-11-21T06:40:16"
+}

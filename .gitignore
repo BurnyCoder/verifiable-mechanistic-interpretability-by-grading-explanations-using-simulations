@@ -27,9 +27,10 @@ dist/
 *.pt
 *.npz
 !tests/fixtures/**/*.npz
-data/
-runs/
-sandboxes/
+# root-level only: agent run folders and sandboxes; results/runs/*.json (graded results) ARE committed
+/data/
+/runs/
+/sandboxes/
 llama.cpp/
 
 # --- logs: raw per-run logs are large; curated copies go to results/ ---

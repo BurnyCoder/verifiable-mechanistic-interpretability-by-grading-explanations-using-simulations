@@ -1,0 +1,76 @@
+{
+  "kl_out": 18.620285117153532,
+  "argmax_agreement": 0.008771242853786514,
+  "accuracy": 0.008771242853786514,
+  "target_accuracy": 1.0,
+  "sites": {
+    "resid_mid": {
+      "completeness": 0.08644202680009339,
+      "soundness": 0.9934202811440879,
+      "harmonic": 0.15904483735504618
+    },
+    "mlp_post": {
+      "completeness": 0.07579389940913972,
+      "soundness": 0.9909671356148968,
+      "harmonic": 0.14081741070129436
+    },
+    "resid_post": {
+      "completeness": 0.030879701887793765,
+      "soundness": 0.9948062482166682,
+      "harmonic": 0.059900051039826846
+    }
+  },
+  "hs": 0.11992076636538913,
+  "centred_logit_fvu": 1.163574241402127,
+  "calibrated_kl": 4.7273913436140464,
+  "calibration_scale": 0.00033546262797554106,
+  "cka": {
+    "resid_mid": 0.23795139884991245,
+    "mlp_post": 0.1968196901341067,
+    "resid_post": 0.01053520002715795
+  },
+  "procrustes": {
+    "resid_mid": 1.4114108987078402,
+    "mlp_post": 1.450150851515707,
+    "resid_post": 1.857397144852311
+  },
+  "matched_neuron_corr": 0.10753298046843307,
+  "matched_attention_distance": 0.279180341113009,
+  "stitching_kl": NaN,
+  "embedding_spectrum_cosine": 0.9823575015169552,
+  "failed": false,
+  "error": null,
+  "run_id": "dev__dev__E4__qwen359b-mini__t0.6__s9",
+  "stage": "dev",
+  "target": "dev",
+  "level": "E4",
+  "variant": "",
+  "round": 0,
+  "model": "qwen3.5-9b",
+  "temperature": 0.6,
+  "seed": 9,
+  "selftest": true,
+  "harness": "mini",
+  "agent": {
+    "exit_code": 0,
+    "seconds": 3143,
+    "timeout_s": 3600,
+    "events": 234,
+    "steps": 46,
+    "tool_calls": 44,
+    "errors": 3,
+    "wsl_returncode": 0,
+    "starter_unchanged": false
+  },
+  "audit": {
+    "flagged": false,
+    "reasons": [],
+    "suspicious_terms": []
+  },
+  "length": {
+    "chars": 50849,
+    "gzip_bytes": 21069,
+    "numbers": 7833
+  },
+  "finished": "2026-11-21T11:05:33"
+}

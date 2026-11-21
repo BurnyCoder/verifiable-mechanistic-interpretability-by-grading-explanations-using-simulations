@@ -1,0 +1,76 @@
+{
+  "kl_out": 2209.468164317873,
+  "argmax_agreement": 0.00947607486882293,
+  "accuracy": 0.00947607486882293,
+  "target_accuracy": 1.0,
+  "sites": {
+    "resid_mid": {
+      "completeness": 0.32321501121287843,
+      "soundness": 0.9954361107011288,
+      "harmonic": 0.4879833465199917
+    },
+    "mlp_post": {
+      "completeness": 0.30581591932346075,
+      "soundness": 0.9968282780352179,
+      "harmonic": 0.46804178281849623
+    },
+    "resid_post": {
+      "completeness": 0.018398462424917716,
+      "soundness": 0.9971545559298028,
+      "harmonic": 0.036130286252966284
+    }
+  },
+  "hs": 0.3307184718638181,
+  "centred_logit_fvu": 4106.4195324220655,
+  "calibrated_kl": 4.85955472764259,
+  "calibration_scale": 0.0003354626279032871,
+  "cka": {
+    "resid_mid": 0.6283172672710855,
+    "mlp_post": 0.6336088776756594,
+    "resid_post": 0.01760022459887834
+  },
+  "procrustes": {
+    "resid_mid": 0.8646556781514452,
+    "mlp_post": 0.8969319832173954,
+    "resid_post": 1.8004936635864452
+  },
+  "matched_neuron_corr": 0.0110301390516469,
+  "matched_attention_distance": 0.27325848620840254,
+  "stitching_kl": NaN,
+  "embedding_spectrum_cosine": 0.9823575015169551,
+  "failed": false,
+  "error": null,
+  "run_id": "dev__dev__E3__qwen3635ba3b-mini__t0.6__s7",
+  "stage": "dev",
+  "target": "dev",
+  "level": "E3",
+  "variant": "",
+  "round": 0,
+  "model": "qwen3.6-35b-a3b",
+  "temperature": 0.6,
+  "seed": 7,
+  "selftest": true,
+  "harness": "mini",
+  "agent": {
+    "exit_code": 0,
+    "seconds": 3608,
+    "timeout_s": 3600,
+    "events": 192,
+    "steps": 38,
+    "tool_calls": 38,
+    "errors": 0,
+    "wsl_returncode": 0,
+    "starter_unchanged": false
+  },
+  "audit": {
+    "flagged": false,
+    "reasons": [],
+    "suspicious_terms": []
+  },
+  "length": {
+    "chars": 3625,
+    "gzip_bytes": 1738,
+    "numbers": 113
+  },
+  "finished": "2026-11-21T09:07:57"
+}
