@@ -35,8 +35,8 @@ comment.
 
 ## Working within your budget
 
-You have about {MINUTES} minutes and {STEPS} steps, and you produce text slowly (roughly 15–20 tokens per second), so a long
-message costs minutes. Do your planning while thinking, not in code comments; keep comments short. Build up
+You have about {MINUTES} minutes and {STEPS} steps, and generating a long message takes time, so very long messages
+cost minutes. Do your planning while thinking, not in code comments; keep comments short. Build up
 `build_weights.py` in stages and run the script and the self-test after each stage, so that a working
 `weights.npz` exists early and then improves.
 
