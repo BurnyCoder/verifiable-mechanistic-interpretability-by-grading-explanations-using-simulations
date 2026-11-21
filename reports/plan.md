@@ -2,6 +2,22 @@
 
 *Approved plan, copied verbatim from the planning session on 2026-11-21. Progress against it: [progress.md](progress.md).*
 
+## Changes since approval (kept up to date; the approved plan below is unchanged for the record)
+
+| When | Change | Why | Where recorded |
+|---|---|---|---|
+| Stage 0 | Throughput fallback rules applied; context, thinking budget and sampling preset of Qwen3.6-35B-A3B tuned on the dev target | stage-0 smoke runs | amendment 1, `experiments/learnings.md` |
+| Stage 0 | OpenCode replaced by a custom bash-only harness (mini-SWE-agent design) for the local models | OpenCode truncation/compaction failures; your suggestion | amendment 2 |
+| Stage 0 | **Claude Haiku 5.5 in Claude Code becomes the main simulator** (API credits, $20 cap, Haiku → Sonnet → Opus only while the cheaper one stays at chance); local Qwens become the capability ablation (3 models × 4 explanations) | every local Qwen stayed at chance on the dev target; your instruction | amendment 2, memory note on the Claude budget |
+| Stage 0 | Temperature sweep replaced by Claude effort low/high (Claude 5.5 accepts no other sampling) | API constraint | amendment 2 |
+| Round 1 | 44 conditions per round instead of 40 | amendment 2 | `planned-runs.md` |
+| Round 1 | Four post-freeze deviations: analysis code aligned with amendment 2; local Qwen ablations in parallel with later Haiku stages; one infrastructure failure re-run (unix socket path limit); NaN stitching metric repaired | bugs and pacing | end of `preregistration.md` |
+| Round 1 | Post-hoc memorisation analysis (frequencies built into each replacement) | the simulator fills gaps with the paper's published frequencies | `experiments/01-round1/experiment.md` |
+| Round 1 | Results explorer on GitHub Pages; Hugging Face repo and collection | plan deliverables | README |
+
+Rounds 2 (N = 3) and 3 (N = 10) start only after every round-1 condition, including the local Qwen ablations, has
+N = 1 (your instruction: N = 1 of everything first).
+
 
 ## Context (the plan addresses the user as "you")
 
