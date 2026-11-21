@@ -186,7 +186,7 @@ def main(argv: list[str] | None = None) -> None:
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("explain").add_argument("target")
     sub.add_parser("compile").add_argument("target")
-    sub.add_parser("check")
+    sub.add_parser("check").add_argument("--claude", action="store_true", help="Claude-mode plumbing check (~$0.01)")
     r = sub.add_parser("run")
     r.add_argument("target")
     r.add_argument("level")
@@ -215,6 +215,11 @@ def main(argv: list[str] | None = None) -> None:
         explain(settings, a.target)
     elif a.cmd == "compile":
         compile_and_grade(settings, a.target)
+    elif a.cmd == "check" and a.claude:
+        from vmi.simulator.runner import claude_check
+        info = claude_check(settings, settings.runs_dir / "_checks")
+        _dump(RESULTS / "claude" / f"check_{time.strftime('%Y%m%dT%H%M%S')}.json", info)
+        log.info("claude check: %s", json.dumps({k: v for k, v in info.items() if k != "proxy_log"}))
     elif a.cmd == "check":
         from vmi.simulator.runner import isolation_check
         lines = isolation_check(settings, settings.runs_dir / "_checks")

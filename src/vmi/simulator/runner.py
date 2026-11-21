@@ -150,10 +150,12 @@ def run_agent(settings: Settings, run_dir: Path, mode: str = "agent") -> dict:
     sink(f"start mode={mode}")
     model = json.loads((run_dir / "run.json").read_text())["model"]
     env = None
-    if mode == "claude":  # the key goes only to the proxy outside the sandbox (WSLENV forwards it to WSL)
-        from vmi.config import anthropic_key
-        env = {**os.environ, "VMI_ANTHROPIC_KEY": anthropic_key(),
-               "WSLENV": ":".join(filter(None, [os.environ.get("WSLENV", ""), "VMI_ANTHROPIC_KEY/u"]))}
+    if mode == "claude":  # credentials go only to the proxy outside the sandbox (WSLENV forwards them to WSL)
+        from vmi.config import anthropic_credentials
+        key, workspace = anthropic_credentials()
+        env = {**os.environ, "VMI_ANTHROPIC_KEY": key, "VMI_ANTHROPIC_WORKSPACE_ID": workspace,
+               "WSLENV": ":".join(filter(None, [os.environ.get("WSLENV", ""), "VMI_ANTHROPIC_KEY/u",
+                                                "VMI_ANTHROPIC_WORKSPACE_ID/u"]))}
     t0 = time.time()
     proc = subprocess.run(["wsl.exe", "-d", WSL_DISTRO, "--", "bash", script, to_wsl(run_dir), str(settings.llm_port),
                            str(settings.run_timeout_s), model if mode == "claude" else f"local/{model}", mode],
@@ -169,6 +171,19 @@ def run_agent(settings: Settings, run_dir: Path, mode: str = "agent") -> dict:
     if ef.exists():
         exit_info = json.loads(ef.read_text())
     return {**exit_info, **write_transcript(run_dir), "wsl_returncode": proc.returncode}
+
+
+def claude_check(settings: Settings, scratch: Path, model: str = "claude-haiku-5-5") -> dict:
+    """Plumbing check of the Claude mode (sandbox → relay → proxy → API) with one tiny request; returns the summary."""
+    import dataclasses
+    from vmi.simulator.sandbox import prepare_run
+
+    run_dir = prepare_run(settings, scratch / "claude_check", explanation="(plumbing check)", extra_files={},
+                          meta={"condition": "claude_check"}, model=model)
+    (run_dir / "prompt.txt").write_text("Reply with the single word OK. Do not use any tools.", encoding="utf-8")
+    info = run_agent(dataclasses.replace(settings, run_timeout_s=180), run_dir, mode="claude")
+    info["proxy_log"] = (run_dir / "logs" / "proxy.log").read_text(encoding="utf-8", errors="replace")[-2000:]
+    return info
 
 
 def isolation_check(settings: Settings, scratch: Path) -> list[str]:

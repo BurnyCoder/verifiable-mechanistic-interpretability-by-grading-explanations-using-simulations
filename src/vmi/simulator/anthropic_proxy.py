@@ -101,7 +101,7 @@ def usage_from_body(body: bytes, content_type: str) -> tuple[dict, str | None]:
     return usage, model
 
 
-def make_handler(cfg: dict, key: str, wire_path: str):
+def make_handler(cfg: dict, key: str, wire_path: str, workspace: str = ""):
     """Build the request handler class bound to this run's config."""
     up = urlsplit(cfg.get("upstream", "https://api.anthropic.com"))
 
@@ -154,6 +154,8 @@ def make_handler(cfg: dict, key: str, wire_path: str):
             wire(f"=== {time.strftime('%Y-%m-%dT%H:%M:%S')} REQUEST POST {path}\n{body.decode('utf-8', 'replace')}\n")
             headers = {k: v for k, v in self.headers.items() if k.lower() not in DROP_HEADERS}
             headers.update({"x-api-key": key, "accept-encoding": "identity", "content-length": str(len(body))})
+            if workspace:  # required for keys not scoped to a workspace
+                headers["anthropic-workspace-id"] = workspace
             conn_cls = http.client.HTTPSConnection if up.scheme == "https" else http.client.HTTPConnection
             kw = {"context": ssl.create_default_context()} if up.scheme == "https" else {}
             try:
@@ -190,9 +192,9 @@ def make_handler(cfg: dict, key: str, wire_path: str):
     return Handler
 
 
-def serve(listen: str, cfg: dict, key: str, wire_path: str):
+def serve(listen: str, cfg: dict, key: str, wire_path: str, workspace: str = ""):
     """Start the proxy on "unix:/path" or "tcp:HOST:PORT" in a background thread; return the server."""
-    handler = make_handler(cfg, key, wire_path)
+    handler = make_handler(cfg, key, wire_path, workspace)
     if listen.startswith("unix:"):
         srv = socketserver.ThreadingUnixStreamServer(listen[5:], handler)
     else:
@@ -207,9 +209,10 @@ def main() -> None:
     listen, cfg_path, wire_path = sys.argv[1:4]
     cfg = json.loads(open(cfg_path, encoding="utf-8").read())
     key = os.environ.pop("VMI_ANTHROPIC_KEY", "")
+    workspace = os.environ.pop("VMI_ANTHROPIC_WORKSPACE_ID", "")
     if not key:
         sys.exit("VMI_ANTHROPIC_KEY is not set")
-    serve(listen, cfg, key, wire_path)
+    serve(listen, cfg, key, wire_path, workspace)
     print(f"proxy listening on {listen}; spent so far ${spent(cfg['ledger']):.4f} of ${cfg['cap_usd']}", flush=True)
     threading.Event().wait()
 

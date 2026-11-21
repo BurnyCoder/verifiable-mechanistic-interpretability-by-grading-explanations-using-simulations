@@ -91,9 +91,11 @@ def load() -> Settings:
     )
 
 
-def anthropic_key() -> str:
-    """The Anthropic API key from .env, read only for Claude runs (passed to the proxy outside the sandbox)."""
-    key = dotenv_values(REPO_ROOT / ".env").get("ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_API_KEY")
+def anthropic_credentials() -> tuple[str, str]:
+    """(API key, workspace id) from .env, read only for Claude runs and passed only to the proxy outside the sandbox.
+    The workspace id is required when the key is not scoped to a workspace (API error seen in the plumbing check)."""
+    env = dotenv_values(REPO_ROOT / ".env")
+    key = env.get("ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_API_KEY")
     if not key:
         raise KeyError("ANTHROPIC_API_KEY is not set in .env")
-    return key
+    return key, env.get("ANTHROPIC_WORKSPACE_ID") or os.environ.get("ANTHROPIC_WORKSPACE_ID", "")

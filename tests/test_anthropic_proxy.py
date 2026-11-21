@@ -58,7 +58,7 @@ def proxy(tmp_path):
     up = _upstream(seen)
     cfg = {"upstream": f"http://127.0.0.1:{up.server_port}", "models": ["claude-haiku-5-5"], "run_id": "r1",
            "ledger": str(tmp_path / "ledger.jsonl"), "cap_usd": 1.0, "run_cap_usd": 1.0, "reserve_usd": 0.0}
-    srv = ap.serve("tcp:127.0.0.1:0", cfg, KEY, str(tmp_path / "wire.log"))
+    srv = ap.serve("tcp:127.0.0.1:0", cfg, KEY, str(tmp_path / "wire.log"), workspace="wrkspc_test")
     yield srv.server_address[1], seen, cfg, tmp_path
     srv.shutdown()
     up.shutdown()
@@ -69,6 +69,7 @@ def test_forwards_with_key_and_prices_usage(proxy):
     status, body = _post(port, {"model": "claude-haiku-5-5", "messages": []})
     assert status == 200 and "message_delta" in body
     assert seen[0]["x-api-key"] == KEY  # real key upstream, placeholder replaced
+    assert seen[0]["anthropic-workspace-id"] == "wrkspc_test"
     row = json.loads((tmp / "ledger.jsonl").read_text().splitlines()[0])
     assert row["cost_usd"] == pytest.approx((1000 * 0.10 + 2000 * 0.50) / 1e6)
     assert KEY not in (tmp / "wire.log").read_text()
