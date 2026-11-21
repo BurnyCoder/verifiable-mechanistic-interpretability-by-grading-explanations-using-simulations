@@ -49,6 +49,6 @@ def write_round(r: int, out_dir: Path | None = None) -> list[Path]:
     for stage in STAGES:
         p = out_dir / f"round{r}_{stage}.jsonl"
         rows = [{**c, "seed": s, "round_": r} for s in ROUND_SEEDS[r] for c in conditions(stage)]
-        p.write_text("\n".join(json.dumps(x) for x in rows) + "\n", encoding="utf-8")
+        p.write_text("\n".join(json.dumps(x) for x in rows) + "\n", encoding="utf-8", newline="\n")
         paths.append(p)
     return paths
