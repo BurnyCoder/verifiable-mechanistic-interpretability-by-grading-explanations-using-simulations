@@ -141,5 +141,44 @@
     "gen_tokens": 256,
     "gen_tps": 20.79094799629481,
     "wall_s": 16.646488904953003
+  },
+  {
+    "model": "Qwen3.6-35B-A3B-UD-IQ4_XS.gguf",
+    "ctx": 81920,
+    "n_cpu_moe": 34,
+    "attempt": "cold-attached",
+    "gpu_mem_mib": 6941,
+    "gpu_mem_before_mib": null,
+    "prompt_tokens": 1281,
+    "prompt_tps": 4.2678223152115145,
+    "gen_tokens": 256,
+    "gen_tps": 3.499686133050903,
+    "wall_s": 373.73806047439575
+  },
+  {
+    "model": "Qwen3.6-35B-A3B-UD-IQ4_XS.gguf",
+    "ctx": 81920,
+    "n_cpu_moe": 34,
+    "attempt": "warm-attached",
+    "gpu_mem_mib": 6947,
+    "gpu_mem_before_mib": null,
+    "prompt_tokens": 1281,
+    "prompt_tps": 307.4940697572261,
+    "gen_tokens": 256,
+    "gen_tps": 21.99309158182077,
+    "wall_s": 15.938787698745728
+  },
+  {
+    "model": "Qwen3.6-35B-A3B-UD-IQ4_XS.gguf",
+    "ctx": 81920,
+    "n_cpu_moe": 34,
+    "attempt": "warm-attached",
+    "gpu_mem_mib": 7027,
+    "gpu_mem_before_mib": null,
+    "prompt_tokens": 1281,
+    "prompt_tps": 327.60480988307756,
+    "gen_tokens": 256,
+    "gen_tps": 20.381992102337744,
+    "wall_s": 16.644423007965088
   }
 ]

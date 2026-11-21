@@ -33,6 +33,8 @@ def measure(s, n: int, attempt: str, mem: int, base: int | None) -> dict:
                    json={"prompt": PROMPT, "n_predict": 256, "temperature": 0.6, "seed": 0,
                          "cache_prompt": False, "ignore_eos": True}).json()
     tm = r.get("timings", {})
+    if not tm:  # e.g. 503 "Loading model": never record an empty measurement
+        raise RuntimeError(f"no timings in server response: {r}")
     row = {"model": Path(str(s.llm_gguf)).name, "ctx": s.llm_context, "n_cpu_moe": n, "attempt": attempt,
            "gpu_mem_mib": mem, "gpu_mem_before_mib": base, "prompt_tokens": tm.get("prompt_n"),
            "prompt_tps": tm.get("prompt_per_second"), "gen_tokens": tm.get("predicted_n"),
