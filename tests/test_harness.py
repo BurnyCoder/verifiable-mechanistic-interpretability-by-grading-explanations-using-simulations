@@ -47,6 +47,16 @@ def _server(requests: list):
     return srv
 
 
+def test_fit_context_elides_oldest_middle_messages():
+    msgs = [{"role": "system", "content": "s"}, {"role": "user", "content": "task"}] + [
+        {"role": "assistant" if i % 2 else "user", "content": f"m{i}"} for i in range(10)]
+    cfg = {"context_tokens": 1000, "max_tokens": 200}
+    assert harness.fit_context(msgs, cfg, last_total=100) == 0  # far from the 800-token input limit
+    n = harness.fit_context(msgs, cfg, last_total=790)
+    assert n == 2 and msgs[2]["content"] == msgs[3]["content"] == harness.ELIDED
+    assert msgs[1]["content"] == "task" and [m["content"] for m in msgs[-6:]] == [f"m{i}" for i in range(4, 10)]
+
+
 def test_harness_loop(tmp_path, capsys):
     requests: list = []
     srv = _server(requests)

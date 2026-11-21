@@ -111,6 +111,22 @@ def shorten(text: str, limit: int) -> str:
     return f"{text[:half]}\n[... {len(text) - limit} characters elided ...]\n{text[-half:]}"
 
 
+ELIDED = "[earlier message elided to fit the context window]"
+
+
+def fit_context(messages: list[dict], cfg: dict, last_total: int, keep_recent: int = 6) -> int:
+    """When the last request's tokens near the input limit (context − per-turn output), replace the oldest half of the
+    middle messages with a short note (system prompt, task and the last `keep_recent` messages stay). Returns the
+    number of messages elided. Stage-0 run 10 ended when the linear history passed the 80k context."""
+    limit = cfg.get("context_tokens", 0) - cfg["max_tokens"]
+    if limit <= 0 or last_total < 0.85 * limit:
+        return 0
+    middle = [m for m in messages[2:len(messages) - keep_recent] if m["content"] != ELIDED]
+    for m in middle[:max(1, (len(middle) + 1) // 2)]:
+        m["content"] = ELIDED
+    return max(1, (len(middle) + 1) // 2) if middle else 0
+
+
 def observe(cmd: str, cwd: str, timeout_s: int) -> tuple[str, str]:
     """Run one action; return (output for the model, output for the log)."""
     try:
@@ -134,9 +150,12 @@ def run(cfg: dict, task: str) -> str:
                 {"role": "user", "content": INSTANCE.format(task=task, done=DONE)}]
     emit("text", text=f"[harness] prompt: {messages[1]['content']}")
     format_errors = 0
+    last_total = 0  # prompt + completion tokens of the previous request
     for step in range(1, cfg["step_limit"] + 1):
         if time.time() - t0 > cfg["time_limit_s"]:
             return "TimeExceeded"
+        if n := fit_context(messages, cfg, last_total):
+            emit("text", text=f"[harness] elided {n} old messages to fit the context window")
         emit("step_start", step=step)
         try:
             resp = query(cfg, messages)
@@ -155,6 +174,7 @@ def run(cfg: dict, task: str) -> str:
             content = thinking
         emit("text", text=content)
         emit("step_finish", reason=reason, tokens=resp.get("usage"))
+        last_total = int((resp.get("usage") or {}).get("total_tokens") or 0)
         if reason == "length":  # cut off: keep what was written, say so, let the model continue
             messages.append({"role": "assistant", "content": shorten(content, MAX_KEPT_REPLY)})
             note = (f"Your last response was cut off at the output limit ({cfg['max_tokens']} tokens including "

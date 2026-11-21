@@ -109,6 +109,25 @@ Newest entries at the bottom. Per-experiment learnings live in each experiment's
   user messages (so the chat template keeps only the latest thinking), a truncated reply kept with a note, same
   sandbox, relay, limits, sampling and event format. Smoke run 7 changed harness and explanation text at once (one hour
   per run); this confound is stated wherever the switch is reported.
+- **Harness bug: replies without a closed thinking tag.** Smoke run 7 ended after 3 minutes on three "format errors"
+  although each reply was a correct THOUGHT plus one bash block: the model had not closed its thinking tag, so
+  llama-server's reasoning parser returned everything in `reasoning_content` and `content` was empty. The harness now
+  parses `reasoning_content` when `content` is empty (with a test).
+- **With the harness the protocol problems are gone, but the agent is still at chance.** Smoke run 8 (E3, harness):
+  all files read in 4 minutes, one 14-minute design turn, then a build–self-test–fix cycle every 2–3 minutes for 38
+  steps, ending cleanly at the time limit. Every build stayed at chance (best accuracy 0.98 %; graded: 0.95 %,
+  HS 0.33). Its construction was conceptually wrong: a and b share the same embedding dimensions, products were
+  attempted with a hand-made polarisation trick on the mixed coordinates, every neuron wrote to the same two output
+  dimensions, and it used neither the stated neuron form nor the allowed least-squares read-out. This now looks like
+  the capability limit of a 3B-active model on this construction task rather than a protocol problem.
+- **Claude Code mode (user decision: only if all Qwens stay at chance; Haiku → Sonnet → Opus; API credits, $20
+  cap).** The same offline sandbox, with Claude Code pointed at the in-sandbox relay; outside, a proxy
+  (`src/vmi/simulator/anthropic_proxy.py`) adds the API key and workspace id (neither enters the sandbox), allows only
+  /v1/messages and the run's models, rejects server-side tools with internet access, prices each response's usage
+  into `results/claude/ledger.jsonl` before completing it, and refuses requests that would exceed the total or per-run
+  cap. A plumbing check (`vmi check --claude`) first failed with "This API key is not scoped to a workspace" (fixed by
+  sending `anthropic-workspace-id`), then passed at $0.0002. A pre-push secret scan (`scripts/check_secrets.py`, also a
+  test) checks every tracked file for the exact key values and real key formats.
 
 ## Grader and reference compiler (dev target only)
 

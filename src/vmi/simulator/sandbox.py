@@ -44,6 +44,7 @@ def harness_config(settings: Settings, *, model: str, temperature: float, seed: 
     """Config of the custom bash-only harness (harness.py), read inside the sandbox."""
     return {"url": f"http://127.0.0.1:{settings.llm_port}/v1/chat/completions", "model": model,
             "max_tokens": turn_output(settings), "sampling": sampling(temperature, seed),
+            "context_tokens": settings.llm_context,  # the harness elides old messages before the prompt overflows
             "step_limit": settings.run_max_steps, "time_limit_s": settings.run_timeout_s - 60,  # exit before the kill
             "request_timeout_s": settings.run_timeout_s, "command_timeout_s": 120, "cwd": "/work"}
 
