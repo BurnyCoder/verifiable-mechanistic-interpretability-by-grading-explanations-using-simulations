@@ -87,6 +87,28 @@ Newest entries at the bottom. Per-experiment learnings live in each experiment's
   design into the code. New settings: presence penalty 0.0, thinking budget 16,384, per-turn output 24,576 (thinking +
   8k for one whole-file write), OpenCode input limit 57,344 of the 80k context, and a 60-minute run cap (one full turn
   at ~21 tokens/s takes ~20 minutes; at 40 minutes a run had room for about one and a half turns).
+- **A bigger thinking budget did not resolve the design either.** In the sixth smoke run (coding preset, 16k budget)
+  each of three turns used the full 16k thinking tokens (~15 minutes) and then took a trivial action (run the starter,
+  re-read files); one whole-file write after 40k characters of thinking was again mostly comments (414 of 512 lines)
+  and was truncated. The run ended at chance (starter unchanged, accuracy 0.0088, HS 0). The comments showed where it
+  was stuck: how ReLU neurons obtain *products* of a- and b-terms when attention delivers their weighted sum.
+- **The true explanation was vaguer than the wrong one — a design flaw, fixed.** The Clock text (E1–E4, W-freq,
+  W-role, W-scramble) said only "the ReLU neurons form products", while the Pizza text (W-alg) stated the neuron
+  function exactly, ReLU(cos(w_k a + φ) + cos(w_k b + φ)); the false explanation was therefore easier to implement,
+  which would bias H2. Checked on the dev target that the precise Clock statement is true: the a- and b-terms of each
+  neuron's pre-activation have median amplitude ratio 0.999 and median phase difference 0.1°, quadratic terms are
+  smaller (median amplitude 0.33 vs 1.50), and one frequency explains a median 97.9 % of pre-activation variance. The
+  Clock MLP step (and the math/code format variants) now states pre-activation ≈ bias + A·[cos(w_k a + φ) +
+  cos(w_k b + φ)] and that the ReLU of this sum contains the products; E-paper keeps the paper's original wording.
+- **Custom harness instead of OpenCode.** Several stage-0 failures were OpenCode behaviour rather than model
+  behaviour: truncated replies dropped from the history (so retries repeated them), the session ending after three
+  truncations, compaction at a fraction of the window followed by re-reading every file, and every turn's thinking
+  kept in the prompt. Following the user's suggestion (switch harness if the agent stays at chance), a minimal
+  harness reusing [mini-SWE-agent](https://github.com/SWE-agent/mini-swe-agent)'s design was added
+  (`src/vmi/simulator/harness.py`): bash as the only tool, one command per reply, linear history, observations as
+  user messages (so the chat template keeps only the latest thinking), a truncated reply kept with a note, same
+  sandbox, relay, limits, sampling and event format. Smoke run 7 changed harness and explanation text at once (one hour
+  per run); this confound is stated wherever the switch is reported.
 
 ## Grader and reference compiler (dev target only)
 

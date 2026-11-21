@@ -15,7 +15,8 @@ from vmi.simulator import harness
 
 pytestmark = pytest.mark.skipif(shutil.which("bash") is None, reason="needs bash")
 
-REPLIES = [  # (finish_reason, content)
+REPLIES = [  # (finish_reason, content); "" content = reply only in reasoning_content (unclosed thinking tag)
+    ("stop", ""),
     ("stop", "THOUGHT: make a file.\n\n```bash\necho hello > out.txt && cat out.txt\n```"),
     ("length", "THOUGHT: a very long design that was cut off"),
     ("stop", "two blocks\n```bash\nls\n```\n```bash\nls\n```"),
@@ -29,8 +30,9 @@ def _server(requests: list):
             body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
             requests.append(body)
             reason, content = REPLIES[len(requests) - 1]
+            thinking = "THOUGHT: look.\n\n```bash\nls\n```" if not content else "thinking"
             out = json.dumps({"choices": [{"finish_reason": reason, "message": {"content": content,
-                              "reasoning_content": "thinking"}}], "usage": {"prompt_tokens": 1}}).encode()
+                              "reasoning_content": thinking}}], "usage": {"prompt_tokens": 1}}).encode()
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
             self.send_header("Content-Length", str(len(out)))
@@ -53,15 +55,16 @@ def test_harness_loop(tmp_path, capsys):
            "command_timeout_s": 10, "cwd": str(tmp_path)}
     status = harness.run(cfg, "Do the task.")
     srv.shutdown()
-    assert status == "Submitted" and len(requests) == 4
+    assert status == "Submitted" and len(requests) == 5
     assert (tmp_path / "out.txt").read_text().strip() == "hello"
-    second = requests[1]["messages"]
+    assert "<returncode>0</returncode>" in requests[1]["messages"][-1]["content"]  # the reasoning-only reply ran
+    second = requests[2]["messages"]
     assert second[-1]["role"] == "user" and "hello" in second[-1]["content"]  # observation as a user message
     assert all("reasoning_content" not in m for m in second)  # old thinking is not sent back
-    third = requests[2]["messages"]
-    assert third[-2] == {"role": "assistant", "content": REPLIES[1][1]} and "cut off" in third[-1]["content"]
-    assert "Format error" in requests[3]["messages"][-1]["content"]
+    third = requests[3]["messages"]
+    assert third[-2] == {"role": "assistant", "content": REPLIES[2][1]} and "cut off" in third[-1]["content"]
+    assert "Format error" in requests[4]["messages"][-1]["content"]
     events = [json.loads(line) for line in capsys.readouterr().out.splitlines()]
     kinds = [e["type"] for e in events]
-    assert kinds.count("step_finish") == 4 and kinds.count("tool_use") == 2
+    assert kinds.count("step_finish") == 5 and kinds.count("tool_use") == 3
     assert {"output-limit", "format"} <= {e["part"]["error"]["type"] for e in events if e["type"] == "error"}

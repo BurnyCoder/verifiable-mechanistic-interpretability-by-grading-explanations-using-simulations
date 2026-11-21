@@ -149,6 +149,10 @@ def run(cfg: dict, task: str) -> str:
         thinking, content = msg.get("reasoning_content") or "", msg.get("content") or ""
         if thinking:
             emit("reasoning", text=thinking)
+        if not content.strip() and thinking.strip():
+            # the model answered without closing its thinking tag, so the server's reasoning parser put the whole
+            # reply into reasoning_content (stage-0 run 7: three correct actions rejected as empty)
+            content = thinking
         emit("text", text=content)
         emit("step_finish", reason=reason, tokens=resp.get("usage"))
         if reason == "length":  # cut off: keep what was written, say so, let the model continue
