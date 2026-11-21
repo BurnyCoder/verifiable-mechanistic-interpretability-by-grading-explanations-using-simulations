@@ -268,6 +268,27 @@ def frequencies_table(max_round: int, model: str = "claude-haiku-5-5") -> str:
     return "\n".join(rows)
 
 
+def ablations_table(max_round: int, target: str = "T0") -> str:
+    """Ablation and hyperparameter variants next to the unablated condition (main simulator) and the local simulators."""
+    from vmi.analysis.hypotheses import LOCAL_MODELS, MAIN_MODEL, _select, load_runs
+    runs = load_runs(max_round)
+    spec = [("none (main condition)", "E3", "", MAIN_MODEL), ("explanation as maths", "E3", "fmt-math", MAIN_MODEL),
+            ("explanation as code", "E3", "fmt-code", MAIN_MODEL), ("self-test removed", "E3", "noselftest", MAIN_MODEL),
+            ("effort low", "E3", "effort-low", MAIN_MODEL), ("effort high", "E3", "effort-high", MAIN_MODEL),
+            ("none (main condition)", "W-freq", "", MAIN_MODEL), ("effort low", "W-freq", "effort-low", MAIN_MODEL),
+            ("effort high", "W-freq", "effort-high", MAIN_MODEL)]
+    spec += [(f"simulator {m}", lv, "", m) for m in LOCAL_MODELS for lv in ("E2", "E3", "E4", "W-freq")]
+    rows = ["| Change | Explanation | Simulator | N | task accuracy | KL_out ↓ | HS ↑ | matched-neuron corr ↑ |",
+            "|---|---|---|---|---|---|---|---|"]
+    for change, lv, variant, model in spec:
+        rs = [r for r in _select(runs, target=target, level=lv, variant=variant, model=model) if not r.get("failed")]
+        if rs:
+            rows.append(f"| {change} | {lv} | {model} | {len(rs)} | {_ms([r['accuracy'] for r in rs])} | "
+                        f"{_ms([r['kl_out'] for r in rs])} | {_ms([r['hs'] for r in rs])} | "
+                        f"{_ms([r.get('matched_neuron_corr') for r in rs])} |")
+    return "\n".join(rows)
+
+
 def predictions_table(max_round: int, plain: bool = False) -> str:
     """Preregistered prediction vs. observation per hypothesis (main simulator), with the formal verdict beside it.
 

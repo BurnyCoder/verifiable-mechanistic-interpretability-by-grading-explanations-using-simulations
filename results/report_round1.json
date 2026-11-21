@@ -7,7 +7,8 @@
     "reports\\figures\\planted_T0.png",
     "reports\\figures\\trajectory_T0.png",
     "reports\\figures\\length_T0.png",
-    "reports\\figures\\simulators_T0.png"
+    "reports\\figures\\simulators_T0.png",
+    "reports\\figures\\examples_T0.png"
   ],
   "filled": {
     "README.md": [
@@ -15,7 +16,8 @@
       "baselines-T0",
       "key-results",
       "replications",
-      "predictions-plain"
+      "predictions-plain",
+      "ablations-T0"
     ],
     "reports/summary.md": [
       "key-results",
@@ -42,6 +44,7 @@
       "stitching-T0",
       "predictions",
       "replications",
+      "ablations-T0",
       "compiler-T0",
       "compiler-T1",
       "compiler-T2",

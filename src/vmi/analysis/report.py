@@ -30,7 +30,8 @@ def blocks(max_round: int) -> dict[str, str]:
            "explainer-sensitivity-T0": tables.explainer_sensitivity_table("T0"),
            "frequencies": tables.frequencies_table(max_round), "stitching-T0": tables.stitching_table(max_round, "T0"),
            "predictions": tables.predictions_table(max_round), "replications": tables.replications_table(max_round),
-           "predictions-plain": tables.predictions_table(max_round, plain=True)}
+           "predictions-plain": tables.predictions_table(max_round, plain=True),
+           "ablations-T0": tables.ablations_table(max_round, "T0")}
     for t in TARGETS:
         if (REPO_ROOT / "results" / "compiler" / t).exists():
             out[f"compiler-{t}"] = tables.compiler_table(t)

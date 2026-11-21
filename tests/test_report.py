@@ -52,6 +52,14 @@ def test_predictions_cover_every_hypothesis_and_match_rule():
         assert "| H1 |" in tables.predictions_table(1)
 
 
+def test_ablations_table_lists_the_unablated_condition_first():
+    text = tables.ablations_table(1)
+    lines = text.splitlines()
+    assert lines[0].startswith("| Change |") and len(lines) >= 2
+    if len(lines) > 2:  # the main condition comes first so every variant reads against it
+        assert lines[2].startswith("| none (main condition) | E3 |")
+
+
 def test_key_results_report_the_target_swap_when_present():
     import json
     fq = tables.RES / "frequencies_round1.json"
