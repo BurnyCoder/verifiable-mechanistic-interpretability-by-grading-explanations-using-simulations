@@ -64,8 +64,10 @@ def to_model(arrays: dict[str, np.ndarray], device: str | torch.device = "cpu") 
     """Build a GrokTransformer holding these weights (strict load; the causal-mask buffer comes from the class)."""
     model = GrokTransformer(ModelShape())  # random init, immediately overwritten below
     sd = model.state_dict()  # includes the 'mask' buffer, which is fixed and not part of the schema
+    model = model.double()  # keep the agent's float64 values exactly (graded in float64)
+    sd = model.state_dict()
     for name, (key, _) in SCHEMA.items():
-        sd[key] = torch.as_tensor(arrays[name], dtype=torch.float32)
+        sd[key] = torch.as_tensor(arrays[name], dtype=torch.float64)
     model.load_state_dict(sd, strict=True)
     return model.to(device).eval()
 

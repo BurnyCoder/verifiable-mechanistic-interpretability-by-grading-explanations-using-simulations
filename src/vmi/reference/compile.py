@@ -60,6 +60,14 @@ def _forward_to_mlp(W: dict) -> tuple[np.ndarray, np.ndarray]:
     return resid_mid, post
 
 
+def _ridge(X: np.ndarray, Y: np.ndarray, rel: float = 1e-8) -> np.ndarray:
+    """Ridge least squares (XᵀX + λI)⁻¹XᵀY with λ = rel·tr(XᵀX)/d: like lstsq, but keeps weights moderate when
+    features are nearly collinear (huge cancelling weights would be fragile)."""
+    G = X.T @ X
+    lam = rel * np.trace(G) / G.shape[0] + 1e-12
+    return np.linalg.solve(G + lam * np.eye(G.shape[0]), X.T @ Y)
+
+
 def _logit_target(spec: dict, freqs: list[int], amps: dict) -> np.ndarray:
     """The stated logit formula on all inputs: [p², 113]."""
     a, b = _inputs()
@@ -122,7 +130,6 @@ def compile_spec(spec: dict) -> dict[str, np.ndarray]:
         resid_mid, _ = _forward_to_mlp(W)
         a, b = _inputs()
         X = np.concatenate([resid_mid, np.ones((P * P, 1))], 1)
-        pinv = np.linalg.pinv(X)  # one pseudo-inverse serves all 512 neurons
         targets = np.zeros((P * P, D_MLP))
         for row in neurons[:D_MLP]:
             k = int(row["freq"])
@@ -132,37 +139,46 @@ def compile_spec(spec: dict) -> dict[str, np.ndarray]:
                 + row["sum_amp"] * np.cos(w * (a + b) - math.radians(row["sum_phase"])) \
                 + row["diff_amp"] * np.cos(w * (a - b) - math.radians(row["diff_phase"]))
             targets[:, int(row["neuron"])] = f if k in K_m else row["bias"]  # W-role: frequency absent → constant
-        sol = pinv @ targets  # [129, 512]
+        sol = _ridge(X, targets)  # [129, 512]
         W["W_in"] = sol[:-1].T
         W["b_in"] = sol[-1]
-    else:  # neurons of frequency k with evenly spaced phases read cos(wa+φ) + cos(wb+φ)
+    else:  # neurons of frequency k, evenly spaced phases φ, target pre-activation cos(wa+φ) + cos(wb+φ)
         clusters = spec.get("neuron_clusters") or {k: D_MLP // len(K_m) for k in K_m}
         counts = {int(k): int(n) for k, n in clusters.items() if int(k) in K_m}
         total = sum(counts.values())
         if total > D_MLP:  # rescale proportionally if the stated sizes exceed the layer
             counts = {k: n * D_MLP // total for k, n in counts.items()}
+        resid_mid, _ = _forward_to_mlp(W)
+        a, b = _inputs()
+        X = np.concatenate([resid_mid, np.ones((P * P, 1))], 1)
+        targets = np.full((P * P, D_MLP), -1.0)  # unused neurons: constant −1 → dead after ReLU
         i = 0
         for k, n in counts.items():
+            w = 2 * math.pi * k / P
             for j in range(n):
                 phi = 2 * math.pi * j / max(n, 1)
-                if k in tok:
-                    ic, is_ = tok[k]
-                    for h in range(N_HEADS):  # each head block holds A·v_a + (1−A)·v_b; four heads sum to 2(v_a+v_b)
-                        W["W_in"][i, block[h] + ic] = 0.5 * math.cos(phi)
-                        W["W_in"][i, block[h] + is_] = -0.5 * math.sin(phi)
+                # least squares picks the head-block combination that best yields the symmetric linear form, so
+                # attention patterns that depend on a and b (Clock heads) are used rather than ignored
+                targets[:, i] = np.cos(w * a + phi) + np.cos(w * b + phi) if k in tok else 0.0
                 i += 1
-        W["b_in"][i:] = -1.0  # unused neurons stay dead
-    # 4. read-out: least squares from neuron activations to the stated logit formula, factorised into W_out, W_U
-    _, post = _forward_to_mlp(W)
+        sol = _ridge(X, targets)
+        W["W_in"] = sol[:-1].T
+        W["b_in"] = sol[-1]
+    # 4. read-out: least squares from neuron activations (plus the residual stream the unembedding also sees) to the
+    #    stated logit formula; the neuron part is factorised by SVD into W_out and W_U through dedicated output dims
+    resid_mid, post = _forward_to_mlp(W)
+    used = slice(0, out0)  # residual dims in use before the MLP (token, flags, head blocks)
     amps = spec.get("logit_amplitudes") or {}
     T = _logit_target(spec, K_m, amps)
-    Xp = np.concatenate([post, np.ones((P * P, 1))], 1)
-    L = np.linalg.lstsq(Xp, T - T.mean(1, keepdims=True), rcond=None)[0]  # [513, 113]
-    U, S, Vt = np.linalg.svd(L, full_matrices=False)
+    Xp = np.concatenate([post, resid_mid[:, used], np.ones((P * P, 1))], 1)
+    L = _ridge(Xp, T - T.mean(1, keepdims=True))  # [512 + out0 + 1, 113]
+    L_post = np.concatenate([L[:D_MLP], L[-1:]], 0)  # neuron weights + bias row → through W_out
+    U, S, Vt = np.linalg.svd(L_post, full_matrices=False)
     r = int(min((S > S[0] * 1e-8).sum(), D_MODEL - out0))  # rank that fits the free dimensions
     W["W_out"][out0:out0 + r] = (U[:-1, :r] * S[:r]).T
     W["b_out"][out0:out0 + r] = U[-1, :r] * S[:r]
     W["W_U"][out0:out0 + r, :P] = Vt[:r]
+    W["W_U"][used, :P] = L[D_MLP:D_MLP + out0]  # direct path: resid_mid dims read by the unembedding
     if not amps:  # scale from the stated loss (or the default) by bisection on log-scale
         base = Xp @ L
         target = float(spec.get("loss_all_inputs") or DEFAULT_LOSS)

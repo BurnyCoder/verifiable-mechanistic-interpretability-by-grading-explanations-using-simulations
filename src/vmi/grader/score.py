@@ -63,9 +63,15 @@ def grade_acts(acts_m: Acts, acts_r: Acts, target: GrokTransformer, replacement:
 
 
 def grade_models(target: GrokTransformer, replacement: GrokTransformer, **kw) -> dict:
-    """Grade replacement against target (both GrokTransformer) on the grading device."""
+    """Grade replacement against target (both GrokTransformer) on the grading device, in float64.
+
+    float64 matches the agent's numpy self-test: a replacement whose weights rely on large cancelling terms must not
+    pass the self-test and then fail grading because of float32 rounding (targets are float32 checkpoints, so casting
+    them up is exact).
+    """
     dev = device()
-    target, replacement = target.to(dev).eval(), replacement.to(dev).eval()
+    target = target.to(dev, torch.float64).eval()
+    replacement = replacement.to(dev, torch.float64).eval()
     return grade_acts(collect(target, dev), collect(replacement, dev), target, replacement, **kw)
 
 

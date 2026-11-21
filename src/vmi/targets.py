@@ -56,10 +56,11 @@ def resolve(name_or_run: str) -> Target:
     return Target(name_or_run, run_id, split_seed=s)
 
 
-def run_dir(settings: Settings, run_id: str) -> Path:
-    """Folder of a run: downloaded runs live in data/grokking-runs, runs trained here in data/trained."""
-    for base in (settings.runs_store, settings.data_dir / "trained"):
-        if (base / run_id / "meta.json").exists():
+def run_dir(settings: Settings, run_id: str, prefer_trained: bool = False) -> Path:
+    """Folder of a complete run: downloaded runs live in data/grokking-runs, runs trained here in data/trained."""
+    bases = [settings.runs_store, settings.data_dir / "trained"]
+    for base in (bases[::-1] if prefer_trained else bases):
+        if (base / run_id / "meta.json").exists() and (base / run_id / "checkpoints.safetensors").exists():
             return base / run_id
     raise FileNotFoundError(f"run {run_id} not found under {settings.runs_store} or {settings.data_dir / 'trained'}")
 
