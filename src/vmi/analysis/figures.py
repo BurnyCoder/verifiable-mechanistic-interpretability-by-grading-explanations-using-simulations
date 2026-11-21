@@ -233,6 +233,55 @@ def fig_simulators(max_round: int, target: str = "T0") -> Path | None:
     return _save(fig, f"simulators_{target}")
 
 
+def fig_examples(max_round: int, target: str = "T0") -> Path | None:
+    """Output examples: which frequencies each network actually built, against the target's (ground truth).
+
+    One panel per network, bars = per-frequency norm of W_L = W_U·W_out (grokviz `wl_fourier_norms`, cos and sin
+    combined; paper Fig. 3), each panel scaled to its own maximum; shaded columns mark the target's key frequencies.
+    Panels: the target, the main simulator's replacements for E3 (true), E1 (algorithm only), W-freq and W-alg, one
+    independent retrain and one random initialisation. HS against the target is printed in each panel title."""
+    import torch
+    from grokviz import fourier as gf
+    from grokviz import metrics as gm
+    from grokviz.model import GrokTransformer
+    from vmi import targets, weights
+    from vmi.config import load
+    from vmi.grader.score import grade_models
+    settings = load()
+    runs = [r for r in load_runs(max_round) if not r.get("failed")]
+    M = targets.load_model(settings, target).double()
+    F, _ = gf.fourier_basis(M.cfg.d_vocab - 1 if hasattr(M, "cfg") else 113)
+    panels = [("target " + target + " (ground truth)", M, INK2, None)]
+    for lv, colour in (("E3", TRUE), ("E1", TRUE), ("W-freq", CTRL), ("W-alg", CTRL)):
+        rs = sorted(_select(runs, target=target, level=lv), key=lambda r: r["seed"])
+        npz = rs and settings.runs_dir / rs[0]["run_id"] / "work_out" / "weights.npz"
+        if npz and npz.exists():
+            panels.append((f"agent, {lv}", weights.to_model(weights.load_npz(npz)).double(), colour, rs[0]["hs"]))
+    retrain = targets.resolve("wd1_s2" if targets.resolve(target).run_id != "wd1_s2" else "wd1_s3").run_id
+    for name, model in ((f"independent retrain ({retrain})", targets.load_model(settings, retrain).double()),
+                        ("random initialisation", GrokTransformer(seed=1000).double())):
+        panels.append((name, model, REF, grade_models(M, model, secondary=False)["hs"]))
+    key = set(json.loads((RES / "explanations" / target / "analysis.json").read_text())["key_freqs"])
+    fig, axes = plt.subplots(len(panels), 1, figsize=(7.2, 1.05 * len(panels)), sharex=True)
+    for ax, (name, model, colour, hs) in zip(axes, panels):
+        with torch.no_grad():
+            norms = gf.frequency_norms(gm.wl_fourier_norms(model.cpu(), F)).numpy()  # grading moved some models to the GPU
+        k = np.arange(1, len(norms) + 1)
+        for f in key:
+            ax.axvspan(f - 0.5, f + 0.5, color=GRID, zorder=0)
+        ax.bar(k, norms / max(norms.max(), 1e-12), width=0.8, color=colour, zorder=2)
+        ax.set_ylim(0, 1.05)
+        ax.set_yticks([0, 1])
+        ax.grid(axis="x", visible=False)
+        ax.set_title(name + ("" if hs is None else f" — HS {hs:.2f}"), loc="left", fontsize=8, pad=2)
+    axes[-1].set_xlabel("frequency k (shaded: the target's key frequencies)")
+    fig.supylabel("W_L Fourier norm / max", fontsize=8)
+    fig.suptitle(f"Which frequencies each network built (target {target}, round {max_round}, first run per condition)",
+                 x=0.01, ha="left", fontsize=10, y=1.0)
+    fig.tight_layout()
+    return _save(fig, f"examples_{target}")
+
+
 def fig_architecture() -> Path:
     """Pipeline diagram (no data): explainer → weights-blind offline agent → grader, with the agent-free compiler path."""
     from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
@@ -284,5 +333,5 @@ def fig_architecture() -> Path:
 def make_all(max_round: int) -> list[Path]:
     """Every figure whose inputs exist (missing inputs are skipped, never faked)."""
     figs = [fig_architecture(), fig_ladder(max_round), fig_kl_vs_hs(max_round), fig_planted(), fig_trajectory(),
-            fig_length(max_round), fig_simulators(max_round)]
+            fig_length(max_round), fig_simulators(max_round), fig_examples(max_round)]
     return [p for p in figs if p]

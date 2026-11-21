@@ -32,7 +32,7 @@ preregistered before any result. First results (round 1, one run per condition �
 - **Copying behaviour does not copy the mechanism:** independent retrains (HS 0.12) and logit-distilled students (HS 0.23, KL 2.38e-06) stay at the random-initialisation floor (HS 0.24).
 - **Negative result:** the primary HS does not separate the Pizza explanation (W-alg, HS 0.89) or the scrambled neuron table (W-scramble, HS 0.92) from the true explanations; the secondary matched-neuron correlation separates W-scramble (0.62) from E4 (0.89).
 - **Memorisation (post hoc):** when the explanation gives no frequencies (E0, E1), the simulator's 2 replacement(s) on unpublished targets use the paper's published frequencies (mean overlap 0.80 with {14, 35, 41, 42, 52}, 0.00 with the target's own). Grading the same weights against the published checkpoint (target swap): E0: HS 0.00 against T0, 0.63 against the published checkpoint; E1: HS 0.05 against T0, 0.95 against the published checkpoint. A separate algorithm-only run on the published checkpoint scores HS 0.92: scores on published models measure memory, not the explanation.
-- **Cost:** all Claude Haiku 5.5 runs so far cost $0.97 in total.
+- **Cost:** all Claude Haiku 5.5 runs so far cost $1.13 in total.
 <!-- END key-results -->
 
 Output KL alone ranks a wrong-frequency explanation, independent retrains and distilled students as good as or better
@@ -225,6 +225,13 @@ output KL and low HS. Output KL alone would rank all of these at or above the tr
 bottom. Keeping only T0's key-frequency components in its embedding and unembedding leaves HS almost unchanged: the
 key frequencies carry nearly all of what HS measures.
 
+![Output examples: per-frequency norm of W_L = W_U·W_out for the target and for one network per condition, each scaled to its maximum; shaded columns are the target's key frequencies.](../figures/examples_T0.png)
+
+The output examples show what the scores summarise. The E3 replacement builds the target's frequencies; the E1
+replacement builds the published checkpoint's frequencies (Section 4.6); W-freq builds other frequencies; the Pizza
+replacement (W-alg) builds the same frequencies as the target, which is why HS cannot separate it; an independent
+retrain converges to a different frequency set; a random network has a flat spectrum.
+
 ### 4.3 Calibration, specificity and training dynamics
 
 <!-- BEGIN controls-T0 -->
@@ -255,6 +262,29 @@ T0's checkpoints, HS rises during circuit formation in step with the fall of the
 ![HS against explanation length (characters) on T0.](../figures/length_T0.png)
 
 ### 4.5 Ablations, sensitivity and other targets
+
+Ablations and hyperparameter variants on T0, next to the unablated condition:
+
+<!-- BEGIN ablations-T0 -->
+| Change | Explanation | Simulator | N | task accuracy | KL_out ↓ | HS ↑ | matched-neuron corr ↑ |
+|---|---|---|---|---|---|---|---|
+| none (main condition) | E3 | claude-haiku-5-5 | 1 | 1.000 | 0.023 | 0.939 | 0.828 |
+| explanation as maths | E3 | claude-haiku-5-5 | 1 | 1.000 | 7.16e-04 | 0.911 | 0.791 |
+| explanation as code | E3 | claude-haiku-5-5 | 1 | 1.000 | 0.002 | 0.918 | 0.805 |
+| self-test removed | E3 | claude-haiku-5-5 | 1 | 1.000 | 0.001 | 0.964 | 0.805 |
+| effort low | E3 | claude-haiku-5-5 | 1 | 0.562 | 1.974 | 0.922 | 0.720 |
+| effort high | E3 | claude-haiku-5-5 | 1 | 1.000 | 0.002 | 0.923 | 0.805 |
+| none (main condition) | W-freq | claude-haiku-5-5 | 1 | 1.000 | 9.31e-04 | 0.055 | 0.030 |
+| effort low | W-freq | claude-haiku-5-5 | 1 | 0.770 | 1.030 | 0.114 | 0.095 |
+| effort high | W-freq | claude-haiku-5-5 | 1 | 1.000 | 0.002 | 0.098 | 0.030 |
+| simulator qwen3.5-4b | E2 | qwen3.5-4b | 1 | 0.009 | 4.727 | 0.000 | 0.000 |
+| simulator qwen3.5-4b | E3 | qwen3.5-4b | 1 | 0.009 | 4.727 | 0.000 | 0.000 |
+| simulator qwen3.5-4b | E4 | qwen3.5-4b | 1 | 0.009 | 4.727 | 0.000 | 0.000 |
+| simulator qwen3.5-4b | W-freq | qwen3.5-4b | 1 | 0.009 | 6.066 | 0.000 | 1.41e-16 |
+| simulator qwen3.5-9b | E2 | qwen3.5-9b | 1 | 0.009 | 7.628 | 0.000 | 0.000 |
+<!-- END ablations-T0 -->
+
+All agent runs of the round:
 
 <!-- BEGIN runs -->
 | Stage | Target | Explanation | Simulator | T | Variant | N | failed | accuracy | KL_out ↓ (mean ± sd) | HS ↑ (mean ± sd) |
@@ -621,8 +651,8 @@ the preregistered threshold stays the analysis default.*
 <!-- BEGIN cost -->
 | Model | runs (incl. checks) | requests | spend (USD) |
 |---|---|---|---|
-| claude-haiku-5-5 | 47 | 420 | 0.971 |
-| **total** | 47 | 420 | **0.971** |
+| claude-haiku-5-5 | 56 | 476 | 1.131 |
+| **total** | 56 | 476 | **1.131** |
 <!-- END cost -->
 
 ## AI statement
