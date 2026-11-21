@@ -1,0 +1,79 @@
+{
+  "kl_out": 0.0005142358176742077,
+  "argmax_agreement": 1.0,
+  "accuracy": 1.0,
+  "target_accuracy": 1.0,
+  "sites": {
+    "resid_mid": {
+      "completeness": 0.22984267979108974,
+      "soundness": 0.08673348957288796,
+      "harmonic": 0.12594161911249319
+    },
+    "mlp_post": {
+      "completeness": 0.31388380161611673,
+      "soundness": 0.2931454483103362,
+      "harmonic": 0.3031603757257412
+    },
+    "resid_post": {
+      "completeness": 0.18475978452461383,
+      "soundness": 0.11897548123092694,
+      "harmonic": 0.14474370778946866
+    }
+  },
+  "hs": 0.19128190087590102,
+  "centred_logit_fvu": 1.2087009853894157,
+  "calibrated_kl": 2.1362414674829976e-05,
+  "calibration_scale": 1.7255168557149518,
+  "cka": {
+    "resid_mid": 0.08905075638500198,
+    "mlp_post": 0.13190151390361526,
+    "resid_post": 0.0561434234814726
+  },
+  "procrustes": {
+    "resid_mid": 1.7743318099630434,
+    "mlp_post": 1.666003973456877,
+    "resid_post": 1.8116179249386228
+  },
+  "matched_neuron_corr": 0.07496265697080165,
+  "matched_attention_distance": 0.31023294716811456,
+  "stitching_kl": 10.414247608740808,
+  "embedding_spectrum_cosine": 0.23415525390479777,
+  "failed": false,
+  "error": null,
+  "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s1",
+  "stage": "controls",
+  "target": "T0",
+  "level": "E0",
+  "variant": "",
+  "round": 2,
+  "model": "claude-haiku-5-5",
+  "temperature": null,
+  "seed": 1,
+  "selftest": true,
+  "harness": "claudecode",
+  "effort": "medium",
+  "agent": {
+    "exit_code": 0,
+    "seconds": 168,
+    "timeout_s": 3600,
+    "events": 128,
+    "steps": 36,
+    "tool_calls": 17,
+    "errors": 0,
+    "wsl_returncode": 0,
+    "cost_usd": 0.0185,
+    "total_claude_spend_usd": 1.0047,
+    "starter_unchanged": false
+  },
+  "audit": {
+    "flagged": false,
+    "reasons": [],
+    "suspicious_terms": []
+  },
+  "length": {
+    "chars": 279,
+    "gzip_bytes": 226,
+    "numbers": 2
+  },
+  "finished": "2026-11-21T21:07:05"
+}
