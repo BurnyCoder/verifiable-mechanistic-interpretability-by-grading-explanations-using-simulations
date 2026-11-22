@@ -219,7 +219,7 @@ Eleven agent smoke runs on the dev target `wd1_s10` (details and transcripts: `r
 `reports/progress.md`. Prompts, `TASK.md`, sandbox templates, explanation templates, harnesses, simulator settings and
 analysis code are fixed from that commit on. T-new is trained after it.
 
-### Post-freeze deviations (logged as they happen; 1–4 change no hypothesis, metric, test or condition; 5 removes conditions)
+### Post-freeze deviations (logged as they happen; 1–4 and 6 change no hypothesis, metric, test or condition; 5 removes conditions; 7 corrects how H1/H2 verdicts were computed; 8 adds missing preregistered statistics, discloses analyses not run and corrects §4's rationale)
 
 1. **2026-11-21, round 1, after the controls stage — analysis code brought in line with amendment 2.** The frozen
    `analysis/hypotheses.py` still selected the main condition as Qwen3.6-35B-A3B at temperature 0.6 (pre-amendment)
@@ -277,3 +277,37 @@ analysis code are fixed from that commit on. T-new is trained after it.
    "supported". The descriptive "direction matches" column for H2 now calls a difference whose bootstrap CI includes 0
    a tie. Also fixed: round reports are now filled only with their own round's numbers (the round-1 report had been
    overwritten with round-2 tables and was restored).
+8. **2026-11-22, after round 2 — independent audit: preregistered analyses that were missing or narrower than
+   written, analyses not run, and an erratum.** Found by an audit that re-read this document against the code and the
+   results after every round-2 number had been seen (`reports/reviews/independent-audit-2026-11-22.md`).
+   (a) *Computed now as §5 specifies:* H3's HS difference of W-freq to each of E2–E4 with bootstrap CI; H4's
+   secondary two-sided Mann–Whitney of E3 and E4 against the distilled students (Holm over both; a 3-vs-3 two-sided
+   exact test cannot go below p = 0.1, so it reads "cannot tell at this N"); and H1–H3 on the seed-sensitivity targets
+   with the preregistered tests (trend test; one-sided Mann–Whitney E3 > W-freq, the only wrong explanation run there,
+   under the smallest-attainable-p rule), where earlier versions only compared directions. H3's verdict still follows
+   its falsifier (KL above the largest E2–E4 mean); the hypothesis wording's lower bound (KL within [min, max]) is now
+   reported beside it.
+   (b) *H8 as §5 states it:* every E3/E4 replacement against all 401 checkpoints of T0, supported only if every
+   replacement's ρ > 0. Rounds 1–2 had used only the highest-HS replacement against every 10th checkpoint (41) and
+   labelled it "all checkpoints"; that result is kept in `results/controls/trajectory_T0_superseded.json`.
+   (c) *Not run, disclosed here:* §8's redrawn W-freq and W-scramble explanations (3 seeds) and §7's T-paper retrain
+   baselines (`wd1_s0` and the `split0_init*` runs). The "failed runs excluded" grader variant is moot (no reported run
+   failed). The compiler criterion "100 % accuracy for E2–E4" (planned runs) was relaxed to > 99 % in the tests (dev E2
+   reaches 0.9975).
+   (d) *W-alg is not length-matched.* §3 calls it E3-length, but the rendered Pizza explanation has about 60 % of E3's
+   characters on every target, so H2's E3 > W-alg comparison is not length-controlled.
+   (e) *Erratum to §4's rationale.* "Invariant to exactly that group" holds for HS = 1 (reached exactly when each
+   model's states are an affine function of the other's) and for completeness R²(M̂→M), which is invariant to any
+   invertible linear map of M̂'s basis. Soundness R²(M→M̂) pools over M̂'s dimensions and is invariant only to
+   orthogonal maps and uniform scaling of M̂'s basis: regression R² is invariant only in its predictor (Kornblith et al.
+   2019, Table 1, [arXiv:1905.00414](https://arxiv.org/abs/1905.00414)). The primary metric is unchanged; a whitened
+   soundness, invariant in both directions, is added to the grader sensitivity analysis as a post-hoc check.
+   (f) *Corrections to amendments.* Amendment 2 item 3's dev-target check (a/b amplitude ratio median 0.999, phase
+   difference median 0.1°) is not produced by a committed script or results file; it is a development note. The 35B
+   model ran nine stage-0 runs (six in OpenCode, three in the bash-only harness), seven of them with graded records,
+   not "eight" (amendment 2 item 6) or "seven" (deviation 5); its best stays 2.44 %. At N = 1 the rule of deviation 1
+   was applied with one exception: a comparison whose single-run difference was reversed (E4 > W-scramble) read "not
+   supported".
+   None of (a)–(f) changes a primary metric or a preregistered verdict rule. Effect on the reported verdicts: (a) adds
+   statistics and a "cannot tell" for the student comparison; (b) H8 stays supported in its preregistered form: every one of
+   the six replacements has ρ > 0 (0.75–0.84, median 0.77; the superseded single-replacement value was 0.86).
