@@ -251,8 +251,10 @@ def grader_sensitivity_table(max_round: int, target: str = "T0", kind: str = "ag
     B = d["summary"].get("baseline", {}) if kind == "agent" else {}  # retrains / random init, agent table only
     extra = [lv for lv in ("retrain", "random init") if any(lv in v["means"] for v in B.values())]
     levels = [lv for lv in LEVEL_ORDER if any(lv in v["means"] for v in S.values())]
-    rows = ["| Grader setting | " + " | ".join(levels + extra) + " | Kendall τ vs. preregistered |",
-            "|---" * (len(levels) + len(extra) + 2) + "|"]
+    # pandoc sizes pipe-table columns by their dash counts: a wide first column keeps long setting names off the numbers
+    dash = lambda h: "-" * (26 if h == "Grader setting" else 11 if len(h) > 7 else 7)  # noqa: E731
+    head = ["Grader setting", *levels, *extra, "Kendall τ vs. preregistered"]
+    rows = ["| " + " | ".join(head) + " |", "|" + "|".join(dash(h) for h in head) + "|"]
     for name, v in S.items():
         rows.append(f"| {name} | " + " | ".join(_f(v["means"].get(lv), 2) for lv in levels)
                     + "".join(f" | {_f(B.get(name, {}).get('means', {}).get(lv), 2)}" for lv in extra)
