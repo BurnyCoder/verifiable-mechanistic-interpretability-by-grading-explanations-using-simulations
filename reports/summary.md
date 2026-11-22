@@ -93,5 +93,5 @@ runs, all at chance (user decision; preregistration deviation 5), so H5's capabi
 runs the 32 Claude Haiku conditions; round 3 (N = 10) is postponed to a later day. Open: a second metric for
 sub-frequency structure. Details:
 [paper](paper.pdf), [round-1 report](experiments/01-round1/experiment.md), [round-2 report](experiments/02-round2/experiment.md),
-[reviews](reviews/round2-review.md), [independent audit](reviews/independent-audit-2026-11-22.md), [second audit](reviews/audit-2-2026-11-22.md), [third audit](reviews/audit-3-2026-11-22.md), [fourth audit](reviews/audit-4-2026-11-22.md), [fifth audit](reviews/audit-5-2026-11-22.md), [sixth audit](reviews/audit-6-2026-11-22.md),
+[reviews](reviews/round2-review.md), [independent audit](reviews/independent-audit-2026-11-22.md), [second audit](reviews/audit-2-2026-11-22.md), [third audit](reviews/audit-3-2026-11-22.md), [fourth audit](reviews/audit-4-2026-11-22.md), [fifth audit](reviews/audit-5-2026-11-22.md), [sixth audit](reviews/audit-6-2026-11-22.md), [seventh audit](reviews/audit-7-2026-11-22.md),
 [results explorer](https://burnycoder.github.io/verifiable-mechanistic-interpretability-by-grading-explanations-using-simulations/).

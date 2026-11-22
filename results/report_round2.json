@@ -26,6 +26,7 @@
       "walg-shorter",
       "n-local",
       "tune-said",
+      "a7-search",
       "selftest-median",
       "own-check",
       "wrole-comp-acc",
@@ -73,7 +74,8 @@
     "reports/experiments/experiments.md": [
       "runs",
       "cost",
-      "targets"
+      "targets",
+      "a7-search"
     ],
     "reports/paper/paper.md": [
       "runs",
@@ -116,6 +118,9 @@
       "a5-weak-harm",
       "a5-t0-emb",
       "a5-emb-extra",
+      "a7-search",
+      "a7-search-kinds",
+      "a7-search-sign",
       "tune-said",
       "tune-regex",
       "own-check",
@@ -132,6 +137,8 @@
       "a5-hyp",
       "a6-verdicts",
       "a6-regrade",
+      "a7-verdicts",
+      "a7-regrade",
       "e01-acc",
       "a5-scr-other",
       "h8-ctrl-max",
