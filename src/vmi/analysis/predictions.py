@@ -84,7 +84,7 @@ def h5_gaps(runs) -> dict[str, list[dict]]:
     what the comparison is: "T0" (the preregistered H5 test — §5's tests use the main simulator on T0), "seed" (T1, T2,
     T-new: an extension, post hoc) and "T-paper" (contamination-flagged: memorisation can lift the agent, so it is
     reported apart and not counted). `beyond` applies §5's falsifier: the agent mean exceeds the compiler by more than
-    the agent mean's 95 % bootstrap CI (with three runs the CI is too narrow, so this flags more than it should).
+    the agent mean's 95 % bootstrap CI (with three runs the percentile CI is the range of the runs, true coverage about 75 %, so this flags more than it should).
     Audit 2026-11-22 (second pass): earlier versions pooled T0 with the seed targets and silently dropped T-paper."""
     from vmi.analysis import stats as st
     out: dict[str, list[dict]] = {"T0": [], "seed": [], "T-paper": []}
@@ -203,9 +203,19 @@ def prediction_rows(max_round: int) -> list[dict]:
         h = H["H8"]
         rho, lo = h["spearman_hs_vs_neglog_restricted_loss"], h.get("spearman_min", h["spearman_hs_vs_neglog_restricted_loss"])
         ctrl = h.get("negative_controls_by_level", {})  # post hoc (audit 2026-11-22, second pass): specificity of ρ
+        # Audit 4 positive control (post hoc): final T0 itself and agent-free builds against the same checkpoints
+        pcf = RES / "audit4" / "h8_positive_control.json"
+        pc = json.loads(pcf.read_text(encoding="utf-8")) if pcf.exists() else {}
+        names = {"final T0 (weights dump)": "final T0 itself", "Fourier-restricted T0": "Fourier-restricted T0",
+                 "reference compiler E3 (no agent)": "compiler E3", "independent retrain wd1_s0": "a retrain"}
         add("H8", f"Spearman ρ(HS, −log restricted loss) per replacement: median {_f(rho)}, min {_f(lo)} ({h['N']})"
                   + ("; negative controls (post hoc), ρ per replacement: " + "; ".join(
-                      f"{lv} " + ", ".join(f"{x:+.2f}" for x in v) for lv, v in ctrl.items()) if ctrl else ""),
+                      f"{lv} " + ", ".join(f"{x:+.2f}" for x in v) for lv, v in ctrl.items()) if ctrl else "")
+                  + ("; reference networks (post hoc, audit 4): " + ", ".join(
+                      f"{names[k]} {x:+.2f}" for k, x in pc["rho_vs_neglog_restricted_loss"].items())
+                     + f"; during circuit formation (steps ≤ {pc['phases']['plateau_start_step']:,}) every network with "
+                       f"T0's frequencies has ρ ≥ {min(x for k, x in pc['phases']['rho_formation'].items() if 'retrain' not in k):.3f}"
+                     if pc else ""),
             _match({"ρ ≤ 0 for some replacement": lo > 0}))
     return out
 
