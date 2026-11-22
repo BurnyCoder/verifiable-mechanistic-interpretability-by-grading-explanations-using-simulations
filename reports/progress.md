@@ -1,5 +1,27 @@
 # Progress
 
+## 2026-11-22 10:15 — fourth independent audit (deviation 11)
+
+**Done** (no new agent runs, no API spend; N = 3 — not yet N = 10)
+- Audit made without reading the earlier reviews or audit scripts (`reviews/audit-4-2026-11-22.md`). An independent
+  numpy/scikit-learn grader written from the preregistration reproduces all 261 stored scores that come from weight
+  files (`results/audit4/regrade.json`); independent exact tests reproduce all 44 stored test statistics and verdicts
+  and the replication table (`results/audit4/hypotheses.json`). Four parallel source checks read every cited source.
+- Corrected interpretations: H4b fails because the planted model's function does not drift monotonically (KL follows
+  it), not because KL fails; H8's positive correlation is shared by final T0 itself and every network with T0's
+  frequencies during circuit formation, and its size is set by drift after grokking, so it shows shared frequency
+  structure, not a separate tracking of circuit formation (post-hoc positive control,
+  `results/audit4/h8_positive_control.json`). Three-run bootstrap intervals cover about 75 %, not 95 %.
+- Corrected facts and citations (iWSP, Huang, Gao, Haklay, Poché, Kornblith/Klabunde, Bansal, netrep, Zhong Fig. 7,
+  Nanda App. C.2, Sutter, Qwen cards, Claude Code budget flag, pricing source, VRAM units); twelve method references
+  added to the paper; Claude Haiku 5.5's release date (2026-10-07, before the targets' upload) added to the
+  contamination argument; stale code comments fixed; figures for H4b and H8 extended.
+
+**Effect:** no primary metric, preregistered test or verdict changed (`results/hypotheses_round2.json` regenerates
+byte-identically); H4b and H8 are read more narrowly.
+
+**Next:** round 3 (N = 10) only when you ask.
+
 ## 2026-11-22 09:00 — third independent audit (deviation 10)
 
 **Done** (no new agent runs, no API spend; N = 3 — not yet N = 10)
@@ -13,8 +35,9 @@
   alignment-class rationale is corrected for `mlp_post`; T1's "fewest frequencies" is a tie; citation wording
   (Sutter, Poché, Paulo, Huang, Yip, Haklay, Zhong, Cammarata, OpenCode, Qwen3.8 GGUFs).
 - Added (post hoc): Zhong et al.'s Clock/Pizza diagnostics (`vmi clockpizza`): every target is Clock-like and the
-  literal Pizza build Pizza-like (the W-alg control is valid), but the replacements built from the true E1–E3
-  explanations are Pizza-like too, and HS still rates them about 0.9. Own label checks counted in Appendix D.
+  literal Pizza build Pizza-like (W-alg is a wrong explanation of T0, as designed), but the replacements built from
+  the true E1–E3 explanations are Pizza-like too — and so are the compiler's literal E1–E4 builds, so H2's E3 > W-alg
+  compares two Pizza-like builds (audit 4) — and HS still rates them about 0.9. Own label checks counted in Appendix D.
 
 **Effect:** no primary metric or preregistered test result changed; H1's reported verdict and the T-paper replication
 changed as above.
@@ -91,7 +114,7 @@ ran (see the audit entry above for two no-agent analyses that were not run).
 - Local Qwen runs stopped on your instruction after five runs, all at chance (Qwen3.5-4B × 4, Qwen3.5-9B × 1);
   rounds 2–3 have no local conditions (32 Claude Haiku conditions per round). Logged as deviation 5 (a results-driven
   stop); H5 and H6 become "not evaluable".
-- Stitching KL regraded for all runs and the compiler (primary metrics reproduced exactly); it shares HS's invariance.
+- Stitching KL regraded for all runs and the compiler (primary metrics reproduced exactly); it has completeness's invariance (any invertible linear map of M̂'s resid_mid).
 - Post-hoc target swap confirms memorisation; round-1 review addendum; hypotheses, figures, tables, paper regenerated.
 
 **Positive results (Haiku):** HS jumps from about 0.05 (E0, E1) to about 0.9 once the key frequencies are named, close
@@ -203,8 +226,8 @@ amendment and round 1. If the $20 is spent without success: evaluate, update REA
 - Smoke runs 4 and 5 produced the first graded agent replacements (accuracy 1.4 % and 0.5 %, HS 0.34 and 0.32): the
   pipeline works end to end (sandbox → weights → audit → grade), but the agent spent most of each run on truncated
   whole-file writes and context compactions.
-- Root cause found in the Qwen3.6 model card: the 4k thinking budget was far below the model's trained regime (≥32k
-  output recommended), so it continued designing inside code comments; and the presence penalty of 1.5 was the
+- Root cause found in the Qwen3.6 model card: the 4k thinking budget was far below the model's trained regime (32,768
+  output tokens recommended for most queries), so it continued designing inside code comments; and the presence penalty of 1.5 was the
   general-task preset, not the coding one (0.0). Settings now follow the card's coding preset, with a 16k thinking
   budget, 24k-token turns, an 80k context with an explicit OpenCode input limit, and a 60-minute run cap.
 
@@ -219,7 +242,7 @@ will stop at a stage boundary when the week ends (preregistered rule). About 23 
 
 **Done since 02:30**
 - Throughput decided: warm, Qwen3.6-35B-A3B runs at 289 prompt / 21.6 generated tokens/s with 48k context and
-  `--n-cpu-moe 34` (6.8 GB VRAM), above the 8 tokens/s threshold → kept as main simulator (amendment 1).
+  `--n-cpu-moe 34` (6,790 MiB VRAM), above the 8 tokens/s threshold → kept as main simulator (amendment 1).
 - Isolation check 15/15 including the LLM being reachable through the relay.
 - Three end-to-end smoke runs on dev × E3, none produced weights yet; each failure fixed on the dev target only
   (details in `experiments/learnings.md`): (1) 16k tokens of thinking without acting → thinking budget 4,096 tokens per
@@ -249,7 +272,7 @@ will stop at a stage boundary when the week ends (preregistered rule). About 23 
 - Reproduction check: re-training reproduces key frequencies for `wd1_s10` but not bitwise weights (batch-composition
   dependence; see learnings).
 - Throughput: Qwen3.6-35B-A3B UD-IQ4_XS at 64k context was far below the preregistered 8 tokens/s threshold
-  (3.9 tokens/s prompt processing; free RAM 1.3 GB during the request; the non-expert weights + KV cache used 5.1 GB
+  (3.9 tokens/s prompt processing; free RAM 1.3 GB during the request; the non-expert weights + KV cache used 5,141 MiB
   VRAM, leaving no room for experts on the GPU). A warm re-test at 32k context is running; Qwen3.5-9B/4B GGUFs are
   downloading for the preregistered fallback.
 

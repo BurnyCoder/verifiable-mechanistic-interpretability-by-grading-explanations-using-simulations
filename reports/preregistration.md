@@ -219,7 +219,7 @@ Eleven agent smoke runs on the dev target `wd1_s10` (details and transcripts: `r
 `reports/progress.md`. Prompts, `TASK.md`, sandbox templates, explanation templates, harnesses, simulator settings and
 analysis code are fixed from that commit on. T-new is trained after it.
 
-### Post-freeze deviations (logged as they happen; 1–4 and 6 change no hypothesis, metric, test or condition; 5 removes conditions; 7 corrects how H1/H2 verdicts were computed; 8 adds missing preregistered statistics, discloses analyses not run and corrects §4's rationale; 9 corrects factual statements, narrows two claims to their evidence and adds post-hoc checks; 10 corrects how H1's verdict and the T-paper replication are reported, makes H1's trend test exact, corrects §4's rationale for `mlp_post` and adds post-hoc checks)
+### Post-freeze deviations (logged as they happen; 1–4 and 6 change no hypothesis, metric, test or condition; 5 removes conditions; 7 corrects how H1/H2 verdicts were computed; 8 adds missing preregistered statistics, discloses analyses not run and corrects §4's rationale; 9 corrects factual statements, narrows two claims to their evidence and adds post-hoc checks; 10 corrects how H1's verdict and the T-paper replication are reported, makes H1's trend test exact, corrects §4's rationale for `mlp_post` and adds post-hoc checks; 11 corrects how H4b and H8 are interpreted, states the coverage of three-run bootstrap intervals, corrects errata and citations and adds post-hoc checks)
 
 1. **2026-11-21, round 1, after the controls stage — analysis code brought in line with amendment 2.** The frozen
    `analysis/hypotheses.py` still selected the main condition as Qwen3.6-35B-A3B at temperature 0.6 (pre-amendment)
@@ -376,3 +376,57 @@ analysis code are fixed from that commit on. T-new is trained after it.
    Yip et al.'s models stated as in the sources.
    None of (a)–(g) changes a primary metric or a preregistered test; (a) changes how H1's verdict is reported, (b) turns
    the T-paper replication of H1 from "cannot tell" into "not supported".
+11. **2026-11-22, after round 2 — fourth independent audit: readings of H4b and H8, interval coverage, errata and
+   post-hoc checks.** Made without reading the earlier reviews or audit scripts, after every round-2 number had been
+   seen (`reports/reviews/audit-4-2026-11-22.md`). First, every stored score that comes from a weight file was re-graded
+   by an independent numpy/scikit-learn implementation of §2 and §4 (261 stored scores from weight files, largest
+   difference 1.3e-10 in HS and 1.9e-11 in KL; `scripts/audit4/regrade.py`,
+   `results/audit4/regrade.json`), and every hypothesis test and verdict was recomputed with independent exact tests
+   (all 44 stored statistics and verdicts reproduce; `scripts/audit4/hypotheses.py`, `results/audit4/hypotheses.json`).
+   (a) *H4b's reading.* H4b stays "not supported" by its rule. But the planted model's function does not drift
+   monotonically under further training (snapshot task accuracy 1.000 → 0.977 → 0.996 → 1.000,
+   `results/controls/planted_calibration_T0.json`), and output KL follows that function. §5's gloss "this would mean
+   the grader is unreliable" assumed a monotone drift that did not occur, so the control did not test the grader as
+   intended; the abstract's "output KL does not behave as a calibrated distance" is withdrawn.
+   (b) *H8's reading (post-hoc positive control).* Final T0 itself graded against its own 401 checkpoints, T0
+   restricted to its key frequencies and the agent-free compiler's E3 build all rise with the restricted loss during
+   circuit formation (Spearman ρ ≥ 0.997 over the 150 checkpoints up to step 14,900, a post-hoc split after which the
+   restricted loss stays within 1.2 × its minimum), exactly as the six E3/E4 replacements do; an independent retrain
+   falls (-1.00). After grokking (251 checkpoints) the restricted loss creeps up (5.2e-08 to 5.7e-08) while each
+   network's HS drifts monotonically, and this plateau sets the size of the whole-trajectory ρ: final T0 itself gets
+   0.59, below every replacement (0.75–0.84), T0 restricted to its key frequencies 0.99, the compiler's E3 build 0.88
+   (`scripts/audit4/h8_positive_control.py`, `results/audit4/h8_positive_control.json`). H8's positive ρ therefore
+   shows that the replacements share T0's frequency structure, not a separate ability of HS to track circuit
+   formation, and its size does not order networks by faithfulness. H8 stays "supported" in its preregistered
+   (descriptive) form;
+   statements that "HS tracks circuit formation" now say that the replacements resemble the trained end point that T0's
+   checkpoints approach.
+   (c) *Bootstrap coverage.* With three runs per arm the nominal 95 % percentile-bootstrap interval of a mean is the
+   range of the runs; its true coverage is about 75 % (about 80 % for a difference; Hesterberg 2015,
+   https://arxiv.org/abs/1411.5279). Statements that call such an interval "too narrow" now state this; "beyond the
+   CI" (H5 on the seed targets) and "tie" readings (H2) are correspondingly weak. No verdict uses these intervals.
+   (d) *Ties.* scipy's exact Mann–Whitney ignores ties; none of the 36 values entering the reported rank tests are
+   tied, so every reported p-value is exact.
+   (e) *Errata to amendments.* Amendment 1 item 1: the VRAM figures are MiB-based (5,141 MiB at 64k context, 2,872 MiB
+   at 32k; `results/stage0/llm_tuning.json`), not "5.1 GB". Amendment 2 item 3: E-paper's algorithm text is a
+   paraphrase of the paper, not "the paper's wording". Amendment 2 item 6: "Claude Code has no step cap" is wrong
+   (corrected in deviation 9(a)); Claude Haiku 5.5's rejection of non-default sampling is documented at
+   https://platform.claude.com/docs/en/build-with-claude/thinking. The frozen W-alg text has two imprecisions that do
+   not change the algorithm it describes (step 2 gives the "=" position 2cos(w_k(a−b)/2) where attention weights 0.5
+   give cos(w_k(a−b)/2); step 3 calls a single ReLU's positive part an absolute value); it is left unchanged.
+   (f) *Citations and facts.* Narrowed or corrected: iWSP does compare features (linear CKA for one model); Huang et
+   al.'s score ≥ 0.8 sample concerns error rates; Gao's critique of correlation scores; Haklay et al.'s scope; Poché et
+   al.'s condition (meaningful class names) and that the explanation is the authors' hypothesis; regression R²'s
+   predictor-only invariance is Kornblith et al.'s Table 1, not Klabunde et al.'s; Bansal et al. train the stitch on
+   the task loss (this project fits it by least squares); the tests use Google's CKA and scipy's Procrustes, not
+   netrep; Zhong et al.'s Fig. 7 boundaries are separate per metric; the compiler's E3 build is on the Pizza side and
+   is not a "literal Clock"; Qwen's output-length recommendation and Qwen3.8-Flash-Next's size. Added: Claude Haiku
+   5.5's release on 2026-10-07 (https://platform.claude.com/docs/en/models/haiku-5-5/overview), before the targets'
+   files were uploaded on 2026-10-21; Takehi et al. 2026 as iWSP's precursor; the method and statistics references the
+   paper used without citing.
+   (g) *Exact zeros in H7.* All three E4 replacements score HS 0.000 against T1 because at every site the
+   completeness R² (replacement → T1) is slightly negative on held-out folds (−0.002 to −0.026) and is clipped to 0,
+   which makes each site's harmonic mean 0; the independent regrade reproduces this (`results/audit4/regrade.json`).
+   It is not a solver failure and does not affect H7 (the margin is taken to the best wrong target, T2).
+   None of (a)–(g) changes a primary metric, a preregistered test or a verdict; (a) and (b) change how H4b and H8 are
+   interpreted.
