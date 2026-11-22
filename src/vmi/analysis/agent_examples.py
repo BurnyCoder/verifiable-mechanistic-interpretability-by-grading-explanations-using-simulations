@@ -126,7 +126,7 @@ def extract(r: dict) -> dict:
     script = run / "work_out" / "build_weights.py"
     lines = script.read_text(encoding="utf-8", errors="replace").splitlines() if script.exists() else []
     c = compiler(r["target"], r["level"])
-    return {"run_id": r["run_id"], "target": r["target"], "level": r["level"] + (f" ({r['variant']})" if r.get("variant") else ""),
+    return {"run_id": r["run_id"], "target": r["target"], "level": r["level"] + (f" · {r['variant']}" if r.get("variant") else ""),
             "model": r["model"],
             "tool_calls": len(calls), "selftest_runs": len(selftests), "minutes": round((r.get("agent") or {}).get("seconds", 0) / 60, 1),
             "cost_usd": cost, "errors": sum(("Traceback" in x or "Error" in x) for x in results),
