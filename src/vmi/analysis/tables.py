@@ -380,7 +380,7 @@ def agent_words_md(max_round: int) -> str:
     for x in rows:
         traj = " → ".join(f"{a:.4f}" for a in x["accs"]) or "never reached"
         out += [f"**{x['kind']} {x['label']}** ({x['target']} · {x['level']} · {x['model']}; self-test accuracy over the "
-                f"run: {traj}; final HS {x['hs']:.2f})", ""]
+                f"run: {traj}; final HS {x['hs']:.2f})", "", f"*Why:* {x['why']}", ""]
         quotes = [("Plan", x["plan"]), ("After the first self-test", x["reaction"]),
                   ("Closing", agent_examples.first_sentence(x["final"], 260))]
         out += [f"> *{k}:* “{q}”  " for k, q in quotes if q]

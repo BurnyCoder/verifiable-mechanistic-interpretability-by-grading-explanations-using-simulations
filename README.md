@@ -101,7 +101,9 @@ algorithm-only and independently trained networks do not (r ≈ 0), although the
 ### What the agent did: successes and failure modes, from its own transcripts
 
 One run per case, chosen by the rule in the second column (not by reading transcripts first). The line shown is from
-the `build_weights.py` the agent wrote; the quote is the first sentence of its closing message. Longer excerpts:
+the `build_weights.py` the agent wrote; the quote is the first sentence of its closing message. Below the table, each
+case says *why* it is right or wrong, comparing the frequencies the agent built with the ones it was told and the
+ones the target network really uses, and quoting what the agent said. Longer excerpts:
 [reports/agent-examples.md](reports/agent-examples.md); every run's full transcript is linked.
 
 <!-- BEGIN agent-examples -->
@@ -122,11 +124,15 @@ ran. (The model's hidden thinking is not returned by the API; these are its visi
 <!-- BEGIN agent-words -->
 **✅ success** (T0 (main target network) · E3 (+ per-frequency details) · claude-haiku-5-5; self-test accuracy over the run: 0.9961 → 0.9961 → 0.9908 → 0.9995; final HS (hidden-state similarity, 1 = same internals) 0.94)
 
+*Why:* Right: it built exactly the frequencies the explanation names, {2, 3, 23, 37, 39}, which are T0's own, so both the answers (accuracy 0.9995) and the internals (HS (hidden-state similarity, 1 = same internals) 0.94; compiler 0.93) match the target.
+
 > *Plan:* “The task is to hand-construct a 1-layer transformer's weights from the explanation, with no training. I'll build it in stages: embeddings and attention first, then the MLP, then the readout fitted in closed form, checking the self-test after each stage.”  
 > *After the first self-test:* “Next I'll finish the script: stage the attention/MLP weights, run the reference forward pass to get MLP features, then solve the output projection by least squares.”  
 > *Closing:* “`build_weights.py` builds `weights.npz` in a few seconds, and `selftest.py` passes with 99.95% accuracy (12,765 of 12,769 inputs) and mean probability 0.980 on the correct answer.”  
 
 **✅ beats the compiler** (T2 (target from another seed) · E3 (+ per-frequency details) · claude-haiku-5-5; self-test accuracy over the run: 0.5068 → 1.0000 → 1.0000; final HS (hidden-state similarity, 1 = same internals) 0.97)
+
+*Why:* Right, and better than the AI-free compiler: it built T2's frequencies {37, 44, 45, 46, 47, 51} and debugged its way from a first self-test at 0.5068 to 1.0000 (“The first build runs but gets only 50.7% accuracy.”). HS (hidden-state similarity, 1 = same internals) 0.97 against the compiler's 0.78, which follows the rendered explanation literally.
 
 > *Plan:* “I'll check the folder for any extra files, such as the CSV table the explanation mentions, before building anything.”  
 > *After the first self-test:* “No CSV is present. I'll write the full construction in one pass: embeddings on 6 Fourier circles, two head pairs that attend to a and b, MLP neurons with phases, and a least-squares fit of the MLP output onto the cos/sin readout directions.”  
@@ -134,11 +140,15 @@ ran. (The model's hidden thinking is not returned by the API; these are its visi
 
 **✅ faithful to a wrong explanation** (T0 (main target network) · W-freq (wrong frequencies) · claude-haiku-5-5; self-test accuracy over the run: 0.9992 → 0.9992 → 1.0000; final HS (hidden-state similarity, 1 = same internals) 0.06)
 
+*Why:* Right behaviour of the agent, and the grader catches the explanation: it built exactly the wrong frequencies it was told, {22, 31, 42, 52, 55}, not T0's {2, 3, 23, 37, 39}. The answers are still right (accuracy 1.0000), but the internals do not match (HS (hidden-state similarity, 1 = same internals) 0.06), so HS exposes the wrong explanation that output-only grading would pass.
+
 > *Plan:* “I've read the task. The plan: build the embedding, attention, MLP, and unembedding directly from the Fourier mechanism in EXPLANATION.md, and fit only the MLP output projection with closed-form least squares. Starting with the embedding, attention, and readout directions.”  
 > *After the first self-test:* “No CSV table is present, so the explanation's numbers are all I have. Writing the full construction in one script, with the MLP output fitted by least squares.”  
 > *Closing:* “`build_weights.py` builds `weights.npz` in about 3 seconds, and `selftest.py` passes: 100% accuracy on all 12,769 inputs, with mean correct-answer probability 0.9991.”  
 
 **❌ fills gaps from memory** (T0 (main target network) · E1 (algorithm only) · claude-haiku-5-5; self-test accuracy over the run: 1.0000 → 1.0000; final HS (hidden-state similarity, 1 = same internals) 0.05)
+
+*Why:* Wrong mechanism, right answers: the explanation gave no frequencies, and the agent filled them in from memory (“I'll pick five standard ones (14, 35, 41, 42, 52) and build the network in closed form: a head that copies the cos/sin …”). It built {14, 35, 41, 42, 52}, the published paper's frequencies, instead of T0's {2, 3, 23, 37, 39}, so its answers are right (accuracy 1.0000) but its internals do not match (HS (hidden-state similarity, 1 = same internals) 0.05).
 
 > *Plan:* “The folder has no CSV, so the key frequencies are unspecified. I'll pick five standard ones (14, 35, 41, 42, 52) and build the network in closed form: a head that copies the cos/sin features of a and b into the "=" position, MLP neurons with phase-shifted ReLU, and a least-squares readout of the sum-frequency features.”  
 > *After the first self-test:* “The self-test passes on the first build. I'll confirm the run time limit and re-run the self-test from a clean state.”  
@@ -146,11 +156,15 @@ ran. (The model's hidden thinking is not returned by the API; these are its visi
 
 **❌ broken answers** (T0 (main target network) · E3 (+ per-frequency details) · effort-low · claude-haiku-5-5; self-test accuracy over the run: 0.6790 → 0.4047 → 0.2905 → 0.5627 → 0.5805 → 0.7846 → 0.5624; final HS (hidden-state similarity, 1 = same internals) 0.92)
 
+*Why:* Wrong answers, right mechanism: it built the target's frequencies {2, 3, 23, 37, 39}, so the internals match (HS (hidden-state similarity, 1 = same internals) 0.92), but the details were off (accuracy 0.5624). It noticed (“The self-test runs but accuracy is only 0.679.”), its self-test peaked at 0.7846 and it stopped on a build at 0.5624, because each rewrite replaced the last.
+
 > *Plan:* “I've read the task and the explanation. The plan is to build the embedding, attention, and MLP weights directly from the explanation, then fit only the MLP-to-readout map with closed-form least squares. I'll write the script in one go and then run it.”  
 > *After the first self-test:* “The self-test runs but accuracy is only 0.679. I'll check which readout frequencies the fit gets wrong.”  
 > *Closing:* “`build_weights.py` builds `weights.npz`, and `selftest.py` passes, but accuracy is only **56.2%** (mean correct-answer probability 0.548).”  
 
 **❌ small local model** (T0 (main target network) · E3 (+ per-frequency details) · qwen3.5-4b; self-test accuracy over the run: 0.0088 → 0.0088 → 0.0088; final HS (hidden-state similarity, 1 = same internals) 0.00)
+
+*Why:* Wrong: it never built a working network. Its self-test stayed at chance (0.0088) every time; 2 of its replies were cut off at the output limit before anything ran, and the run ended with exit status: TimeExceeded. Its script even had the target's frequencies {2, 3, 23, 37, 39}. Its last words were still debugging: “I see the issue - the attention mechanism in forward.py uses the same key vector for both positions, which means the attention weights will be identical.”
 
 > *Plan:* “I need to first read the files in the current folder to understand the task requirements. Let me start by reading TASK.md, ARCHITECTURE.md, and EXPLANATION.md to understand what needs to be done.”  
 > *After the first self-test:* “Let me first run the starter build script and selftest to see the baseline performance.”  

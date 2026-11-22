@@ -119,6 +119,22 @@ def test_glossary_explains_labels_once_per_unit_and_leaves_code_and_links_alone(
     assert gloss(gloss(t)) == gloss(t)  # idempotent
 
 
+def test_agent_example_explanations_name_the_cause():
+    from vmi.analysis import agent_examples as ae
+    assert ae._freqs("KF = [2, 3, 23, 37, 39]  # key frequencies") == [2, 3, 23, 37, 39]
+    assert ae._freqs("heads = (0, 1)") is None  # too short to be a frequency list
+    assert ae.sentence_with("Plan first. I'll pick 14 and 35. Done.", ["14"]) == "I'll pick 14 and 35."
+    base = {"accuracy": 1.0, "hs": 0.05, "accs": [1.0], "harness_errors": [], "final": "Done.", "reaction": "",
+            "said": [], "compiler_hs": 0.05, "plan": "No frequencies given. I'll pick 14, 35, 41, 42, 52."}
+    memo = ae.why({**base, "freq_lines": ["KEY_FREQS = [14, 35, 41, 42, 52]"]}, "T0", "E1")
+    assert memo.startswith("Wrong mechanism, right answers") and "published paper's" in memo and "I'll pick" in memo
+    ok = ae.why({**base, "hs": 0.94, "compiler_hs": 0.93, "freq_lines": ["KF = [2, 3, 23, 37, 39]"]}, "T0", "E3")
+    assert ok.startswith("Right:") and "T0's own" in ok
+    dead = ae.why({**base, "accuracy": 0.0088, "accs": [0.0088], "harness_errors": ["output-limit", "exit status: TimeExceeded"],
+                   "freq_lines": []}, "T0", "E3")
+    assert dead.startswith("Wrong: it never built a working network") and "output limit" in dead
+
+
 def test_key_results_report_the_target_swap_when_present():
     import json
     fq = tables.RES / "frequencies_round1.json"
