@@ -103,6 +103,22 @@ def test_verdict_rules_follow_preregistration_sections_5_and_6():
         assert set(H["H2"]["verdicts"].values()) == {"cannot tell at this N"}
 
 
+def test_glossary_explains_labels_once_per_unit_and_leaves_code_and_links_alone():
+    from vmi.analysis.glossary import gloss
+    assert gloss("HS on T0 is 0.9; HS again") == ("HS (hidden-state similarity, 1 = same internals) on T0 (main target "
+                                                   "network) is 0.9; HS again")
+    assert gloss("0.05 (E1, algorithm only)") == "0.05 (E1, algorithm only)"  # meaning already given
+    assert gloss("hidden-state similarity (HS)") == "hidden-state similarity (HS)"  # meaning given just before
+    assert gloss("E3>W-freq and E3/E4") == "E3 (+ per-frequency details) > W-freq (wrong frequencies) and E3 and E4 (+ per-neuron table)"
+    assert gloss("`KF = E3` and [T0](https://x/T0__E3)") == "`KF = E3` and [T0](https://x/T0__E3)"
+    assert gloss("| E3 | 1 |\n| E3 | 2 |") == "| E3 (+ per-frequency details) | 1 |\n| E3 (+ per-frequency details) | 2 |"  # per row
+    assert gloss("T2 (0.274)") == "T2 (target from another seed) (0.274)"  # a number in parentheses is not a meaning
+    s = "E0–E4 and ## x\n## Heading HS\n```\nHS\n```"
+    assert gloss(s) == s.replace("E0–E4 and ## x", "E0–E4 and ## x")  # ranges, headings and code fences unchanged
+    t = "Mixed: E2 then T-new, KL_out 0.1"
+    assert gloss(gloss(t)) == gloss(t)  # idempotent
+
+
 def test_key_results_report_the_target_swap_when_present():
     import json
     fq = tables.RES / "frequencies_round1.json"

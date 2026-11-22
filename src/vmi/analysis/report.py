@@ -65,7 +65,9 @@ def regenerate(max_round: int) -> dict:
     hyp = hypotheses.write(max_round)
     figs = figures.make_all(max_round)
     gen = blocks(max_round)
-    filled = {d: inject_all(REPO_ROOT / d, gen) for d in DOCS + [ROUND_DOCS.get(max_round, "")] if d}
+    from vmi.analysis.glossary import gloss  # the README spells out what HS, E1, T0 … mean; reports keep compact labels
+    readme = {k: gloss(v) for k, v in gen.items()}
+    filled = {d: inject_all(REPO_ROOT / d, readme if d == "README.md" else gen) for d in DOCS + [ROUND_DOCS.get(max_round, "")] if d}
     from vmi.analysis import site  # interactive GitHub Pages explorer reads docs/data.json
     site.build(max_round)
     summary = {"hypotheses": str(hyp.relative_to(REPO_ROOT)), "figures": [str(p.relative_to(REPO_ROOT)) for p in figs],
