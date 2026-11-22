@@ -1,4 +1,4 @@
-"""Compile an explanation spec into weights of the paper architecture — the agent-free ceiling (baseline).
+"""Compile an explanation spec into weights of the paper architecture — the agent-free reference point (baseline; not a ceiling: the agent exceeds it on some targets).
 
 Local explanation: the spec (built by `explainer/ladder.py`, the same dict the explanation text is rendered from)
 says which frequencies, attention patterns, neuron allocations, per-neuron functions and logit amplitudes the

@@ -129,8 +129,10 @@ scripts are reviewed by hand (`results/audit_reviews.json`).
 ## Claude API spend
 
 <!-- BEGIN cost -->
-| Model | runs (incl. checks) | requests | spend (USD) |
-|---|---|---|---|
-| claude-haiku-5-5 | 103 | 953 | 2.328 |
-| **total** | 103 | 953 | **2.328** |
+| Kind of run | model | runs | requests | spend (USD) |
+|---|---|---|---|---|
+| reported runs | claude-haiku-5-5 | 96 | 881 | 2.200 |
+| development runs (stage 0, dev target) | claude-haiku-5-5 | 6 | 68 | 0.128 |
+| plumbing checks | claude-haiku-5-5 | 1 | 4 | 0.000 |
+| **total** | | 103 | 953 | **2.328** |
 <!-- END cost -->
