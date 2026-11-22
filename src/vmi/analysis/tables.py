@@ -356,8 +356,8 @@ def agent_examples_table(max_round: int) -> str:
     if not rows:
         return "_no agent runs on this machine_"
     esc = lambda s: s.replace("|", "\\|")  # noqa: E731  markdown table cells
-    out = ["| | Case (run chosen by rule) | What the agent did (its log) | A line it wrote | In its own words (closing message) | Result |",
-           "|---|---|---|---|---|---|"]
+    out = ["| | Case (run chosen by rule) | What the agent did (its log) | A line it wrote | In its own words (closing message) | Result | Why it is right or wrong |",
+           "|---|---|---|---|---|---|---|"]
     for x in rows:
         line = " ".join((x["freq_lines"] or x["choices"] or ["–"])[0].split())
         line = line if len(line) <= 90 else line[:89] + "…"
@@ -366,7 +366,7 @@ def agent_examples_table(max_round: int) -> str:
         first = agent_examples.first_sentence(x["final"])
         result = f"accuracy {x['accuracy']:.4f}, HS {x['hs']:.2f}" + (f" (compiler {x['compiler_hs']:.2f})" if x["compiler_hs"] is not None else "")
         out.append(f"| {x['kind']} | **{x['label']}**<br>[{x['target']} · {x['level']} · {x['model']}]({x['url']}) | {esc(process)} | "
-                   f"`{esc(line)}` | {esc(first)} | {result} |")
+                   f"`{esc(line)}` | {esc(first)} | {result} | {esc(x['why_short'])} |")
     return "\n".join(out)
 
 

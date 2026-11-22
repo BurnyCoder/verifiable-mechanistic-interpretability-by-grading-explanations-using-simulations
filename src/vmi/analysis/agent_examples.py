@@ -150,9 +150,10 @@ def _freqs(line: str) -> list[int] | None:
     return [int(v) for v in re.findall(r"\d+", line.split("#")[0].split("=", 1)[1])] if line and INT_LIST.search(line) else None
 
 
-def why(x: dict, target: str, level: str) -> str:
-    """Why the run is right or wrong, from what it built (its script), what it was told, what the target uses, and
-    what it said. Every value comes from the run's files, the explanation's spec and the target's analysis."""
+def why(x: dict, target: str, level: str) -> tuple[str, str]:
+    """(long, short): why the run is right or wrong, from what it built (its script), what it was told, what the target
+    uses, and what it said. Both come from the same branch, so the README table and the per-case text cannot disagree.
+    Every value comes from the run's files, the explanation's spec and the target's analysis."""
     from vmi.analysis.frequencies import PAPER_FREQS
     base = REPO_ROOT / "results" / "explanations" / target
     tgt = json.loads((base / "analysis.json").read_text())["key_freqs"]
@@ -167,30 +168,40 @@ def why(x: dict, target: str, level: str) -> str:
                 + (f"; {cut} of its replies were cut off at the output limit before anything ran" if cut else "")
                 + (f", and the run ended with {x['harness_errors'][-1]}" if x["harness_errors"] else "")
                 + (f". Its script even had the target's frequencies {fs(built)}" if built and set(built) == set(tgt) else "")
-                + f". Its last words were still debugging: “{first_sentence(x['final'], 160)}”")
+                + f". Its last words were still debugging: “{first_sentence(x['final'], 160)}”",
+                f"Never built a working network: self-test at chance ({acc:.4f})"
+                + (f", {cut} replies cut off at the output limit" if cut else "") + (", out of time" if x["harness_errors"] else ""))
     if built and set(built) & set(PAPER_FREQS) and len(set(built) & set(PAPER_FREQS)) >= 3 and target != "T-paper" and not told:
         return (f"Wrong mechanism, right answers: the explanation gave no frequencies, and the agent filled "
                 f"them in from memory (“{sentence_with(x['plan'], [str(v) for v in built], 120)}”). It built {fs(built)}, the published paper's "
                 f"frequencies, instead of {target}'s {fs(tgt)}, so its answers are right (accuracy {acc:.4f}) but its "
-                f"internals do not match (HS {hs:.2f}).")
+                f"internals do not match (HS {hs:.2f}).",
+                f"No frequencies given, so it used the paper's {fs(built)} from memory instead of {target}'s {fs(tgt)}: "
+                f"right answers, wrong internals")
     if told and built and set(built) == set(told) and set(told) != set(tgt):
         return (f"Right behaviour of the agent, and the grader catches the explanation: it built exactly the wrong "
                 f"frequencies it was told, {fs(built)}, not {target}'s {fs(tgt)}. The answers are still right (accuracy "
                 f"{acc:.4f}), but the internals do not match (HS {hs:.2f}), so HS exposes the wrong explanation that "
-                f"output-only grading would pass.")
+                f"output-only grading would pass.",
+                f"Built the wrong frequencies it was told, {fs(built)}, not {target}'s: right answers, wrong internals, "
+                f"so HS catches the wrong explanation")
     if acc < 0.95:
         best = max(accs) if accs else acc
         return (f"Wrong answers, right mechanism: it built the target's frequencies {fs(built or tgt)}, so the internals "
                 f"match (HS {hs:.2f}), but the details were off (accuracy {acc:.4f}). It noticed (“{sentence_with(x['reaction'] or x['final'], ['ccuracy', '%'], 150)}”), "
-                f"its self-test peaked at {best:.4f} and it stopped on a build at {acc:.4f}, because each rewrite replaced the last.")
+                f"its self-test peaked at {best:.4f} and it stopped on a build at {acc:.4f}, because each rewrite replaced the last.",
+                f"Right frequencies, so the internals match, but wrong details: self-test peaked at {best:.4f}, it stopped at {acc:.4f}")
     c = x["compiler_hs"]
     if c is not None and hs > c + 0.05:
         return (f"Right, and better than the AI-free compiler: it built {target}'s frequencies {fs(built or tgt)} and "
                 f"debugged its way from a first self-test at {accs[0]:.4f} to {accs[-1]:.4f} (“{sentence_with(' '.join(x['said']), ['ccuracy', '%'], 170)}”). "
-                f"HS {hs:.2f} against the compiler's {c:.2f}, which follows the rendered explanation literally.")
+                f"HS {hs:.2f} against the compiler's {c:.2f}, which follows the rendered explanation literally.",
+                f"Built {target}'s frequencies and debugged from {accs[0]:.4f} to {accs[-1]:.4f}; beats the literal compiler "
+                f"(HS {hs:.2f} vs {c:.2f})")
     return (f"Right: it built exactly the frequencies the explanation names, {fs(built or tgt)}, which are {target}'s own, "
             f"so both the answers (accuracy {acc:.4f}) and the internals (HS {hs:.2f}"
-            + (f"; compiler {c:.2f}" if c is not None else "") + ") match the target.")
+            + (f"; compiler {c:.2f}" if c is not None else "") + ") match the target.",
+            f"Built exactly {target}'s frequencies {fs(built or tgt)}, as the explanation says: answers and internals match")
 
 
 def rows(max_round: int) -> list[dict]:
@@ -200,7 +211,7 @@ def rows(max_round: int) -> list[dict]:
             x = {"label": label, "kind": kind, "rule": rule, **extract(r)}
         except FileNotFoundError:  # run folder not on this machine (e.g. a fresh clone): skip, never invent
             continue
-        x["why"] = why(x, r["target"], r["level"])
+        x["why"], x["why_short"] = why(x, r["target"], r["level"])
         out.append(x)
     return out
 
