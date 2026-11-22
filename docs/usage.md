@@ -49,7 +49,7 @@ Levels: `E0`–`E4`, `W-freq`, `W-alg`, `W-role`, `W-scramble`, `E-paper` (T-pap
 ## What one agent run does
 
 1. `simulator/sandbox.py` creates the run folder: `work/` (TASK.md, ARCHITECTURE.md, EXPLANATION.md, forward.py,
-   selftest.py, and neurons.csv for E4), `opencode.jsonc`, `prompt.txt`, `run.json`.
+   selftest.py, the starter build_weights.py, and neurons.csv for E4 and W-scramble), `opencode.jsonc`, `prompt.txt`, `run.json`.
 2. `simulator/runner.py` calls `scripts/run_one.sh` in WSL, which copies `work/` to WSL's native disk, starts the outside
    endpoint on a unix socket — the Anthropic proxy for Claude runs (adds the key, enforces the model allowlist and the
    budget ledger) or the relay to llama-server for local runs, both logging every request and response body (headers excluded) — and runs the agent inside

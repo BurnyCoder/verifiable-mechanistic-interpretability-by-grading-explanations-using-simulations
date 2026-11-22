@@ -219,7 +219,7 @@ Eleven agent smoke runs on the dev target `wd1_s10` (details and transcripts: `r
 `reports/progress.md`. Prompts, `TASK.md`, sandbox templates, explanation templates, harnesses, simulator settings and
 analysis code are fixed from that commit on. T-new is trained after it.
 
-### Post-freeze deviations (logged as they happen; 1–4 and 6 change no hypothesis, metric, test or condition; 5 removes conditions; 7 corrects how H1/H2 verdicts were computed; 8 adds missing preregistered statistics, discloses analyses not run and corrects §4's rationale; 9 corrects factual statements, narrows two claims to their evidence and adds post-hoc checks; 10 corrects how H1's verdict and the T-paper replication are reported, makes H1's trend test exact, corrects §4's rationale for `mlp_post` and adds post-hoc checks; 11 corrects how H4b and H8 are interpreted, states the coverage of three-run bootstrap intervals, corrects errata and citations and adds post-hoc checks)
+### Post-freeze deviations (logged as they happen; 1–4 and 6 change no hypothesis, metric, test or condition; 5 removes conditions; 7 corrects how H1/H2 verdicts were computed; 8 adds missing preregistered statistics, discloses analyses not run and corrects §4's rationale; 9 corrects factual statements, narrows two claims to their evidence and adds post-hoc checks; 10 corrects how H1's verdict and the T-paper replication are reported, makes H1's trend test exact, corrects §4's rationale for `mlp_post` and adds post-hoc checks; 11 corrects how H4b and H8 are interpreted, states the coverage of three-run bootstrap intervals, corrects errata and citations and adds post-hoc checks; 12 re-derives every verdict independently, narrows the scope of the "true" explanations and of one blind spot, corrects how the deviations made after results are counted and corrects errata and citations)
 
 1. **2026-11-21, round 1, after the controls stage — analysis code brought in line with amendment 2.** The frozen
    `analysis/hypotheses.py` still selected the main condition as Qwen3.6-35B-A3B at temperature 0.6 (pre-amendment)
@@ -434,3 +434,46 @@ analysis code are fixed from that commit on. T-new is trained after it.
    It is not a solver failure and does not affect H7 (the margin is taken to the best wrong target, T2).
    None of (a)–(g) changes a primary metric, a preregistered test or a verdict; (a) and (b) change how H4b and H8 are
    interpreted.
+12. **2026-11-22, after round 2 — fifth independent audit: hypothesis evaluation re-derived, scope of the "true"
+   explanations and of one blind spot, the count of deviations made after results, errata and citations.** Made
+   without reading the earlier reviews or audit scripts, after every round-2 number had been seen
+   (`reports/reviews/audit-5-2026-11-22.md`).
+   (a) *Hypothesis evaluation.* Every verdict was re-derived from the raw run records by a script that uses none of
+   the project's analysis code and only exact methods — Jonckheere–Terpstra, Mann–Whitney and Wilcoxon p-values by full
+   enumeration, bootstrap intervals from the exact bootstrap distribution, Holm by definition
+   (`scripts/audit5/hypotheses_check.py`, `results/audit5/hypotheses_check.json`): all 45 stored statistics and
+   verdicts, and every replication row, reproduce. No verdict is changed.
+   (b) *Scope of the "true" explanations (post hoc).* §3's key frequencies come from the neuron-to-logit map
+   W_L = W_U·W_out alone (grokviz, τ = 0.25), and E2–E4 state that the embedding, attention, MLP and unembedding all use
+   them. On T0, frequency 2 passes the threshold only in W_L (0.27 of its maximum; next frequency 0.10), has no
+   clustered neuron, is at 0.17 of the maximum in the embedding, and 99.7 % of its W_L energy comes from neurons of
+   frequency 37 (2 ≡ −3·37 mod 113, consistent with a ReLU harmonic; inference); the embedding's own above-threshold
+   set is {3, 6, 23, 37, 39}. On T2, T-new and T-paper the embedding also carries above-threshold frequencies that the
+   explanations omit, each ≡ −2× a key frequency (`scripts/audit5/checks.py`, `results/audit5/checks.json`). T0's E2–E4
+   are therefore true at the level of frequencies and component roles except for this read-out-only frequency; the
+   frozen rendering is reported, not changed.
+   (c) *Scope of the per-neuron blind spot.* HS did not separate the agents' W-scramble builds from their E4 builds,
+   but the agent-free compiler's literal W-scramble build scores 0.09 below its E4 build on T0 (mostly at
+   `resid_post`), within ±0.007 on T1, T-new and T-paper, and 0.05 above it on T2. Statements that HS is "blind to" or
+   "does not measure" the per-neuron assignment now say that it did not separate the agents' builds at N = 3; "cannot
+   tell Clock from Pizza" now says that HS did not separate them (no Clock-side build of an explanation exists).
+   (d) *Deviations made after results.* The paper and README said that seven deviations came after results had been
+   seen. All post-freeze deviations were made after some per-run scores had been seen (deviation 1 states it;
+   deviations 1–4 changed no hypothesis, test or condition); deviations 5–12 came after round-level results or because
+   of them.
+   (e) *Errata.* The nine H4 retrains are `wd1_s0` and `wd1_s2`–`wd1_s9` (the dev target `wd1_s10` is excluded, as
+   §7's "for T-paper also `wd1_s0`" left implicit); the compiler's E0 build is its default Clock network at fixed
+   default frequencies, identical to its E1 build, because E0 states no algorithm; the H8 formation-phase minimum is
+   0.9967 (written "≥ 0.997", now rounded down); the cost table counted two plumbing checks as one; the sandbox also
+   holds `neurons.csv` for E4 and W-scramble; T1/T2's selection is now generated from the published key frequencies
+   (`results/targets_selection.json`); amendment 2's protocol and §2's rules are unchanged.
+   (f) *Citations.* Zhong et al.'s Fig. 7 classifies runs by two separate lines, gradient symmetricity > 0.98 and
+   distance irrelevance < 0.6 (T2's 0.59 is just under the latter, far below the former); their Def. 4.1 is gradient
+   symmetricity and Def. 4.2 distance irrelevance. Sutter et al.'s injectivity/surjectivity assumptions are called
+   "strong" in their conclusion and "relatively weak" in their introduction; the README's paraphrase of their theorem
+   now uses their term (input-restricted distributed abstraction). The 75 % / 80 % coverage of three-run percentile
+   intervals is our calculation (and a normal-data simulation), not Hesterberg's; he is cited for the general
+   narrowness. The memorisation finding is recall of the published mechanism cued by a task description that gives
+   the paper's exact recipe (no sandbox file names a frequency or the paper).
+   None of (a)–(f) changes a primary metric, a preregistered test or a verdict; (b) and (c) narrow how two results are
+   described.
