@@ -100,9 +100,16 @@ def prediction_rows(max_round: int) -> list[dict]:
                                "KL does not fall E1→E4": _mono(list(mk.values()), increasing=False),
                                "E0 not below E1": e0 is None or e0 < mh["E1"]}))
     if "H2" in H:
-        eff = {k: v["diff"] for k, v in H["H2"]["effects"].items() if v}
-        add("H2", "HS difference " + "; ".join(f"{k} {d:+.3f}" for k, d in eff.items()),
-            _match({f"{k} reversed": d > 0 for k, d in eff.items()}))
+        eff = {k: v for k, v in H["H2"]["effects"].items() if v}
+
+        def status(v):  # with ≥ 2 runs per side the bootstrap CI decides; with 1 run only the sign is known
+            ci = v.get("ci")
+            if ci and ci[0] <= 0 <= ci[1]:
+                return "tie (CI includes 0)"
+            return "ahead" if v["diff"] > 0 else "reversed"
+        add("H2", "HS difference " + "; ".join(f"{k} {v['diff']:+.3f}" + (f" [{v['ci'][0]:+.3f}, {v['ci'][1]:+.3f}]" if v.get("ci") else "")
+                                               for k, v in eff.items()),
+            _match({f"{k} {status(v)}": status(v) == "ahead" for k, v in eff.items()}))
     if "H3" in H:
         h = H["H3"]
         w, tk, th = h["wfreq"], list(h["true_kl_means"].values()), list(h["true_hs_means"].values())

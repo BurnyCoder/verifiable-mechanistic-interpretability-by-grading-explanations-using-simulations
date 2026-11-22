@@ -148,8 +148,10 @@ def baselines_table(target: str = "T0") -> str:
     return "\n".join(rows)
 
 
-def controls_table(target: str = "T0") -> str:
-    """Deterministic no-agent controls: planted-mechanism calibration (H4b) and wrong-target specificity (H7)."""
+def controls_table(target: str = "T0", max_round: int | None = None) -> str:
+    """Deterministic no-agent controls: planted-mechanism calibration (H4b) and wrong-target specificity (H7).
+
+    The wrong-target file is refreshed every round; with max_round only that round's replacements are listed."""
     out = []
     pc = RES / "controls" / f"planted_calibration_{target}.json"
     if pc.exists():
@@ -159,6 +161,10 @@ def controls_table(target: str = "T0") -> str:
     wt = RES / "controls" / f"wrong_targets_{target}.json"
     if wt.exists():
         rows = json.loads(wt.read_text())["rows"]
+        if max_round is not None:
+            from vmi.analysis.hypotheses import load_runs
+            keep = {r["run_id"] for r in load_runs(max_round)}
+            rows = [r for r in rows if r["run_id"] in keep]
         out += ["", "| Replacement | HS vs T0 | best wrong target (HS) | d = HS(T0) − max HS(wrong) |", "|---|---|---|---|"]
         for r in rows:
             k = max(r["hs_wrong"], key=r["hs_wrong"].get)

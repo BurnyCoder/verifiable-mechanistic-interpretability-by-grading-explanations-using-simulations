@@ -266,3 +266,14 @@ analysis code are fixed from that commit on. T-new is trained after it.
    Round 3 is not cancelled: its manifests are written by `vmi manifests 3` unchanged when it resumes, and nothing in
    the protocol or analysis changes in between. The decision was made during round 2's main stage, after round 1's
    results and five round-2 runs had been seen; it concerns scheduling, removes no condition and changes no test.
+7. **2026-11-22, after round 2's analysis — two analysis-code corrections to match §5 and §6 as written.** Found
+   when the N = 3 verdicts were first read. (a) H1: §5 tests HS and KL_out "separately, same rule", but the code
+   reported only the HS trend as H1's verdict. It now reports both parts ("HS: supported; KL_out: not supported" at
+   N = 3; both "not supported" at N = 1, as the round-1 text already stated). (b) H2: the rule of deviation 1 (a rank
+   test whose smallest attainable p is ≥ 0.05 returns "cannot tell at this N") was applied only at N = 1; at N = 3 the
+   code returned "not supported" although a 3-vs-3 one-sided Mann–Whitney cannot go below p = 0.05 (§6 says so
+   explicitly). All four H2 comparisons now read "cannot tell at this N". Direction of the effects on the headline:
+   (a) adds a negative verdict, (b) turns four "not supported" into "cannot tell"; neither turns anything into
+   "supported". The descriptive "direction matches" column for H2 now calls a difference whose bootstrap CI includes 0
+   a tie. Also fixed: round reports are now filled only with their own round's numbers (the round-1 report had been
+   overwritten with round-2 tables and was restored).

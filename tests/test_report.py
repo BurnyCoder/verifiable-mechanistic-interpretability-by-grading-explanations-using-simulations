@@ -88,6 +88,21 @@ def test_agent_examples_quote_whole_sentences_and_parse_both_log_formats():
     assert says == [(1, "check the files.")]  # the model's words without its command block
 
 
+def test_verdict_rules_follow_preregistration_sections_5_and_6():
+    from vmi.analysis import stats as st
+    # §6: 3 vs 3 one-sided Mann-Whitney cannot go below 1/20, so it cannot decide at alpha = 0.05 even with full separation
+    assert st.min_p_mann_whitney(3, 3) == 1 / 20
+    assert st.verdict(0.05, True, st.min_p_mann_whitney(3, 3)) == "cannot tell at this N"
+    assert st.verdict(0.001, True, st.min_p_mann_whitney(3, 9)) == "supported"  # 3 vs 9: smallest p = 1/220
+    assert st.verdict(0.3, True, st.min_p_mann_whitney(3, 9)) == "not supported"
+    from vmi.analysis import hypotheses
+    H = hypotheses.evaluate(2)["hypotheses"]
+    if "H1" in H:  # §5: HS and KL_out are tested separately, both reported
+        assert set(H["H1"]["verdicts"]) == {"HS", "KL_out"}
+    if "H2" in H and H["H2"]["N"] == 3:
+        assert set(H["H2"]["verdicts"].values()) == {"cannot tell at this N"}
+
+
 def test_key_results_report_the_target_swap_when_present():
     import json
     fq = tables.RES / "frequencies_round1.json"

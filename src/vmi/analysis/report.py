@@ -15,7 +15,9 @@ from vmi.analysis import figures, hypotheses, tables  # generators
 from vmi.config import REPO_ROOT  # repo paths
 
 DOCS = ["README.md", "reports/summary.md", "reports/experiments/experiments.md", "reports/paper/paper.md",
-        "reports/experiments/00-stage0-dev/experiment.md", "reports/experiments/01-round1/experiment.md"]
+        "reports/experiments/00-stage0-dev/experiment.md"]  # always show the latest analysed round
+ROUND_DOCS = {1: "reports/experiments/01-round1/experiment.md", 2: "reports/experiments/02-round2/experiment.md",
+              3: "reports/experiments/03-round3/experiment.md"}  # a round's own report only ever gets that round's numbers
 TARGETS = ["T0", "T1", "T2", "T-new", "T-paper", "dev"]
 
 
@@ -23,7 +25,7 @@ def blocks(max_round: int) -> dict[str, str]:
     """Every generated block, keyed by marker name."""
     out = {"hypotheses": tables.hypotheses_table(max_round), "runs": tables.runs_table(max_round),
            "scoreboard-T0": tables.scoreboard(max_round, "T0"), "baselines-T0": tables.baselines_table("T0"),
-           "controls-T0": tables.controls_table("T0"), "cost": tables.cost_table(), "targets": tables.targets_table(),
+           "controls-T0": tables.controls_table("T0", max_round), "cost": tables.cost_table(), "targets": tables.targets_table(),
            "key-results": tables.key_results(max_round),
            "grader-sensitivity-T0": tables.grader_sensitivity_table(max_round, "T0", "agent"),
            "grader-sensitivity-compiler-T0": tables.grader_sensitivity_table(max_round, "T0", "compiler"),
@@ -63,7 +65,7 @@ def regenerate(max_round: int) -> dict:
     hyp = hypotheses.write(max_round)
     figs = figures.make_all(max_round)
     gen = blocks(max_round)
-    filled = {d: inject_all(REPO_ROOT / d, gen) for d in DOCS}
+    filled = {d: inject_all(REPO_ROOT / d, gen) for d in DOCS + [ROUND_DOCS.get(max_round, "")] if d}
     from vmi.analysis import site  # interactive GitHub Pages explorer reads docs/data.json
     site.build(max_round)
     summary = {"hypotheses": str(hyp.relative_to(REPO_ROOT)), "figures": [str(p.relative_to(REPO_ROOT)) for p in figs],
