@@ -82,7 +82,11 @@ def trajectory(settings: Settings, max_round: int, every: int = 1) -> dict:
     Negative controls (post hoc, audit 2026-11-22 second pass): ρ between two quantities that both trend over training
     is positive for many pairs, so the same ρ is computed for replacements built without T0's mechanism — W-freq (wrong
     frequencies), E1 (algorithm only) and E0 (no explanation). If HS tracks circuit formation specifically, their ρ
-    should not be positive like the E3/E4 replacements'. They do not enter the preregistered verdict."""
+    should not be positive like the E3/E4 replacements'. They do not enter the preregistered verdict.
+
+    Positive control (post hoc, audit 4, `scripts/audit4/h8_positive_control.py`): final T0 itself and every other
+    network with T0's frequencies rise the same way during circuit formation, and the size of the whole-trajectory ρ is
+    set by drift after grokking, so ρ > 0 shows shared frequency structure, not a separate tracking ability."""
     from grokviz import metrics as gm
     from grokviz.runstore import RunStore
     runs = _agent_runs(max_round=max_round)
