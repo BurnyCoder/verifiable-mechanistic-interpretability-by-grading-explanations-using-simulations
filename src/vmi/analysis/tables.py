@@ -519,6 +519,16 @@ def _audit5_values() -> dict[str, str]:
     if hc.exists():
         h = json.loads(hc.read_text(encoding="utf-8"))
         v["a5-hyp"] = f"{h['n_agree']} of {h['n_items']}"
+        c = h.get("r2_convention_check")
+        if c:  # verdicts re-derived with every agent run's HS under the held-out-mean R² convention
+            v["a5-r2conv-verdicts"] = f"{_w(c['verdicts_compared'] - len(c['changed']))} of {_w(c['verdicts_compared'])}"
+    rg = RES / "audit5" / "regrade_independent.json"  # independent forward pass and ridge (scripts/audit5/regrade_independent.py)
+    if rg.exists():
+        g = json.loads(rg.read_text(encoding="utf-8"))
+        s = g["summary"]
+        v["a5-regrade"] = (f"{sum(x['n'] for x in s.values())} gradings, largest differences {max(x['max_abs_diff_hs'] for x in s.values()):.1e} "
+                           f"in HS and {max(x['max_abs_diff_kl_out'] for x in s.values()):.1e} in KL")
+        v["a5-r2conv"] = f"{g['r2_denominator_convention']['max_abs_hs_change_heldout_mean_convention']:.1e}"
     return v
 
 

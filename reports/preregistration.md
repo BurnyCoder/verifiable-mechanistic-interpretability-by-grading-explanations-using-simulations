@@ -441,8 +441,15 @@ analysis code are fixed from that commit on. T-new is trained after it.
    (a) *Hypothesis evaluation.* Every verdict was re-derived from the raw run records by a script that uses none of
    the project's analysis code and only exact methods — Jonckheere–Terpstra, Mann–Whitney and Wilcoxon p-values by full
    enumeration, bootstrap intervals from the exact bootstrap distribution, Holm by definition
-   (`scripts/audit5/hypotheses_check.py`, `results/audit5/hypotheses_check.json`): all 45 stored statistics and
-   verdicts, and every replication row, reproduce. No verdict is changed.
+   (`scripts/audit5/hypotheses_check.py`, `results/audit5/hypotheses_check.json`): all 88 stored statistics, verdicts
+   and published values reproduce — rounds 1 and 2, every replication row, H5 on the seed targets and T-paper, and H8's
+   negative controls. The scores those tests use were re-graded by a second implementation written from `ARCHITECTURE.md`
+   and §4 (306 gradings: every reported run, compiler build, retrain, student, random initialisation, planted snapshot
+   and H7 wrong-target grading, and every 40th H8 checkpoint; largest differences 1.3e-10 in HS and 4.4e-12 in KL;
+   `scripts/audit5/regrade_independent.py`); §4 leaves the R² denominator open, and taking it about the held-out
+   fold's own mean instead of the training-fold mean changes any run's HS by at most 7.6e-4, and re-deriving the 19
+   run-based verdicts with those values changes none (H7's margins and H8's correlations are far larger than the change).
+   No verdict is changed.
    (b) *Scope of the "true" explanations (post hoc).* §3's key frequencies come from the neuron-to-logit map
    W_L = W_U·W_out alone (grokviz, τ = 0.25), and E2–E4 state that the embedding, attention, MLP and unembedding all use
    them. On T0, frequency 2 passes the threshold only in W_L (0.27 of its maximum; next frequency 0.10), has no

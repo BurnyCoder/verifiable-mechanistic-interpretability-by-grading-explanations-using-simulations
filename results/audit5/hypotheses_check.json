@@ -214,6 +214,64 @@
       "local_runs": 5,
       "local_above_chance": 0
     },
+    "H5_extension": {
+      "T1 E2": {
+        "gap": 0.00724219206454535,
+        "beyond": true
+      },
+      "T1 E3": {
+        "gap": -0.047650735873691286,
+        "beyond": false
+      },
+      "T1 E4": {
+        "gap": -0.03192866892555235,
+        "beyond": false
+      },
+      "T1 W-freq": {
+        "gap": -0.018343373088074696,
+        "beyond": false
+      },
+      "T2 E2": {
+        "gap": 0.06734606397913934,
+        "beyond": false
+      },
+      "T2 E3": {
+        "gap": 0.17872393847921986,
+        "beyond": true
+      },
+      "T2 E4": {
+        "gap": 0.04034339711392532,
+        "beyond": true
+      },
+      "T2 W-freq": {
+        "gap": -0.059855534125654156,
+        "beyond": false
+      },
+      "T-new E3": {
+        "gap": -0.05953536886656419,
+        "beyond": false
+      },
+      "T-new E4": {
+        "gap": 0.0014248039778173016,
+        "beyond": true
+      },
+      "T-new W-freq": {
+        "gap": 0.004964384422982943,
+        "beyond": false
+      },
+      "T-paper E3": {
+        "gap": 0.07292733683940789,
+        "beyond": true
+      },
+      "T-paper E4": {
+        "gap": -0.04604248296440672,
+        "beyond": false
+      },
+      "T-paper W-freq": {
+        "gap": -0.004136270105284945,
+        "beyond": false
+      }
+    },
     "H7": {
       "wrong_targets": [
         "T1",
@@ -254,7 +312,54 @@
         0.8394353668068636
       ],
       "n_checkpoints": 401,
-      "verdict": "supported"
+      "verdict": "supported",
+      "negative_controls": {
+        "controls__T0__E0__claudehaiku55-claudecode__tdef__s0": {
+          "level": "E0",
+          "rho": -0.8313440279897274,
+          "stored_rho": -0.8313440279897274
+        },
+        "controls__T0__E0__claudehaiku55-claudecode__tdef__s1": {
+          "level": "E0",
+          "rho": -0.45251609781516366,
+          "stored_rho": -0.45251609781516366
+        },
+        "controls__T0__E0__claudehaiku55-claudecode__tdef__s2": {
+          "level": "E0",
+          "rho": 0.14019224327241597,
+          "stored_rho": 0.14019224327241597
+        },
+        "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s0": {
+          "level": "W-freq",
+          "rho": -0.4012472549968363,
+          "stored_rho": -0.4012472549968363
+        },
+        "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s1": {
+          "level": "W-freq",
+          "rho": -0.24106766665425994,
+          "stored_rho": -0.24106766665425994
+        },
+        "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s2": {
+          "level": "W-freq",
+          "rho": -0.3779847024230469,
+          "stored_rho": -0.3779847024230469
+        },
+        "main__T0__E1__claudehaiku55-claudecode__tdef__s0": {
+          "level": "E1",
+          "rho": -0.5812811255443482,
+          "stored_rho": -0.5812811255443482
+        },
+        "main__T0__E1__claudehaiku55-claudecode__tdef__s1": {
+          "level": "E1",
+          "rho": -0.5757622734209255,
+          "stored_rho": -0.5757622734209255
+        },
+        "main__T0__E1__claudehaiku55-claudecode__tdef__s2": {
+          "level": "E1",
+          "rho": -0.5723850820709421,
+          "stored_rho": -0.5723850820709421
+        }
+      }
     },
     "replications": {
       "T0": {
@@ -672,9 +777,21 @@
       "agree": true
     },
     {
+      "item": "H5 T0 E2 beyond the CI",
+      "stored": "False",
+      "recomputed": "False",
+      "agree": true
+    },
+    {
       "item": "H5 T0 E3 gap",
       "stored": 0.0024530366413803018,
       "recomputed": 0.0024530366413803018,
+      "agree": true
+    },
+    {
+      "item": "H5 T0 E3 beyond the CI",
+      "stored": "False",
+      "recomputed": "False",
       "agree": true
     },
     {
@@ -684,12 +801,269 @@
       "agree": true
     },
     {
+      "item": "H5 T0 E4 beyond the CI",
+      "stored": "False",
+      "recomputed": "False",
+      "agree": true
+    },
+    {
       "item": "H5 T0 W-freq gap",
       "stored": -0.02418125537228441,
       "recomputed": -0.02418125537228441,
       "agree": true
+    },
+    {
+      "item": "H5 T0 W-freq beyond the CI",
+      "stored": "False",
+      "recomputed": "False",
+      "agree": true
+    },
+    {
+      "item": "H5 seed targets: pairs above the compiler by sign",
+      "stored": 6,
+      "recomputed": 6,
+      "agree": true
+    },
+    {
+      "item": "H5 seed targets: pairs beyond the CI",
+      "stored": "T1 E2, T2 E3, T2 E4, T-new E4",
+      "recomputed": "T1 E2, T2 E3, T2 E4, T-new E4",
+      "agree": true
+    },
+    {
+      "item": "H5 seed targets: largest gap",
+      "stored": 0.17872393847921986,
+      "recomputed": 0.17872393847921986,
+      "agree": true
+    },
+    {
+      "item": "H5 T-paper beyond the CI",
+      "stored": "E3",
+      "recomputed": "E3",
+      "agree": true
+    },
+    {
+      "item": "H8 negative control E0 s0 ρ",
+      "stored": -0.8313440279897274,
+      "recomputed": -0.8313440279897274,
+      "agree": true
+    },
+    {
+      "item": "H8 negative control E0 s1 ρ",
+      "stored": -0.45251609781516366,
+      "recomputed": -0.45251609781516366,
+      "agree": true
+    },
+    {
+      "item": "H8 negative control E0 s2 ρ",
+      "stored": 0.14019224327241597,
+      "recomputed": 0.14019224327241597,
+      "agree": true
+    },
+    {
+      "item": "H8 negative control W-freq s0 ρ",
+      "stored": -0.4012472549968363,
+      "recomputed": -0.4012472549968363,
+      "agree": true
+    },
+    {
+      "item": "H8 negative control W-freq s1 ρ",
+      "stored": -0.24106766665425994,
+      "recomputed": -0.24106766665425994,
+      "agree": true
+    },
+    {
+      "item": "H8 negative control W-freq s2 ρ",
+      "stored": -0.3779847024230469,
+      "recomputed": -0.3779847024230469,
+      "agree": true
+    },
+    {
+      "item": "H8 negative control E1 s0 ρ",
+      "stored": -0.5812811255443482,
+      "recomputed": -0.5812811255443482,
+      "agree": true
+    },
+    {
+      "item": "H8 negative control E1 s1 ρ",
+      "stored": -0.5757622734209255,
+      "recomputed": -0.5757622734209255,
+      "agree": true
+    },
+    {
+      "item": "H8 negative control E1 s2 ρ",
+      "stored": -0.5723850820709421,
+      "recomputed": -0.5723850820709421,
+      "agree": true
+    },
+    {
+      "item": "replication T0 H1 verdict",
+      "stored": "supported",
+      "recomputed": "supported",
+      "agree": true
+    },
+    {
+      "item": "replication T0 H2 verdict",
+      "stored": "cannot tell at this N",
+      "recomputed": "cannot tell at this N",
+      "agree": true
+    },
+    {
+      "item": "replication T0 H3 holds fully",
+      "stored": "True",
+      "recomputed": "True",
+      "agree": true
+    },
+    {
+      "item": "replication T1 H1 verdict",
+      "stored": "not supported",
+      "recomputed": "not supported",
+      "agree": true
+    },
+    {
+      "item": "replication T1 H2 verdict",
+      "stored": "cannot tell at this N",
+      "recomputed": "cannot tell at this N",
+      "agree": true
+    },
+    {
+      "item": "replication T1 H3 holds fully",
+      "stored": "False",
+      "recomputed": "False",
+      "agree": true
+    },
+    {
+      "item": "replication T2 H1 verdict",
+      "stored": "not supported",
+      "recomputed": "not supported",
+      "agree": true
+    },
+    {
+      "item": "replication T2 H2 verdict",
+      "stored": "cannot tell at this N",
+      "recomputed": "cannot tell at this N",
+      "agree": true
+    },
+    {
+      "item": "replication T2 H3 holds fully",
+      "stored": "True",
+      "recomputed": "True",
+      "agree": true
+    },
+    {
+      "item": "replication T-new H1 verdict",
+      "stored": "cannot tell at this N",
+      "recomputed": "cannot tell at this N",
+      "agree": true
+    },
+    {
+      "item": "replication T-new H2 verdict",
+      "stored": "cannot tell at this N",
+      "recomputed": "cannot tell at this N",
+      "agree": true
+    },
+    {
+      "item": "replication T-new H3 holds fully",
+      "stored": "False",
+      "recomputed": "False",
+      "agree": true
+    },
+    {
+      "item": "replication T-paper H1 verdict",
+      "stored": "not supported",
+      "recomputed": "not supported",
+      "agree": true
+    },
+    {
+      "item": "replication T-paper H2 verdict",
+      "stored": "cannot tell at this N",
+      "recomputed": "cannot tell at this N",
+      "agree": true
+    },
+    {
+      "item": "replication T-paper H3 holds fully",
+      "stored": "True",
+      "recomputed": "True",
+      "agree": true
+    },
+    {
+      "item": "round 1 H1 (HS trend)",
+      "stored": "not supported",
+      "recomputed": "not supported",
+      "agree": true
+    },
+    {
+      "item": "round 1 H2 E3>W-freq",
+      "stored": "cannot tell at this N",
+      "recomputed": "cannot tell at this N",
+      "agree": true
+    },
+    {
+      "item": "round 1 H2 E3>W-alg",
+      "stored": "cannot tell at this N",
+      "recomputed": "cannot tell at this N",
+      "agree": true
+    },
+    {
+      "item": "round 1 H2 E3>W-role",
+      "stored": "cannot tell at this N",
+      "recomputed": "cannot tell at this N",
+      "agree": true
+    },
+    {
+      "item": "round 1 H2 E4>W-scramble",
+      "stored": "not supported",
+      "recomputed": "not supported",
+      "agree": true
+    },
+    {
+      "item": "round 1 H3",
+      "stored": "supported",
+      "recomputed": "supported",
+      "agree": true
+    },
+    {
+      "item": "round 1 H4 E3",
+      "stored": "cannot tell at this N",
+      "recomputed": "cannot tell at this N",
+      "agree": true
+    },
+    {
+      "item": "round 1 H4 E4",
+      "stored": "cannot tell at this N",
+      "recomputed": "cannot tell at this N",
+      "agree": true
+    },
+    {
+      "item": "round 1 H4b",
+      "stored": "not supported",
+      "recomputed": "not supported",
+      "agree": true
+    },
+    {
+      "item": "round 1 H7",
+      "stored": "cannot tell at this N",
+      "recomputed": "cannot tell at this N",
+      "agree": true
+    },
+    {
+      "item": "round 1 H8",
+      "stored": "supported",
+      "recomputed": "supported",
+      "agree": true
     }
   ],
-  "n_agree": 45,
-  "n_items": 45
+  "r2_convention_check": {
+    "n_runs_substituted": 101,
+    "verdicts_compared": 19,
+    "changed": {},
+    "h2_p_heldout_mean": {
+      "E3>W-freq": 0.05,
+      "E3>W-alg": 0.35,
+      "E3>W-role": 0.05,
+      "E4>W-scramble": 0.5
+    }
+  },
+  "n_agree": 88,
+  "n_items": 88
 }

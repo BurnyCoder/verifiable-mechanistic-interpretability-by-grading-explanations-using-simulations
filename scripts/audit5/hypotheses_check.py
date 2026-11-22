@@ -1,9 +1,11 @@
 """Audit 5 (2026-11-22): independent re-evaluation of every preregistered hypothesis from the raw run records.
 
-Local explanation: reads only JSON files under results/ (never the project's analysis code) and re-derives every
-statistic and verdict of preregistration §5–§6 and its deviations 1, 5, 7, 8 and 10 with exact methods:
+Local explanation: re-derives every statistic and verdict from JSON files under results/ without the project's analysis code
+(only the published wording it is compared with comes from `vmi.analysis.predictions`), for preregistration §5–§6 and
+its deviations 1, 5, 7, 8 and 10, with exact methods:
   - Jonckheere–Terpstra p by enumerating every distinct assignment of the pooled runs to the ordered levels;
   - Mann–Whitney and Wilcoxon signed-rank p by full enumeration (rank sums over all subsets; all 2^n sign patterns);
+  - H5 on the seed targets and T-paper, H8's post-hoc negative controls, the replication rows and round 1 (N = 1);
   - percentile-bootstrap intervals from the *exact* bootstrap distribution (every equally likely resample of three
     runs per group, 27 per group), so no random seed is involved; Holm by its step-down definition;
 then compares each result with `results/hypotheses_round{r}.json` and with the replication rules, and writes
@@ -14,7 +16,8 @@ Sources: Jonckheere 1954 (Biometrika 41:133–145) / Terpstra 1952; Mann & Whitn
 Wilcoxon 1945 (Biometrics Bulletin 1:80–83); Holm 1979 (Scand. J. Stat. 6:65–70); exact bootstrap — Efron &
 Tibshirani 1993, *An Introduction to the Bootstrap*, §13; Spearman ρ via scipy.stats.rankdata
 (https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.rankdata.html).
-Run: `.venv/Scripts/python.exe scripts/audit5/hypotheses_check.py [round]` (CPU, about one minute).
+Run: `.venv/Scripts/python.exe scripts/audit5/hypotheses_check.py [round]` (CPU, about ten minutes; if
+`results/audit5/regrade_independent.json` exists, it also re-derives the verdicts under the held-out-mean R² convention).
 """
 
 from __future__ import annotations  # postponed annotations
@@ -37,7 +40,8 @@ MAIN = "claude-haiku-5-5"  # amendment 2: main simulator
 
 
 def log(msg: str) -> None:
-    """Timestamped progress line on the terminal."""
+    """Timestamped progress line on the terminal (UTF-8, so Greek letters print on a Windows console too)."""
+    sys.stdout.reconfigure(encoding="utf-8")  # https://docs.python.org/3/library/io.html#io.TextIOWrapper.reconfigure
     print(f"[{time.strftime('%H:%M:%S')}] {msg}", flush=True)
 
 
@@ -189,8 +193,12 @@ def rank_verdict(p_adj: float, min_p: float, positive: bool) -> str:
 # ---------------------------------------------------------------------------------------------------------------
 # Hypotheses
 # ---------------------------------------------------------------------------------------------------------------
-def evaluate(r: int) -> dict:
+def evaluate(r: int, hs_override: dict | None = None) -> dict:
+    """Every hypothesis at round r; hs_override (run_id → HS) substitutes agent-run HS values (convention check)."""
     runs = load_runs(r)
+    for d in runs:
+        if hs_override and d["run_id"] in hs_override:
+            d["hs"] = hs_override[d["run_id"]]
     T = "T0"
     out = {}
     # H1 — HS trend E1<E2<E3<E4 and KL trend (decreasing), E0 clause by direction only
@@ -207,7 +215,12 @@ def evaluate(r: int) -> dict:
     eff = {k: boot_mean_diff_exact(vals(runs, T, a), vals(runs, T, b)) for k, (a, b) in pairs.items()}
     out["H2"] = {k: {"p": t2[k]["p"], "holm_p": adj[k], "min_p": t2[k]["min_p"], "r_rb": t2[k]["r_rb"],
                      "ties": t2[k]["ties"], "effect": eff[k],
-                     "verdict": rank_verdict(adj[k], t2[k]["min_p"], eff[k]["diff"] > 0)} for k in pairs}
+                     # N = 1 (deviation 1 as applied in round 1, disclosed in deviation 8(f)): a reversed single-run
+                     # difference reads "not supported", otherwise "cannot tell"
+                     "verdict": (("cannot tell at this N" if eff[k]["diff"] > 0 else "not supported")
+                                 if min(len(vals(runs, T, a)), len(vals(runs, T, b))) < 2
+                                 else rank_verdict(adj[k], t2[k]["min_p"], eff[k]["diff"] > 0))}
+                 for k, (a, b) in pairs.items()}
     # H3 — W-freq: agreement ≥ 0.99, KL ≤ max of E2–E4 means (falsifier), HS below each of E2–E4 means
     wf = {k: vals(runs, T, "W-freq", k) for k in ("hs", "kl_out", "argmax_agreement")}
     true = {lv: {k: vals(runs, T, lv, k) for k in ("hs", "kl_out")} for lv in ("E2", "E3", "E4")}
@@ -246,19 +259,35 @@ def evaluate(r: int) -> dict:
         h5[lv] = {"gap": float(v.mean() - c), "agent_ci_low": lo, "beyond": bool(v.mean() > c and lo > c)}
     local = [d for d in runs if d["model"] != MAIN]
     out["H5"] = {"T0": h5, "local_runs": len(local), "local_above_chance": sum(d["accuracy"] > 2 / 113 for d in local)}
+    # H5 extension (post hoc in the paper): the same comparison on the seed targets and, apart, on T-paper
+    ext = {}
+    for t in ("T1", "T2", "T-new", "T-paper"):
+        for lv in ("E2", "E3", "E4", "W-freq"):
+            v, cf = vals(runs, t, lv), RES / "compiler" / t / f"{lv}.json"
+            if len(v) and cf.exists():
+                c = json.loads(cf.read_text())["hs"]
+                lo = wquantile(resamples(v).mean(1), 0.025)
+                ext[f"{t} {lv}"] = {"gap": float(v.mean() - c), "beyond": bool(v.mean() > c and lo > c)}
+    out["H5_extension"] = ext
     # H7 — Wilcoxon on d = HS(T0) − max over the 12 preregistered wrong targets
+    keep = lambda run_id: r >= 2 or run_id.endswith("__s0")  # noqa: E731  round 1 = replicate 0 only
     wt = json.loads((RES / "controls" / "wrong_targets_T0.json").read_text())
-    d = [row["hs_T0"] - max(row["hs_wrong"].values()) for row in wt["rows"]]
+    rows7 = [row for row in wt["rows"] if keep(row["run_id"])]
+    d = [row["hs_T0"] - max(row["hs_wrong"].values()) for row in rows7]
     w7 = wilcoxon_exact_greater(d)
     out["H7"] = {"wrong_targets": list(wt["rows"][0]["hs_wrong"].keys()), "d": d,
-                 "d_matches_stored": all(abs(x - row["d"]) < 1e-12 for x, row in zip(d, wt["rows"])), **w7,
+                 "d_matches_stored": all(abs(x - row["d"]) < 1e-12 for x, row in zip(d, rows7)), **w7,
                  "verdict": rank_verdict(w7["p"], w7["min_p"], w7["median"] > 0)}
     # H8 — supported iff every E3/E4 replacement's ρ > 0 (deviation 8)
     tr = json.loads((RES / "controls" / "trajectory_T0.json").read_text())
     from scipy.stats import spearmanr  # recompute ρ from the stored curves
     nl = -np.log(np.array(tr["restricted_loss"]))
-    rhos = [float(spearmanr(np.array(x["hs"]), nl).statistic) for x in tr["replacements"] if "__E3__" in x["run_id"] or "__E4__" in x["run_id"]]
-    out["H8"] = {"rhos": rhos, "n_checkpoints": len(nl), "verdict": "supported" if rhos and min(rhos) > 0 else "not supported"}
+    rhos = [float(spearmanr(np.array(x["hs"]), nl).statistic) for x in tr["replacements"]
+            if ("__E3__" in x["run_id"] or "__E4__" in x["run_id"]) and keep(x["run_id"])]
+    out["H8"] = {"rhos": rhos, "n_checkpoints": len(nl), "verdict": "supported" if rhos and min(rhos) > 0 else "not supported",
+                 # post-hoc negative controls (W-freq, E1, E0 replacements), ρ recomputed from their stored curves
+                 "negative_controls": {c["run_id"]: {"level": c["level"], "rho": float(spearmanr(np.array(c["hs"]), nl).statistic),
+                                                     "stored_rho": c["rho"]} for c in tr.get("negative_controls", [])}}
     # Replications (§5: H1–H3 per seed target with the same tests)
     rep = {}
     for t in ["T0", "T1", "T2", "T-new", "T-paper"]:
@@ -315,6 +344,49 @@ def compare(r: int, mine: dict) -> list[dict]:
     add("H8 verdict", H["H8"]["verdict"], mine["H8"]["verdict"])
     for lv, v in mine["H5"]["T0"].items():
         add(f"H5 T0 {lv} gap", H["H5"]["agent_minus_compiler_main"][lv], v["gap"])
+        add(f"H5 T0 {lv} beyond the CI", "False", str(v["beyond"]))  # the paper: none of the four beyond the CI
+    # Claims the paper and README print (generated by the project's code; compared with this script's derivation)
+    sys.path.insert(0, str(ROOT / "src"))
+    from vmi.analysis import predictions as pr  # the published wording, not used for any recomputation
+    from vmi.analysis.hypotheses import load_runs as project_runs
+    g5 = pr.h5_gaps(project_runs(r))
+    ext = mine["H5_extension"]
+    seed = {k: v for k, v in ext.items() if not k.startswith("T-paper")}
+    add("H5 seed targets: pairs above the compiler by sign", sum(x["gap"] > 0 for x in g5["seed"]), sum(v["gap"] > 0 for v in seed.values()), 0)
+    add("H5 seed targets: pairs beyond the CI", ", ".join(f"{x['target']} {x['level']}" for x in g5["seed"] if x["beyond"]),
+        ", ".join(k for k, v in seed.items() if v["beyond"]))
+    add("H5 seed targets: largest gap", max(x["gap"] for x in g5["seed"]), max(v["gap"] for v in seed.values()))
+    add("H5 T-paper beyond the CI", ", ".join(x["level"] for x in g5["T-paper"] if x["beyond"]),
+        ", ".join(k.split(" ")[1] for k, v in ext.items() if k.startswith("T-paper") and v["beyond"]))
+    for rid, c in mine["H8"]["negative_controls"].items():
+        add(f"H8 negative control {c['level']} {rid.rsplit('__', 1)[-1]} ρ", c["stored_rho"], c["rho"])
+    claimed = {row["target"].split(" ")[0]: row for row in pr.replication_rows(r)}
+    for t, v in mine["replications"].items():
+        h1 = claimed[t]["h1"].split("; ", 1)[1]
+        add(f"replication {t} H1 verdict", h1.split(" (")[0], v["H1"]["verdict"])
+        add(f"replication {t} H2 verdict", claimed[t]["h2"].split("; ")[1].split(" (")[0], v["H2"]["verdict"])
+        add(f"replication {t} H3 holds fully", str(claimed[t]["h3"] == "yes"), str(all(v["H3"].values())))
+    return rows
+
+
+def compare_round1(mine: dict) -> list[dict]:
+    """Round 1 (N = 1): stored verdicts in `results/hypotheses_round1.json` (written before deviation 7 split H1 into
+    parts; its H1 verdict is the HS trend) against this script's derivation at N = 1."""
+    H = json.loads((RES / "hypotheses_round1.json").read_text())["hypotheses"]
+    rows = []
+
+    def add(name, stored, recomputed):
+        rows.append({"item": name, "stored": stored, "recomputed": recomputed, "agree": stored == recomputed})
+
+    add("round 1 H1 (HS trend)", H["H1"].get("verdict"), mine["H1"]["HS"]["verdict"])
+    for k, v in mine["H2"].items():
+        add(f"round 1 H2 {k}", H["H2"]["verdicts"][k], v["verdict"])
+    add("round 1 H3", H["H3"]["verdict"], mine["H3"]["verdict"])
+    for lv in ("E3", "E4"):
+        add(f"round 1 H4 {lv}", H["H4"]["verdicts"][lv], mine["H4"][lv]["verdict"])
+    add("round 1 H4b", H["H4b"]["verdict"], mine["H4b"]["verdict"])
+    add("round 1 H7", H["H7"]["verdict"], mine["H7"]["verdict"])
+    add("round 1 H8", H["H8"]["verdict"], mine["H8"]["verdict"])
     return rows
 
 
@@ -322,6 +394,23 @@ def main() -> None:
     r = int(sys.argv[1]) if len(sys.argv) > 1 else 2
     mine = evaluate(r)
     rows = compare(r, mine)
+    if r >= 2 and (RES / "hypotheses_round1.json").exists():  # every round is evaluated (§6): check round 1 too
+        rows += compare_round1(evaluate(1))
+    conv = None
+    rg = RES / "audit5" / "regrade_independent.json"
+    if rg.exists():  # §4 leaves the R² denominator open: do the verdicts survive the held-out-mean convention?
+        alt = {i["name"]: i["hs_heldout_mean"] for i in json.loads(rg.read_text())["items"] if "hs_heldout_mean" in i}
+        a = evaluate(r, alt)
+        verdicts = lambda m: {"H1 HS": m["H1"]["HS"]["verdict"], "H1 KL": m["H1"]["KL"]["verdict"], "H3": m["H3"]["verdict"],  # noqa: E731
+                              **{f"H2 {k}": v["verdict"] for k, v in m["H2"].items()},
+                              **{f"H4 {lv}": m["H4"][lv]["verdict"] for lv in ("E3", "E4")},
+                              **{f"replication {t} H1": v["H1"]["verdict"] for t, v in m["replications"].items()},
+                              **{f"replication {t} H2": v["H2"]["verdict"] for t, v in m["replications"].items()}}
+        base, other = verdicts(mine), verdicts(a)
+        conv = {"n_runs_substituted": len(alt), "verdicts_compared": len(base),
+                "changed": {k: [base[k], other[k]] for k in base if base[k] != other[k]},
+                "h2_p_heldout_mean": {k: v["p"] for k, v in a["H2"].items()}}
+        log(f"held-out-mean R² convention: {len(base) - len(conv['changed'])} of {len(base)} verdicts unchanged {conv['changed'] or ''}")
     for x in rows:
         log(f"{'OK ' if x['agree'] else 'DIFF'} {x['item']}: stored {x['stored']} | recomputed {x['recomputed']}")
     for t, v in mine["replications"].items():
@@ -329,7 +418,7 @@ def main() -> None:
             f"CI [{v['H1']['spearman']['ci'][0]:.2f}, {v['H1']['spearman']['ci'][1]:.2f}]); H2 {v['H2']['verdict']} "
             f"(p {v['H2']['p']:.3f}); H3 {v['H3']}")
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(json.dumps({"round": r, "recomputed": mine, "comparison": rows,
+    OUT.write_text(json.dumps({"round": r, "recomputed": mine, "comparison": rows, "r2_convention_check": conv,
                                "n_agree": sum(x["agree"] for x in rows), "n_items": len(rows)},
                               indent=2, ensure_ascii=False, default=float), encoding="utf-8", newline="\n")
     log(f"{sum(x['agree'] for x in rows)} of {len(rows)} stored items reproduced; wrote {OUT.relative_to(ROOT)}")
