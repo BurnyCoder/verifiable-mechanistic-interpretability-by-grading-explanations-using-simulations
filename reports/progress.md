@@ -1,5 +1,26 @@
 # Progress
 
+## 2026-11-22 04:00 — independent audit of results, methods and claims
+
+**Done** (no new agent runs; N = 3 — not yet N = 10)
+- Every reported statistic recomputed by an independent script from the raw run records: all reproduce exactly;
+  regeneration is deterministic.
+- Methods checked against their sources and library docs; about 130 cited URLs fetched and checked.
+- Fixed (deviation 8, `reviews/independent-audit-2026-11-22.md`):
+  - the primary metric's invariance claim (soundness is not invariant to non-orthogonal maps; a whitened check is
+    added to the grader sensitivity);
+  - missing preregistered statistics (H3 CIs, H4 student test, replication tests);
+  - H8 re-run as preregistered (all E3/E4 replacements × 401 checkpoints);
+  - W-alg's length mismatch and two analyses never run, now disclosed;
+  - the memorisation wording (four of the paper's five frequencies);
+  - the failed run's diagnosis (intended P3 = 42, from its own docstring);
+  - HS's floor (random networks score above other-frequency networks);
+  - citations that were cited for more than they say.
+
+**Now:** nothing running after the audit's regeneration. **Next:** round 3 (N = 10) only when you ask.
+
+**Estimate:** round 2 of 3 complete: 101 of 325 planned agent runs (31 %); every Claude Haiku condition has N = 3.
+
 ## 2026-11-22 01:30 — round 2 (N = 3) complete; round 3 postponed; waiting for your go-ahead
 
 **Done since 20:45** (N = 3 — not yet N = 10)
@@ -19,7 +40,8 @@ low-effort collapse and the E0 memorisation did not replicate in every run.
 
 **Now:** nothing running. **Next:** round 3 (N = 10, 224 Haiku runs, about 10–15 hours, about $5) only when you ask.
 
-**Estimate:** about 65 % of the full plan is done (101 of 325 agent runs); everything through round 2 is complete.
+**Estimate:** round 2 of 3 complete (101 of 325 planned agent runs, 31 %); every Claude Haiku condition through round 2
+ran (see the audit entry above for two no-agent analyses that were not run).
 
 ## 2026-11-21 20:45 — round 1 complete; local Qwen runs stopped (user decision)
 

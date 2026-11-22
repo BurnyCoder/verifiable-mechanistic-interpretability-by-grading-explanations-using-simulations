@@ -76,8 +76,11 @@ replacement — sit at the bottom of the HS axis. Output KL alone cannot tell th
 **Reading.** On the planted mechanism (a model whose mechanism is known because it was compiled from E3), HS starts
 at 1 and decreases monotonically as the model is trained away from it; output KL is not monotone (training first
 disturbs, then re-sharpens the outputs), so H4b's KL half fails while its HS half holds. Replacements built from T0's
-explanation fit T0 far better than any other target or no-mechanism model (H7 direction), and their HS against T0's
-checkpoints rises through circuit formation together with the fall of the restricted loss (H8).
+explanation fit T0 far better than any other target or no-mechanism model (H7 direction), and HS against T0's
+checkpoints rises through circuit formation together with the fall of the restricted loss (H8). H8 here used one
+replacement (`main__T0__E3…s0`, the highest-HS E3/E4 run of round 1) against every 10th checkpoint (41 of 401), not
+every E3/E4 replacement × all 401 checkpoints as preregistered; the "all checkpoints" label in the H8 row below is
+wrong. After round 2 it was re-run as preregistered with all six round-1–2 replacements (deviation 8; still supported, `results/controls/trajectory_T0.json`).
 
 ## Baselines (no agent)
 
@@ -219,14 +222,17 @@ each replacement built by the main simulator. Frequencies with small amplitude f
 | T-paper | E-paper | 14, 35, 41, 42, 52 | 14, 35, 41, 42, 52 | 1.00 | 1.00 | 0.984 | – |
 <!-- END frequencies -->
 
-**Reading.** With no frequencies in the explanation (E0, E1), Haiku builds the published paper's frequencies into the
-replacement — its build scripts hard-code them (e.g. `KEY_FREQS = [14, 35, 41, 42, 52]  # choice: not specified by
-EXPLANATION.md`). On unpublished targets that yields a working adder with the wrong mechanism and near-zero HS; on the
+**Reading.** With no frequencies in the explanation (E0, E1), Haiku builds four of the published paper's five
+frequencies (14, 35, 41, 52 by the key-frequency rule) into the replacement; the T0 E1 build script hard-codes the
+paper's set (`KEY_FREQS = [14, 35, 41, 42, 52]  # key frequencies (choice: not specified by EXPLANATION.md)`). On
+targets with no published analysis that yields a working adder with the wrong mechanism and near-zero HS; on the
 published checkpoint (T-paper) the algorithm-only E1 scores like a full explanation. The last column is a target
 swap, the most direct test: the *same* T0 E0/E1 weights, graded against the published checkpoint instead of T0, score
 far higher there than against T0, so the simulator built the published mechanism, not the explained one. Scores on a published model
-therefore measure what the simulator remembers, not what the explanation says; the unpublished targets (T0–T2,
-T-new), which the preregistration introduced for exactly this risk, are what make the score interpretable. This is
+therefore measure what the simulator remembers, not what the explanation says; the targets with no published
+analysis (T0–T2, weights public on Hugging Face since 2026-10-21, after Claude Haiku 5.5's June 2026 training-data
+cutoff; T-new, trained after the freeze), which the preregistration introduced for exactly this risk, are what make the
+score interpretable. This is
 an existence proof at N = 1, consistent with [Haklay et al. 2026](https://arxiv.org/abs/2603.20101) (agents reproduce
 published circuits from memory).
 
@@ -283,8 +289,8 @@ Explainer thresholds varied (E2–E4 re-rendered and re-compiled, no agent):
 
 **Reading.** The ordering of explanations by the agent runs' HS is unchanged by the number of folds, the fold seed and
 a hundredfold stronger ridge, and nearly unchanged by a hundredfold weaker one; the conclusions do not hinge on these
-settings. Single sites reorder some neighbours (the MLP site alone gives the no-mechanism explanations a small
-non-zero floor and puts E4 first), and orthogonal alignment lowers every value while keeping the pattern: the
+settings. Single sites reorder some neighbours (the MLP site alone gives E1 (and W-freq) a small non-zero floor and
+puts E4 first), and orthogonal alignment lowers every value while keeping the pattern: the
 wrong-frequency, no-explanation and wrong-role replacements stay at the bottom, and the Pizza and scrambled-neuron
 replacements stay among the true ones, so neither blind spot is an artefact of allowing general linear maps. The
 compiler's builds are more sensitive to the ridge strength. In the explainer, the stricter key-frequency threshold
@@ -339,9 +345,11 @@ the preregistered threshold stays the analysis default.*
 **Reading.** Presenting E3 as math or as code, or removing the self-test, does not lower the simulator's HS in these
 single runs. Low effort lowers task accuracy while E3's HS stays high: the replacement has the right frequency
 structure but wrong details (behaviour and mechanism dissociate in this direction too). On the seed-sensitivity targets
-T1, T2 and T-new the T0 pattern repeats — E2–E4 well above the no-agent references, W-freq at the floor. On T2 the
-simulator's E3 build beats the reference compiler's (the compiler is misled by the rendered E3 there, the agent is
-not), so H5's "agent ≤ compiler" already fails in one condition. Every finished local Qwen run (Qwen3.5-4B on E2, E3,
+T1, T2 and T-new, E2–E4 reach HS in the range of the reference compiler's builds and W-freq stays low, like the
+compiler's W-freq build (compiler tables above); random, retrain and student baselines exist only for T0, so there is
+no no-agent floor on these targets. By sign, the agent's HS is above the compiler's in 7 of 15 target–explanation
+pairs, largest on T2 (H5 row below; on T2 the compiler is misled by the rendered E3, the agent is not); whether a
+difference lies beyond its bootstrap CI is reported in the predictions table. Every finished local Qwen run (Qwen3.5-4B on E2, E3,
 E4 and W-freq; Qwen3.5-9B on E2) built a network with constant output: task accuracy 1/113 and HS 0, whatever the
 explanation. Each run used up its 60 steps or its 60 minutes without reaching a working build. The local runs were
 then stopped (deviation 5), so H5's capability trend and H6's cross-simulator ranking cannot be tested.
@@ -373,7 +381,7 @@ Replications on the seed-sensitivity targets (preregistration §5: H1–H3 re-te
 | T-paper (flagged: memorisation) | E1 0.925, E3 0.944, E4 0.929 | no | +0.852 | agreement 1.000, KL 9.56e-05 (true max 0.518), HS 0.091 | yes |
 <!-- END replications -->
 
-**Reading.** Where a prediction concerns the frequency level, the main simulator's results go the predicted way (H3, H4, H7, H8, and H2 for W-freq and W-role). The predictions fail where they assumed that every added level of detail helps (H1: HS gains nothing after E2 and output KL rises), that HS sees below the frequency level (H2: W-alg nearly ties, W-scramble is reversed), that the reference compiler is a ceiling (H5), or that output KL grows smoothly as a planted model drifts (H4b: KL spikes after the first optimiser steps, then falls). "Direction matches" compares directions and preregistered thresholds only; the formal verdict adds the preregistered test, which at small N mostly cannot reach significance. On the seed-sensitivity targets the gap between E3 and the wrong-frequency explanation replicates on every target and H1's monotone rise does not; where H3 fails there, the wrong-frequency replacement itself is broken (argmax agreement below the preregistered 0.99), an implementation error of the simulator rather than a property of the explanation.
+**Reading.** Where a prediction concerns the frequency level, the main simulator's results go the predicted way (H3, H4, H7, H8, and H2 for W-freq and W-role). The predictions fail where they assumed that every added level of detail helps (H1: HS gains are small and non-monotone after E2, and output KL rises), that HS sees below the frequency level (H2: W-alg nearly ties, W-scramble is reversed; W-alg is not length-matched, about 60 % of E3's characters, `results/explanations/*/W-alg/length.json`), that the reference compiler is a ceiling (H5: by sign the agent is above it in 7 of 15 pairs), or that output KL grows smoothly as a planted model drifts (H4b: KL spikes after the first optimiser steps, then falls). "Direction matches" compares directions and preregistered thresholds only; the formal verdict adds the preregistered test, which at small N mostly cannot reach significance. On the seed-sensitivity targets the gap between E3 and the wrong-frequency explanation replicates on every target and H1's monotone rise does not; where H3 fails there (T1, T-new), the wrong-frequency replacement's argmax agreement is below the preregistered 0.99. Whether that is an implementation error of the simulator or a property of the explanation is untested; the true E3/E4 replacements on T1 (and E3 on T-new) also have agreement below 0.99.
 
 Full statistics: `results/hypotheses_round1.json`.
 

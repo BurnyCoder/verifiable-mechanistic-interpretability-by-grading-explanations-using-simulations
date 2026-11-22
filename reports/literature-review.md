@@ -1,6 +1,7 @@
 # Literature review — grading mechanistic explanations by simulation
 
-*Libor "Burny" Burian, Victor Levoso — 2026-11-21. Written before any experiment of this project was run.*
+*Libor "Burny" Burian, Victor Levoso — 2026-11-21. Written before any experiment of this project was run;
+citation corrections and post-freeze facts (simulator, target contamination) added 2026-11-22.*
 
 **How this review was made.** Primary sources (arXiv HTML/PDF, LaTeX sources, official repositories, LessWrong
 posts and comments) were read in full by research subagents on 2026-11-20/21 and summarised with locations; every
@@ -33,15 +34,20 @@ c = (a+b) mod p. Mainline key frequencies: {14, 35, 41, 42, 52} (§4.1).
 - 433 of 512 neurons have > 85 % of variance explained by a degree-2 polynomial in one frequency (§4.3).
 - W_L is effectively rank 10; its residual outside the key directions is < 0.55 % of its norm (§4.2).
 - Attention: each head's pattern A ≈ 0.5 + α(cos wa − cos wb) + β(sin wa − sin wb) with FVE 97.9–99.1 % (Table 2).
-- Ablations (§4.4): replacing the 433 neurons with their polynomial fits raises loss 3 %; keeping only the
-  cos/sin(w_k(a+b)) logit terms lowers loss; removing them destroys performance.
+- Ablations (§4.4): replacing the 433 neurons with their polynomial fits raises loss 3 %; restricting each neuron to
+  its key-frequency cos/sin(w_k(a+b)) terms lowers loss 77 % (to 5.54×10⁻⁸); keeping only the key-frequency components
+  of the logits lowers it 70 % (to 7.24×10⁻⁸); projecting MLP activations onto the nullspace of W_L's 10 key
+  directions raises loss to 5.27, worse than uniform.
 - **What the explanation leaves unspecified** (and what therefore limits weight reconstruction): per-neuron
   phases and gains; how neurons are allocated to frequencies (only the k=14 cluster size, 44, is published);
   79 poorly explained neurons; a sixth embedding frequency not used downstream; positional and "=" embeddings;
-  MLP biases; the remaining 5 % of logit variance; and the overall logit scale, which is set by the balance between
-  weight decay and loss rather than by the algorithm.
+  MLP biases; the remaining 5 % of logit variance; and the overall logit scale. The paper's appendix notes that at
+  perfect accuracy the loss keeps falling by scaling the logits up, which weight decay counteracts; that the scale is
+  therefore set by this balance rather than by the algorithm is our inference.
 
-**Symmetries that make raw weights incomparable** (our derivation; consistent with Klabunde et al. below): without
+**Symmetries that make raw weights incomparable** (our derivation; consistent with Klabunde et al., *Similarity of
+Neural Network Models: A Survey of Functional and Representational Measures*,
+[arXiv:2305.06329](https://arxiv.org/abs/2305.06329)): without
 LayerNorm, any invertible A ∈ GL(128) applied to every residual-stream writer (and A⁻¹ to every reader) preserves the
 function; per head W_Q→W_Q M, W_K→W_K M⁻ᵀ and W_V→W_V N, W_O→W_O N⁻¹; MLP neurons can be permuted and positively
 rescaled; heads can be permuted. A grader must compare invariants (outputs, attention patterns, neuron activations up
@@ -55,7 +61,7 @@ not name the key frequencies cannot reproduce a specific model's hidden states.
 
 | Work | What it adds | Relevance here |
 |---|---|---|
-| Zhong et al. 2023, *The Clock and the Pizza* — [arXiv:2306.17844](https://arxiv.org/abs/2306.17844) | Two algorithms reach perfect accuracy: Clock (logits cos(w(a+b−c)), needs multiplication) and Pizza (|cos(w(a−b)/2)|·cos(w(a+b−c)), needs only |·|). Distinguished only by internal metrics (gradient symmetricity; distance irrelevance). Full attention (Nanda's setting) gives Clock. | Existence proof that **same behaviour ≠ same mechanism** in exactly this task family — the motivation for hidden-state similarity beyond output KL (our H3). |
+| Zhong et al. 2023, *The Clock and the Pizza* — [arXiv:2306.17844](https://arxiv.org/abs/2306.17844) | Two algorithms reach perfect accuracy: Clock (logits ≈ cos(w(a+b−c)), needs multiplication) and Pizza (logits ≈ \|cos(w(a−b)/2)\|·cos(w(a+b−c)), needs only \|·\|). Same accuracy but **different logit patterns** (§3.2, "First Evidence for Pizza: Logit Patterns"); also separated by distance irrelevance (computed from the correct-logit matrix, i.e. output-level) and gradient symmetricity (input gradients). Full attention (Nanda's setting) gives Clock. | Existence proof that this task family admits distinct algorithms at equal accuracy, so a replacement must be checked for *which* algorithm it implements. It is **not** a "same outputs, different internals" case: output KL over the full logits would likely separate Clock from Pizza (our expectation, untested). H3's claim that output KL is insufficient rests instead on Tracr (§4) and on near-one-hot targets ([state-of-the-art review §1](state-of-the-art-review.md)). |
 | Gromov 2023, *Grokking modular arithmetic* — [arXiv:2301.02679](https://arxiv.org/abs/2301.02679) | Closed-form weights for a 2-layer MLP with x² activation: W⁽¹⁾ = cos(2πkn/p + φ), W⁽²⁾ = cos(−2πkq/p − φ₃), with φ₁ + φ₂ = φ₃; works for ReLU empirically at larger width. | A hand-written-weights construction for the same algorithm; template for what a "reference compiler" can do. |
 | Yip, Agrawal, Chan, Gross 2024, *Modular addition without black-boxes* — [arXiv:2412.03773](https://arxiv.org/abs/2412.03773) | ReLU neurons implement a quadrature of ∫ReLU(cos(k(a+b)/2+φ))cos(kc+2φ)dφ ∝ cos(k(a+b−c)); per-neuron phase ψ ≈ 2φ; error bounds. Pizza models, p = 59. | Shows that per-neuron phases are needed for a faithful neuron-level account (our E4 level). |
 | Gross et al. 2024, *Compact proofs of model performance* — [arXiv:2406.11779](https://arxiv.org/abs/2406.11779) | Explanation quality as a trade-off between proof length (FLOPs) and bound tightness; brute force = exact but longest. Max-of-K, not modular addition. | The degenerate "explanation = the weights" endpoint; we report every score against explanation length. |
@@ -74,8 +80,8 @@ alone and measures closeness to the trained model** (searched 2026-11-20; absenc
   activations and measures output Jensen–Shannon divergence normalised by mean ablation.
 - **Paulo, Mallen, Juang, Belrose 2024**, *Automatically Interpreting Millions of Features in LLMs*
   ([arXiv:2410.13928](https://arxiv.org/abs/2410.13928); code [EleutherAI/delphi](https://github.com/EleutherAI/delphi)):
-  five scorers (detection, fuzzing, simulation, surprisal, embedding) plus intervention scoring; recommends several
-  scorers; explicitly notes no scorer accounts for explanation length.
+  five new scorers (detection, fuzzing, surprisal, embedding, intervention), compared against the earlier simulation
+  scorer of Bills et al.; recommends several scorers; explicitly notes no scorer accounts for explanation length.
 - **Paulo & Belrose 2025**, *Partially Rewriting a Transformer in Natural Language*
   ([arXiv:2501.18838](https://arxiv.org/abs/2501.18838)): replaces a transcoder's encoder by an LLM that predicts each
   latent from its explanation; measures output loss. Closest earlier "replace part of the model from its
@@ -83,7 +89,8 @@ alone and measures closeness to the trained model** (searched 2026-11-20; absenc
 - **Huang et al. 2023**, *Rigorously Assessing Natural Language Explanations of Neurons*
   ([arXiv:2309.10312](https://arxiv.org/abs/2309.10312)): precision/recall and interchange-intervention tests; on 300
   GPT-2 XL neurons that GPT-4 scored highly, F1 was 0.56 and correlated −0.1 with the simulation score.
-- **Kopf et al. 2024, CoSy** ([arXiv:2405.20331](https://arxiv.org/abs/2405.20331)) and FADE (Findings ACL 2025) —
+- **Kopf et al. 2024, CoSy** ([arXiv:2405.20331](https://arxiv.org/abs/2405.20331)) and Puri et al., *FADE: Why Bad
+  Descriptions Happen to Good Features*, Findings ACL 2025 ([arXiv:2502.16994](https://arxiv.org/abs/2502.16994)) —
   explanation scoring for vision neurons and SAE features.
 - **Leo Gao, *Neural networks are not already clean*** (LessWrong, 2026-10-17,
   [post](https://www.lesswrong.com/posts/Dkh7pXKjoNWkkxQDz/neural-networks-are-not-already-clean)): argues
@@ -95,8 +102,8 @@ alone and measures closeness to the trained model** (searched 2026-11-20; absenc
 ## 4. Explanations compiled to or checked against weights
 
 - **Tracr** (Lindner et al. 2023, [arXiv:2301.05062](https://arxiv.org/abs/2301.05062)): compiles RASP programs to
-  transformer weights. Its compressed models kept accuracy but had layer-output cosine ≈ 0.8 for `sort_unique` —
-  a published case of same behaviour via different internal encodings, caught only by hidden-state comparison.
+  transformer weights. Its compressed models are a published case of same behaviour via different internal
+  encodings, caught by layer-output comparison (cosine ≈ 0.8, `sort_unique`) despite near-perfect accuracy.
 - **InterpBench / SIIT** (Gupta et al. 2024, [arXiv:2407.14494](https://arxiv.org/abs/2407.14494)): semi-synthetic
   transformers with known circuits as ground truth.
 - **Causal abstraction** (Geiger et al., [arXiv:2301.04709](https://arxiv.org/abs/2301.04709)) and **causal scrubbing**
@@ -111,12 +118,15 @@ alone and measures closeness to the trained model** (searched 2026-11-20; absenc
   f = (m(C) − m(∅)) / (m(N) − m(∅)) and interchange-intervention accuracy.
 - **Open Problems in Mechanistic Interpretability** (Sharkey et al. 2025,
   [arXiv:2501.16496](https://arxiv.org/abs/2501.16496)): descriptions should be validated by whether they predict
-  counterfactual behaviour; discusses hand-crafting replacement networks, citing Cammarata et al.'s
-  [*Curve Circuits*](https://distill.pub/2020/circuits/curve-circuits/) (Distill 2021), where humans hand-built a curve
-  detector and compared its activations with the natural neurons — our idea, done by hand for one circuit.
-- **Parameter decomposition** (APD, [arXiv:2501.14926](https://arxiv.org/abs/2501.14926); SPD,
-  [arXiv:2506.20790](https://arxiv.org/abs/2506.20790)): replacement models fitted to weights, framed as minimising
-  mechanistic description length.
+  counterfactual behaviour; discusses hand-crafting replacement networks, citing Cammarata et al. 2020,
+  [*Curve Detectors*](https://distill.pub/2020/circuits/curve-detectors/) (Distill), which validated its account by
+  substituting handcrafted replacements. The hand-built curve-detector network itself is detailed in
+  [*Curve Circuits*](https://distill.pub/2020/circuits/curve-circuits/) (Cammarata et al., Distill 2021) — our idea,
+  done by hand for one circuit.
+- **Parameter decomposition:** APD ([arXiv:2501.14926](https://arxiv.org/abs/2501.14926), "…Minimizing Mechanistic
+  Description Length") fits replacement components to the weights and frames this as minimising mechanistic
+  description length; SPD ([arXiv:2506.20790](https://arxiv.org/abs/2506.20790)) presents itself as a more scalable
+  linear parameter decomposition.
 
 ## 5. LLMs and agents that write weights — the novelty check
 
@@ -135,9 +145,11 @@ alone and measures closeness to the trained model** (searched 2026-11-20; absenc
   AgenticInterpBench ([arXiv:2606.24026](https://arxiv.org/abs/2606.24026)); **Haklay et al. 2026, *Pitfalls in
   Evaluating Interpretability Agents*** ([arXiv:2603.20101](https://arxiv.org/abs/2603.20101)) — agents can reproduce
   published circuits from memory; Pando ([arXiv:2604.11061](https://arxiv.org/abs/2604.11061)).
-- **Critiques of simulation scores:** Heap et al. 2025 — auto-interp metrics do not distinguish trained and random
-  transformers ([arXiv:2501.17727](https://arxiv.org/abs/2501.17727)); **Poché et al. 2026 — LLM simulators can bypass
-  explanations** ([arXiv:2609.08585](https://arxiv.org/abs/2609.08585)), recommending no-explanation baselines;
+- **Critiques of auto-interp scores:** Heap et al. 2025 — fuzzing and detection scores of SAE features do not
+  distinguish trained and random transformers in many settings ([arXiv:2501.17727](https://arxiv.org/abs/2501.17727)); **Poché et al. 2026 — LLM simulators can bypass
+  explanations** ([arXiv:2609.08585](https://arxiv.org/abs/2609.08585)): in output-simulatability evaluation of text
+  classifiers (a ConSim replication with meaningful class names), simulators matched no-explanation baselines; they
+  recommend label-leakage baselines, multiple simulators, enough seeds and novel tasks;
   Lermen et al. 2025 — explainer and simulator can collude via steganography
   ([arXiv:2504.07831](https://arxiv.org/abs/2504.07831)).
 
@@ -151,7 +163,7 @@ controls**. The contribution is that combination and a careful validation of it,
 
 | Resource | Licence | Use |
 |---|---|---|
-| `BurnyCoder/grokking-modular-addition-runs` ([HF](https://huggingface.co/BurnyCoder/grokking-modular-addition-runs)): 22 one-layer models trained deterministically with the official recipe, 401 checkpoints each | MIT | Targets, retrain baselines, no-mechanism controls |
+| `BurnyCoder/grokking-modular-addition-runs` ([HF](https://huggingface.co/BurnyCoder/grokking-modular-addition-runs), public since 2026-10-21): 22 one-layer models trained deterministically — 14 with the paper's settings (11 seeds `wd1_s0`–`wd1_s10`, plus 3 initialisations on one split, `split0_init100`–`102`), 5 with weight decay 0 (`wd0_s*`), 3 random-label controls (`rand_s*`); 40,000 steps (the official code defaults to 50,000); 401 checkpoints each | MIT | Targets, retrain baselines, no-mechanism controls |
 | `grokviz` ([GitHub](https://github.com/BurnyCoder/visualizing-grokking-modular-addition-in-transformer)): paper-faithful model, training, Fourier analysis, paper-checkpoint conversion | MIT | Analysis and training code (pinned commit) |
 | Paper mainline checkpoint ([HF mirror](https://huggingface.co/callummcdougall/grokking_full_run_data), byte-identical to [ARENA's](https://huggingface.co/arena-education/grokking_full_run_data)) | none stated | Target T-paper; not redistributed |
 | ARENA 1.5.2 code ([ARENA_materials](https://github.com/ARENA-education/ARENA_materials)) | none | Not copied; its published numbers used as test oracles |
@@ -163,5 +175,9 @@ Lipton & Steinhardt, *Troubling Trends* ([arXiv:1807.03341](https://arxiv.org/ab
 ML pitfalls* ([arXiv:2108.02497](https://arxiv.org/abs/2108.02497)); Nanda's research-process sequence
 ([Alignment Forum](https://www.alignmentforum.org/s/5GT3yoYM9gRmMEKqL)); NeurIPS checklist
 ([guide](https://neurips.cc/public/guides/PaperChecklist)). Concretely: preregistered hypotheses and falsifiers,
-discriminating controls, explanation-free baselines, contamination controls (unpublished targets; held-out target
-trained after the protocol freeze), and reporting of negative results.
+discriminating controls, explanation-free baselines, contamination controls, and reporting of negative results.
+Contamination: targets T0–T2 have no published analysis, and their weights have been public on Hugging Face only since
+2026-10-21 — after Claude Haiku 5.5's training-data cutoff (June 2026,
+[models overview](https://platform.claude.com/docs/en/about-claude/models/overview)) — so they cannot be in its
+training data; a held-out target was trained after the protocol freeze. Run `wd1_s0` learned exactly the paper's
+frequencies {14, 35, 41, 42, 52}, so it is not a clean target; it serves as the paper's-twin baseline, not as a target.

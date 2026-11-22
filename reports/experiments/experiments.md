@@ -1,14 +1,15 @@
 # Experiments — summary of everything run so far
 
 *Every number in the tables below is generated from `results/` by `vmi analyse <round>`
-(`src/vmi/analysis/report.py`); nothing in a marked block is typed by hand. Verdicts carry their N: at N = 1 there is
-no within-condition spread, so they rest on directions and on the deterministic no-agent arms.*
+(`src/vmi/analysis/report.py`); nothing in a marked block is typed by hand. Verdicts carry their N: the current ones are at
+N = 3 (round 2) with the preregistered tests; round 1's N = 1 verdicts rested on directions and on the deterministic
+no-agent arms.*
 
 | # | Experiment | Status | Report |
 |---|---|---|---|
 | 00 | Stage 0 — tooling and smoke tests on the dev target (never reported as results) | done | [00-stage0-dev/experiment.md](00-stage0-dev/experiment.md) |
 | 01 | Round 1 (N = 1) — main method → controls → baselines → ablations → hyperparameter → seed sensitivity | done | [01-round1/experiment.md](01-round1/experiment.md) |
-| 02 | Round 2 (N = 3) — the same stages, two more replicates per condition, Claude Haiku only | done | [02-round2/experiment.md](02-round2/experiment.md) |
+| 02 | Round 2 (N = 3) — the same stages, two more replicates per condition, Claude Haiku only | agent runs done; H8 trajectory re-run as preregistered (still supported); redrawn W-freq/W-scramble and T-paper's extra retrains not run (deviation 8) | [02-round2/experiment.md](02-round2/experiment.md) |
 | 03 | Round 3 (N = 10) | postponed to a later day (user decision, deviation 6) | – |
 
 Learnings across experiments: [learnings.md](learnings.md).
@@ -31,7 +32,7 @@ correct answers?
 | **M**, target | A trained one-layer transformer for (a + b) mod 113 ([Nanda et al. 2023](https://arxiv.org/abs/2301.05217) architecture: d_model 128, 4 heads, d_mlp 512, no LayerNorm). |
 | **M̂**, replacement | The network whose weights the agent wrote (same architecture, `weights.npz`). |
 | **KL_out** | Mean KL(P_M ‖ P_M̂) over all 113² = 12,769 inputs, in nats (float64). Lower = more similar behaviour. |
-| **HS** | Hidden-state similarity: 5-fold cross-validated linear-regression R² in both directions (M̂ → M and M → M̂) at three sites (residual stream after attention, MLP activations, final residual stream), harmonic mean per site, averaged over sites. Invariant to any invertible linear change of the residual basis. Higher = more similar internals. |
+| **HS** | Hidden-state similarity: 5-fold cross-validated linear-regression R² in both directions (M̂ → M and M → M̂) at three sites (residual stream after attention, MLP activations, final residual stream), harmonic mean per site, averaged over sites. Completeness (M̂ → M) is invariant to invertible linear maps of the replacement's basis, soundness (M → M̂) only to orthogonal maps and uniform scaling; HS = 1 under any exact invertible linear equivalence. Higher = more similar internals. |
 | **Matched-neuron corr** | Secondary metric: mean correlation of MLP neurons after Hungarian matching; sensitive to per-neuron assignments, which HS is not. |
 | **Key frequencies** | The few Fourier frequencies w_k = 2πk/113 the model uses ([Nanda et al. 2023](https://arxiv.org/abs/2301.05217), Sec. 4). |
 | **E0–E4** | Explanation ladder of increasing true detail: E0 task only; E1 algorithm without model-specific numbers; E2 key frequencies and component roles; E3 + per-frequency amplitudes, attention fits, neurons per frequency and the precise neuron function; E4 + per-neuron table. |
@@ -67,8 +68,10 @@ except T-new (trained here after the protocol freeze with the same recipe) and T
 | Qwen3.5-9B (Q4_K_M) | same | same | same | capability ablation; 1 run (E2), at chance, then stopped |
 | Qwen3.5-4B (Q4_K_M) | same | same | same | capability ablation; 4 runs, all at chance |
 
-Why these settings: the Qwen preset is the model card's coding preset; the context and thinking budgets were the
-smallest that removed the truncation and compaction failures seen in stage 0 (`learnings.md`). Claude Haiku was
+Why these settings: the Qwen preset is the model card's coding preset; the context and thinking budgets were raised
+after stage-0 truncation and compaction failures but did not remove them all (smoke run 6 still truncated a whole-file
+write, `learnings.md`); the remaining failures (dropped truncated replies, session-ending errors, early compaction)
+were removed by the custom bash-only harness (preregistration amendment 2 item 4). Claude Haiku was
 chosen by a rule fixed before any Claude run: try Haiku → Sonnet → Opus only while every cheaper simulator stays
 below 5 % task accuracy (chance is 1/113 ≈ 0.9 %); Haiku met it in its first run, so Sonnet and Opus were not used.
 

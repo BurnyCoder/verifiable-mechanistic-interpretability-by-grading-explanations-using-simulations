@@ -6,7 +6,25 @@ results here only informed tooling. Preregistration §9.*
 ## Goal
 
 Make every part of the pipeline work end to end on a target that is not reported: explainer, reference compiler,
-grader, sandbox isolation, local LLM throughput, and the OpenCode agent.
+grader, sandbox isolation, local LLM throughput, and the simulator agent (planned: Qwen in OpenCode; used from round 1:
+Claude Haiku 5.5 in Claude Code).
+
+## Agent smoke runs (stage 0)
+
+17 agent runs on the dev target (run folders `D:/AI/vmi-sim/runs/dev__*`; 15 graded in `results/runs/dev__*.json` —
+the first two OpenCode runs left no build script). Details per run: [learnings.md](../learnings.md), "Agent behaviour".
+
+- **Qwen, 11 runs, none at ≥ 5 % task accuracy.** Qwen3.6-35B-A3B × 9 (E3 × 8, E4 × 1): six in OpenCode (smoke runs
+  1–6: thinking stalls, repetition loops, truncated whole-file writes, early compaction), then three in a custom
+  bash-only harness (mini-SWE-agent design), which after one harness bug fix removed the protocol failures but not the
+  chance-level builds.
+  Qwen3.5-9B and Qwen3.5-4B × 1 each (E4, harness). Best: 0.0244 (Qwen3.6-35B-A3B, E4, harness); Qwen3.5-4B left no
+  valid weights.
+- **Harness switch** OpenCode → bash-only harness (preregistration amendment 2 item 4), made together with the
+  explanation-text fix (item 3); this confound is stated wherever the switch is reported.
+- **Claude Haiku 5.5 selected** by the 5 % rule fixed before any Claude run (items 5–6): its first run (dev × E4)
+  reached accuracy 1.0, so Sonnet and Opus were not run. Five more Haiku runs × {E0, E1, E2, E3, W-freq}; all six:
+  amendment 2 item 8.
 
 ## Reference compiler on the dev target (agent-free)
 

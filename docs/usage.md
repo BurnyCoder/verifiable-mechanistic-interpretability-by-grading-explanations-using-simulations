@@ -17,7 +17,7 @@ All commands run from the repository root on Windows; agent runs call into WSL a
 6. Claude runs (main simulator): Claude Code installed in WSL (`~/.local/bin/claude`; the binary is bound read-only
    into the sandbox), and `ANTHROPIC_API_KEY` plus `ANTHROPIC_WORKSPACE_ID` in `.env`. The key is handed only to
    `simulator/anthropic_proxy.py`, which runs in WSL outside the sandbox; `uv run vmi check --claude` makes one tiny
-   request (≈ $0.01) to test the plumbing. Run `python scripts/check_secrets.py` before every push.
+   request (well under $0.01; the logged check cost $0.0002) to test the plumbing. Run `python scripts/check_secrets.py` before every push.
 
 ## Commands (`uv run vmi <command>`)
 
@@ -36,7 +36,10 @@ All commands run from the repository root on Windows; agent runs call into WSL a
 | `train RUN_IDS...` | train fresh runs with the paper recipe (e.g. `new_s11` = T-new) | `VMI_DATA_DIR/trained/` |
 | `regrade` | recompute secondary metrics of graded runs from saved weights (primary metrics must reproduce) | `results/runs/` |
 | `diagnose` | re-run agents' build scripts with single edits (interventions) to find what made a run fail; read by the README examples | `results/diagnoses/` |
-| `analyse ROUND` | evaluate all hypotheses at the round's N, draw all figures, refill every marked table in README, reports and paper | `results/hypotheses_round*.json`, `reports/figures/`, marked blocks |
+| `analyse ROUND` | evaluate all hypotheses at the round's N, draw all figures, refill every marked table in README, reports and paper | `results/hypotheses_round*.json`, `results/report_round*.json`, `results/frequencies_round*.json`, `reports/figures/`, `reports/agent-examples.md`, `docs/data.json`, marked blocks |
+| `sensitivity ROUND` | grader sensitivity (ridge, folds, fold seeds, sites, orthogonal and whitened alignment, retrains and random networks, H7 under whitening) and explainer-threshold sensitivity, no agent | `results/sensitivity/` |
+| `local MANIFEST` | serve each local model in turn and run its pending conditions | `results/runs/` |
+| `publish [--dry-run]` | export redacted, scanned artefacts and upload them to the Hugging Face Hub | `VMI_DATA_DIR/../hf_export/` |
 | `paper` | build the paper PDF with pandoc + XeLaTeX | `reports/paper.pdf` |
 
 Targets: `T0`, `T1`, `T2`, `dev`, `T-paper`, `T-new`, or any run id (`wd1_s3`, `wd0_s0`, `rand_s1`, ...).
@@ -48,7 +51,7 @@ Levels: `E0`–`E4`, `W-freq`, `W-alg`, `W-role`, `W-scramble`, `E-paper` (T-pap
    selftest.py, and neurons.csv for E4), `opencode.jsonc`, `prompt.txt`, `run.json`.
 2. `simulator/runner.py` calls `scripts/run_one.sh` in WSL, which copies `work/` to WSL's native disk, starts the outside
    endpoint on a unix socket — the Anthropic proxy for Claude runs (adds the key, enforces the model allowlist and the
-   budget ledger) or the relay to llama-server for local runs, both logging every byte — and runs the agent inside
+   budget ledger) or the relay to llama-server for local runs, both logging every request and response body (headers excluded) — and runs the agent inside
    bubblewrap with no network, no /home, no Windows drives and AF_VSOCK blocked: Claude Code (`--bare`, stream-json),
    the bash-only harness (`simulator/harness.py`) or OpenCode. The agent's events stream to the terminal and
    `logs/runner.log`.

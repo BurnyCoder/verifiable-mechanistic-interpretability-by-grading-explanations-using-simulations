@@ -8,13 +8,20 @@ Newest entries at the bottom. Per-experiment learnings live in each experiment's
 - **Same behaviour ≠ same mechanism is documented in exactly this task family.** Clock vs Pizza networks
   ([Zhong et al. 2023](https://arxiv.org/abs/2306.17844)) and Tracr's compressed models (layer cosine ≈ 0.8 at full
   accuracy; [Lindner et al. 2023](https://arxiv.org/abs/2301.05062)) motivated a hidden-state metric next to output KL.
-- **The alignment class must match the model's symmetries.** Without LayerNorm the residual stream is defined only up
-  to GL(128), so CKA/Procrustes (orthogonal invariance) would penalise functionally identical replacements; unrestricted
-  non-linear maps make anything match anything ([Sutter et al. 2025](https://arxiv.org/abs/2507.08802)). Hence
-  cross-validated *linear* regression in both directions as the primary hidden-state score. The test
-  `test_invariant_to_residual_basis_change` confirms HS = 1 and CKA < 1 under a random invertible change of basis.
+- **The alignment class must match the model's symmetries.** Without LayerNorm an invertible linear change of the
+  residual basis (compensated in the reading and writing weights) leaves the function unchanged, so CKA/Procrustes
+  (orthogonal invariance) would penalise functionally identical replacements; unrestricted non-linear maps make anything
+  match anything ([Sutter et al. 2025](https://arxiv.org/abs/2507.08802)). Hence cross-validated *linear* regression in
+  both directions as the primary hidden-state score. Its invariance is partial: R² is invariant to invertible linear
+  maps of the predictor only ([Kornblith et al. 2019, Table 1](https://arxiv.org/abs/1905.00414)), so completeness
+  R²(M̂→M) is invariant to the replacement's basis, soundness R²(M→M̂) only to orthogonal maps and uniform scaling; under
+  any exact invertible linear equivalence both are 1, so HS = 1. Tests: `test_invariant_to_residual_basis_change` (HS = 1,
+  CKA < 1 under a random invertible change of basis) and
+  `test_soundness_depends_on_the_replacement_basis_and_whitened_soundness_does_not`.
 - **Agents can recall published circuits** ([Haklay et al. 2026](https://arxiv.org/abs/2603.20101)); the paper's
-  frequencies {14, 35, 41, 42, 52} are public. Hence unpublished targets and a held-out target trained after the freeze.
+  frequencies {14, 35, 41, 42, 52} are public. Hence targets with no published analysis (weights public on Hugging Face
+  since 2026-10-21, after Claude Haiku 5.5's June 2026 training-data cutoff) and a held-out target trained after the
+  freeze.
 - **Simulators can ignore explanations** ([Poché et al. 2026](https://arxiv.org/abs/2609.08585)) → E0 (no explanation)
   and E1 (no model-specific numbers) controls.
 
@@ -72,7 +79,7 @@ Newest entries at the bottom. Per-experiment learnings live in each experiment's
   first graded agent replacement (accuracy 1.4 %, KL 2.5·10³ nats, HS 0.34, 13 steps, 40-minute cap). Fixes: a 16k
   per-turn output cap so a whole-file write fits next to ≤4k thinking; context 80k with OpenCode's model input limit set
   explicitly to context − output; the TASK.md guidance now says "build up in stages" instead of a line limit.
-  Throughput at 80k is unchanged once warm (260–309 prompt / 21 generated tokens/s, 6.9–7.1 GB VRAM); 96k peaked at
+  Throughput at 80k is unchanged once warm (260–328 prompt / 20–22 generated tokens/s, 6.9–7.1 GB VRAM); 96k peaked at
   7.4 GB VRAM and was slower, so it was not used (`results/stage0/llm_tuning.json`). The machine has < 1 GB of free RAM
   while the server holds ~13.6 GB of the memory-mapped experts, so the first requests after each server start are slow
   (pages read from disk) — the server is kept running across a batch of runs.
@@ -97,8 +104,9 @@ Newest entries at the bottom. Per-experiment learnings live in each experiment's
   function exactly, ReLU(cos(w_k a + φ) + cos(w_k b + φ)); the false explanation was therefore easier to implement,
   which would bias H2. Checked on the dev target that the precise Clock statement is true: the a- and b-terms of each
   neuron's pre-activation have median amplitude ratio 0.999 and median phase difference 0.1°, quadratic terms are
-  smaller (median amplitude 0.33 vs 1.50), and one frequency explains a median 97.9 % of pre-activation variance. The
-  Clock MLP step (and the math/code format variants) now states pre-activation ≈ bias + A·[cos(w_k a + φ) +
+  smaller (median amplitude 0.33 vs 1.50), and one frequency explains a median 97.9 % of pre-activation variance
+  (development notes: no committed script computes these medians; the per-neuron fits they summarise are in
+  `results/explanations/dev/analysis.json`). The Clock MLP step (and the math/code format variants) now states pre-activation ≈ bias + A·[cos(w_k a + φ) +
   cos(w_k b + φ)] and that the ReLU of this sum contains the products; E-paper keeps the paper's original wording.
 - **Custom harness instead of OpenCode.** Several stage-0 failures were OpenCode behaviour rather than model
   behaviour: truncated replies dropped from the history (so retries repeated them), the session ending after three
@@ -142,7 +150,7 @@ Newest entries at the bottom. Per-experiment learnings live in each experiment's
   only 84–95 % accuracy. Trained models instead show a pair of heads with opposite coefficients at one frequency (paper
   Table 2; dev target heads 0 and 2), whose sum is nearly uniform — with that structure the compiler reaches 100 %.
   The compiler also lets the unembedding read the residual stream directly (skip path), which recovered 84 → 95 % in the
-  adversarial case.
+  adversarial case. (The 84–95 % figures are development notes, not backed by a committed results file.)
 - **Bitwise reproduction depends on which runs are trained together.** Re-training `wd1_s1` and `wd1_s10` together
   (grokviz's vectorised trainer) did not reproduce the published weights, which were trained in a batch of 22 runs:
   different batch sizes change floating-point kernels, and grokking trajectories amplify the difference.
@@ -160,8 +168,8 @@ run ID; `ablations__T0__E3-noselftest__claudehaiku55-claudecode__tdef__s0` made 
 107 (`sun_path` is 108 bytes including the terminating NUL; [man 7 unix](https://man7.org/linux/man-pages/man7/unix.7.html)).
 
 **Fix.** The socket now lives in `~/vmi-sim/k/<first 16 hex chars of md5(run ID)>/llm.sock` (≈ 47 bytes for any ID),
-bound to the same `/llm` inside the sandbox. Run IDs with seed ≥ 10 (round 3) would have pushed more conditions over
-the limit, so this would have recurred.
+bound to the same `/llm` inside the sandbox. The hyperparameter W-freq effort-low and effort-high run IDs (108- and
+109-byte socket paths) would also have overflowed; they ran after the fix.
 
 **Swapping a running bash script.** Two runs were executing `run_one.sh` when it had to change. Bash re-reads a script
 file by byte offset as it executes, so editing it in place can make a running script execute shifted lines. A
@@ -174,9 +182,12 @@ least one model response?) and archive, never delete, the failed record.
 ## Round 1 — the simulator fills gaps from memory (2026-11-21)
 
 **What happened.** On the published checkpoint (T-paper), the algorithm-only explanation E1 produced a replacement
-that scored like a full explanation, while E1 on the unpublished T0 scored at the floor. The build script hard-coded
-`KEY_FREQS = [14, 35, 41, 42, 52]` with the comment "choice: not specified by EXPLANATION.md" — the paper's published
-frequencies. The same happened on T0 for E0 and E1 and on the dev target in stage 0.
+that scored like a full explanation, while E1 on T0 (no published analysis) scored at the floor. The T0 E1 build script
+(`main__T0__E1…s0`) hard-coded `KEY_FREQS = [14, 35, 41, 42, 52]` with the comment "choice: not specified by
+EXPLANATION.md" — the paper's published frequencies; the T-paper E1 script (s0) used `KEYS = [14, 35, 41, 42, 52, 71]`.
+By the key-frequency rule all three T0 E1 replacements contain four of the paper's five frequencies (14, 35, 41, 52;
+`results/frequencies_round2.json`); runs s1 and s2 hard-coded `[14, 35, 41, 52, 73]` (73 ≡ −40 mod 113). The same
+happened for E0 on T0 (one run of three) and for E1 on the dev target in stage 0.
 
 **How it was checked.** Not only by reading scripts: the key-frequency rule used for the targets was applied to every
 replacement's weights (`analysis/frequencies.py`), giving the overlap of the frequencies actually built in with the
@@ -186,7 +197,8 @@ higher than against T0. Comparing two runs (E1 on T0 vs. E1 on T-paper) mixes ag
 re-grading one set of weights against two targets isolates the target.
 
 **Learning.** Weights-blind does not mean knowledge-blind. Any simulation score on a published model is confounded by
-memorisation; unpublished targets (and a held-out target trained after the freeze) are necessary, not optional. The
+memorisation; targets with no published analysis (weights public since 2026-10-21, after the simulator's June 2026
+training-data cutoff) and a held-out target trained after the freeze are necessary, not optional. The
 same applies to any LLM-based interpretability evaluation on famous models ([Haklay et al. 2026](https://arxiv.org/abs/2603.20101)).
 
 ## Round 1 — small local simulators never build a working network (2026-11-21)
@@ -208,9 +220,9 @@ of that floor, for example Haiku, Sonnet and Opus, rather than models that all s
 ## Round 1–2 — reading the agents' own transcripts (2026-11-22)
 
 **What happened.** Extracting the agents' visible messages and self-test results (`analysis/agent_examples.py`)
-showed three things the scores alone did not. (1) The memorisation is explicit: in the algorithm-only run the agent
-writes that the frequencies are unspecified and that it will "pick five standard ones (14, 35, 41, 42, 52)", the
-published paper's set. (2) The low-effort E3 run (accuracy 0.562 with the right frequencies) failed because of a layout bug in its own script: its constants put head 3's output and the readout in the same residual dimensions (P3 = RO = 52), so head 3's attention output was added onto the answer. Re-running its script with only that number changed gives accuracy 1.0000 at the same HS (`vmi diagnose`, results/diagnoses/). The agent never found the bug: it blamed bias-free ReLU neurons, tuned four constants around it, and finally rejected its most accurate setting (0.785) as less faithful to the explanation. An earlier version of this entry guessed that the run stopped on a worse build because each rewrite replaced the last; the transcript shows a deliberate choice, and the intervention shows the real cause. (3) The small local model had the right frequencies in its script but never got a working network before its time
+showed three things the scores alone did not. (1) The memorisation is explicit: in the T0 algorithm-only run (`main__T0__E1…s0`) the
+agent writes that the frequencies are unspecified and that it will "pick five standard ones (14, 35, 41, 42, 52)", the
+published paper's set (the key-frequency rule finds four of them, 14, 35, 41, 52, in its weights). (2) The low-effort E3 run (accuracy 0.562 with the right frequencies) failed because of a layout bug in its own script: its constants put head 3's output and the readout in the same residual dimensions (P3 = RO = 52), so head 3's attention output was added onto the answer. Re-running its script with only that number changed gives accuracy 1.0000 at the same HS (`vmi diagnose`, results/diagnoses/). The agent never found the bug: it blamed bias-free ReLU neurons, tuned four constants around it, and finally rejected its most accurate setting (0.785) as less faithful to the explanation. An earlier version of this entry guessed that the run stopped on a worse build because each rewrite replaced the last; the transcript shows a deliberate choice, and the intervention shows the real cause. (3) The small local model had the right frequencies in its script but never got a working network before its time
 ran out, with replies cut off at the output limit.
 
 **Learning.** Transcripts are evidence, not decoration, but an agent's own diagnosis can be wrong: the cause has to be
@@ -218,3 +230,36 @@ tested by intervening on its code, not read off its messages (nor guessed by the
 A low task accuracy with the right frequencies can be an implementation bug unrelated to the explanation, which is one
 more reason the grader reports HS separately from behaviour. The model's hidden thinking is not returned by the API,
 so only its visible messages can be quoted.
+
+## Independent audit (2026-11-22)
+
+**What it found and how it was fixed** (reports, analysis code, and deviation 8 of the preregistration):
+
+- **Invariance overclaimed.** HS was described as invariant to any invertible linear map. R² is invariant to invertible
+  maps of the predictor only ([Kornblith et al. 2019, Table 1](https://arxiv.org/abs/1905.00414)): completeness is
+  invariant to the replacement's basis, soundness only to orthogonal maps and uniform scaling; HS = 1 under any exact
+  invertible linear equivalence. Wording fixed; new grader test (see the literature entry above).
+- **"Built the paper's frequencies" was too strong.** The key-frequency rule finds four of the five (14, 35, 41, 52) in
+  each T0 E1 replacement, and two runs hard-coded `[14, 35, 41, 52, 73]` (`results/frequencies_round2.json`).
+- **Diagnosis layout.** The low-effort E3 diagnosis moved head 3 to unused dimensions (P3 = 62); the script's own
+  docstring puts heads 2/3 at 42–51, i.e. P3 = 42 was intended. The diagnosis now tests both
+  (`src/vmi/analysis/diagnose.py`).
+- **HS has no zero floor.** Random-initialisation networks (HS 0.236, `results/controls/random_init_T0.json`) score
+  above working networks built on other frequencies (retrains 0.119, `results/baselines/T0.json`; W-freq 0.070), so
+  low HS values are not a calibrated distance.
+- **Preregistered statistics not computed.** H3's bootstrap CIs, H4's test against distilled students, the per-target
+  replication tests (only directions were reported) and H8 over every E3/E4 replacement × all 401 checkpoints (rounds
+  1–2: one replacement × 41 checkpoints, labelled "all checkpoints"). Now computed or re-running (deviation 8). Also
+  disclosed there (c): the redrawn W-freq/W-scramble explanations and T-paper's extra retrains never ran, and the
+  compiler's 100 % accuracy check was relaxed to > 99 %.
+- **W-alg is not length-matched:** about 60 % of E3's characters on every target
+  (`results/explanations/*/W-alg/length.json`; `test_length_matched_controls` checks only W-freq and W-role).
+- **Citations cited for more than they say.** iWSP (Mehta et al. 2026) already uses CKA and a no-description control;
+  Heap et al. 2025 evaluate SAE features with fuzzing and detection scores; Zhong et al. 2023's Clock and Pizza differ
+  in their logit patterns, so they are not a same-outputs, different-internals example. Reviews corrected.
+- **Claude Code has no step cap.** Text describing a Claude run "within the 60-step budget" used the local harness's
+  limit; Claude runs are limited by time and budget only (amendment 2 item 6).
+
+**Learning.** Check the code's own measurements (the key-frequency rule, the length files) before writing "built X" or
+"length-matched", and check that each preregistered statistic is actually computed by the analysis code rather than
+only described in the preregistration.

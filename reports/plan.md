@@ -19,6 +19,7 @@
 | Round 2 | **Round 3 (N = 10) postponed** to a later day; round 2 (N = 3) completes and its verdicts are reported as "at N = 3 — not yet N = 10" | your instruction ("Postpone N=4 - N=10 to some other day") | deviation 6 in `preregistration.md` |
 | Round 2 | Round 2 done (64 runs, no failures); two analysis-code corrections so H1 and H2 follow §5–§6 as written; round reports keep their own round's numbers | found when reading the N = 3 verdicts | deviation 7 in `preregistration.md` |
 | Round 2 | README: predicted vs. measured, highlighted examples, concrete outputs vs. ground truth, the agents' own words; output-examples and outputs-vs-internals figures; ablations table | your requests | README, `reports/agent-examples.md` |
+| After round 2 | **Independent audit**: statistics recomputed independently (all reproduce); HS invariance claim corrected (soundness is not GL-invariant) with a post-hoc whitened check; missing preregistered statistics added (H3 CIs, H4 student test, replication tests) and H8 run as preregistered; W-alg's length mismatch and two analyses never run disclosed; memorisation, diagnosis and citation wording corrected | your request for an independent audit | deviation 8 in `preregistration.md`, `reviews/independent-audit-2026-11-22.md` |
 
 Round 2 (N = 3) runs the 32 Claude Haiku conditions; round 3 (N = 10) is postponed to a later day and starts only when
 you ask for it.
