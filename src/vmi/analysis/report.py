@@ -53,6 +53,26 @@ def inject_all(path: Path, generated: dict[str, str]) -> list[str]:
     return names
 
 
+def inject_values(path: Path, values: dict[str, str]) -> list[str]:
+    """Refill every inline value `<!-- v:name -->…<!-- /v -->` in one document (no newlines added, so a number
+    quoted inside a sentence is generated like a table); names without a value are left as they are."""
+    import re
+    if not path.exists():
+        return []
+    text = path.read_text(encoding="utf-8")
+    filled = []
+
+    def sub(m):
+        if m.group(1) not in values:
+            return m.group(0)
+        filled.append(m.group(1))
+        return f"<!-- v:{m.group(1)} -->{values[m.group(1)]}<!-- /v -->"
+    new = re.sub(r"<!-- v:([\w-]+) -->(.*?)<!-- /v -->", sub, text, flags=re.S)
+    if new != text:
+        path.write_text(new, encoding="utf-8", newline="\n")
+    return list(dict.fromkeys(filled))
+
+
 def regenerate(max_round: int) -> dict:
     """Hypotheses, figures and all document tables for one round; returns what was written."""
     from vmi.analysis import frequencies  # post-hoc memorisation check needs the saved replacement weights
@@ -68,6 +88,9 @@ def regenerate(max_round: int) -> dict:
     from vmi.analysis.glossary import gloss  # the README spells out what HS, E1, T0 … mean; reports keep compact labels
     readme = {k: gloss(v) for k, v in gen.items()}
     filled = {d: inject_all(REPO_ROOT / d, readme if d == "README.md" else gen) for d in DOCS + [ROUND_DOCS.get(max_round, "")] if d}
+    values = tables.inline_values(max_round)  # numbers quoted inside prose sentences
+    for d in DOCS:
+        filled[d] = filled.get(d, []) + inject_values(REPO_ROOT / d, values)
     from vmi.analysis import site  # interactive GitHub Pages explorer reads docs/data.json
     site.build(max_round)
     summary = {"hypotheses": str(hyp.relative_to(REPO_ROOT)), "figures": [str(p.relative_to(REPO_ROOT)) for p in figs],

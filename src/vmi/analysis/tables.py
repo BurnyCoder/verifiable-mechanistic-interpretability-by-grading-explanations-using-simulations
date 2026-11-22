@@ -241,6 +241,67 @@ def key_results(max_round: int, target: str = "T0") -> str:
     return out[0] + "\n\n" + "\n".join(out[1:])  # blank line: a markdown list must not continue the paragraph above
 
 
+_WORDS = {0: "none", 1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine",
+          10: "ten", 12: "twelve"}
+
+
+def _w(n: int) -> str:
+    return _WORDS.get(n, str(n))
+
+
+def inline_values(max_round: int) -> dict[str, str]:
+    """Numbers quoted inside prose sentences of README, summary and paper (`<!-- v:name -->…<!-- /v -->`), each computed
+    from results/ like the tables, so no count or ratio in the text is typed by hand."""
+    from vmi.analysis.hypotheses import LOCAL_MODELS, MAIN_MODEL, _select, load_runs
+    runs = load_runs(max_round)
+    v: dict[str, str] = {}
+    local = [r for r in runs if r["model"] in LOCAL_MODELS]
+    v["n-local"] = _w(len(local))
+    names = {"qwen3.5-4b": "Qwen3.5-4B", "qwen3.5-9b": "Qwen3.5-9B", "qwen3.6-35b-a3b": "Qwen3.6-35B-A3B"}
+    v["local-by-model"] = ", ".join(f"{names[m]} × {sum(r['model'] == m for r in local)}" for m in LOCAL_MODELS
+                                    if any(r["model"] == m for r in local))
+    ratios = []  # how much shorter the Pizza explanation is than E3, per target (characters)
+    for d in sorted((RES / "explanations").iterdir()):
+        a, e = d / "W-alg" / "length.json", d / "E3" / "length.json"
+        if a.exists() and e.exists():
+            ratios.append(1 - json.loads(a.read_text())["chars"] / json.loads(e.read_text())["chars"])
+    if ratios:
+        v["walg-shorter"] = f"{round(float(np.mean(ratios)) * 100, -1):.0f}"
+    fq = RES / f"frequencies_round{max_round}.json"
+    if fq.exists():
+        F = json.loads(fq.read_text())
+        paper = set(F["paper_freqs"])
+        rows = [r for r in F["rows"] if r["model"] == MAIN_MODEL and r["variant"] == "" and r["target"] == "T0"]
+        for lv, key in (("E1", "e1"), ("E0", "e0")):
+            rs = [r for r in rows if r["level"] == lv]
+            mem = [r for r in rs if len(set(r["used_freqs"]) & paper) >= 4]
+            v[f"{key}-n"] = _w(len(rs))
+            v[f"{key}-mem"] = ("all " + _w(len(rs))) if rs and len(mem) == len(rs) else f"{_w(len(mem))} of {_w(len(rs))}"
+            v[f"{key}-mem-in"] = f"{_w(len(mem))} run{'' if len(mem) == 1 else 's'} in {_w(len(rs))}"
+            if mem:
+                v[f"{key}-k"] = _w(min(len(set(r["used_freqs"]) & paper) for r in mem))
+                v[f"{key}-common"] = ", ".join(map(str, sorted(set.intersection(*(set(r["used_freqs"]) & paper for r in mem)))))
+    for lv, key in (("E3", "e3"), ("W-freq", "wfreq")):  # low-effort runs whose answers broke (task accuracy < 0.95)
+        rs = [r for r in runs if r["target"] == "T0" and r["level"] == lv and r.get("variant") == "effort-low" and r["model"] == MAIN_MODEL]
+        v[f"lowfx-{key}"] = f"{_w(sum(r['accuracy'] < 0.95 for r in rs))} of {_w(len(rs))}"
+        v[f"lowfx-{key}-n"] = _w(len(rs))
+    r2 = [r for r in runs if int(r.get("round", 0)) == 2]
+    v["round2-runs"] = str(len(r2))
+    nf = sum(bool(r.get("failed")) for r in r2)
+    v["round2-failed"] = "no failures" if nf == 0 else f"{nf} failures"
+    e2, e3 = [r["hs"] for r in _select(runs, level="E2")], [r["hs"] for r in _select(runs, level="E3")]
+    if e2 and e3:
+        v["e3-vs-e2"] = "every E3 run is above every E2 run" if min(e3) > max(e2) else "E3 runs are not all above the E2 runs"
+    gaps = [np.mean([r["hs"] for r in _select(runs, target=t, level="E3")]) - np.mean([r["hs"] for r in _select(runs, target=t, level="W-freq")])
+            for t in ("T0", "T1", "T2", "T-new", "T-paper") if _select(runs, target=t, level="E3") and _select(runs, target=t, level="W-freq")]
+    if gaps:
+        v["wfreq-gap-targets"] = ("all " + _w(len(gaps)) + " targets") if all(g > 0 for g in gaps) else f"{_w(sum(g > 0 for g in gaps))} of {_w(len(gaps))} targets"
+    e01 = [r["accuracy"] for r in runs if r["target"] == "T0" and r["level"] in ("E0", "E1") and r["model"] == MAIN_MODEL and r.get("variant", "") == ""]
+    if e01:
+        v["e01-acc"] = f"{min(e01):.3f}" if f"{min(e01):.3f}" == f"{max(e01):.3f}" else f"{min(e01):.3f}–{max(e01):.3f}"
+    return v
+
+
 def grader_sensitivity_table(max_round: int, target: str = "T0", kind: str = "agent") -> str:
     """Mean HS per explanation under each preregistered grader variant, and Kendall τ of the ordering vs. default."""
     p = RES / "sensitivity" / f"grader_{target}_round{max_round}.json"
