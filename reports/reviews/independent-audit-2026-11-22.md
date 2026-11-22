@@ -98,7 +98,24 @@ Severity: **major** = a claim about the method or the results that was wrong or 
 - **H4b's failure** reads better as a failed assumption of the calibration series (the planted model's function does not drift monotonically) than as a failure of the grader. HS still falls monotonically there.
 - **All evidence is N = 3, one task family and one simulator.** Every summary statement now says so.
 
-## 4. Not changed
+## 4. Completion check (second pass against the audit plan)
+
+A second pass against every item of the audit plan found steps that had been skipped or done only in part. Each was then finished:
+
+- **Hand-typed result numbers.**
+  - Counts and ratios quoted inside README, summary and paper prose are now generated inline values (`<!-- v:name -->…<!-- /v -->`, `tables.inline_values`), refilled by `vmi analyse` like the tables. They cover the local-run count, W-alg's length ratio, the memorisation counts, the low-effort failure counts, round 2's run count, the E3-versus-E2 comparison, the number of targets with the wrong-frequency gap and the E0/E1 accuracy.
+  - A count of failed expectations was removed instead.
+- **New statistics recomputed independently.** H3's differences, H4's two-sided student p (0.1), H8's per-replacement ρ (min 0.751, median 0.774) and the replication tests (exact enumeration) all match.
+  - The grader's pooled R² equals scikit-learn's documented `variance_weighted` R² in-sample.
+- **Citations.** One consolidated list: [citation-check-2026-11-22.md](citation-check-2026-11-22.md). It includes the plan's URLs, which no checker had covered; all of them were among the sources already checked.
+- **Figures.** All were checked for graph crimes.
+  - The simulator figure mixed N = 1 (Qwen) and N = 3 (Haiku) under "round 2"; its legend now gives N per simulator.
+  - An overlapping label in the length figure was moved.
+  - The PDF's sensitivity table had overlapping columns; it now has wider columns.
+- **Results-driven changes.** Deviations 5, 7 and 8 are now named in the README's predicted-versus-measured section and in the paper's methods.
+- **Learnings.** The "thinking not returned" claim was corrected and the Ollama sources were added.
+
+## 5. Not changed
 
 - The primary metrics, the verdict rules and the preregistered hypotheses.
 - Round 3 stays postponed. No Claude budget was spent by this audit.
