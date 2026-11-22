@@ -63,7 +63,7 @@ def _scan(folder: Path) -> list[str]:
     return hits
 
 
-def _card(n_runs: int) -> str:
+def _card(n_runs: int, n_dev: int = 0) -> str:
     return f"""---
 license: mit
 tags:
@@ -80,7 +80,8 @@ Burian and [Victor Levoso](https://scholar.google.com/citations?user=BBGcEigAAAA
 interpretability hackathon on automatically evaluating mechanistic interpretability explanations co-organized in the
 [mechinterp.com](https://mechinterp.com/) community.
 
-An LLM agent (Claude Haiku 5.5 in Claude Code, or a local Qwen model), offline and never shown the target's weights,
+An LLM agent (Claude Haiku 5.5 in Claude Code; local Qwen models were tried and stopped at chance), offline except for
+the model endpoint and never shown the target's weights,
 reads an explanation of a one-layer modular-addition transformer ([Nanda et al. 2023](https://arxiv.org/abs/2301.05217))
 and writes the weights of a replacement network. The replacement is graded against the target by output KL and by
 cross-validated hidden-state similarity. Code, preregistration, paper and all graded results: [GitHub]({GITHUB}).
@@ -90,7 +91,7 @@ Target models: [{TARGET_RUNS_REPO}](https://huggingface.co/{TARGET_RUNS_REPO}).
 
 | Folder | What |
 |---|---|
-| `replacements/<run_id>/` | one folder per graded agent run ({n_runs} so far): `weights.npz` (the replacement, 11 float64 arrays in the paper's layout), `build_weights.py` (the agent's script), `transcript.md`, `events.ndjson.gz` (full event stream), `wire.log.gz` (every request and response body between the sandbox and the model; no headers), `result.json` (grader output) |
+| `replacements/<run_id>/` | one folder per graded agent run ({n_runs} so far, of which {n_dev} are stage-0 development runs on the dev target, never reported as results): `weights.npz` (the replacement, 11 float64 arrays in the paper's layout), `build_weights.py` (the agent's script), `transcript.md`, `events.ndjson.gz` (full event stream), `wire.log.gz` (every request and response body between the sandbox and the model; no headers), `result.json` (grader output) |
 | `compiler/<target>/<explanation>.npz` | the agent-free reference compiler's build for every explanation of every target |
 | `trained/T-new/` | the held-out target trained after the protocol freeze (paper recipe, seed 11): all 401 checkpoints, curves, metadata |
 | `trained/planted_T0/` | the reference-compiled E3 model for T0 and its snapshots after 100, 1,000 and 10,000 further training steps |
@@ -111,7 +112,7 @@ def export(settings: Settings) -> Path:
     out = settings.data_dir.parent / "hf_export"
     if out.exists():
         shutil.rmtree(out)
-    n = 0
+    n = n_dev = 0
     for p in sorted((RES / "runs").glob("*.json")):
         r = json.loads(p.read_text(encoding="utf-8"))
         run = settings.runs_dir / r["run_id"]
@@ -127,6 +128,7 @@ def export(settings: Settings) -> Path:
             if src.exists():
                 _copy_text(src, d / name, compress=gz)
         n += 1
+        n_dev += r.get("stage") == "dev"
     comp = settings.runs_dir / "_compiler"  # reference-compiler builds, one npz per target and explanation
     if comp.exists():
         shutil.copytree(comp, out / "compiler")
@@ -141,7 +143,7 @@ def export(settings: Settings) -> Path:
             shutil.copy2(f, out / "trained" / "students_T0" / f"student_s{s}.npz")
     for meta in (out / "trained").rglob("meta.json"):
         meta.write_text(_redact(meta.read_text(encoding="utf-8")), encoding="utf-8")
-    (out / "README.md").write_text(_card(n), encoding="utf-8", newline="\n")
+    (out / "README.md").write_text(_card(n, n_dev), encoding="utf-8", newline="\n")
     hits = _scan(out)
     if hits:
         raise RuntimeError("forbidden content in the export, nothing uploaded:\n" + "\n".join(hits[:20]))

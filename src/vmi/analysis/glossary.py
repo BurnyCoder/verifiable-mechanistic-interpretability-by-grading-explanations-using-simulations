@@ -21,7 +21,7 @@ GLOSS = {  # the shortest wording that still tells a non-expert what the label s
     "W-scramble": "shuffled neuron table",
     "T-paper": "the published checkpoint", "T-new": "target trained after the freeze", "T0": "main target network",
     "T1": "target from another seed", "T2": "target from another seed",
-    "HS": "hidden-state similarity, 1 = same internals", "KL_out": "output divergence, 0 = same answers",
+    "HS": "hidden-state similarity, 1 = internals match up to a linear map", "KL_out": "output divergence, 0 = same answers",
     "KL": "output divergence, 0 = same answers",
 }
 _TOKEN = re.compile(r"(?<![\w/\->→'`.–])(" + "|".join(re.escape(k) for k in sorted(GLOSS, key=len, reverse=True))

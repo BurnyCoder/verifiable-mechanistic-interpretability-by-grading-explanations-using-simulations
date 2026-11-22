@@ -261,7 +261,7 @@ def main(argv: list[str] | None = None) -> None:
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("explain").add_argument("target")
     sub.add_parser("compile").add_argument("target")
-    sub.add_parser("check").add_argument("--claude", action="store_true", help="Claude-mode plumbing check (~$0.01)")
+    sub.add_parser("check").add_argument("--claude", action="store_true", help="Claude-mode plumbing check (one tiny request, well under $0.01)")
     r = sub.add_parser("run")
     r.add_argument("target")
     r.add_argument("level")

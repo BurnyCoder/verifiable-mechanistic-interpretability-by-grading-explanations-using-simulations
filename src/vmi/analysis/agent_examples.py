@@ -115,7 +115,7 @@ def extract(r: dict) -> dict:
     run = load().runs_dir / r["run_id"]
     ev = [json.loads(x) for x in (run / "logs" / "events.ndjson").read_text(encoding="utf-8").splitlines() if x.strip()]
     calls, results, final, cost, harness_errors, says = (_claude_events if r.get("harness") == "claudecode" else _harness_events)(ev)
-    selftests = [i for i, c in enumerate(calls) if "selftest" in (c or "")]
+    selftests = [i for i, c in enumerate(calls) if "selftest" in (c or "") and "python" in (c or "")]  # runs, not reads
     accs = [float(m.group(1)) for i in selftests if i < len(results)
             for m in [re.search(r"accuracy[^:\n]*:\s*([0-9]*\.[0-9]+)", results[i])] if m]  # self-test accuracy, in order
     talk = [s for n, s in says if s.strip() and s != final]
@@ -189,19 +189,22 @@ def why(x: dict, target: str, level: str) -> tuple[str, str]:
                 + f". Its last words were still debugging: “{first_sentence(x['final'], 160)}”",
                 f"Never built a working network: self-test at chance ({acc:.4f})"
                 + (f", {cut} replies cut off at the output limit" if cut else "") + (", out of time" if x["harness_errors"] else ""))
-    if built and set(built) & set(PAPER_FREQS) and len(set(built) & set(PAPER_FREQS)) >= 3 and target != "T-paper" and not told:
+    n_paper = len(set(built or []) & set(PAPER_FREQS))
+    if built and n_paper >= 3 and target != "T-paper" and not told:
+        exact = set(built) == set(PAPER_FREQS)  # all five, or only some of them (the rest are other choices)
+        what = "the published paper's frequencies" if exact else f"{n_paper} of the published paper's five frequencies {fs(PAPER_FREQS)}"
         return (f"Wrong mechanism, right answers: the explanation gave no frequencies, and the agent filled "
-                f"them in from memory (“{sentence_with(x['plan'], [str(v) for v in built], 120)}”). It built {fs(built)}, the published paper's "
-                f"frequencies, instead of {target}'s {fs(tgt)}, so its answers are right (accuracy {acc:.4f}) but its "
-                f"internals do not match (HS {hs:.2f}).",
-                f"No frequencies given, so it used the paper's {fs(built)} from memory instead of {target}'s {fs(tgt)}: "
-                f"right answers, wrong internals")
+                f"them in from memory (“{sentence_with(x['plan'], [str(v) for v in built], 120)}”). Its build script "
+                f"hard-codes {fs(built)}, {what}, instead of {target}'s {fs(tgt)}, so its answers are right (accuracy "
+                f"{acc:.4f}) but its internals do not match (HS {hs:.2f}).",
+                f"No frequencies given, so it hard-coded " + (f"the paper's {fs(built)}" if exact else f"{fs(built)} ({n_paper} of the paper's five)")
+                + f" from memory instead of {target}'s {fs(tgt)}: right answers, wrong internals")
     if told and built and set(built) == set(told) and set(told) != set(tgt):
-        return (f"Right behaviour of the agent, and the grader catches the explanation: it built exactly the wrong "
-                f"frequencies it was told, {fs(built)}, not {target}'s {fs(tgt)}. The answers are still right (accuracy "
+        return (f"Right behaviour of the agent, and the grader catches the explanation: its script uses exactly the "
+                f"wrong frequencies it was told, {fs(built)}, not {target}'s {fs(tgt)}. The answers are still right (accuracy "
                 f"{acc:.4f}), but the internals do not match (HS {hs:.2f}), so HS exposes the wrong explanation that "
                 f"output-only grading would pass.",
-                f"Built the wrong frequencies it was told, {fs(built)}, not {target}'s: right answers, wrong internals, "
+                f"Its script uses the wrong frequencies it was told, {fs(built)}, not {target}'s: right answers, wrong internals, "
                 f"so HS catches the wrong explanation")
     if acc < 0.95:
         from vmi.analysis.diagnose import load_diagnosis  # interventions on the agent's script, if this run was diagnosed
@@ -209,17 +212,18 @@ def why(x: dict, target: str, level: str) -> tuple[str, str]:
         d = load_diagnosis(x["run_id"])
         if d:
             v = {e["name"]: e for e in d["variants"]}
-            fix = next(e for n, e in v.items() if n.startswith("head 3 moved") or n.startswith("fix"))
+            fix = next(e for n, e in v.items() if n.startswith("head 3 where") or n.startswith("fix"))  # the intended value
             others = "; ".join(f"{n}: accuracy {e['accuracy']:.4f}" for n, e in v.items() if e is not fix and n != "as submitted")
-            return (f"Wrong answers, right mechanism: it built the target's frequencies {fs(built or tgt)}, so the internals "
-                    f"match (HS {hs:.2f}), but the answers are wrong (accuracy {acc:.4f}). The wrong detail is {d['cause']}. "
+            return (f"Wrong answers, right mechanism: its script uses the target's frequencies {fs(built or tgt)}, and the "
+                    f"internals match (HS {hs:.2f}), but the answers are wrong (accuracy {acc:.4f}). The wrong detail is {d['cause']}. "
                     f"Re-running its own script with that one fix gives accuracy {fix['accuracy']:.4f} at HS {fix['hs']:.2f} "
                     f"(other changes tested: {others}). " + (f"{d['owner']}. " if d.get("owner") else "")
                     + (f"It stopped by its own choice after {x['tool_calls']} tool calls and {x['minutes']} minutes, well "
-                       f"within the 60-step, 60-minute budget. " if x.get("tool_calls") is not None else "")
+                       f"within the 60-minute, $2 per-run budget (Claude Code has no step cap). "
+                       if x.get("tool_calls") is not None else "")
                     + _replicates_sentence(d, x["run_id"])
                     + f"The agent never found the bug: it blamed the neurons "
-                    f"(“{sentence_with(said, d['blamed'], 150)}”), tuned four constants around the bug (self-test peak "
+                    f"(“{sentence_with(said, d['blamed'], 150)}”), tuned constants around the bug (self-test peak "
                     f"{best:.4f}) and then kept the setting it judged more faithful to the explanation "
                     f"(“{sentence_with(said, d['kept'], 170)}”).",
                     f"Right frequencies, wrong answers: {d['short']}; fixing it gives accuracy {fix['accuracy']:.4f}. "
@@ -227,22 +231,22 @@ def why(x: dict, target: str, level: str) -> tuple[str, str]:
                     + (f" (bug in {d['replicate_check']['failures']} of {d['replicate_check']['identical_runs']} identical runs)"
                        if d.get("replicate_check") else ""))
         reason = sentence_with(said, ["faithful", "keep", "trade-off"], 170) if any(k in said for k in ("faithful", "keep")) else ""
-        return (f"Wrong answers, right mechanism: it built the target's frequencies {fs(built or tgt)}, so the internals "
-                f"match (HS {hs:.2f}), but the answers are wrong (accuracy {acc:.4f}). It noticed (“{sentence_with(x['reaction'] or x['final'], ['ccuracy', '%'], 150)}”); "
+        return (f"Wrong answers, right mechanism: its script uses the target's frequencies {fs(built or tgt)}, and the "
+                f"internals match (HS {hs:.2f}), but the answers are wrong (accuracy {acc:.4f}). It noticed (“{sentence_with(x['reaction'] or x['final'], ['ccuracy', '%'], 150)}”); "
                 f"its self-test peaked at {best:.4f} and it stopped at {acc:.4f}"
                 + (f" (“{reason}”)" if reason else "") + ". Not diagnosed further.",
                 f"Right frequencies, wrong answers: self-test peaked at {best:.4f}, it stopped at {acc:.4f} (not diagnosed)")
     c = x["compiler_hs"]
     if c is not None and hs > c + 0.05:
-        return (f"Right, and better than the AI-free compiler: it built {target}'s frequencies {fs(built or tgt)} and "
+        return (f"Right, and better than the AI-free compiler: its script uses {target}'s frequencies {fs(built or tgt)} and it "
                 f"debugged its way from a first self-test at {accs[0]:.4f} to {accs[-1]:.4f} (“{sentence_with(' '.join(x['said']), ['ccuracy', '%'], 170)}”). "
                 f"HS {hs:.2f} against the compiler's {c:.2f}, which follows the rendered explanation literally.",
-                f"Built {target}'s frequencies and debugged from {accs[0]:.4f} to {accs[-1]:.4f}; beats the literal compiler "
+                f"Script uses {target}'s frequencies; debugged from {accs[0]:.4f} to {accs[-1]:.4f}; beats the literal compiler "
                 f"(HS {hs:.2f} vs {c:.2f})")
-    return (f"Right: it built exactly the frequencies the explanation names, {fs(built or tgt)}, which are {target}'s own, "
+    return (f"Right: its script uses exactly the frequencies the explanation names, {fs(built or tgt)}, which are {target}'s own, "
             f"so both the answers (accuracy {acc:.4f}) and the internals (HS {hs:.2f}"
             + (f"; compiler {c:.2f}" if c is not None else "") + ") match the target.",
-            f"Built exactly {target}'s frequencies {fs(built or tgt)}, as the explanation says: answers and internals match")
+            f"Script uses {target}'s frequencies {fs(built or tgt)}, as the explanation says: answers and internals match")
 
 
 def rows(max_round: int) -> list[dict]:
@@ -274,7 +278,7 @@ def write_doc(max_round: int) -> str:
             counts = {e: x["harness_errors"].count(e) for e in dict.fromkeys(x["harness_errors"])}
             parts.append("- **Harness events:** " + ", ".join(f"{e} ×{n}" if n > 1 else e for e, n in counts.items()))
         if x["freq_lines"] or x["choices"]:
-            parts += ["- **Lines it wrote in `build_weights.py`:**", "", "```python", *x["freq_lines"], *x["choices"], "```"]
+            parts += ["- **Lines it wrote in `build_weights.py`:**", "", "```python", *dict.fromkeys(x["freq_lines"] + x["choices"]), "```"]  # a line can match both
         if x["accs"]:
             parts.append("- **Self-test accuracy over the run:** " + " → ".join(f"{a:.4f}" for a in x["accs"]))
         parts += ["", "**What it said, in order** (its messages between tool calls; the model's hidden thinking is not "

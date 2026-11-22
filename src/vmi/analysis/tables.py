@@ -183,9 +183,12 @@ def key_results(max_round: int, target: str = "T0") -> str:
     if all(m(lv) is not None for lv in ("E1", "E2", "E3", "E4")):
         lv4 = ("E1", "E2", "E3", "E4")
         inv = [f"{b} < {a}" for a, b in zip(lv4, lv4[1:]) if m(b) < m(a)]  # order violations along the ladder
+        e0 = m("E0")
         out.append(f"- **Model-specific detail raises hidden-state similarity:** HS on {target} is {m('E1'):.2f} (E1, algorithm "
                    f"only), {m('E2'):.2f} (E2), {m('E3'):.2f} (E3) and {m('E4'):.2f} (E4); with no explanation (E0) it is "
-                   f"{_f(m('E0'), 2)}. " + (f"Not monotone: {', '.join(inv)}." if inv else "Monotone along the ladder."))
+                   f"{_f(e0, 2)}. " + (f"Not monotone from E1 to E4: {', '.join(inv)}." if inv else "Monotone from E1 to E4")
+                   + ("" if e0 is None else "; E0 lies above E1, against the preregistered prediction." if e0 > m("E1")
+                      else "; E0 lies below E1, as predicted."))
     if m("W-freq") is not None:
         out.append(f"- **Correct behaviour, wrong mechanism is caught by HS, not by output KL:** the wrong-frequency "
                    f"replacement reaches KL {_f(m('W-freq', 'kl_out'))} nats (true E3: {_f(m('E3', 'kl_out'))}) but HS "
@@ -195,9 +198,12 @@ def key_results(max_round: int, target: str = "T0") -> str:
     if b.exists() and ri.exists():
         d, r0 = json.loads(b.read_text()), json.loads(ri.read_text())
         hs = lambda rs: float(np.mean([x["hs"] for x in rs]))  # noqa: E731
+        top = max(hs(d["retrains"]), hs(d["students"]))
         out.append(f"- **Copying behaviour does not copy the mechanism:** independent retrains (HS {hs(d['retrains']):.2f}) and "
                    f"logit-distilled students (HS {hs(d['students']):.2f}, KL {_f(float(np.mean([x['kl_out'] for x in d['students']])))}) "
-                   f"stay at the random-initialisation floor (HS {hs(r0):.2f}).")
+                   + ("score no higher than randomly initialised networks" if top <= hs(r0) + 0.005 else "score above randomly initialised networks")
+                   + f" (HS {hs(r0):.2f}). HS's scale is therefore not anchored at 0 for unrelated networks: it measures overlap of "
+                   f"internal features, and working networks built on other frequencies score below random ones.")
     if m("W-alg") is not None and m("W-scramble") is not None:
         out.append(f"- **Negative result:** the primary HS does not separate the Pizza explanation (W-alg, HS {m('W-alg'):.2f}) "
                    f"or the scrambled neuron table (W-scramble, HS {m('W-scramble'):.2f}) from the true explanations; the "
@@ -213,16 +219,21 @@ def key_results(max_round: int, target: str = "T0") -> str:
                 rs = [r for r in rows if r["level"] == lv]
                 if not rs:
                     return ""
-                mem = sum(r["jaccard_paper"] >= 0.5 for r in rs)
+                paper = set(json.loads(fq.read_text())["paper_freqs"])
+                mem = sum(len(set(r["used_freqs"]) & paper) >= 4 for r in rs)  # measured by the key-frequency rule
+                none = sum(not set(r["used_freqs"]) & set(r["target_freqs"]) for r in rs)
                 swap = [r["hs_vs_paper"] for r in rs if "hs_vs_paper" in r]
-                return (f"{lv}: {mem} of {len(rs)} replacement(s) built mostly the paper's frequencies (Jaccard ≥ 0.5); mean HS "
+                return (f"{lv}: {mem} of {len(rs)} replacement(s) used at least four of the paper's five frequencies, and "
+                        f"{none} of {len(rs)} used none of {rs[0]['target']}'s; mean HS "
                         f"{np.mean([r['hs'] for r in rs]):.2f} against {rs[0]['target']} but "
                         f"{np.mean(swap):.2f} against the published checkpoint (target swap: same weights, other target)")
             out.append(f"- **Memorisation (post hoc):** when the explanation gives no frequencies, the simulator often builds "
-                       f"the published paper's frequencies {{14, 35, 41, 42, 52}} into its replacement. "
+                       f"most of the published paper's frequencies {{14, 35, 41, 42, 52}} into its replacement. "
                        + "; ".join(x for x in (per_level("E1"), per_level("E0")) if x)
-                       + f". A separate algorithm-only run on the published checkpoint scores HS "
-                       f"{np.mean([r['hs'] for r in tp_e1]):.2f}: scores on published models measure memory, not the explanation.")
+                       + f". The {len(tp_e1)} algorithm-only run(s) on the published checkpoint itself score HS "
+                       f"{np.mean([r['hs'] for r in tp_e1]):.2f} on average (range {min(r['hs'] for r in tp_e1):.2f}–"
+                       f"{max(r['hs'] for r in tp_e1):.2f}): on a published model, a high score can come from the simulator's "
+                       f"memory rather than the explanation (one published model and one simulator tested).")
     led = RES / "claude" / "ledger.jsonl"
     if led.exists():
         spend = sum(json.loads(x).get("cost_usd", 0.0) for x in led.read_text(encoding="utf-8").splitlines() if x.strip())
@@ -237,10 +248,19 @@ def grader_sensitivity_table(max_round: int, target: str = "T0", kind: str = "ag
         return "_not run yet_"
     d = json.loads(p.read_text())
     S = d["summary"][kind]
+    B = d["summary"].get("baseline", {}) if kind == "agent" else {}  # retrains / random init, agent table only
+    extra = [lv for lv in ("retrain", "random init") if any(lv in v["means"] for v in B.values())]
     levels = [lv for lv in LEVEL_ORDER if any(lv in v["means"] for v in S.values())]
-    rows = ["| Grader setting | " + " | ".join(levels) + " | Kendall τ vs. preregistered |", "|---" * (len(levels) + 2) + "|"]
+    rows = ["| Grader setting | " + " | ".join(levels + extra) + " | Kendall τ vs. preregistered |",
+            "|---" * (len(levels) + len(extra) + 2) + "|"]
     for name, v in S.items():
-        rows.append(f"| {name} | " + " | ".join(_f(v["means"].get(lv), 2) for lv in levels) + f" | {_f(v['kendall_tau_vs_preregistered'], 2)} |")
+        rows.append(f"| {name} | " + " | ".join(_f(v["means"].get(lv), 2) for lv in levels)
+                    + "".join(f" | {_f(B.get(name, {}).get('means', {}).get(lv), 2)}" for lv in extra)
+                    + f" | {_f(v['kendall_tau_vs_preregistered'], 2)} |")
+    if kind == "agent" and d.get("h7_d"):
+        rows.append("\n*H7 margin d = HS(T0) − max HS over the " + str(len(d["wrong_targets"])) + " wrong targets, per E3/E4 "
+                    "replacement (smallest / median):* " + "; ".join(
+                        f"{name}: {min(v.values()):.2f} / {float(np.median(list(v.values()))):.2f}" for name, v in d["h7_d"].items()))
     return "\n".join(rows)
 
 
@@ -394,7 +414,7 @@ def replications_table(max_round: int) -> str:
     rows = replication_rows(max_round)
     if not rows:
         return "_not run yet_"
-    out = ["| Target | HS per true explanation | H1: HS rises E2→E4? | H2: HS(E3) − HS(W-freq) | H3 observed (W-freq) | H3 holds? |",
+    out = ["| Target | HS per true explanation | H1: HS rises with detail? (trend test) | H2: HS(E3) − HS(W-freq); Mann–Whitney | H3 observed (W-freq) | H3 holds? |",
            "|-----|------|---|---|-------|-----|"]
     out += [f"| {r['target']} | {r['hs_by_level']} | {r['h1']} | {r['h2']} | {r['h3_observed']} | {r['h3']} |" for r in rows]
     return "\n".join(out)
