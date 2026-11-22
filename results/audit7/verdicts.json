@@ -1,0 +1,587 @@
+{
+  "H1": {
+    "n_per_level": [
+      3,
+      3,
+      3,
+      3
+    ],
+    "J_hs": 51.0,
+    "p_hs": 9.46969696969697e-05,
+    "rho_hs": 0.906850385883814,
+    "rho_hs_min_over_all_resamples": 0.7827936876641307,
+    "J_neg_kl": 17.0,
+    "p_neg_kl": 0.9309442640692641,
+    "rho_neg_kl": -0.32387513781564786,
+    "verdict_hs": "supported",
+    "verdict_kl": "not supported",
+    "e0_mean": 0.1295197949939649,
+    "e1_mean": 0.04646391422010308
+  },
+  "H2": {
+    "E3>W-freq": {
+      "p": 0.05,
+      "holm_p": 0.2,
+      "min_p": 0.05,
+      "diff": 0.8587022155497118,
+      "exact_boot_ci": [
+        0.8345809470760193,
+        0.8797117723164982
+      ],
+      "verdict_dev1": "cannot tell at this N",
+      "verdict_literal_s5": "not supported"
+    },
+    "E3>W-alg": {
+      "p": 0.35,
+      "holm_p": 0.7,
+      "min_p": 0.05,
+      "diff": 0.020000059863604314,
+      "exact_boot_ci": [
+        -0.009985512364406347,
+        0.04474955307413362
+      ],
+      "verdict_dev1": "cannot tell at this N",
+      "verdict_literal_s5": "not supported"
+    },
+    "E3>W-role": {
+      "p": 0.05,
+      "holm_p": 0.2,
+      "min_p": 0.05,
+      "diff": 0.7250769982574378,
+      "exact_boot_ci": [
+        0.6583257725395504,
+        0.7682007841099024
+      ],
+      "verdict_dev1": "cannot tell at this N",
+      "verdict_literal_s5": "not supported"
+    },
+    "E4>W-scramble": {
+      "p": 0.5,
+      "holm_p": 0.7,
+      "min_p": 0.05,
+      "diff": 0.006812079136578109,
+      "exact_boot_ci": [
+        -0.024977841288004288,
+        0.036746701323300074
+      ],
+      "verdict_dev1": "cannot tell at this N",
+      "verdict_literal_s5": "not supported"
+    }
+  },
+  "H3": {
+    "wfreq_agreement": 0.9999477902211084,
+    "wfreq_kl": 0.002931726669060388,
+    "wfreq_hs": 0.0703737578414156,
+    "true_kl_means": {
+      "E2": 0.0002117706685867848,
+      "E3": 0.00972143346739828,
+      "E4": 0.06004481507139639
+    },
+    "true_hs_means": {
+      "E2": 0.894206961203665,
+      "E3": 0.9290759733911275,
+      "E4": 0.9433019203788685
+    },
+    "kl_within_min_max": true,
+    "verdict": "supported"
+  },
+  "H4": {
+    "retrain_runs": [
+      "wd1_s0",
+      "wd1_s2",
+      "wd1_s3",
+      "wd1_s4",
+      "wd1_s5",
+      "wd1_s6",
+      "wd1_s7",
+      "wd1_s8",
+      "wd1_s9"
+    ],
+    "p": {
+      "E3": 0.004545454545454545,
+      "E4": 0.004545454545454545
+    },
+    "holm_p": {
+      "E3": 0.00909090909090909,
+      "E4": 0.00909090909090909
+    },
+    "students_two_sided_p": {
+      "E3": 0.1,
+      "E4": 0.1
+    },
+    "students_holm": {
+      "E3": 0.2,
+      "E4": 0.2
+    },
+    "verdicts": {
+      "E3": "supported",
+      "E4": "supported"
+    }
+  },
+  "H4b": {
+    "hs": [
+      0.999999966589694,
+      0.9980927411909205,
+      0.9574774979645472,
+      0.8878842738878275
+    ],
+    "kl": [
+      0.0,
+      0.37062174455452224,
+      0.040109442486207875,
+      0.00042517092465205994
+    ],
+    "verdict": "not supported"
+  },
+  "H5": {
+    "E2": {
+      "agent_minus_compiler": -0.0006342656364095589,
+      "agent_runs": [
+        0.8994455393035308,
+        0.8945524617726366,
+        0.8886228825348276
+      ],
+      "compiler": 0.8948412268400746,
+      "compiler_inside_agent_range": true
+    },
+    "E3": {
+      "agent_minus_compiler": 0.0024530366413803018,
+      "agent_runs": [
+        0.9394805798904734,
+        0.9324099362097188,
+        0.9153374040731904
+      ],
+      "compiler": 0.9266229367497472,
+      "compiler_inside_agent_range": true
+    },
+    "E4": {
+      "agent_minus_compiler": -0.008508141978027739,
+      "agent_runs": [
+        0.9115119999542861,
+        0.9529163502723046,
+        0.9654774109100147
+      ],
+      "compiler": 0.9518100623568962,
+      "compiler_inside_agent_range": true
+    },
+    "W-freq": {
+      "agent_minus_compiler": -0.02418125537228441,
+      "agent_runs": [
+        0.05537189466979208,
+        0.06125435253934653,
+        0.09449502631510821
+      ],
+      "compiler": 0.09455501321370001,
+      "compiler_inside_agent_range": true
+    }
+  },
+  "H7": {
+    "wrong_targets": [
+      "T-paper",
+      "T1",
+      "T2",
+      "dev",
+      "rand_s0",
+      "rand_s1",
+      "rand_s2",
+      "wd0_s0",
+      "wd0_s1",
+      "wd0_s2",
+      "wd0_s3",
+      "wd0_s4"
+    ],
+    "n_wrong": 12,
+    "d": [
+      0.6652475673992395,
+      0.6929018479893604,
+      0.625774993866173,
+      0.6853957048190834,
+      0.7263465741818759,
+      0.7078022548646208
+    ],
+    "p": 0.015625,
+    "verdict": "supported"
+  },
+  "H8": {
+    "rho": {
+      "main__T0__E3__claudehaiku55-claudecode__tdef__s0": 0.8204021662262255,
+      "main__T0__E3__claudehaiku55-claudecode__tdef__s1": 0.7508087988982767,
+      "main__T0__E3__claudehaiku55-claudecode__tdef__s2": 0.7765554397588119,
+      "main__T0__E4__claudehaiku55-claudecode__tdef__s0": 0.7522559273458146,
+      "main__T0__E4__claudehaiku55-claudecode__tdef__s1": 0.7711582982841404,
+      "main__T0__E4__claudehaiku55-claudecode__tdef__s2": 0.8394353668068635
+    },
+    "min": 0.7508087988982767,
+    "median": 0.7738568690214762,
+    "negative_controls": {
+      "controls__T0__E0__claudehaiku55-claudecode__tdef__s0": -0.8313440279897272,
+      "controls__T0__E0__claudehaiku55-claudecode__tdef__s1": -0.4525160978151636,
+      "controls__T0__E0__claudehaiku55-claudecode__tdef__s2": 0.14019224327241597,
+      "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s0": -0.4012472549968363,
+      "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s1": -0.24106766665425988,
+      "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s2": -0.3779847024230469,
+      "main__T0__E1__claudehaiku55-claudecode__tdef__s0": -0.5812811255443481,
+      "main__T0__E1__claudehaiku55-claudecode__tdef__s1": -0.5757622734209253,
+      "main__T0__E1__claudehaiku55-claudecode__tdef__s2": -0.5723850820709421
+    },
+    "verdict": "supported"
+  },
+  "replications": {
+    "T0": {
+      "levels": [
+        "E2",
+        "E3",
+        "E4"
+      ],
+      "jt_p": 0.010714285714285714,
+      "rho": 0.7905694150420948,
+      "e3_minus_wfreq": 0.8587022155497118,
+      "mw_p_e3_wfreq": 0.05,
+      "h3": {
+        "agreement": 0.9999477902211084,
+        "kl": 0.002931726669060388,
+        "true_kl_max": 0.06004481507139639,
+        "hs": 0.0703737578414156,
+        "holds": true
+      },
+      "true_agreement": {
+        "E2": 1.0,
+        "E3": 0.9995301119899757,
+        "E4": 0.9859555694781633
+      }
+    },
+    "T1": {
+      "levels": [
+        "E2",
+        "E3",
+        "E4"
+      ],
+      "jt_p": 0.5,
+      "rho": 0.05270462766947299,
+      "e3_minus_wfreq": 0.8852729422016767,
+      "mw_p_e3_wfreq": 0.05,
+      "h3": {
+        "agreement": 0.854334716892474,
+        "kl": 0.5372078714626717,
+        "true_kl_max": 0.4984753884647315,
+        "hs": 0.051002545597001764,
+        "holds": false
+      },
+      "true_agreement": {
+        "E2": 0.9997911608844335,
+        "E3": 0.9077975304774584,
+        "E4": 0.9012452032265643
+      }
+    },
+    "T2": {
+      "levels": [
+        "E2",
+        "E3",
+        "E4"
+      ],
+      "jt_p": 0.5,
+      "rho": 0.05270462766947299,
+      "e3_minus_wfreq": 0.8640600835359714,
+      "mw_p_e3_wfreq": 0.05,
+      "h3": {
+        "agreement": 0.9986947555277103,
+        "kl": 0.00562668692343278,
+        "true_kl_max": 0.048711977640984304,
+        "hs": 0.09764889860047156,
+        "holds": true
+      },
+      "true_agreement": {
+        "E2": 1.0,
+        "E3": 1.0,
+        "E4": 0.9895580442216826
+      }
+    },
+    "T-new": {
+      "levels": [
+        "E3",
+        "E4"
+      ],
+      "jt_p": 0.05,
+      "rho": 0.8783100656536799,
+      "e3_minus_wfreq": 0.8158842610622218,
+      "mw_p_e3_wfreq": 0.05,
+      "h3": {
+        "agreement": 0.9074320620252173,
+        "kl": 0.4317546551053135,
+        "true_kl_max": 0.32805026001378307,
+        "hs": 0.0941046160692207,
+        "holds": false
+      },
+      "true_agreement": {
+        "E3": 0.9098859216331219,
+        "E4": 0.9968152034876132
+      }
+    },
+    "T-paper": {
+      "levels": [
+        "E1",
+        "E3",
+        "E4"
+      ],
+      "jt_p": 0.06130952380952381,
+      "rho": 0.6324555320336759,
+      "e3_minus_wfreq": 0.8227691380930128,
+      "mw_p_e3_wfreq": 0.05,
+      "h3": {
+        "agreement": 0.998224867517686,
+        "kl": 0.00677452428905851,
+        "true_kl_max": 0.41335691957338483,
+        "hs": 0.11700161354327808,
+        "holds": true
+      },
+      "true_agreement": {
+        "E3": 0.9624089591980578,
+        "E4": 0.8943274075234292
+      }
+    }
+  },
+  "checks": [
+    {
+      "check": "H1 JT p (HS)",
+      "audit7": 9.46969696969697e-05,
+      "stored": 9.46969696969697e-05,
+      "agree": true
+    },
+    {
+      "check": "H1 JT p (\u2212KL)",
+      "audit7": 0.9309442640692641,
+      "stored": 0.9309442640692641,
+      "agree": true
+    },
+    {
+      "check": "H1 Spearman \u03c1 (HS)",
+      "audit7": 0.906850385883814,
+      "stored": 0.9068503858838141,
+      "agree": true
+    },
+    {
+      "check": "H1 verdict HS",
+      "audit7": "supported",
+      "stored": "supported",
+      "agree": true
+    },
+    {
+      "check": "H1 verdict KL",
+      "audit7": "not supported",
+      "stored": "not supported",
+      "agree": true
+    },
+    {
+      "check": "H2 E3>W-freq p",
+      "audit7": 0.05,
+      "stored": 0.05,
+      "agree": true
+    },
+    {
+      "check": "H2 E3>W-freq Holm p",
+      "audit7": 0.2,
+      "stored": 0.2,
+      "agree": true
+    },
+    {
+      "check": "H2 E3>W-freq verdict",
+      "audit7": "cannot tell at this N",
+      "stored": "cannot tell at this N",
+      "agree": true
+    },
+    {
+      "check": "H2 E3>W-alg p",
+      "audit7": 0.35,
+      "stored": 0.35,
+      "agree": true
+    },
+    {
+      "check": "H2 E3>W-alg Holm p",
+      "audit7": 0.7,
+      "stored": 0.7,
+      "agree": true
+    },
+    {
+      "check": "H2 E3>W-alg verdict",
+      "audit7": "cannot tell at this N",
+      "stored": "cannot tell at this N",
+      "agree": true
+    },
+    {
+      "check": "H2 E3>W-role p",
+      "audit7": 0.05,
+      "stored": 0.05,
+      "agree": true
+    },
+    {
+      "check": "H2 E3>W-role Holm p",
+      "audit7": 0.2,
+      "stored": 0.2,
+      "agree": true
+    },
+    {
+      "check": "H2 E3>W-role verdict",
+      "audit7": "cannot tell at this N",
+      "stored": "cannot tell at this N",
+      "agree": true
+    },
+    {
+      "check": "H2 E4>W-scramble p",
+      "audit7": 0.5,
+      "stored": 0.5,
+      "agree": true
+    },
+    {
+      "check": "H2 E4>W-scramble Holm p",
+      "audit7": 0.7,
+      "stored": 0.7,
+      "agree": true
+    },
+    {
+      "check": "H2 E4>W-scramble verdict",
+      "audit7": "cannot tell at this N",
+      "stored": "cannot tell at this N",
+      "agree": true
+    },
+    {
+      "check": "H3 verdict",
+      "audit7": "supported",
+      "stored": "supported",
+      "agree": true
+    },
+    {
+      "check": "H4 E3 Holm p",
+      "audit7": 0.00909090909090909,
+      "stored": 0.00909090909090909,
+      "agree": true
+    },
+    {
+      "check": "H4 E3 verdict",
+      "audit7": "supported",
+      "stored": "supported",
+      "agree": true
+    },
+    {
+      "check": "H4 E3 students p",
+      "audit7": 0.1,
+      "stored": 0.1,
+      "agree": true
+    },
+    {
+      "check": "H4 E4 Holm p",
+      "audit7": 0.00909090909090909,
+      "stored": 0.00909090909090909,
+      "agree": true
+    },
+    {
+      "check": "H4 E4 verdict",
+      "audit7": "supported",
+      "stored": "supported",
+      "agree": true
+    },
+    {
+      "check": "H4 E4 students p",
+      "audit7": 0.1,
+      "stored": 0.1,
+      "agree": true
+    },
+    {
+      "check": "H4b verdict",
+      "audit7": "not supported",
+      "stored": "not supported",
+      "agree": true
+    },
+    {
+      "check": "H5 E2 agent\u2212compiler",
+      "audit7": -0.0006342656364095589,
+      "stored": -0.0006342656364095589,
+      "agree": true
+    },
+    {
+      "check": "H5 E3 agent\u2212compiler",
+      "audit7": 0.0024530366413803018,
+      "stored": 0.0024530366413803018,
+      "agree": true
+    },
+    {
+      "check": "H5 E4 agent\u2212compiler",
+      "audit7": -0.008508141978027739,
+      "stored": -0.008508141978027739,
+      "agree": true
+    },
+    {
+      "check": "H5 W-freq agent\u2212compiler",
+      "audit7": -0.02418125537228441,
+      "stored": -0.02418125537228441,
+      "agree": true
+    },
+    {
+      "check": "H7 Wilcoxon p",
+      "audit7": 0.015625,
+      "stored": 0.015625,
+      "agree": true
+    },
+    {
+      "check": "H7 verdict",
+      "audit7": "supported",
+      "stored": "supported",
+      "agree": true
+    },
+    {
+      "check": "H7 d __tdef__s0",
+      "audit7": 0.6652475673992395,
+      "stored": 0.6652475673992395,
+      "agree": true
+    },
+    {
+      "check": "H7 d __tdef__s1",
+      "audit7": 0.6929018479893604,
+      "stored": 0.6929018479893604,
+      "agree": true
+    },
+    {
+      "check": "H7 d __tdef__s2",
+      "audit7": 0.625774993866173,
+      "stored": 0.625774993866173,
+      "agree": true
+    },
+    {
+      "check": "H7 d __tdef__s0",
+      "audit7": 0.6853957048190834,
+      "stored": 0.6853957048190834,
+      "agree": true
+    },
+    {
+      "check": "H7 d __tdef__s1",
+      "audit7": 0.7263465741818759,
+      "stored": 0.7263465741818759,
+      "agree": true
+    },
+    {
+      "check": "H7 d __tdef__s2",
+      "audit7": 0.7078022548646208,
+      "stored": 0.7078022548646208,
+      "agree": true
+    },
+    {
+      "check": "H8 min \u03c1",
+      "audit7": 0.7508087988982767,
+      "stored": 0.7508087988982768,
+      "agree": true
+    },
+    {
+      "check": "H8 median \u03c1",
+      "audit7": 0.7738568690214762,
+      "stored": 0.7738568690214762,
+      "agree": true
+    },
+    {
+      "check": "H8 verdict",
+      "audit7": "supported",
+      "stored": "supported",
+      "agree": true
+    }
+  ],
+  "n_checks": 40,
+  "n_agree": 40
+}

@@ -471,6 +471,36 @@ def inline_values(max_round: int) -> dict[str, str]:
         v["e01-acc"] = f"{min(e01):.3f}" if f"{min(e01):.3f}" == f"{max(e01):.3f}" else f"{min(e01):.3f}–{max(e01):.3f}"
     v.update(_audit5_values())
     v.update(_audit6_values(runs))
+    v.update(_audit7_values())
+    return v
+
+
+def _audit7_values() -> dict[str, str]:
+    """Inline values of the seventh audit (`v:a7-*`), from results/audit7/ (post hoc; no verdict uses them): the
+    re-derived verdicts (scripts/audit7/verdicts.py), the numpy re-grade (scripts/audit7/regrade.py) and the searches
+    found inside the agents' final build scripts with the seed-target results without those runs
+    (scripts/audit7/build_script_searches.py)."""
+    v: dict[str, str] = {}
+    vd = RES / "audit7" / "verdicts.json"
+    if vd.exists():
+        d = json.loads(vd.read_text(encoding="utf-8"))
+        v["a7-verdicts"] = f"{d['n_agree']} of {d['n_checks']}"
+    rg = RES / "audit7" / "regrade.json"
+    if rg.exists():
+        d = json.loads(rg.read_text(encoding="utf-8"))
+        v["a7-regrade"] = (f"{d['n']} gradings, largest differences {d['max_abs_diff_hs']:.1e} in HS and "
+                           f"{d['max_abs_diff_kl']:.1e} in KL")
+    bs = RES / "audit7" / "build_script_searches.json"
+    if bs.exists():
+        d = json.loads(bs.read_text(encoding="utf-8"))
+        k = d["by_kind"]
+        v["a7-search"] = f"{d['n_selecting']} of {d['n_reported_main_simulator']}"
+        v["a7-search-kinds"] = (f"a least-squares fit to a quantity the explanation states ({k['explanation']}), task accuracy "
+                                f"({k['labels']}) or an analytic formula ({k['analytic']})")
+        a, w = d["summary"]["all"], d["summary"]["without"]
+        v["a7-search-sign"] = (f"agent above compiler by sign in {w['above_by_sign']} rather than {a['above_by_sign']} of "
+                               f"{a['pairs']} pairs" if w["above_by_sign"] != a["above_by_sign"]
+                               else f"agent above compiler by sign in {a['above_by_sign']} of {a['pairs']} pairs either way")
     return v
 
 

@@ -1,0 +1,374 @@
+{
+  "rule": "TASK.md: no gradient descent, optimisers or any loop that updates weights to reduce a loss",
+  "n_reported_main_simulator": 96,
+  "detected": {
+    "ablations__T0__E3-fmt-math__claudehaiku55-claudecode__tdef__s2": {
+      "lines": [
+        "if best is None or err <"
+      ],
+      "varies": "MLP bias offset, 5 values",
+      "criterion": "least-squares fit of the MLP output to cos/sin(w_k(a+b)) at the explanation's frequencies",
+      "criterion_kind": "explanation"
+    },
+    "ablations__T0__E3-noselftest__claudehaiku55-claudecode__tdef__s1": {
+      "lines": [
+        "if best is None or r2.mean() >"
+      ],
+      "varies": "MLP bias scale, 3 values",
+      "criterion": "mean R\u00b2 of the least-squares read-out of cos/sin(w_k(a+b))",
+      "criterion_kind": "explanation"
+    },
+    "hyper__T0__W-freq-effort-low__claudehaiku55-claudecode__tdef__s0": {
+      "lines": [
+        "if best is None or acc >"
+      ],
+      "varies": "one candidate only (G = 3, B = [1, 2, 3, 4])",
+      "criterion": "task accuracy, but with a single candidate nothing is selected",
+      "criterion_kind": "none (degenerate loop)"
+    },
+    "seed__T-new__E3__claudehaiku55-claudecode__tdef__s2": {
+      "lines": [
+        "if best is None or r2 >",
+        "for _ in range(8):"
+      ],
+      "varies": "8-step multiplicative update of each head's '=' attention score; then MLP bias scale, 4 values",
+      "criterion": "attention to '=' matched to the explanation's stated value; R\u00b2 of the read-out of cos/sin(w_k(a+b))",
+      "criterion_kind": "explanation"
+    },
+    "seed__T-new__W-freq__claudehaiku55-claudecode__tdef__s2": {
+      "lines": [
+        "if best is None or err <"
+      ],
+      "varies": "attention gain per head, 231-point scan",
+      "criterion": "mean squared error to the explanation's fitted attention formula",
+      "criterion_kind": "explanation"
+    },
+    "seed__T-paper__E1__claudehaiku55-claudecode__tdef__s2": {
+      "lines": [
+        "for _ in range(trials):"
+      ],
+      "varies": "set of 5 frequencies, 20,000 random draws",
+      "criterion": "largest off-peak value of \u03a3_k cos(w_k d) (no data, no labels)",
+      "criterion_kind": "analytic"
+    },
+    "seed__T-paper__E3__claudehaiku55-claudecode__tdef__s0": {
+      "lines": [
+        "if best is None or err <"
+      ],
+      "varies": "spread of neuron phases, 3 values",
+      "criterion": "least-squares fit error of the MLP output to cos/sin(w_k(a+b))",
+      "criterion_kind": "explanation"
+    },
+    "seed__T-paper__W-freq__claudehaiku55-claudecode__tdef__s2": {
+      "lines": [
+        "if best is None or (acc, pc) >"
+      ],
+      "varies": "MLP bias ratio, 4 values",
+      "criterion": "task accuracy, then mean probability of the correct answer (task labels)",
+      "criterion_kind": "labels"
+    }
+  },
+  "n_selecting": 7,
+  "by_kind": {
+    "explanation": 5,
+    "labels": 1,
+    "analytic": 1
+  },
+  "in_hypothesis_tests": [],
+  "replication_all": {
+    "T1": {
+      "n": {
+        "E2": 3,
+        "E3": 3,
+        "E4": 3,
+        "W-freq": 3
+      },
+      "hs_means": {
+        "E2": 0.9571801751958325,
+        "E3": 0.9362754877986785,
+        "E4": 0.9604463701795263
+      },
+      "jt_p": 0.5,
+      "e3_minus_wfreq": 0.8852729422016767,
+      "mw_p": 0.05,
+      "h3_holds": false,
+      "agent_minus_compiler": {
+        "E2": 0.00724219206454535,
+        "E3": -0.047650735873691286,
+        "E4": -0.03192866892555235,
+        "W-freq": -0.018343373088074696
+      },
+      "compiler_below_every_run": {
+        "E2": true,
+        "E3": false,
+        "E4": false,
+        "W-freq": false
+      }
+    },
+    "T2": {
+      "n": {
+        "E2": 3,
+        "E3": 3,
+        "E4": 3,
+        "W-freq": 3
+      },
+      "hs_means": {
+        "E2": 0.9003491457216185,
+        "E3": 0.961708982136443,
+        "E4": 0.9507495103060681
+      },
+      "jt_p": 0.5,
+      "e3_minus_wfreq": 0.8640600835359714,
+      "mw_p": 0.05,
+      "h3_holds": true,
+      "agent_minus_compiler": {
+        "E2": 0.06734606397913934,
+        "E3": 0.17872393847921986,
+        "E4": 0.04034339711392532,
+        "W-freq": -0.059855534125654156
+      },
+      "compiler_below_every_run": {
+        "E2": false,
+        "E3": true,
+        "E4": true,
+        "W-freq": false
+      }
+    },
+    "T-new": {
+      "n": {
+        "E3": 3,
+        "E4": 3,
+        "W-freq": 3
+      },
+      "hs_means": {
+        "E3": 0.9099888771314425,
+        "E4": 0.9840526018221801
+      },
+      "jt_p": 0.05,
+      "e3_minus_wfreq": 0.8158842610622218,
+      "mw_p": 0.05,
+      "h3_holds": false,
+      "agent_minus_compiler": {
+        "E3": -0.05953536886656419,
+        "E4": 0.0014248039778173016,
+        "W-freq": 0.004964384422982943
+      },
+      "compiler_below_every_run": {
+        "E3": false,
+        "E4": true,
+        "W-freq": false
+      }
+    },
+    "T-paper": {
+      "n": {
+        "E1": 3,
+        "E3": 3,
+        "E4": 3,
+        "W-freq": 3
+      },
+      "hs_means": {
+        "E1": 0.5895177356405524,
+        "E3": 0.9397707516362909,
+        "E4": 0.937344908509543
+      },
+      "jt_p": 0.06130952380952381,
+      "e3_minus_wfreq": 0.8227691380930128,
+      "mw_p": 0.05,
+      "h3_holds": true,
+      "agent_minus_compiler": {
+        "E3": 0.07292733683940789,
+        "E4": -0.04604248296440672,
+        "W-freq": -0.004136270105284945
+      },
+      "compiler_below_every_run": {
+        "E3": true,
+        "E4": false,
+        "W-freq": false
+      }
+    }
+  },
+  "replication_without": {
+    "T1": {
+      "n": {
+        "E2": 3,
+        "E3": 3,
+        "E4": 3,
+        "W-freq": 3
+      },
+      "hs_means": {
+        "E2": 0.9571801751958325,
+        "E3": 0.9362754877986785,
+        "E4": 0.9604463701795263
+      },
+      "jt_p": 0.5,
+      "e3_minus_wfreq": 0.8852729422016767,
+      "mw_p": 0.05,
+      "h3_holds": false,
+      "agent_minus_compiler": {
+        "E2": 0.00724219206454535,
+        "E3": -0.047650735873691286,
+        "E4": -0.03192866892555235,
+        "W-freq": -0.018343373088074696
+      },
+      "compiler_below_every_run": {
+        "E2": true,
+        "E3": false,
+        "E4": false,
+        "W-freq": false
+      }
+    },
+    "T2": {
+      "n": {
+        "E2": 3,
+        "E3": 3,
+        "E4": 3,
+        "W-freq": 3
+      },
+      "hs_means": {
+        "E2": 0.9003491457216185,
+        "E3": 0.961708982136443,
+        "E4": 0.9507495103060681
+      },
+      "jt_p": 0.5,
+      "e3_minus_wfreq": 0.8640600835359714,
+      "mw_p": 0.05,
+      "h3_holds": true,
+      "agent_minus_compiler": {
+        "E2": 0.06734606397913934,
+        "E3": 0.17872393847921986,
+        "E4": 0.04034339711392532,
+        "W-freq": -0.059855534125654156
+      },
+      "compiler_below_every_run": {
+        "E2": false,
+        "E3": true,
+        "E4": true,
+        "W-freq": false
+      }
+    },
+    "T-new": {
+      "n": {
+        "E3": 2,
+        "E4": 3,
+        "W-freq": 2
+      },
+      "hs_means": {
+        "E3": 0.880954961439389,
+        "E4": 0.9840526018221801
+      },
+      "jt_p": 0.1,
+      "e3_minus_wfreq": 0.8229630475650375,
+      "mw_p": 0.16666666666666666,
+      "h3_holds": false,
+      "agent_minus_compiler": {
+        "E3": -0.08856928455861768,
+        "E4": 0.0014248039778173016,
+        "W-freq": -0.03114831777188618
+      },
+      "compiler_below_every_run": {
+        "E3": false,
+        "E4": true,
+        "W-freq": false
+      }
+    },
+    "T-paper": {
+      "n": {
+        "E1": 2,
+        "E3": 2,
+        "E4": 3,
+        "W-freq": 2
+      },
+      "hs_means": {
+        "E1": 0.762274261439603,
+        "E3": 0.9378724911177085,
+        "E4": 0.937344908509543
+      },
+      "jt_p": 0.1380952380952381,
+      "e3_minus_wfreq": 0.842927179582742,
+      "mw_p": 0.16666666666666666,
+      "h3_holds": true,
+      "agent_minus_compiler": {
+        "E3": 0.07102907632082556,
+        "E4": -0.04604248296440672,
+        "W-freq": -0.026192572113596532
+      },
+      "compiler_below_every_run": {
+        "E3": true,
+        "E4": false,
+        "W-freq": false
+      }
+    }
+  },
+  "summary": {
+    "all": {
+      "pairs": 11,
+      "above_by_sign": 6,
+      "beyond_ci": [
+        "T-new E4",
+        "T1 E2",
+        "T2 E3",
+        "T2 E4"
+      ],
+      "tpaper_beyond_ci": [
+        "E3"
+      ],
+      "h3_holds": {
+        "T1": false,
+        "T2": true,
+        "T-new": false,
+        "T-paper": true
+      },
+      "e3_above_wfreq": {
+        "T1": true,
+        "T2": true,
+        "T-new": true,
+        "T-paper": true
+      },
+      "trend_supported": {
+        "T1": false,
+        "T2": false,
+        "T-new": false,
+        "T-paper": false
+      }
+    },
+    "without": {
+      "pairs": 11,
+      "above_by_sign": 5,
+      "beyond_ci": [
+        "T-new E4",
+        "T1 E2",
+        "T2 E3",
+        "T2 E4"
+      ],
+      "tpaper_beyond_ci": [
+        "E3"
+      ],
+      "h3_holds": {
+        "T1": false,
+        "T2": true,
+        "T-new": false,
+        "T-paper": true
+      },
+      "e3_above_wfreq": {
+        "T1": true,
+        "T2": true,
+        "T-new": true,
+        "T-paper": true
+      },
+      "trend_supported": {
+        "T1": false,
+        "T2": false,
+        "T-new": false,
+        "T-paper": false
+      }
+    }
+  },
+  "ablation_means_all": {
+    "fmt-math": 0.9145103937286683,
+    "noselftest": 0.9419956878101639
+  },
+  "ablation_means_without": {
+    "fmt-math": 0.9140260439888612,
+    "noselftest": 0.9392401760950169
+  }
+}

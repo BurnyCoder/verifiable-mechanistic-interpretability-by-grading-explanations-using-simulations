@@ -80,7 +80,10 @@ below 5 % task accuracy (chance is 1/113 ≈ 0.9 %); Haiku met it in its first r
 Every replacement is graded against its target on all 12,769 inputs (no train/test split is needed: the agent never
 sees the target's outputs, only the explanation; the self-test checks accuracy against the task labels
 (a + b) mod 113). Build scripts are audited for training loops and iterative optimisation (forbidden), and flagged
-scripts are reviewed by hand (`results/audit_reviews.json`).
+scripts are reviewed by hand (`results/audit_reviews.json`). The audit's patterns catch gradient descent and
+optimisers, not small derivative-free searches: reading every final script (audit 7, deviation 14) found <!-- v:a7-search -->7 of 96<!-- /v --> that
+try several values of one constant and keep the best, none in a T0 run that a hypothesis test uses
+(`results/audit7/build_script_searches.json`).
 
 ## All agent runs so far
 

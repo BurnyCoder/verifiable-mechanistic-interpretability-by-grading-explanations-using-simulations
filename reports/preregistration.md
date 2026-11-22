@@ -219,7 +219,7 @@ Eleven agent smoke runs on the dev target `wd1_s10` (details and transcripts: `r
 `reports/progress.md`. Prompts, `TASK.md`, sandbox templates, explanation templates, harnesses, simulator settings and
 analysis code are fixed from that commit on. T-new is trained after it.
 
-### Post-freeze deviations (logged as they happen; 1–4 and 6 change no hypothesis, metric, test or condition; 5 removes conditions; 7 corrects how H1/H2 verdicts were computed; 8 adds missing preregistered statistics, discloses analyses not run and corrects §4's rationale; 9 corrects factual statements, narrows two claims to their evidence and adds post-hoc checks; 10 corrects how H1's verdict and the T-paper replication are reported, makes H1's trend test exact, corrects §4's rationale for `mlp_post` and adds post-hoc checks; 11 corrects how H4b and H8 are interpreted, states the coverage of three-run bootstrap intervals, corrects errata and citations and adds post-hoc checks; 12 re-derives every verdict independently, narrows the scope of the "true" explanations and of one blind spot, corrects how the deviations made after results are counted and corrects errata and citations; 13 re-derives every verdict and re-grades the scores with new code, reports H2's literal §5 reading beside "cannot tell", replaces a pattern count of the agents' parameter searches by a read count and corrects citations)
+### Post-freeze deviations (logged as they happen; 1–4 and 6 change no hypothesis, metric, test or condition; 5 removes conditions; 7 corrects how H1/H2 verdicts were computed; 8 adds missing preregistered statistics, discloses analyses not run and corrects §4's rationale; 9 corrects factual statements, narrows two claims to their evidence and adds post-hoc checks; 10 corrects how H1's verdict and the T-paper replication are reported, makes H1's trend test exact, corrects §4's rationale for `mlp_post` and adds post-hoc checks; 11 corrects how H4b and H8 are interpreted, states the coverage of three-run bootstrap intervals, corrects errata and citations and adds post-hoc checks; 12 re-derives every verdict independently, narrows the scope of the "true" explanations and of one blind spot, corrects how the deviations made after results are counted and corrects errata and citations; 13 re-derives every verdict and re-grades the scores with new code, reports H2's literal §5 reading beside "cannot tell", replaces a pattern count of the agents' parameter searches by a read count and corrects citations; 14 re-derives every verdict and re-grades the T0 scores with code independent of the project and of scipy, discloses searches inside final build scripts that the static audit missed and corrects citations)
 
 1. **2026-11-21, round 1, after the controls stage — analysis code brought in line with amendment 2.** The frozen
    `analysis/hypotheses.py` still selected the main condition as Qwen3.6-35B-A3B at temperature 0.6 (pre-amendment)
@@ -527,3 +527,36 @@ analysis code are fixed from that commit on. T-new is trained after it.
    weight decay), not the learning rate, decay value or step count.
    None of (a)–(e) changes a primary metric, a preregistered test or a reported verdict; (b) adds the literal reading
    beside H2's verdict and (c) changes a post-hoc count from 41 to 44.
+14. **2026-11-22, after round 2 — seventh independent audit: verdicts and T0 scores re-derived, searches inside final
+   build scripts, citations.** Made without reading the earlier reviews or audit scripts, after every round-2 number had
+   been seen (`reports/reviews/audit-7-2026-11-22.md`).
+   (a) *Re-derivation.* Every round-2 verdict was recomputed from the raw run records by code that imports neither the
+   project's analysis code nor scipy (Jonckheere–Terpstra over all 369,600 / 1,680 assignments, Mann–Whitney over all
+   splits, Wilcoxon over all 2⁶ sign patterns, the exact bootstrap distribution, the minimum Spearman ρ over every
+   within-level resample; `scripts/audit7/verdicts.py`, `results/audit7/verdicts.json`): all 40 checks agree. The 27 T0
+   main and controls runs and the 9 T0 compiler builds were re-graded with a numpy forward pass written from
+   `ARCHITECTURE.md` and §4's metrics (`scripts/audit7/regrade.py`, `results/audit7/regrade.json`): all 36 reproduce,
+   largest differences 1.2e-11 in HS and 1.3e-11 in KL. Zhong et al.'s distance irrelevance, recomputed with the same
+   forward pass for the 5 targets and those 36 networks, reproduces to 1.8e-11
+   (`scripts/audit7/clock_pizza_check.py`).
+   (b) *Searches inside final build scripts.* §2 forbids "any loop that updates weights to reduce a loss"; the static
+   audit flags only gradient-descent and optimiser patterns, and no reported run was flagged. Reading every reported
+   final `build_weights.py` found 7 of 96 that themselves try several values of one constant (3–231 values), 20,000
+   random frequency sets, or an 8-step calibration of an attention score, and keep the best: by a least-squares fit to a
+   quantity the explanation states (5 runs), by task accuracy (1) or by an analytic formula without data (1); an eighth
+   loop has a single candidate (`scripts/audit7/build_script_searches.py`, `results/audit7/build_script_searches.json`).
+   None is a T0 main or controls run, so no preregistered verdict uses one. By the standard of the one manual review
+   (`results/audit_reviews.json`: a search scored without data or labels is valid) the analytic one is valid; the
+   others are derivative-free searches that the letter of §2 forbids, using only the task and the explanation, never the
+   target. They stay in the reported results, as the static audit passed them; on the seed targets, results without them
+   change no verdict, no H3 reading and no "beyond the CI" agent–compiler comparison, only the sign-only count (agent
+   above compiler in 5 rather than 6 of 11 pairs). For round 3 the audit should also flag selection loops.
+   (c) *Citations.* Nanda et al. give the logit scale as a plot of the fitted α_k (App. C.1.5, Fig. 14), not as numbers,
+   and call the five of their embedding's six frequencies that later parts use the key frequencies (§4.1); Gromov's
+   closed-form weights are approximate, for a quadratic-activation MLP; Gross et al. measure proof length by asymptotic
+   cost and FLOPs, and brute force is the longest of their strategies; Huang et al.'s intervention result is that even
+   top-scored explanations have causal effects similar to a random baseline on most tasks; Poché et al.'s "shortcut
+   hypothesis" is that predictions rest mainly on task priors; iWSP's agent is Claude Code with Claude 5.5 models on its
+   benchmark tasks and other agents for its brain-encoding models.
+   None of (a)–(c) changes a primary metric, a preregistered test or a reported verdict; (b) adds a disclosure and a
+   post-hoc sensitivity check.

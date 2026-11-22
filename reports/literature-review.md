@@ -42,7 +42,8 @@ c = (a+b) mod p. Mainline key frequencies: {14, 35, 41, 42, 52} (§4.1).
 - **What the explanation leaves unspecified** (and what therefore limits weight reconstruction): per-neuron
   phases and gains; how neurons are allocated to frequencies (only the k=14 cluster size, 44, is published);
   79 poorly explained neurons; a sixth embedding frequency not used downstream; positional and "=" embeddings;
-  MLP biases; the remaining 5 % of logit variance; and the overall logit scale. The paper's appendix notes that at
+  MLP biases; the remaining 5 % of logit variance; and the overall logit scale, which appears only as a plot of the
+  fitted α_k over training (App. C.1.5, Fig. 14), not as numbers. The paper's appendix notes that at
   perfect accuracy the loss keeps falling by scaling the logits up, which weight decay counteracts; that the scale is
   therefore set by this balance rather than by the algorithm is our inference.
 
@@ -63,9 +64,9 @@ not name the key frequencies cannot reproduce a specific model's hidden states.
 | Work | What it adds | Relevance here |
 |---|---|---|
 | Zhong et al. 2023, *The Clock and the Pizza* — [arXiv:2306.17844](https://arxiv.org/abs/2306.17844) | Two algorithms reach perfect accuracy: Clock (logits ≈ cos(w(a+b−c)), needs multiplication) and Pizza (logits ≈ \|cos(w(a−b)/2)\|·cos(w(a+b−c)), needs only \|·\|). Same accuracy but **different logit patterns** (§3.2, "First Evidence for Pizza: Logit Patterns"); also separated by distance irrelevance (computed from the correct-logit matrix, i.e. output-level; the decisive factor, §4.1.3) and gradient symmetricity (input gradients). Full attention at Nanda's width typically gives Clock, but not always (a width-1024 model with full attention learned Pizza, App. H). | Existence proof that this task family admits distinct algorithms at equal accuracy, so a replacement must be checked for *which* algorithm it implements. It is **not** a "same outputs, different internals" case: output KL separates the literal builds (reference compiler on T0, W-alg vs E3: paper Appendix A), though not the agents' builds (paper §4.1). Post hoc (audit 3) we apply Zhong et al.'s distance irrelevance: every target is Clock-like, but the replacements built from our true explanations are Pizza-like (paper §5). H3's claim that output KL is insufficient rests instead on Tracr (§4) and on near-one-hot targets ([state-of-the-art review §1](state-of-the-art-review.md)). |
-| Gromov 2023, *Grokking modular arithmetic* — [arXiv:2301.02679](https://arxiv.org/abs/2301.02679) | Closed-form weights for a 2-layer MLP with x² activation: W⁽¹⁾ = cos(2πkn/p + φ), W⁽²⁾ = cos(−2πkq/p − φ₃), with φ₁ + φ₂ = φ₃; works for ReLU empirically at larger width. | A hand-written-weights construction for the same algorithm; template for what a "reference compiler" can do. |
+| Gromov 2023, *Grokking modular arithmetic* — [arXiv:2301.02679](https://arxiv.org/abs/2301.02679) | Approximate closed-form weights (exact only as width grows) for a 2-layer MLP with x² activation: W⁽¹⁾ = cos(2πkn/p + φ), W⁽²⁾ = cos(−2πkq/p − φ₃), with φ₁ + φ₂ = φ₃; works for ReLU empirically at larger width. | A hand-written-weights construction for the same algorithm; template for what a "reference compiler" can do. |
 | Yip, Agrawal, Chan, Gross 2024, *Modular addition without black-boxes* — [arXiv:2412.03773](https://arxiv.org/abs/2412.03773) | ReLU neurons implement a quadrature of ∫ReLU(cos(k(a+b)/2+φ))cos(kc+2φ)dφ ∝ cos(k(a+b−c)); per-neuron phase ψ ≈ 2φ; error bounds. Pizza models, p = 59. | Shows that per-neuron phases are needed for a faithful neuron-level account (our E4 level). |
-| Gross et al. 2024, *Compact proofs of model performance* — [arXiv:2406.11779](https://arxiv.org/abs/2406.11779) | Explanation quality as a trade-off between proof length (FLOPs) and bound tightness; brute force = exact but longest. Max-of-K, not modular addition. | The degenerate "explanation = the weights" endpoint; we report every score against explanation length. |
+| Gross et al. 2024, *Compact proofs of model performance* — [arXiv:2406.11779](https://arxiv.org/abs/2406.11779) | Explanation quality as a trade-off between proof length (asymptotic cost, estimated FLOPs) and bound tightness; brute force = exact but the longest of their strategies. Max-of-K, not modular addition. | The degenerate "explanation = the weights" endpoint; we report every score against explanation length. |
 | Wu, Jaburi, Drori, Gross 2024 — [arXiv:2410.07476](https://arxiv.org/abs/2410.07476) | Builds an idealized model from the interpretation plus trained parameters to obtain accuracy bounds for group-operation networks. | Closest construction-from-interpretation; uses trained parameters, which our simulator is forbidden to see. |
 | Chughtai, Chan, Nanda 2023 — [arXiv:2302.03025](https://arxiv.org/abs/2302.03025); Stander et al. 2023 — [arXiv:2312.06581](https://arxiv.org/abs/2312.06581) | Group-representation explanation; Stander et al. (ICML 2024) argue the models implement coset circuits instead, and Wu et al. 2024 find both accounts incomplete and partly reconcile them. | Cautionary tale: plausible explanations can be wrong — motivates wrong-explanation controls (W-*). |
 | Morwani et al. 2023 — [arXiv:2311.07568](https://arxiv.org/abs/2311.07568) | Max-margin solutions of one-hidden-layer quadratic-activation networks use single-frequency cosine neurons with θ_u + θ_v = θ_w (Theorem 7). | Theory for the phase constraint the explainer reports. |
@@ -162,8 +163,9 @@ alone and measures closeness to the trained model** (searched 2026-11-20; absenc
   explanations** ([arXiv:2609.08585](https://arxiv.org/abs/2609.08585)): when LLM simulators predict a text
   classifier's outputs from concept explanations (a ConSim replication with meaningful class names; an extension covers
   attributions and rationales), explanation gains over no-explanation baselines were statistically significant but small
-  relative to their variability, which the authors explain by simulators solving the task from the meaningful class names (their
-  "shortcut hypothesis"; simulators of at most 15B parameters without reasoning); they
+  relative to their variability, which the authors explain by a "shortcut hypothesis" (predictions rest mainly on task
+  priors — with meaningful class names the simulator can solve the task directly — and explanations change them only
+  slightly; simulators of at most 15B parameters without reasoning); they
   recommend label-leakage baselines, multiple simulators, enough seeds and novel tasks;
   Lermen et al. 2025 — explainer and simulator can collude via steganography
   ([arXiv:2504.07831](https://arxiv.org/abs/2504.07831)).

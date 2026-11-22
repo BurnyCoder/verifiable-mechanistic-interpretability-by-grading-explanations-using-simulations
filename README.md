@@ -52,7 +52,8 @@ their §1 and §8, which is the assumption made here)
 per-feature scores (fuzzing, detection) often fail to separate trained from randomised models
 ([Heap et al. 2025](https://arxiv.org/abs/2501.17727)), and LLM simulators predicting a text classifier's outputs
 gain little from explanations over no-explanation baselines (significant but small gains) when class names are
-meaningful, which the authors explain by the simulators solving the task directly ([Poché et al. 2026](https://arxiv.org/abs/2609.08585)); we
+meaningful, which the authors explain by a "shortcut hypothesis": predictions rest mainly on task priors, so the
+simulator can solve the task directly ([Poché et al. 2026](https://arxiv.org/abs/2609.08585)); we
 test the strongest form, rebuilding the whole network, and validate the score itself with preregistered controls.
 *Novelty:* to our knowledge the first validation of full-weight, weights-blind simulation on an SGD-trained network,
 with output KL plus a symmetry-aware hidden-state metric, an agent-free reference compiler, explanation-length
@@ -125,7 +126,9 @@ agent's own diagnosis can be wrong. Longer excerpts:
 
 **The agent is not a literal compiler.** It may not train weights, but it tries constants in scratch copies and judges
 them by self-test accuracy or a least-squares fit: in <!-- v:tune-said -->44 of 96<!-- /v --> runs its narration announces such a search
-(every candidate sentence read, audit 6; median
+(every candidate sentence read, audit 6), and <!-- v:a7-search -->7 of 96<!-- /v --> final build scripts contain one themselves, which the
+static audit (gradient-descent and optimiser patterns only) did not flag (every script read, audit 7; none in a
+hypothesis test; median
 <!-- v:selftest-median -->3<!-- /v --> self-test runs per run, and <!-- v:own-check -->27 of 96<!-- /v --> runs also score accuracy with their own code;
 post hoc counts, paper Appendix D). Given the self-inconsistent W-role explanation,
 which our literal compiler builds into a network with accuracy <!-- v:wrole-comp-acc -->0.007<!-- /v -->, every agent build is a working adder
@@ -427,7 +430,8 @@ target's key frequencies, neuron clusters, attention fits and per-neuron fits an
 from one parameter dict, which also feeds the reference compiler. (3) For each agent run a fresh folder gets the
 task files and one explanation. (4) The agent runs offline inside bubblewrap; its only way out is a unix socket to a
 proxy (Claude) or relay (llama-server) outside the sandbox, which logs every request and response body in full (headers excluded). (5) The
-build script is audited for training loops; the grader runs both networks on all 12,769 inputs and computes the
+build script is audited for gradient-descent and optimiser patterns (small searches over a constant pass it; audit 7
+found them by reading every script); the grader runs both networks on all 12,769 inputs and computes the
 metrics. (6) `vmi analyse` evaluates every preregistered hypothesis and regenerates every table and figure in this
 README, the reports and the paper from `results/`.
 
@@ -445,8 +449,8 @@ deviation 5). Full table:
 
 ## Novelty and related work
 
-Closest work: [iWSP (Mehta et al. 2026)](https://arxiv.org/abs/2611.18114) has Claude Code write small models in
-code and rebuild them in fresh sessions from a ≤ 200-word description, with a no-description control; it rebuilds only
+Closest work: [iWSP (Mehta et al. 2026)](https://arxiv.org/abs/2611.18114) has an LLM agent (Claude Code with Claude
+5.5 models on its benchmark tasks) write small models in code and rebuild them in fresh sessions from a ≤ 200-word description, with a no-description control; it rebuilds only
 agent-written models, scores by accuracy and prediction correlation (feature CKA for one model) and uses no output KL;
 [Gao (2026)](https://www.lesswrong.com/posts/Dkh7pXKjoNWkkxQDz/neural-networks-are-not-already-clean) proposes scoring
 by substituting simulated activations and measuring downstream KL (output divergence, 0 = same answers) (cf. the ablation score of Bills et al. 2023, which uses Jensen–Shannon divergence); [Cammarata et al. 2021](https://distill.pub/2020/circuits/curve-circuits/)
@@ -570,6 +574,11 @@ docs/               usage and architecture
 - [x] Sixth independent audit (deviation 13): verdicts re-derived and scores re-graded with new code, H2's literal
       §5 reading shown, the agents' parameter searches counted by reading, citation fixes
       ([report](reports/reviews/audit-6-2026-11-22.md))
+- [x] Seventh independent audit (deviation 14): verdicts re-derived without project code or scipy, T0 scores
+      re-graded with numpy, searches inside <!-- v:a7-search -->7 of 96<!-- /v --> final build scripts disclosed with a sensitivity check,
+      citation fixes ([report](reports/reviews/audit-7-2026-11-22.md))
+- [ ] Extend the static audit to flag selection loops (a variable that keeps the best candidate, fixed-count
+      calibration loops) before round 3, and review flagged scripts by hand as §2 prescribes
 - [ ] Render the embedding's own frequency set separately from the read-out's (T0's frequency 2, embedding harmonics)
       in a future explanation version, and test whether the compiler's T0 HS rises as the τ = 0.35 check suggests
 - [ ] Separate explanation from agent repair: the labels cannot be hidden (the task is (a + b) mod 113), so compare a

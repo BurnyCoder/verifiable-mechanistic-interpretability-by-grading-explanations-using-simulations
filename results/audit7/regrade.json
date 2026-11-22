@@ -1,0 +1,259 @@
+{
+  "n": 36,
+  "max_abs_diff_hs": 1.2324585796363863e-11,
+  "max_abs_diff_kl": 1.3080342364801822e-11,
+  "rows": [
+    {
+      "name": "controls__T0__E0__claudehaiku55-claudecode__tdef__s0",
+      "hs": 0.003695160029106661,
+      "kl": 0.009083891090443516,
+      "stored_hs": 0.0036951600291003314,
+      "stored_kl": 0.009083891090443512
+    },
+    {
+      "name": "controls__T0__E0__claudehaiku55-claudecode__tdef__s1",
+      "hs": 0.19128190087627037,
+      "kl": 0.0005142358176742077,
+      "stored_hs": 0.19128190087590102,
+      "stored_kl": 0.0005142358176742077
+    },
+    {
+      "name": "controls__T0__E0__claudehaiku55-claudecode__tdef__s2",
+      "hs": 0.19358232407820755,
+      "kl": 0.004060496346001143,
+      "stored_hs": 0.19358232407689338,
+      "stored_kl": 0.004060496346001142
+    },
+    {
+      "name": "controls__T0__W-alg__claudehaiku55-claudecode__tdef__s0",
+      "hs": 0.8888378520101745,
+      "kl": 0.014587117853972247,
+      "stored_hs": 0.8888378520107217,
+      "stored_kl": 0.014587117853972244
+    },
+    {
+      "name": "controls__T0__W-alg__claudehaiku55-claudecode__tdef__s1",
+      "hs": 0.8988570265673066,
+      "kl": 0.013679546153467368,
+      "stored_hs": 0.8988570265709303,
+      "stored_kl": 0.013679546153467368
+    },
+    {
+      "name": "controls__T0__W-alg__claudehaiku55-claudecode__tdef__s2",
+      "hs": 0.9395328620013271,
+      "kl": 0.04380991049031739,
+      "stored_hs": 0.9395328620009175,
+      "stored_kl": 0.043809910490317405
+    },
+    {
+      "name": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s0",
+      "hs": 0.05537189467005762,
+      "kl": 0.0009310675213667884,
+      "stored_hs": 0.05537189466979208,
+      "stored_kl": 0.0009310675213667754
+    },
+    {
+      "name": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s1",
+      "hs": 0.06125435253980366,
+      "kl": 0.004820350418100868,
+      "stored_hs": 0.06125435253934653,
+      "stored_kl": 0.004820350418100886
+    },
+    {
+      "name": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s2",
+      "hs": 0.09449502631781925,
+      "kl": 0.003043762067713782,
+      "stored_hs": 0.09449502631510821,
+      "stored_kl": 0.0030437620677135034
+    },
+    {
+      "name": "controls__T0__W-role__claudehaiku55-claudecode__tdef__s0",
+      "hs": 0.16807431665911934,
+      "kl": 0.00010914098556692414,
+      "stored_hs": 0.168074316656719,
+      "stored_kl": 0.00010914098556692865
+    },
+    {
+      "name": "controls__T0__W-role__claudehaiku55-claudecode__tdef__s1",
+      "hs": 0.17062011035068836,
+      "kl": 0.0013203667397674555,
+      "stored_hs": 0.17062011034752003,
+      "stored_kl": 0.0013203667397674419
+    },
+    {
+      "name": "controls__T0__W-role__claudehaiku55-claudecode__tdef__s2",
+      "hs": 0.2733024984010657,
+      "kl": 0.001509163639777804,
+      "stored_hs": 0.27330249839682996,
+      "stored_kl": 0.00150916363977782
+    },
+    {
+      "name": "controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s0",
+      "hs": 0.9175709030702227,
+      "kl": 0.002828494514050995,
+      "stored_hs": 0.9175709030701787,
+      "stored_kl": 0.0028284945140509936
+    },
+    {
+      "name": "controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s1",
+      "hs": 0.9541957040281117,
+      "kl": 2.2507359503538646e-05,
+      "stored_hs": 0.9541957040262264,
+      "stored_kl": 2.2507359503538226e-05
+    },
+    {
+      "name": "controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s2",
+      "hs": 0.9377029166320104,
+      "kl": 0.015739249901687288,
+      "stored_hs": 0.9377029166304661,
+      "stored_kl": 0.015739249901687485
+    },
+    {
+      "name": "main__T0__E1__claudehaiku55-claudecode__tdef__s0",
+      "hs": 0.048345923251629445,
+      "kl": 0.00010515457778140867,
+      "stored_hs": 0.048345923249513034,
+      "stored_kl": 0.00010515457778141182
+    },
+    {
+      "name": "main__T0__E1__claudehaiku55-claudecode__tdef__s1",
+      "hs": 0.04482621261271142,
+      "kl": 0.27173407698425045,
+      "stored_hs": 0.04482621260495612,
+      "stored_kl": 0.27173407698425045
+    },
+    {
+      "name": "main__T0__E1__claudehaiku55-claudecode__tdef__s2",
+      "hs": 0.04621960680114801,
+      "kl": 0.018719867225682748,
+      "stored_hs": 0.046219606805840086,
+      "stored_kl": 0.018719867225682748
+    },
+    {
+      "name": "main__T0__E2__claudehaiku55-claudecode__tdef__s0",
+      "hs": 0.8994455393028328,
+      "kl": 1.1986844094062095e-05,
+      "stored_hs": 0.8994455393035308,
+      "stored_kl": 1.1986844094061202e-05
+    },
+    {
+      "name": "main__T0__E2__claudehaiku55-claudecode__tdef__s1",
+      "hs": 0.8945524617740915,
+      "kl": 0.00027029522141211373,
+      "stored_hs": 0.8945524617726366,
+      "stored_kl": 0.00027029522141211037
+    },
+    {
+      "name": "main__T0__E2__claudehaiku55-claudecode__tdef__s2",
+      "hs": 0.8886228825345176,
+      "kl": 0.0003530299402541805,
+      "stored_hs": 0.8886228825348276,
+      "stored_kl": 0.0003530299402541828
+    },
+    {
+      "name": "main__T0__E3__claudehaiku55-claudecode__tdef__s0",
+      "hs": 0.9394805798908376,
+      "kl": 0.02294184171544795,
+      "stored_hs": 0.9394805798904734,
+      "stored_kl": 0.022941841715447844
+    },
+    {
+      "name": "main__T0__E3__claudehaiku55-claudecode__tdef__s1",
+      "hs": 0.9324099362099018,
+      "kl": 0.0046281766959351675,
+      "stored_hs": 0.9324099362097188,
+      "stored_kl": 0.004628176695935077
+    },
+    {
+      "name": "main__T0__E3__claudehaiku55-claudecode__tdef__s2",
+      "hs": 0.9153374040706738,
+      "kl": 0.0015942819908118888,
+      "stored_hs": 0.9153374040731904,
+      "stored_kl": 0.0015942819908119177
+    },
+    {
+      "name": "main__T0__E4__claudehaiku55-claudecode__tdef__s0",
+      "hs": 0.9115119999519975,
+      "kl": 0.08719669875670592,
+      "stored_hs": 0.9115119999542861,
+      "stored_kl": 0.08719669876978627
+    },
+    {
+      "name": "main__T0__E4__claudehaiku55-claudecode__tdef__s1",
+      "hs": 0.9529163502724106,
+      "kl": 0.08540086427775968,
+      "stored_hs": 0.9529163502723046,
+      "stored_kl": 0.08540086427468419
+    },
+    {
+      "name": "main__T0__E4__claudehaiku55-claudecode__tdef__s2",
+      "hs": 0.9654774109100078,
+      "kl": 0.007536882169719347,
+      "stored_hs": 0.9654774109100147,
+      "stored_kl": 0.007536882169718727
+    },
+    {
+      "name": "compiler T0 E0",
+      "hs": 0.051336976982075844,
+      "kl": 0.0001640703012634667,
+      "stored_hs": 0.051336976982973875,
+      "stored_kl": 0.00016407030126345957
+    },
+    {
+      "name": "compiler T0 E1",
+      "hs": 0.051336976982075844,
+      "kl": 0.0001640703012634667,
+      "stored_hs": 0.051336976982973875,
+      "stored_kl": 0.00016407030126345957
+    },
+    {
+      "name": "compiler T0 E2",
+      "hs": 0.8948412268411662,
+      "kl": 1.2960107150643294e-05,
+      "stored_hs": 0.8948412268400746,
+      "stored_kl": 1.2960107150639889e-05
+    },
+    {
+      "name": "compiler T0 E3",
+      "hs": 0.9266229367495596,
+      "kl": 0.00042485621758713384,
+      "stored_hs": 0.9266229367497472,
+      "stored_kl": 0.0004248562175871489
+    },
+    {
+      "name": "compiler T0 E4",
+      "hs": 0.9518100623544433,
+      "kl": 0.009897819090299013,
+      "stored_hs": 0.9518100623568962,
+      "stored_kl": 0.009897819090298828
+    },
+    {
+      "name": "compiler T0 W-freq",
+      "hs": 0.0945550132135345,
+      "kl": 0.0011031119609436963,
+      "stored_hs": 0.09455501321370001,
+      "stored_kl": 0.001103111960943723
+    },
+    {
+      "name": "compiler T0 W-alg",
+      "hs": 0.9205857909436387,
+      "kl": 0.03957685092483505,
+      "stored_hs": 0.9205857909430541,
+      "stored_kl": 0.039576850924835046
+    },
+    {
+      "name": "compiler T0 W-role",
+      "hs": 0.4998326517541574,
+      "kl": 4.7273844807592535,
+      "stored_hs": 0.4998326517563714,
+      "stored_kl": 4.7273844807592535
+    },
+    {
+      "name": "compiler T0 W-scramble",
+      "hs": 0.8587888543640453,
+      "kl": 2.024687893363882e-05,
+      "stored_hs": 0.8587888543763699,
+      "stored_kl": 2.0246878933641992e-05
+    }
+  ]
+}

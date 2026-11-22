@@ -6,6 +6,10 @@ flagged runs are reviewed by hand, and runs confirmed as training are excluded f
 (preregistration §2) and reported.
 Global context: the rule exists so the agent constructs weights from the explanation instead of fitting the task;
 closed-form linear algebra (np.linalg.lstsq / solve / pinv) is explicitly allowed.
+Known gap (audit 7, deviation 14): these patterns do not catch derivative-free searches — a loop that tries a few
+values of a constant and keeps the best by a fit or by task accuracy. Reading every reported final script found 7 of
+96 such loops (scripts/audit7/build_script_searches.py, which detects them post hoc); the frozen audit is unchanged so
+that rounds stay comparable, and extending it is on the README's to-do list for round 3.
 """
 
 from __future__ import annotations  # postponed annotations

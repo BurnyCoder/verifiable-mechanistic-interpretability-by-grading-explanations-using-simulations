@@ -68,11 +68,12 @@ Existing automated scores simulate single features' activations with an LLM and 
 ([Bills et al. 2023](https://openaipublic.blob.core.windows.net/neuron-explainer/paper/index.html)), or replace
 simulation with cheaper scorers such as detection and fuzzing ([Paulo et al. 2024](https://arxiv.org/abs/2410.13928)).
 Even the most confident of Bills et al.'s GPT-2 XL neuron explanations have high error rates (F1 0.56 on 300 neurons
-with score ≥ 0.8), and highly scored explanations show little to no causal efficacy in interchange interventions
-([Huang et al. 2023](https://arxiv.org/abs/2309.10312)); when LLM simulators predict a text
+with score ≥ 0.8), and in interchange interventions even the top-scored explanations have causal effects similar to a
+random baseline on most tasks ([Huang et al. 2023](https://arxiv.org/abs/2309.10312)); when LLM simulators predict a text
 classifier's outputs from concept explanations (and, in an extension, attributions and rationales), the gains over
 matched no-explanation baselines are statistically significant but small relative to their variability, which the
-authors explain by a "shortcut hypothesis": the simulator solves the task directly when class names are meaningful
+authors explain by a "shortcut hypothesis": the simulator's predictions rest mainly on task priors (with meaningful
+class names it can solve the task directly), and explanations change them only slightly
 ([Poché et al. 2026](https://arxiv.org/abs/2609.08585)); and per-feature fuzzing scores of sparse-autoencoder latents
 (detection in an appendix) are similar for trained and randomised transformers in many settings ([Heap et al. 2025](https://arxiv.org/abs/2501.17727)). [Gao (2026)](https://www.lesswrong.com/posts/Dkh7pXKjoNWkkxQDz/neural-networks-are-not-already-clean)
 proposes substituting simulated activations and scoring downstream KL (cf. the ablation score of Bills et al., which
@@ -102,11 +103,12 @@ its Discord server, [mechinterp.com](https://mechinterp.com/).
 (p = 113, d_model 128, four heads, 512 ReLU neurons, no LayerNorm) trained on (a + b) mod 113: it embeds a and b as
 cos/sin(w_k a), cos/sin(w_k b) for a few key frequencies w_k = 2πk/113, forms cos/sin(w_k(a + b)) with attention and
 the MLP, and reads out logit(c) ≈ Σ_k α_k cos(w_k(a + b − c)). The published explanation leaves per-neuron phases and
-gains, most of the allocation of neurons to frequencies (only the k = 14 cluster's size is given) and the logit scale
-unspecified. [Zhong et al. (2023)](https://arxiv.org/abs/2306.17844)
+gains and most of the allocation of neurons to frequencies (only the k = 14 cluster's size is given) unspecified, and
+gives the logit scale only as a plot of the fitted α_k over training (App. C.1.5, Fig. 14), not as numbers.
+[Zhong et al. (2023)](https://arxiv.org/abs/2306.17844)
 showed that a second algorithm ("Pizza") solves the same task with the same accuracy; its logits differ by a factor
 |cos(w_k(a − b)/2)|, so full output distributions can still tell the two apart. [Gromov (2023)](https://arxiv.org/abs/2301.02679)
-gives analytic weights for a two-layer MLP that solves the same task, and [Yip et al. (2024)](https://arxiv.org/abs/2412.03773)
+gives approximate closed-form weights for a two-layer MLP with quadratic activations that solves the same task, and [Yip et al. (2024)](https://arxiv.org/abs/2412.03773)
 explain the MLPs of trained constant-attention (Pizza) models at p = 59 as numerical integration, with compact error
 bounds; they also find these models' logits closer to the Clock form than to the Pizza form. Zhong et al. tell the two
 algorithms apart by *distance irrelevance* (how little the correct-answer logit depends on a − b) and *gradient
@@ -122,11 +124,13 @@ strong, their introduction "relatively weak"), unrestricted alignment maps make 
 so the alignment class must be justified case by case.
 [Cammarata et al. (2021)](https://distill.pub/2020/circuits/curve-circuits/) hand-built one curve-detector circuit and
 compared its activations with the natural one — our idea, done by hand for one circuit. Compact proofs
-([Gross et al. 2024](https://arxiv.org/abs/2406.11779)) make explanation length explicit, with brute-force evaluation on every input
-as the longest proof.
+([Gross et al. 2024](https://arxiv.org/abs/2406.11779)) measure an explanation by the length of the proof it yields
+(asymptotic cost and estimated FLOPs) against the tightness of the bound, with brute-force evaluation on every input as
+the longest of their proof strategies.
 
 **Agents that write weights.** The closest work, iWSP ([Mehta et al. 2026](https://arxiv.org/abs/2611.18114)), has
-Claude Code write small models' weights in code and rebuild them in fresh sessions from a ≤ 200-word description, with
+an LLM agent (Claude Code with Claude 5.5 models on its benchmark tasks; other agents for its brain-encoding models)
+write small models' weights in code and rebuild them in fresh sessions from a ≤ 200-word description, with
 a no-description control; it rebuilds only agent-written models, scores by accuracy and prediction correlation
 (feature CKA for one model) and uses no output KL; it builds on [Takehi et al. (2026)](https://rikiyat.github.io/blog/weight-space-programming/),
 where an LLM reads, edits and writes network weights. The LLM behind an interpretability agent (Claude Opus 4.1) listed
@@ -184,9 +188,9 @@ published explanation with the paper's numbers (T-paper only). No number in an e
 explanation's length is recorded.
 
 *What "key frequency" means here (post hoc, audit 5).* The key frequencies are those whose Fourier norm in the
-neuron-to-logit map W_L = W_U·W_out reaches 0.25 of its maximum (grokviz's rule; Nanda et al. read their main model's key frequencies off the embedding
-W_E, §4.1, and take the frequencies with non-trivial W_L coefficients for their other runs, App. C.2; on T0 the two
-readings differ, as shown next), and E2–E4 state that the embedding, attention, MLP and unembedding all use
+neuron-to-logit map W_L = W_U·W_out reaches 0.25 of its maximum (grokviz's rule; Nanda et al. find six frequencies with non-negligible norm in their main model's embedding W_E and
+call the five that later parts use the key frequencies, §4.1, and take the frequencies with non-trivial W_L
+coefficients for their other runs, App. C.2; on T0 the embedding and W_L give different sets, as shown next), and E2–E4 state that the embedding, attention, MLP and unembedding all use
 this set. That is not exact on every target (`results/audit5/checks.json`). On T0, frequency <!-- v:a5-weak-k -->2<!-- /v --> passes the
 threshold in W_L only (<!-- v:a5-weak-wl -->0.27<!-- /v --> of the maximum; next frequency <!-- v:a5-weak-next -->0.10<!-- /v -->), has no clustered neuron, reaches
 <!-- v:a5-weak-we -->0.17<!-- /v --> in the embedding, and gets <!-- v:a5-weak-share -->99.7% of W_L's k = 2 energy from neurons of frequency 37<!-- /v --> (<!-- v:a5-weak-harm -->2 ≡ −3·37<!-- /v --> mod 113, consistent with a
@@ -206,8 +210,14 @@ reaches the model only through a unix socket to a proxy outside the sandbox that
 Messages endpoint and the run's models, rejects server-side tools with internet access, and enforces per-run and total
 budgets. The sandbox holds `TASK.md`, `EXPLANATION.md` (with `neurons.csv` for E4 and W-scramble), `ARCHITECTURE.md`, a numpy `forward.py`, a `selftest.py`
 that checks shapes and accuracy against the task labels (never against M), and a starter `build_weights.py`. Training
-loops and iterative optimisation are forbidden in the build script; build scripts are audited and flagged ones
-reviewed by hand. The audit does not see what an agent tries in scratch copies: in <!-- v:tune-said -->44 of 96<!-- /v --> reported runs its
+loops and iterative optimisation are forbidden in the build script; build scripts are audited for gradient-descent and
+optimiser patterns and flagged ones reviewed by hand (no reported run was flagged). That audit does not catch
+derivative-free searches: reading every final build script (post hoc, audit 7) found <!-- v:a7-search -->7 of 96<!-- /v --> that
+themselves try several values of one constant (or random frequency sets, or an 8-step calibration of an attention
+score) and keep the best, judged by <!-- v:a7-search-kinds -->a least-squares fit to a quantity the explanation states (5), task accuracy (1) or an analytic formula (1)<!-- /v -->;
+none is a T0 main or controls run, so no hypothesis test uses one; on the seed targets dropping them changes no
+verdict, no H3 reading and no "beyond the CI" comparison with the compiler, only a sign-only count
+(<!-- v:a7-search-sign -->agent above compiler by sign in 5 rather than 6 of 11 pairs<!-- /v -->; `scripts/audit7/build_script_searches.py`). Nor does the audit see what an agent tries in scratch copies: in <!-- v:tune-said -->44 of 96<!-- /v --> reported runs its
 narration announces trying several values of a constant — mostly an MLP bias or gain, also the logit scale, an attention
 gain or the frequency set — judged by self-test accuracy or a least-squares fit (post hoc; every candidate sentence read
 in audit 6, because a pattern match flags <!-- v:tune-regex -->41, two of them false matches and three mentions of tuning without a search, and misses eight<!-- /v -->; Appendix D); <!-- v:own-check -->27 of 96<!-- /v --> runs also
@@ -270,10 +280,10 @@ four H2 comparisons "not supported" instead, and the predictions table in §4.7 
 Trend-test p-values enumerate every assignment of runs to levels exactly (369,600 for H1's four levels × three runs;
 earlier versions used a Monte-Carlo estimate above 50,000 assignments, which covered H1, deviation 10).
 As preregistered, Holm correction is applied within H2 and within H4 only, with no correction across hypotheses. The preregistration, two dated amendments and every post-freeze deviation are in
-`reports/preregistration.md`. All thirteen post-freeze deviations were made after some per-run scores had been seen
+`reports/preregistration.md`. All fourteen post-freeze deviations were made after some per-run scores had been seen
 (deviation 1 says so; deviations 1–4, during round 1, brought the analysis code in line with amendment 2, reordered
 stages, re-ran an infrastructure failure and repaired a secondary metric, changing no hypothesis, test or condition);
-nine came after round-level results or because of them and are disclosed as such: the results-driven stop of
+ten came after round-level results or because of them and are disclosed as such: the results-driven stop of
 the local runs (deviation 5), the postponement of round 3 (deviation 6, scheduling only), two analysis-code corrections made when the N = 3 verdicts were first read (deviation
 7; neither turned a verdict into "supported"), the audit's additions of missing preregistered statistics, the
 preregistered form of H8 and an erratum on HS's invariance (deviation 8; no verdict changed), and a second audit's
@@ -294,7 +304,13 @@ code, <!-- v:a6-verdicts -->29 of 29<!-- /v --> checks agree, `scripts/audit6/ve
 implementation, <!-- v:a6-regrade -->99 gradings, largest differences 1.3e-10 in HS and 5.4e-12 in KL<!-- /v -->, `scripts/audit6/regrade_numpy.py`; the agents' parameter searches
 counted by reading instead of a pattern match; H2's literal §5 reading shown beside "cannot tell"; Zhong et al.'s
 Fig. 7, Sutter et al.'s linear restriction, Nanda et al.'s key-frequency rule and the task description's "exact recipe"
-stated as in the sources; no verdict changed).
+stated as in the sources; no verdict changed), and a seventh audit's corrections (deviation 14: every verdict
+re-derived by code that uses neither the project's analysis code nor scipy, <!-- v:a7-verdicts -->40 of 40<!-- /v --> checks agree,
+`scripts/audit7/verdicts.py`; the T0 scores the tests use re-graded with numpy from `ARCHITECTURE.md`,
+<!-- v:a7-regrade -->36 gradings, largest differences 1.2e-11 in HS and 1.3e-11 in KL<!-- /v -->, `scripts/audit7/regrade.py`; searches inside <!-- v:a7-search -->7 of 96<!-- /v --> final build scripts
+that the static audit missed, disclosed in §3.3 with the seed-target results without them; Nanda et al.'s logit scale
+and key-frequency reading, Gromov, Gross et al., Huang et al., Poché et al. and iWSP stated as in the sources; no
+verdict changed).
 
 ## 4 Results (rounds 1–2, N = 3 per condition)
 
@@ -776,7 +792,8 @@ them and Haiku is not located.
   itself.
 - **The agent repairs and tunes.** Agents adjust constants against task accuracy, and they turn a
   self-inconsistent explanation (W-role) into a working adder (Section 5); the static audit sees only the final build
-  script. No target information is involved, but scores reflect the explanation plus the agent's repair. Every run
+  script and flags only gradient-descent and optimiser patterns, so it passed the <!-- v:a7-search -->7 of 96<!-- /v --> final scripts that
+  themselves search over a constant (§3.3; none in a hypothesis test). No target information is involved, but scores reflect the explanation plus the agent's repair. Every run
   checks accuracy (<!-- v:any-label -->all 96<!-- /v --> reported runs, through `selftest.py` or their own code), so
   the self-test ablation did not remove this feedback (Section 4.5); only the agent-free compiler measures an
   explanation without it.
