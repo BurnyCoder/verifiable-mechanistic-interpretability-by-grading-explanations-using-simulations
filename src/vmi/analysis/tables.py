@@ -205,8 +205,16 @@ def key_results(max_round: int, target: str = "T0") -> str:
                    + f" (HS {hs(r0):.2f}). HS's scale is therefore not anchored at 0 for unrelated networks: it measures overlap of "
                    f"internal features, and working networks built on other frequencies score below random ones.")
     if m("W-alg") is not None and m("W-scramble") is not None:
-        out.append(f"- **Negative result:** the primary HS does not separate the Pizza explanation (W-alg, HS {m('W-alg'):.2f}) "
-                   f"or the scrambled neuron table (W-scramble, HS {m('W-scramble'):.2f}) from the true explanations; the "
+        # Audit 4: state the measured differences and their bootstrap CIs (stats.bootstrap_mean_diff, as in H2), and that
+        # non-separation at N = 3 is not a demonstrated equivalence (no equivalence test was preregistered).
+        from vmi.analysis import stats as st
+        hs_of = lambda lv: [r["hs"] for r in _select(runs, target=target, level=lv)]  # noqa: E731
+        d_alg, d_scr = st.bootstrap_mean_diff(hs_of("E3"), hs_of("W-alg")), st.bootstrap_mean_diff(hs_of("E4"), hs_of("W-scramble"))
+        ci = lambda d: f"[{d['ci'][0]:+.3f}, {d['ci'][1]:+.3f}]" if d["ci"] else "no CI"  # noqa: E731
+        out.append(f"- **Negative result:** at N = {n} the primary HS does not separate the Pizza explanation (W-alg, HS "
+                   f"{m('W-alg'):.2f}; E3 − W-alg {d_alg['diff']:+.3f}, bootstrap CI {ci(d_alg)}) or the scrambled neuron "
+                   f"table (W-scramble, HS {m('W-scramble'):.2f}; E4 − W-scramble {d_scr['diff']:+.3f}, CI {ci(d_scr)}) from "
+                   f"the true explanations (a failure to separate, not a demonstrated equivalence); the "
                    f"secondary matched-neuron correlation separates W-scramble ({_f(m('W-scramble', 'matched_neuron_corr'), 2)}) "
                    f"from E4 ({_f(m('E4', 'matched_neuron_corr'), 2)})." + _clock_pizza_sentence(m))
     mem = memorisation(max_round)
@@ -364,6 +372,28 @@ def inline_values(max_round: int) -> dict[str, str]:
         allc = [x for vals in ctrl.values() for x in vals]
         v["h8-ctrl-max"] = f"{max(allc):+.2f}"
         v["h8-ctrl-neg"] = of(sum(x < 0 for x in allc), len(allc))
+    pc = RES / "audit4" / "h8_positive_control.json"  # audit 4 (post hoc): final T0 and agent-free builds vs the checkpoints
+    if pc.exists():
+        p = json.loads(pc.read_text(encoding="utf-8"))
+        rho, ph = p["rho_vs_neglog_restricted_loss"], p["phases"]
+        rng = lambda xs: f"{min(xs):.2f}" if f"{min(xs):.2f}" == f"{max(xs):.2f}" else f"{min(xs):.2f}–{max(xs):.2f}"  # noqa: E731
+        v["h8-pos-final"] = f"{rho['final T0 (weights dump)']:.2f}"
+        v["h8-pos-fr"] = f"{rho['Fourier-restricted T0']:.2f}"
+        v["h8-pos-comp"] = f"{rho['reference compiler E3 (no agent)']:.2f}"
+        v["h8-pos-retrain"] = f"{rho['independent retrain wd1_s0']:+.2f}"
+        t0f = [x for k, x in ph["rho_formation"].items() if "retrain" not in k]  # every network carrying T0's frequencies
+        v["h8-form"] = f"{min(t0f):.3f}" if min(t0f) < 0.9995 else "1.00"
+        v["h8-form-retrain"] = f"{ph['rho_formation']['independent retrain wd1_s0']:+.2f}"
+        v["h8-split"] = f"{ph['plateau_start_step']:,}"
+        v["h8-nform"], v["h8-nplat"] = str(ph["n_formation"]), str(ph["n_plateau"])
+        v["h8-rl-drift"] = f"{ph['restricted_loss_min']:.1e} to {ph['restricted_loss_last']:.1e}"
+        v["h8-plat-final"] = f"{ph['rho_plateau']['final T0 (weights dump)']:+.2f}"
+        v["h8-plat-rep"] = rng([x for k, x in ph["rho_plateau"].items() if k.startswith("main__")])
+    rg = RES / "audit4" / "regrade.json"  # audit 4: independent re-grading of every stored score from its weight file
+    if rg.exists():
+        s = json.loads(rg.read_text(encoding="utf-8"))["summary"]
+        v["audit4-regrade"] = (f"{sum(x['n'] for x in s.values())} stored scores, largest HS difference "
+                               f"{max(x['max_abs_diff_hs'] for x in s.values()):.1e}")
     hj = RES / f"hypotheses_round{max_round}.json"  # what a Bonferroni correction over the 8 hypotheses would do (post hoc)
     if hj.exists():
         H = json.loads(hj.read_text())["hypotheses"]
@@ -701,7 +731,7 @@ def clock_pizza_table() -> str:
         return "_not computed yet (`vmi clockpizza`)_"
     q, g, gf = "distance_irrelevance", "gradient_symmetricity", "gradient_symmetricity_fixed_attention"
     rng = lambda xs: f"{np.mean(xs):.2f} ({min(xs):.2f} to {max(xs):.2f})"  # noqa: E731  mean (range) over runs
-    out = ["| Network | distance irrelevance q (Clock ≈ 1, Pizza ≈ 0) | gradient symmetricity | same, attention held fixed (variant) | task accuracy |",
+    out = ["| Network | distance irrelevance q (Clock-typical 0.4–1, Pizza-typical 0–0.4) | gradient symmetricity | same, attention held fixed (variant) | task accuracy |",
            "|---|---|---|---|---|"]
     for t, r in S["targets"].items():
         out.append(f"| target {t} | {r[q]:.2f} | {r[g]:+.2f} | {r[gf]:+.2f} | {r['accuracy']:.4f} |")
@@ -716,7 +746,7 @@ def clock_pizza_table() -> str:
     note = ("*Zhong et al. (2023), Defs. 4.1–4.2: distance irrelevance q compares the spread of the correct-answer logit "
             "within one difference a − b with its spread over all inputs (§4.1.2: 0–0.4 typical of Pizza, 0.4–1 of Clock; "
             "the decisive diagnostic, §4.1.3); gradient symmetricity is the mean cosine of the logit's gradients with "
-            "respect to the input embeddings of a and b (Pizza > 0.98). The variant holds the attention pattern fixed: the "
+            "respect to the input embeddings of a and b (their Fig. 7 splits runs at 0.98; their Pizza Model A: 0.994). The variant holds the attention pattern fixed: the "
             "hand-built replacements compute near-constant attention from their embeddings, and the full gradient then "
             "points off the data manifold. A build that answers almost nothing correctly (compiler W-role) has no "
             "meaningful q. Post hoc (audit 3); `src/vmi/analysis/clock_pizza.py`, `results/controls/clock_pizza.json`.*")

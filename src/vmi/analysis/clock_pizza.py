@@ -7,8 +7,9 @@ Local explanation:
   one difference the logits barely vary (q near 0).
 - `gradient_symmetricity(model)`: Zhong et al. Def. 4.1 (§4.1.1). For random (a, b, c), the cosine similarity of the
   gradients of logit c with respect to the input embeddings of a and of b, averaged; Pizza's constant attention makes
-  the two gradients nearly equal (> 0.98), Clock's input-dependent attention does not. Zhong et al.'s Pizza models have
-  constant attention by construction; our hand-built replacements compute their (near-constant) attention from the
+  the two gradients nearly equal (their Pizza Model A: 0.994; Fig. 7 splits runs at 0.98), while Clock's multiplication
+  makes them asymmetric (§2.2). Zhong et al.'s reference Pizza (Model A) has constant attention, but Pizza also arises at
+  intermediate attention rates (Fig. 7) and once with full attention (App. H); our hand-built replacements compute their (near-constant) attention from the
   embeddings, so the gradient through the attention scores points off the data manifold and in opposite directions
   for a and b, and the full gradient gives strongly negative values. `fixed_attention=True` (a variant, not Zhong et
   al.'s definition) holds the attention pattern fixed when differentiating; observed after the first run (literal
@@ -17,12 +18,14 @@ Local explanation:
 Global context: audit 3 (2026-11-22). The W-alg control assumes that T0 is a Clock model, and the "negative result"
 that HS does not separate W-alg from E3 rests on that assumption, which no earlier analysis tested. Reading rule, fixed
 before any value was computed: Zhong et al. call distance irrelevance 0–0.4 typical of Pizza and 0.4–1 typical of
-Clock (§4.1.2), and their phase diagram classifies a run as Pizza when gradient symmetricity > 98 % and distance
-irrelevance < 0.6 (Fig. 7). The W-alg negative result stands if T0 is on the Clock side (q ≥ 0.4) and the literal
+Clock (§4.1.2), and their Fig. 7 phase lines are boundaries fitted separately to whether gradient symmetricity > 98 % and
+whether distance irrelevance < 0.6 (not a joint rule). The W-alg negative result stands if T0 is on the Clock side (q ≥ 0.4) and the literal
 Pizza build (reference compiler, W-alg) is on the Pizza side (q < 0.4); otherwise the paper must say that W-alg may
 not be a wrong explanation of T0. Zhong et al. used p = 59 and inputs [a, b]; here p = 113 with an "=" token and
-causal attention, so the literal Clock (compiler E3) and Pizza (compiler W-alg) builds are reported as in-setting
-reference points. Post hoc; no preregistered verdict uses this file.
+causal attention, so the compiler's literal builds of the true explanation (E3) and of the Pizza explanation (W-alg)
+are reported as in-setting reference points. Audit 4: the literal E3 build is itself on the Pizza side (q ≈ 0.18), so
+it is a build of the rendered true explanation, not a Clock reference; no Clock-side build of an explanation exists.
+Post hoc; no preregistered verdict uses this file.
 Sources: Zhong et al. 2023, The Clock and the Pizza, Defs. 4.1–4.2, §4.1.2 ranges, Fig. 7
 (https://arxiv.org/abs/2306.17844); gradients by torch.autograd.grad
 (https://pytorch.org/docs/stable/generated/torch.autograd.grad.html).
@@ -106,8 +109,8 @@ def _max_logit(model) -> np.ndarray:
 
 
 def analyse(settings: Settings) -> Path:
-    """Diagnose every target, the T0 reference-compiler build of every explanation (E3 = literal Clock, W-alg = literal
-    Pizza) and every reported T0 agent replacement of the main and controls stages; write
+    """Diagnose every target, the T0 reference-compiler build of every explanation (E3 = literal build of the rendered
+    true explanation, W-alg = literal Pizza) and every reported T0 agent replacement of the main and controls stages; write
     results/controls/clock_pizza.json."""
     rows = []
     for t in ("T0", "T1", "T2", "T-new", "T-paper"):

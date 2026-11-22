@@ -6,12 +6,12 @@ Newest entries at the bottom. Per-experiment learnings live in each experiment's
 ## From the literature and SOTA review (2026-11-21)
 
 - **Same accuracy ≠ same mechanism is documented in exactly this task family.** Clock vs Pizza networks
-  ([Zhong et al. 2023](https://arxiv.org/abs/2306.17844); same accuracy, different logit patterns) and Tracr's compressed models (layer cosine ≈ 0.8 at full
+  ([Zhong et al. 2023](https://arxiv.org/abs/2306.17844); same accuracy, different logit patterns) and Tracr's compressed models (layer cosine ≈ 0.8 at almost perfect
   accuracy; [Lindner et al. 2023](https://arxiv.org/abs/2301.05062)) motivated a hidden-state metric next to output KL.
 - **The alignment class must match the model's symmetries.** Without LayerNorm an invertible linear change of the
   residual basis (compensated in the reading and writing weights) leaves the function unchanged, so CKA/Procrustes
-  (orthogonal invariance) would penalise functionally identical replacements; unrestricted non-linear maps make anything
-  match anything ([Sutter et al. 2025](https://arxiv.org/abs/2507.08802)). Hence cross-validated *linear* regression in
+  (orthogonal invariance) would penalise functionally identical replacements; under Sutter et al.'s assumptions, unrestricted maps make any
+  algorithm match any network ([Sutter et al. 2025](https://arxiv.org/abs/2507.08802)). Hence cross-validated *linear* regression in
   both directions as the primary hidden-state score. Its invariance is partial: R² is invariant to invertible linear
   maps of the predictor only ([Kornblith et al. 2019, Table 1](https://arxiv.org/abs/1905.00414)), so completeness
   R²(M̂→M) is invariant to the replacement's basis, soundness R²(M→M̂) only to orthogonal maps and uniform scaling; under
@@ -41,7 +41,7 @@ Newest entries at the bottom. Per-experiment learnings live in each experiment's
   17.7 GB file in, with ~1–8 GB of free RAM next to the user's other applications). The same configuration warm
   (second request, 32k context) ran at 150 prompt tokens/s and 21.6 generated tokens/s, above the preregistered
   8 tokens/s threshold, so the main simulator was kept. Lesson: measure warm, and keep the server running for a whole
-  batch of agent runs. At 64k context the non-expert weights plus KV cache used 5.1 GB of VRAM; at 32k, 2.9 GB.
+  batch of agent runs. At 64k context the non-expert weights plus KV cache used 5,141 MiB (5.0 GiB) of VRAM; at 32k, 2,872 MiB (2.8 GiB).
 - **Port 8080 could not be bound** on this machine although nothing was listed as listening (likely a WSL
   mirrored-networking reservation); llama-server moved to port 8091.
 
@@ -79,15 +79,15 @@ Newest entries at the bottom. Per-experiment learnings live in each experiment's
   first graded agent replacement (accuracy 1.4 %, KL 2.5·10³ nats, HS 0.34, 13 steps, 40-minute cap). Fixes: a 16k
   per-turn output cap so a whole-file write fits next to ≤4k thinking; context 80k with OpenCode's model input limit set
   explicitly to context − output; the TASK.md guidance now says "build up in stages" instead of a line limit.
-  Throughput at 80k is unchanged once warm (260–328 prompt / 20–22 generated tokens/s, 6.9–7.1 GB VRAM); 96k peaked at
-  7.4 GB VRAM and was slower, so it was not used (`results/stage0/llm_tuning.json`). The machine has < 1 GB of free RAM
+  Throughput at 80k is unchanged once warm (260–328 prompt / 20–22 generated tokens/s, 6,947–7,121 MiB VRAM); 96k peaked at
+  7,436 MiB VRAM and was slower, so it was not used (`results/stage0/llm_tuning.json`). The machine has < 1 GB of free RAM
   while the server holds ~13.6 GB of the memory-mapped experts, so the first requests after each server start are slow
   (pages read from disk) — the server is kept running across a batch of runs.
 - **The thinking budget, not the output cap, was the root cause — and the presence penalty was the wrong preset.**
   The fifth smoke run thought for its full 4,096 tokens (ending mid-question about how to set the embedding norm), then
   wrote 718 lines (537 distinct) of mostly comment-reasoning until the new 16k cap. Raising the cap only made each
   failure longer. Re-reading the [Qwen3.6-35B-A3B model card](https://huggingface.co/Qwen/Qwen3.6-35B-A3B) ("Best
-  Practices"): it recommends ≥32,768 output tokens for most queries, and for thinking-mode precise coding
+  Practices"): it recommends an output length of 32,768 tokens for most queries (81,920 for competition-level maths and coding), and for thinking-mode precise coding
   temperature 0.6, top-p 0.95, top-k 20, min-p 0 **and presence penalty 0.0** (1.5 is its general-task preset with
   temperature 1.0; the 1.5 chosen after run 2 came from Ollama's general default and was a mistake for this task).
   A 4k thinking budget is far outside the model's trained regime, and forcing the end of thinking moved the unfinished
@@ -200,7 +200,7 @@ re-grading one set of weights against two targets isolates the target.
 memorisation; targets whose mechanism the simulator cannot have seen (no paper; weights and key frequencies public only
 since 2026-10-21, after the simulator's June 2026 training-data cutoff; no internet in the sandbox) and a held-out target
 trained after the freeze are necessary, not optional. The
-same applies to any LLM-based interpretability evaluation on famous models ([Haklay et al. 2026](https://arxiv.org/abs/2603.20101)).
+same risk applies to replication-based evaluations of LLM interpretability agents on well-studied circuits ([Haklay et al. 2026](https://arxiv.org/abs/2603.20101)).
 
 ## Round 1 — small local simulators never build a working network (2026-11-21)
 
@@ -319,3 +319,29 @@ deviation 9).
   *Learning:* prefer output-level diagnostics (distance irrelevance) and check gradient diagnostics on a known case.
 - **Ties count.** "T1 has the fewest key frequencies" was a tie with `wd1_s9`; "public since" was a creation date.
   *Learning:* state the selection rule and the evidence exactly.
+
+## Fourth independent audit (2026-11-22, deviation 11)
+
+- **A control can fail for a reason other than the one it was built to detect.** H4b expected a planted model to drift
+  away monotonically under further training; instead its function dipped and recovered (snapshot accuracy in
+  `results/controls/planted_calibration_T0.json`), and KL followed it. The abstract read this as a grader failure.
+  *Learning:* record the property the control assumes (here: monotone functional drift) and check it before reading
+  the verdict as evidence about the grader.
+- **Give a trajectory correlation a positive control, not only negative ones.** HS of the E3/E4 replacements against
+  T0's checkpoints rises as restricted loss falls (H8), but during circuit formation final T0 itself, the agent-free
+  compiler build and T0 restricted to its key frequencies rise in exactly the same way (ρ ≈ 1 over the formation
+  phase), and after grokking the restricted loss creeps up while HS drifts monotonically, which sets the size of the
+  whole-trajectory ρ — final T0 itself scores below every replacement (`results/audit4/h8_positive_control.json`).
+  Negative controls (W-freq, E1, E0) showed specificity to T0's frequencies; only the positive control showed that the
+  statistic cannot rank faithfulness. *Learning:* for "the
+  score tracks X over training", compare with the end point itself, and ask whether the score adds anything beyond
+  similarity to that end point.
+- **Name the real coverage of small-sample intervals.** With three runs, the "95 %" percentile bootstrap interval of a
+  mean is the range of the runs and covers about 75 % (Hesterberg 2015). "Too narrow" understated this. *Learning:*
+  compute what an interval means at the sample size used, not only that it is imperfect.
+- **An independent re-implementation is cheap insurance.** A numpy forward pass and a scikit-learn ridge written from
+  the preregistration reproduced every stored score (`results/audit4/regrade.json`), and enumeration-based exact tests
+  reproduced every verdict. *Learning:* do this before reading any result, not after four audits.
+- **Citations drift toward the citing paper's story.** Most corrections were narrowings: a source that compares
+  features "does no hidden-state comparison", a hypothesis of the authors becomes a "because", a scoped memorisation
+  finding becomes "any evaluation". *Learning:* quote the sentence being cited, with its conditions.

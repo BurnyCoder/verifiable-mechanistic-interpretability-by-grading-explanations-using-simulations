@@ -233,8 +233,8 @@ therefore measure what the simulator remembers, not what the explanation says; t
 paper (T0–T2, weights and key frequencies public on Hugging Face since 2026-10-21, after Claude Haiku 5.5's June 2026
 training-data cutoff, with no internet in the sandbox; T-new, trained after the freeze), which the preregistration introduced for exactly this risk, are what make the
 score interpretable. This is
-an existence proof at N = 1, consistent with [Haklay et al. 2026](https://arxiv.org/abs/2603.20101) (agents reproduce
-published circuits from memory).
+an existence proof at N = 1, consistent with [Haklay et al. 2026](https://arxiv.org/abs/2603.20101) (the LLM behind an interpretability agent, Claude Opus 4.1, listed the published IOI circuit from memory when asked
+directly; the authors add that memorisation alone does not explain all agent behaviour).
 
 ## Hyperparameter sensitivity without new runs (grader and explainer settings, preregistration §8)
 

@@ -138,14 +138,21 @@ def fig_planted(target: str = "T0") -> Path | None:
         return None
     rows = d["rows"]
     x = range(len(rows))
-    fig, axes = plt.subplots(1, 2, figsize=(7.5, 2.8))
-    for ax, key, title in ((axes[0], "hs", "HS ↑"), (axes[1], "kl_out", "Output KL (nats) ↓")):
-        ax.plot(x, [r[key] for r in rows], color=TRUE, marker="o", markersize=6)
+    # Audit 4: the snapshot's own task accuracy is drawn too — its dip and recovery is what makes KL rise and fall, so
+    # without it the KL panel reads as a grader failure. Snapshots are categorical (0, 100, 1k, 10k steps): markers only,
+    # no connecting lines, so the uneven spacing is not drawn as a trajectory.
+    fig, axes = plt.subplots(1, 3, figsize=(10.5, 2.8))
+    for ax, key, title in ((axes[0], "hs", "HS ↑"), (axes[1], "kl_out", "Output KL (nats) ↓"),
+                           (axes[2], "snapshot_accuracy", "Snapshot task accuracy")):
+        ax.plot(x, [r[key] for r in rows], color=TRUE, marker="o", markersize=6, linestyle="none")
         ax.set_xticks(list(x), [f"{r['step']:,}" for r in rows])
-        ax.set_xlabel("further training steps (snapshots)")
+        ax.set_xlabel("further training steps (snapshot)")
         ax.set_title(title, loc="left")
-        if key == "hs":
-            ax.set_ylim(-0.02, 1.02)  # full HS range, as in every other figure (no truncated axis)
+        if key in ("hs", "snapshot_accuracy"):
+            ax.set_ylim(-0.02, 1.02)  # full [0, 1] range, as in every other figure (no truncated axis)
+        if key == "snapshot_accuracy":  # the dip is small on a full axis, so print the values instead of zooming
+            for xi, r in zip(x, rows):
+                ax.annotate(f"{r[key]:.3f}", (xi, r[key]), textcoords="offset points", xytext=(0, -14), ha="center", fontsize=7)
     fig.suptitle(f"Planted-mechanism calibration ({target} compiled E3 model as ground truth)", x=0.01, y=1.04, ha="left")
     return _save(fig, f"planted_{target}")
 
@@ -162,10 +169,16 @@ def fig_trajectory(target: str = "T0") -> Path | None:
         axes[0].plot(steps, c["hs"], color=CTRL, lw=0.8, alpha=0.6)
     for r in d["replacements"]:
         axes[0].plot(steps, r["hs"], color=TRUE, lw=0.8, alpha=0.7)
+    # Audit 4 positive control (post hoc): final T0 itself against its own checkpoints, black dashed. Any network that
+    # resembles the end point rises the same way, which is how H8's correlation should be read.
+    pc = _json(RES / "audit4" / "h8_positive_control.json")
+    if pc and pc.get("steps") == steps:
+        axes[0].plot(steps, pc["hs"]["final T0 (weights dump)"], color="black", lw=1.2, ls="--")
     axes[0].set_ylim(0, 1)
     nc = len(d.get("negative_controls", []))
     axes[0].set_title(f"HS vs checkpoint ↑: {len(d['replacements'])} E3/E4 replacements (blue)"
-                      + (f", {nc} W-freq/E1/E0 controls (orange, post hoc)" if nc else ""), loc="left")
+                      + (f", {nc} W-freq/E1/E0 controls (orange, post hoc)" if nc else "")
+                      + (", final T0 itself (black dashed, post hoc)" if pc else ""), loc="left", fontsize=8)
     axes[1].plot(steps, d["restricted_loss"], color=TRUE)
     axes[1].set_yscale("log")
     axes[1].set_title("Restricted loss of the checkpoint (key frequencies only; log) ↓", loc="left")
@@ -173,7 +186,9 @@ def fig_trajectory(target: str = "T0") -> Path | None:
     ctrl_rho = [c["rho"] for c in d.get("negative_controls", [])]
     fig.suptitle(f"Training trajectory ({target}); Spearman(HS, −log restricted loss): E3/E4 min "
                  f"{d['spearman_min']:.2f}, median {d['spearman_hs_vs_neglog_restricted_loss']:.2f}"
-                 + (f"; controls max {max(ctrl_rho):+.2f}" if ctrl_rho else ""), x=0.01, ha="left")
+                 + (f"; controls max {max(ctrl_rho):+.2f}" if ctrl_rho else "")
+                 + (f"; final T0 itself {pc['rho_vs_neglog_restricted_loss']['final T0 (weights dump)']:.2f}" if pc else ""),
+                 x=0.01, ha="left", fontsize=9)
     return _save(fig, f"trajectory_{target}")
 
 

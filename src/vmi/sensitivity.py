@@ -85,7 +85,8 @@ def cv_r2_whitened(X: torch.Tensor, Y: torch.Tensor, k: int = mt.N_FOLDS, seed: 
     eigenvectors of its training covariance whose eigenvalue exceeds rel_eig·max, each scaled to unit variance; then the
     same ridge map as `metrics.cv_r2` predicts the whitened held-out rows, and SSE/SST is pooled. Every direction of Y
     counts equally, so the score is invariant to any invertible linear map of Y (and, through the regression, of X): it
-    is a held-out version of R²_CCA, the mean squared canonical correlation (Kornblith et al. 2019, §3,
+    is a held-out analogue of Σρᵢ²/dim(Y kept), which equals R²_CCA, the mean squared canonical correlation, when Y's
+    kept dimension ≤ X's (Kornblith et al. 2019, §4, eq. 7,
     https://arxiv.org/abs/1905.00414; Raghu et al. 2017, https://arxiv.org/abs/1706.05806). The cut-off drops
     directions with numerically zero variance, which have no meaning to whiten."""
     X, Y = X.double(), Y.double()

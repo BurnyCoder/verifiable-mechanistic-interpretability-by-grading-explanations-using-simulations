@@ -12,7 +12,8 @@ run's wire log (headers are not logged, so the key never is).
 Global context: started by scripts/run_one.sh in MODE=claude in place of the llama-server relay; the ledger
 (results/claude/ledger.jsonl) is shared by all Claude runs and is what enforces the user's $20 total cap.
 Standard library only (it runs on WSL's system Python).
-Sources: prices from the Claude API reference bundled with Claude Code (shared/models.md: Haiku 5.5 $0.10/$0.50 per
+Sources: prices from the official pricing page (https://platform.claude.com/docs/en/about-claude/pricing; checked by
+audit 4, 2026-11-22; the same values appear in the API reference bundled with Claude Code, shared/models.md: Haiku 5.5 $0.10/$0.50 per
 MTok up to 100K-token prompts, $0.50/$2.50 above; Sonnet 5.5 $2/$10, cache reads $0.10; Opus 5.5 $4/$20, cache reads
 $0.20; shared/prompt-caching.md: cache writes 1.25x input for the 5-minute TTL and 2x for 1 hour, cache reads ~0.1x
 input elsewhere); Messages API streaming events message_start / message_delta carry `usage`
