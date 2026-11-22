@@ -219,7 +219,7 @@ def why(x: dict, target: str, level: str) -> tuple[str, str]:
                     f"Re-running its own script with that one fix gives accuracy {fix['accuracy']:.4f} at HS {fix['hs']:.2f} "
                     f"(other changes tested: {others}). " + (f"{d['owner']}. " if d.get("owner") else "")
                     + (f"It stopped by its own choice after {x['tool_calls']} tool calls and {x['minutes']} minutes, well "
-                       f"within the 60-minute, $2 per-run budget (Claude Code has no step cap). "
+                       f"within the 60-minute, $2 per-run budget (no turn cap was set: Claude Code's --max-turns was not used). "
                        if x.get("tool_calls") is not None else "")
                     + _replicates_sentence(d, x["run_id"])
                     + f"The agent never found the bug: it blamed the neurons "

@@ -35,7 +35,8 @@ def blocks(max_round: int) -> dict[str, str]:
            "predictions-plain": tables.predictions_table(max_round, plain=True),
            "ablations-T0": tables.ablations_table(max_round, "T0"), "highlights": tables.highlights_table(max_round),
            "outputs-T0": tables.outputs_table(max_round, "T0"), "agent-examples": tables.agent_examples_table(max_round),
-           "agent-words": tables.agent_words_md(max_round)}
+           "agent-words": tables.agent_words_md(max_round),
+           "kl-calibration-T0": tables.kl_calibration_table(max_round, "T0"), "agent-behaviour": tables.agent_behaviour_table()}
     for t in TARGETS:
         if (REPO_ROOT / "results" / "compiler" / t).exists():
             out[f"compiler-{t}"] = tables.compiler_table(t)
@@ -78,10 +79,13 @@ def regenerate(max_round: int) -> dict:
     from vmi.analysis import frequencies  # post-hoc memorisation check needs the saved replacement weights
     from vmi.config import load
     settings = load()
-    if settings.runs_dir.exists():  # both need the saved run folders (weights, event logs)
+    if settings.runs_dir.exists():  # these need the saved run folders (weights, event logs)
         frequencies.used_frequencies(settings, max_round)
         from vmi.analysis import agent_examples  # transcript excerpts → reports/agent-examples.md
         agent_examples.write_doc(max_round)
+        from vmi.analysis import agent_behaviour, environment  # post hoc (audit 2026-11-22): self-test use, versions
+        agent_behaviour.analyse(max_round)
+        environment.write(max_round)
     hyp = hypotheses.write(max_round)
     figs = figures.make_all(max_round)
     gen = blocks(max_round)

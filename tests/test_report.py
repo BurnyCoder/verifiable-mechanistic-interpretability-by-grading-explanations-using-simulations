@@ -236,3 +236,66 @@ def test_key_results_report_the_target_swap_when_present():
     text = tables.key_results(1)
     if any("hs_vs_paper" in r for r in rows):  # memorisation evidence: same weights, graded against the published model
         assert "target swap" in text and "against the published checkpoint" in text
+
+
+def test_jonckheere_is_exact_for_nine_values_and_matches_brute_force():
+    """Audit 2026-11-22 (second pass): the exact branch enumerates every assignment of runs to levels; a perfect
+    increasing order of 3 × 3 runs has p = 1 / (9! / 3!³) = 1/1680, and 2 × 3 runs agree with brute-force permutations."""
+    import itertools
+
+    import numpy as np
+
+    from vmi.analysis import stats as st
+    r = st.jonckheere([np.array([1.0, 2, 3]), np.array([4.0, 5, 6]), np.array([7.0, 8, 9])])
+    assert r["method"] == "exact" and r["orderings"] == 1680 and abs(r["p"] - 1 / 1680) < 1e-12
+    groups = [np.array([0.2, 0.9, 0.4]), np.array([0.5, 0.95, 0.3])]
+    pooled, obs = np.concatenate(groups), st.jt_statistic(groups)
+    perms = list(itertools.permutations(range(6)))
+    brute = sum(st.jt_statistic([pooled[list(p[:3])], pooled[list(p[3:])]]) >= obs - 1e-12 for p in perms) / len(perms)
+    assert abs(st.jonckheere(groups)["p"] - brute) < 1e-12
+
+
+def test_declared_frequencies_read_the_agents_frequency_list(tmp_path):
+    """The build script's literal frequency list, folded to 1..56 (71 ≡ −42 mod 113); per-frequency counts and
+    computed frequency sets are not read as a frequency list."""
+    from vmi.analysis.frequencies import declared_frequencies, fold
+    assert fold(71) == 42 and fold(73) == 40 and fold(14) == 14
+    s = tmp_path / "build_weights.py"
+    s.write_text("N_PER_FREQ = [86, 86, 85]\nKEYS = [14, 35, 41, 42, 52, 71]   # key frequencies\n", encoding="utf-8")
+    assert declared_frequencies(s) == [14, 35, 41, 42, 52]
+    s.write_text("KS = np.arange(1, 17)\nblocks = [1, 2, 3]\nHEAD_FREQ = [4, 5]\n", encoding="utf-8")
+    assert declared_frequencies(s) is None
+    assert declared_frequencies(tmp_path / "missing.py") is None
+
+
+def test_h5_reports_t0_apart_from_the_seed_targets_and_t_paper():
+    """Audit 2026-11-22 (second pass): §5's H5 test is on T0; the seed targets are an extension and T-paper is
+    reported apart (memorisation), so the wording never pools them."""
+    from vmi.analysis.predictions import h5_summary
+    g = {"T0": [{"target": "T0", "level": "E3", "gap": 0.002, "beyond": False}],
+         "seed": [{"target": "T2", "level": "E3", "gap": 0.18, "beyond": True},
+                  {"target": "T1", "level": "E2", "gap": 0.007, "beyond": True},
+                  {"target": "T1", "level": "E3", "gap": -0.03, "beyond": False}],
+         "T-paper": [{"target": "T-paper", "level": "E3", "gap": 0.07, "beyond": True}]}
+    s = h5_summary(g)
+    assert s["t0"].startswith("none of the one") and s["seed"] == "two of three target–explanation pairs on two targets"
+    assert s["max"] == "+0.180 (T2 E3)" and "E3 +0.070 beyond the CI" in s["tpaper"]
+
+
+def test_cost_split_adds_up_to_the_ledger_total():
+    import json
+    led = tables.RES / "claude" / "ledger.jsonl"
+    if not led.exists():
+        return
+    total = sum(json.loads(x).get("cost_usd", 0.0) for x in led.read_text(encoding="utf-8").splitlines() if x.strip())
+    c = tables.cost_split()
+    assert abs(sum(e["spend"] for e in c.values()) - total) < 1e-9 and "reported runs" in c
+    assert "reported runs" in tables.cost_table() and "including development runs" in tables.key_results(2)
+
+
+def test_memorisation_pools_the_identical_e0_e1_runs_over_targets():
+    """E0/E1 text is identical on every target, so their runs on T0 and T-paper are pooled, each graded both ways."""
+    m = tables.memorisation(2)
+    if m.get("E1") and m["E1"]["n"] > m["E1"]["n_T0"]:
+        assert m["E1"]["targets"][0] == "T0" and "T-paper" in m["E1"]["targets"]
+        assert 0 <= m["E1"]["listed"] <= m["E1"]["n"] and 0 < m["chance"] < 1
