@@ -27,6 +27,20 @@ def test_inject_all_is_idempotent(tmp_path):
     assert doc.read_text(encoding="utf-8") == once
 
 
+def test_inline_values_are_filled_in_place_without_breaking_the_sentence(tmp_path):
+    """Numbers quoted in prose are generated too: `<!-- v:name -->…<!-- /v -->` is refilled inline, unknown names stay."""
+    doc = tmp_path / "doc.md"
+    doc.write_text("after <!-- v:n -->5<!-- /v --> runs and <!-- v:other -->x<!-- /v --> here\n", encoding="utf-8")
+    assert report.inject_values(doc, {"n": "five"}) == ["n"]
+    assert doc.read_text(encoding="utf-8") == "after <!-- v:n -->five<!-- /v --> runs and <!-- v:other -->x<!-- /v --> here\n"
+
+
+def test_inline_values_come_from_results():
+    v = tables.inline_values(2)
+    for k in ("n-local", "walg-shorter", "e1-mem", "e0-mem", "lowfx-e3", "round2-runs", "e3-vs-e2", "wfreq-gap-targets"):
+        assert k in v and v[k]
+
+
 def test_tables_render_from_committed_results():
     for text in (tables.scoreboard(1), tables.baselines_table(), tables.controls_table(), tables.cost_table(), tables.runs_table(1)):
         assert isinstance(text, str) and text  # never raises on default-temperature (Claude) runs

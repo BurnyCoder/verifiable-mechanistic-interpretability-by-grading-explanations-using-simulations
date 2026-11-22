@@ -27,7 +27,7 @@ Newest entries at the bottom. Per-experiment learnings live in each experiment's
 
 ## Engineering (2026-11-21)
 
-- **Ollama vs llama-server.** Ollama's OpenAI endpoint ignores client context settings and defaults to 4k context on
+- **Ollama vs llama-server.** Ollama's OpenAI endpoint ignores client context settings ([docs](https://docs.ollama.com/api/openai-compatibility)) and defaults to 4k context ([docs](https://docs.ollama.com/context-length)) on
   < 24 GiB GPUs, which breaks agent tool calls; it also exposes `/api/pull`. llama-server with a fixed GGUF and
   `--n-cpu-moe` was chosen instead.
 - **numpy was invisible inside the sandbox** because it lives in `~/.local` and `/home` is hidden; there is no sudo
@@ -228,8 +228,8 @@ ran out, with replies cut off at the output limit.
 **Learning.** Transcripts are evidence, not decoration, but an agent's own diagnosis can be wrong: the cause has to be
 tested by intervening on its code, not read off its messages (nor guessed by the analyst, as this entry first did).
 A low task accuracy with the right frequencies can be an implementation bug unrelated to the explanation, which is one
-more reason the grader reports HS separately from behaviour. The model's hidden thinking is not returned by the API,
-so only its visible messages can be quoted.
+more reason the grader reports HS separately from behaviour. By default the API returns no thinking text (summaries
+can be requested; these runs did not), so only the visible messages can be quoted.
 
 ## Independent audit (2026-11-22)
 

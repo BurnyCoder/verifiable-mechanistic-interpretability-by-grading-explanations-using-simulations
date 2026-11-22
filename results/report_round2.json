@@ -22,12 +22,27 @@
       "highlights",
       "outputs-T0",
       "agent-examples",
-      "agent-words"
+      "agent-words",
+      "walg-shorter",
+      "n-local",
+      "e3-vs-e2",
+      "wfreq-gap-targets",
+      "e1-mem",
+      "e1-k",
+      "e0-mem-in",
+      "lowfx-e3",
+      "lowfx-wfreq",
+      "lowfx-e3-n",
+      "round2-runs",
+      "round2-failed"
     ],
     "reports/summary.md": [
       "key-results",
       "predictions",
-      "replications"
+      "replications",
+      "walg-shorter",
+      "e3-vs-e2",
+      "n-local"
     ],
     "reports/experiments/experiments.md": [
       "runs",
@@ -54,7 +69,20 @@
       "compiler-T1",
       "compiler-T2",
       "compiler-T-new",
-      "compiler-T-paper"
+      "compiler-T-paper",
+      "e1-mem",
+      "e1-k",
+      "walg-shorter",
+      "n-local",
+      "local-by-model",
+      "e01-acc",
+      "lowfx-e3",
+      "e1-common",
+      "e0-mem-in",
+      "e1-n",
+      "e0-n",
+      "e0-mem",
+      "e3-vs-e2"
     ],
     "reports/experiments/00-stage0-dev/experiment.md": [
       "compiler-dev"
