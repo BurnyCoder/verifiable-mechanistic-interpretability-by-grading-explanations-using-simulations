@@ -337,8 +337,10 @@ All agent runs of the round:
 <!-- END runs -->
 
 **Reading.** Presenting E3 as math or as code, or removing the self-test, moves the simulator's HS by a few
-hundredths at most. Low effort lowered task accuracy in one run of three while E3's HS stayed high: that replacement
-has the right frequency structure but wrong details (behaviour and mechanism dissociate in this direction too). On the seed-sensitivity targets
+hundredths at most. Low effort lowered task accuracy in one E3 run of three while its HS stayed high: the replacement has
+the right frequency structure, and the wrong answers come from a layout bug in the agent's own script (one head's
+output written onto the readout dimensions); re-running the script with that one number changed restores full accuracy
+at the same HS (`vmi diagnose`). Behaviour and mechanism dissociate in this direction too. On the seed-sensitivity targets
 T1, T2 and T-new the T0 pattern repeats — E2–E4 well above the no-agent references, W-freq at the floor. On T2 the
 simulator's E3 build beats the reference compiler's (the compiler is misled by the rendered E3 there, the agent is
 not), so H5's "agent ≤ compiler" already fails in one condition. Every finished local Qwen run (Qwen3.5-4B on E2, E3,
