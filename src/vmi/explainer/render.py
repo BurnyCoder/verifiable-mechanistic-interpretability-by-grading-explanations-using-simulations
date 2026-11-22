@@ -110,7 +110,7 @@ def render(spec: dict) -> tuple[str, dict[str, str]]:
         if K_m and list(K_m) != list(K_e):
             lines.append(f"- The embedding and the attention heads use frequencies k ∈ {{{', '.join(map(str, K_e))}}}.")
             lines.append(f"- The MLP neurons and the unembedding use frequencies k ∈ {{{', '.join(map(str, K_m))}}}.")
-        else:
+        else:  # audit 5: not exact where W_E's own frequency set differs from W_L's (T0's k = 2; see ladder.py)
             lines.append(f"- Key frequencies: k ∈ {{{', '.join(map(str, K_e))}}} (w_k = 2πk/113). "
                          "All four steps above use these frequencies.")
         lines.append(f"- The model is very confident: its mean cross-entropy over all 12,769 inputs is "

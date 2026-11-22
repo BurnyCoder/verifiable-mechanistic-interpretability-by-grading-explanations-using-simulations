@@ -13,6 +13,7 @@ paper and round report, and merged into docs/data.json for the results explorer,
 from __future__ import annotations  # postponed annotations
 
 import json  # result files
+import math  # rounding a lower bound down
 
 import numpy as np  # means
 
@@ -214,7 +215,8 @@ def prediction_rows(max_round: int) -> list[dict]:
                   + ("; reference networks (post hoc, audit 4): " + ", ".join(
                       f"{names[k]} {x:+.2f}" for k, x in pc["rho_vs_neglog_restricted_loss"].items())
                      + f"; during circuit formation (steps ≤ {pc['phases']['plateau_start_step']:,}) every network with "
-                       f"T0's frequencies has ρ ≥ {min(x for k, x in pc['phases']['rho_formation'].items() if 'retrain' not in k):.3f}"
+                       # audit 5: a lower bound is rounded down (0.99668 → 0.996, not 0.997)
+                       f"T0's frequencies has ρ ≥ {math.floor(1000 * min(x for k, x in pc['phases']['rho_formation'].items() if 'retrain' not in k)) / 1000:.3f}"
                      if pc else ""),
             _match({"ρ ≤ 0 for some replacement": lo > 0}))
     return out
@@ -269,22 +271,28 @@ def highlight_rows(max_round: int, target: str = "T0") -> list[dict]:
         ("T-new: HS {} (E3) and {} (E4) vs {} (wrong frequencies)",
          [m("E3", t="T-new"), m("E4", t="T-new"), m("W-freq", t="T-new")]),
         "Prompts and templates were frozen before this network was trained, so they cannot have been tuned to it.")
-    add(False, "Cannot tell the Clock algorithm from the Pizza algorithm",
+    # Audit 5: "cannot tell" read as a demonstrated inability; at N = 3 the data show only that HS did not separate them.
+    add(False, "Did not separate the Clock algorithm from the Pizza algorithm",
         ("Pizza explanation (W-alg): HS {}; true explanation (E3): HS {}", [m("W-alg"), m("E3")]),
         "Both builds use the same frequency features; HS, a linear fit over whole layers, did not separate what is "
         "computed from them (difference within noise at N = 3). Post hoc, Zhong et al.'s output diagnostic finds T0 "
         "Clock-like but the true-explanation rebuilds Pizza-like too, and HS still rates them high (paper §5).")
-    add(False, "Cannot tell a correct neuron table from a shuffled one",
+    a5 = (RES / "audit5" / "checks.json")
+    gap = json.loads(a5.read_text(encoding="utf-8"))["compiler_gaps"].get(target) if a5.exists() else None
+    add(False, "Did not separate a correct neuron table from a shuffled one",
         ("shuffled table (W-scramble): HS {}; true table (E4): HS {}; matched-neuron correlation {} vs {} does separate them",
          [m("W-scramble"), m("E4"), m("W-scramble", "matched_neuron_corr"), m("E4", "matched_neuron_corr")]),
-        "Neuron-level detail needs a neuron-level metric.")
+        "Neuron-level detail needs a neuron-level metric. The agents' builds did not follow the shuffled table into a "
+        "lower HS"
+        + (f"; the AI-free compiler's literal build of it does score {gap['E4_minus_Wscramble']:.2f} lower on this "
+           f"target (not on the other targets; audit 5)." if gap else "."))
     kls = [m(lv, "kl_out") for lv in ("E2", "E3", "E4")]
     backwards = None not in kls and _mono(kls)  # the title states only what the numbers show
-    add(False, "Output KL ranks the explanations backwards" if backwards else "Output KL does not rank the explanations",
+    add(False, "Output KL rises from E2 to E4 (post hoc)" if backwards else "Output KL does not rank the explanations",
         ("E2 → E3 → E4: output KL {} → {} → {}, while HS {} → {} → {}",
          [m("E2", "kl_out"), m("E3", "kl_out"), m("E4", "kl_out"), m("E2"), m("E3"), m("E4")]),
-         "Grading by output KL alone would have ranked the most detailed true explanation lowest of the three (trend "
-         "not significant at N = 3; why KL rises with detail was not tested).")
+         "Grading by output KL alone would have ranked the most detailed true explanation lowest of these three (a post "
+         "hoc reading, untested; the preregistered KL trend over E1–E4 is not supported, and E1's KL is the highest).")
     fq = RES / f"frequencies_round{max_round}.json"
     if fq.exists():
         F = json.loads(fq.read_text())
@@ -294,7 +302,9 @@ def highlight_rows(max_round: int, target: str = "T0") -> list[dict]:
         if e1:
             paper = set(F["paper_freqs"])
             listed = sum(bool(r.get("declared_freqs")) and len(set(r["declared_freqs"]) & paper) >= 4 for r in e1)
-            add(False, "The AI fills gaps from memory of the published paper",
+            # audit 5: recall of the published mechanism, cued by the task description (E0/ARCHITECTURE.md give the
+            # paper's exact recipe), not necessarily of the paper's text
+            add(False, "The AI fills gaps from memory of the published mechanism",
                 ("algorithm-only rebuilds ({} runs on T0 and the published checkpoint; same input text): {} build scripts "
                  "list at least four of the paper's five frequencies; HS {} against T0 but {} against the published "
                  "checkpoint (same weights)",
