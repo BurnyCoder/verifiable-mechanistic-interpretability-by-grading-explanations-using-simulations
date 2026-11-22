@@ -4,7 +4,9 @@ Local explanation: Jonckheere–Terpstra trend test (exact permutation when the 
 Monte-Carlo permutation otherwise), Spearman ρ with a bootstrap CI that resamples runs within groups, one-sided
 Mann–Whitney U, Holm correction, Kendall's W with a permutation p-value, Wilcoxon signed-rank, rank-biserial effect size.
 Global context: `hypotheses.py` applies these to per-run scores; every function returns plain floats for JSON.
-Sources: Jonckheere 1954 (Biometrika 41:133–145) statistic J = Σ_{i<j} #{(x, y): x ∈ G_i, y ∈ G_j, x < y} + ½ ties;
+Sources: Jonckheere–Terpstra trend test — Terpstra 1952 (Indagationes Math. 14:327–333) statistic J = Σ_{i<j} #{(x, y):
+x ∈ G_i, y ∈ G_j, x < y} + ½ ties, equivalent to Jonckheere's 1954 (Biometrika 41:133–145) S = P − Q = 2J − Σ_{i<j} n_i n_j,
+so permutation p-values are identical;
 Holm 1979 (Scand. J. Stat. 6:65–70); Kendall's W (Kendall & Babington Smith 1939); scipy.stats mannwhitneyu,
 wilcoxon, spearmanr (https://docs.scipy.org/doc/scipy/reference/stats.html).
 """
@@ -76,6 +78,17 @@ def mann_whitney_greater(x: np.ndarray, y: np.ndarray) -> dict:
     return {"p": float(res.pvalue), "U": float(res.statistic), "r_rb": float(r_rb)}
 
 
+def mann_whitney_two_sided(x: np.ndarray, y: np.ndarray) -> dict:
+    """Two-sided Mann–Whitney U (no predicted direction; exact for small groups) with the rank-biserial effect size of x
+    over y and the smallest p-value these group sizes allow (complete separation either way)."""
+    x, y = np.asarray(x, float), np.asarray(y, float)
+    if len(x) < 1 or len(y) < 1:
+        return {"p": None, "U": None, "r_rb": None, "min_p": 1.0}
+    res = stats.mannwhitneyu(x, y, alternative="two-sided", method="exact" if len(x) * len(y) <= 400 else "asymptotic")
+    return {"p": float(res.pvalue), "U": float(res.statistic), "r_rb": float(2 * res.statistic / (len(x) * len(y)) - 1),
+            "min_p": min_p_mann_whitney(len(x), len(y), two_sided=True)}
+
+
 def holm(pvals: dict[str, float | None]) -> dict[str, float | None]:
     """Holm step-down adjusted p-values (None entries are kept as None and excluded)."""
     items = sorted(((k, p) for k, p in pvals.items() if p is not None), key=lambda kv: kv[1])
@@ -117,7 +130,7 @@ def wilcoxon_greater(d: np.ndarray) -> dict:
     if len(d) < 2:
         return {"p": None, "median": float(np.median(d)) if len(d) else None, "min_p": 1.0}
     return {"p": float(stats.wilcoxon(d, alternative="greater").pvalue), "median": float(np.median(d)),
-            "min_p": min_p_wilcoxon(len(d))}
+            "min_p": min_p_wilcoxon(int((d != 0).sum()))}  # scipy drops zero differences (zero_method='wilcox')
 
 
 def min_p_wilcoxon(n: int) -> float:
@@ -125,10 +138,12 @@ def min_p_wilcoxon(n: int) -> float:
     return 0.5 ** n
 
 
-def min_p_mann_whitney(n1: int, n2: int) -> float:
-    """Smallest one-sided exact Mann–Whitney p-value for group sizes n1, n2 (complete separation): 1/C(n1+n2, n1)."""
+def min_p_mann_whitney(n1: int, n2: int, two_sided: bool = False) -> float:
+    """Smallest exact Mann–Whitney p-value for group sizes n1, n2 (complete separation): 1/C(n1+n2, n1) one-sided,
+    twice that two-sided (capped at 1)."""
     from math import comb
-    return 1.0 / comb(n1 + n2, n1) if n1 and n2 else 1.0
+    p = 1.0 / comb(n1 + n2, n1) if n1 and n2 else 1.0
+    return min(1.0, 2 * p) if two_sided else p
 
 
 def verdict(p: float | None, effect_positive: bool, min_p: float, alpha: float = 0.05) -> str:

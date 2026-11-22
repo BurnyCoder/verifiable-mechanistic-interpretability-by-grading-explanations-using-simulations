@@ -151,21 +151,22 @@ def fig_planted(target: str = "T0") -> Path | None:
 
 
 def fig_trajectory(target: str = "T0") -> Path | None:
-    """H8: the best E3/E4 replacement graded against every 10th training checkpoint, above the restricted loss."""
+    """H8: every E3/E4 replacement graded against each training checkpoint (one thin line each), above the restricted loss."""
     d = _json(RES / "controls" / f"trajectory_{target}.json")
-    if not d:
+    if not d or "replacements" not in d:
         return None
-    rows = d["rows"]
-    steps = [r["step"] for r in rows]
+    steps = d["steps"]
     fig, axes = plt.subplots(2, 1, figsize=(6.4, 4.2), sharex=True)
-    axes[0].plot(steps, [r["hs"] for r in rows], color=TRUE)
-    axes[0].set_title(f"HS of replacement {d['replacement'].split('__')[2]} vs checkpoint ↑", loc="left")
-    axes[1].plot(steps, [r["restricted_loss"] for r in rows], color=TRUE)
+    for r in d["replacements"]:
+        axes[0].plot(steps, r["hs"], color=TRUE, lw=0.8, alpha=0.7)
+    axes[0].set_ylim(0, 1)
+    axes[0].set_title(f"HS of each of the {len(d['replacements'])} E3/E4 replacements vs checkpoint ↑", loc="left")
+    axes[1].plot(steps, d["restricted_loss"], color=TRUE)
     axes[1].set_yscale("log")
     axes[1].set_title("Restricted loss of the checkpoint (key frequencies only; log) ↓", loc="left")
-    axes[1].set_xlabel("training step of the target checkpoint")
-    fig.suptitle(f"Training trajectory ({target}); Spearman(HS, −log restricted loss) = "
-                 f"{d['spearman_hs_vs_neglog_restricted_loss']:.2f}", x=0.01, ha="left")
+    axes[1].set_xlabel(f"training step of the target checkpoint ({len(steps)} checkpoints)")
+    fig.suptitle(f"Training trajectory ({target}); Spearman(HS, −log restricted loss) per replacement: "
+                 f"min {d['spearman_min']:.2f}, median {d['spearman_hs_vs_neglog_restricted_loss']:.2f}", x=0.01, ha="left")
     return _save(fig, f"trajectory_{target}")
 
 
