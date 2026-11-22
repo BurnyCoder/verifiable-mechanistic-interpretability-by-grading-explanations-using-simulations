@@ -145,6 +145,11 @@ def test_diagnosed_failure_explains_the_bug_with_stored_numbers(tmp_path, monkey
     (tmp_path / f"{rid}.json").write_text(json.dumps({
         "run_id": rid, "cause": "a layout bug", "short": "a layout bug", "blamed": ["ReLU"], "kept": ["faithful"],
         "owner": "The slip is the agent's own",
+        "replicate_check": {"replicates": [{"run_id": rid, "accuracy": 0.56, "identical": True},
+                                           {"run_id": "r1", "accuracy": 0.9994, "identical": True},
+                                           {"run_id": "r2", "accuracy": 0.9986, "identical": True}],
+                            "identical_runs": 3, "failures": 1, "failure_rate_ci95": [0.0084, 0.9057],
+                            "served": ["claude-haiku-5-5"], "claude_code": "2.1.330"},
         "variants": [{"name": "as submitted", "accuracy": 0.56, "hs": 0.92, "kl_out": 2.0},
                      {"name": "head 3 moved to free dimensions", "accuracy": 1.0, "hs": 0.92, "kl_out": 0.0}]}))
     monkeypatch.setattr(diagnose, "OUT", tmp_path)
@@ -154,6 +159,8 @@ def test_diagnosed_failure_explains_the_bug_with_stored_numbers(tmp_path, monkey
     long, short = ae.why(x, "T0", "E3")
     assert "a layout bug" in long and "1.0000" in long and "ReLU neurons fit badly." in long and "faithful" in long
     assert "The slip is the agent's own." in long and "22 tool calls and 6.4 minutes" in long
+    assert "1 of 3 identical runs" in long and "1%–91%" in long and "0.9994 and 0.9986" in long
+    assert short.endswith("(bug in 1 of 3 identical runs)")
     assert "fixing it gives accuracy 1.0000" in short
 
 

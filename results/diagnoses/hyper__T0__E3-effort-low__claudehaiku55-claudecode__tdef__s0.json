@@ -34,5 +34,40 @@
   ],
   "kept": [
     "faithful"
-  ]
+  ],
+  "replicate_check": {
+    "replicates": [
+      {
+        "run_id": "hyper__T0__E3-effort-low__claudehaiku55-claudecode__tdef__s0",
+        "accuracy": 0.5623776333307229,
+        "hs": 0.9223609168218346,
+        "finished": "2026-11-21T15:13:06",
+        "identical": true
+      },
+      {
+        "run_id": "hyper__T0__E3-effort-low__claudehaiku55-claudecode__tdef__s1",
+        "accuracy": 0.999373482653301,
+        "hs": 0.9167886707095926,
+        "finished": "2026-11-21T21:49:14",
+        "identical": true
+      },
+      {
+        "run_id": "hyper__T0__E3-effort-low__claudehaiku55-claudecode__tdef__s2",
+        "accuracy": 0.9985903359699272,
+        "hs": 0.9226250345487353,
+        "finished": "2026-11-21T22:03:22",
+        "identical": true
+      }
+    ],
+    "identical_runs": 3,
+    "failures": 1,
+    "failure_rate_ci95": [
+      0.008403758659612636,
+      0.9057006759497539
+    ],
+    "claude_code": "2.1.330",
+    "served": [
+      "claude-haiku-5-5"
+    ]
+  }
 }

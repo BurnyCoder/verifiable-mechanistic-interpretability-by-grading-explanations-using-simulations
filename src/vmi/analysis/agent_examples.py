@@ -150,6 +150,24 @@ def _freqs(line: str) -> list[int] | None:
     return [int(v) for v in re.findall(r"\d+", line.split("#")[0].split("=", 1)[1])] if line and INT_LIST.search(line) else None
 
 
+def _replicates_sentence(d: dict, run_id: str) -> str:
+    """Were the failed run's replicates identical, how did they do, and how uncertain is the failure rate?"""
+    rc = d.get("replicate_check")
+    others = [x for x in (rc or {}).get("replicates", []) if x["run_id"] != run_id and x["identical"]]
+    if not others:
+        return ""
+    lo, hi = rc["failure_rate_ci95"]
+    return (f"Its {len(others)} replicates were identical in everything checked — the same files given to the agent "
+            f"(identical SHA-256 hashes), prompt, model ({', '.join(rc['served'])}), Claude Code {rc['claude_code']}, "
+            f"effort and grading — so nothing the agent could see differed except the unseedable sampling (outside its "
+            f"view, the runs ran at different times and the server-side model behind the name cannot be verified); "
+            f"they reached accuracy "
+            + " and ".join(f"{x['accuracy']:.4f}" for x in others)
+            + f". So the bug occurred in {rc['failures']} of {rc['identical_runs']} identical runs: a chance slip that "
+            f"the setup does not force, whose frequency so few runs barely constrain (95 % "
+            f"Clopper–Pearson interval {lo:.0%}–{hi:.0%}). ")
+
+
 def why(x: dict, target: str, level: str) -> tuple[str, str]:
     """(long, short): why the run is right or wrong, from what it built (its script), what it was told, what the target
     uses, and what it said. Both come from the same branch, so the README table and the per-case text cannot disagree.
@@ -199,12 +217,15 @@ def why(x: dict, target: str, level: str) -> tuple[str, str]:
                     f"(other changes tested: {others}). " + (f"{d['owner']}. " if d.get("owner") else "")
                     + (f"It stopped by its own choice after {x['tool_calls']} tool calls and {x['minutes']} minutes, well "
                        f"within the 60-step, 60-minute budget. " if x.get("tool_calls") is not None else "")
+                    + _replicates_sentence(d, x["run_id"])
                     + f"The agent never found the bug: it blamed the neurons "
                     f"(“{sentence_with(said, d['blamed'], 150)}”), tuned four constants around the bug (self-test peak "
                     f"{best:.4f}) and then kept the setting it judged more faithful to the explanation "
                     f"(“{sentence_with(said, d['kept'], 170)}”).",
                     f"Right frequencies, wrong answers: {d['short']}; fixing it gives accuracy {fix['accuracy']:.4f}. "
-                    f"The agent blamed the neurons and never found it")
+                    f"The agent blamed the neurons and never found it"
+                    + (f" (bug in {d['replicate_check']['failures']} of {d['replicate_check']['identical_runs']} identical runs)"
+                       if d.get("replicate_check") else ""))
         reason = sentence_with(said, ["faithful", "keep", "trade-off"], 170) if any(k in said for k in ("faithful", "keep")) else ""
         return (f"Wrong answers, right mechanism: it built the target's frequencies {fs(built or tgt)}, so the internals "
                 f"match (HS {hs:.2f}), but the answers are wrong (accuracy {acc:.4f}). It noticed (“{sentence_with(x['reaction'] or x['final'], ['ccuracy', '%'], 150)}”); "
