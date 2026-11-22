@@ -1,0 +1,79 @@
+{
+  "kl_out": 2.8461536916488876e-06,
+  "argmax_agreement": 1.0,
+  "accuracy": 1.0,
+  "target_accuracy": 1.0,
+  "sites": {
+    "resid_mid": {
+      "completeness": 0.9869989558482051,
+      "soundness": 0.9920463221521534,
+      "harmonic": 0.9895162025869022
+    },
+    "mlp_post": {
+      "completeness": 0.9888469569585183,
+      "soundness": 0.8585517738021224,
+      "harmonic": 0.9191045709618008
+    },
+    "resid_post": {
+      "completeness": 0.9692876950814356,
+      "soundness": 0.9781292932819086,
+      "harmonic": 0.9736884230158136
+    }
+  },
+  "hs": 0.9607697321881722,
+  "centred_logit_fvu": 0.21609197270482486,
+  "calibrated_kl": 2.683723437919303e-06,
+  "calibration_scale": 0.9203386462308253,
+  "cka": {
+    "resid_mid": 0.9066033388310956,
+    "mlp_post": 0.7798747245630229,
+    "resid_post": 0.47321474372704386
+  },
+  "procrustes": {
+    "resid_mid": 0.18502767253257613,
+    "mlp_post": 0.3089088134980629,
+    "resid_post": 0.5399487308097353
+  },
+  "matched_neuron_corr": 0.5969255854865447,
+  "matched_attention_distance": 0.12472754187063419,
+  "stitching_kl": 0.00020970297492251637,
+  "embedding_spectrum_cosine": 0.9670711083527201,
+  "failed": false,
+  "error": null,
+  "run_id": "seed__T-paper__E-paper__claudehaiku55-claudecode__tdef__s2",
+  "stage": "seed",
+  "target": "T-paper",
+  "level": "E-paper",
+  "variant": "",
+  "round": 2,
+  "model": "claude-haiku-5-5",
+  "temperature": null,
+  "seed": 2,
+  "selftest": true,
+  "harness": "claudecode",
+  "effort": "medium",
+  "agent": {
+    "exit_code": 0,
+    "seconds": 239,
+    "timeout_s": 3600,
+    "events": 209,
+    "steps": 24,
+    "tool_calls": 12,
+    "errors": 0,
+    "wsl_returncode": 0,
+    "cost_usd": 0.0332,
+    "total_claude_spend_usd": 2.1993,
+    "starter_unchanged": false
+  },
+  "audit": {
+    "flagged": false,
+    "reasons": [],
+    "suspicious_terms": []
+  },
+  "length": {
+    "chars": 3102,
+    "gzip_bytes": 1459,
+    "numbers": 81
+  },
+  "finished": "2026-11-22T00:12:14"
+}

@@ -233,53 +233,89 @@ def fig_simulators(max_round: int, target: str = "T0") -> Path | None:
     return _save(fig, f"simulators_{target}")
 
 
-def fig_examples(max_round: int, target: str = "T0") -> Path | None:
+KIND_COLOUR = {"target": INK2, "true": TRUE, "control": CTRL, "reference": REF}
+
+
+def _title(p: dict) -> str:
+    return p["name"] + (" (ground truth)" if p["kind"] == "target" else f" — HS {p['hs']:.2f}")
+
+
+def fig_examples(max_round: int, target: str = "T0", panels: list[dict] | None = None) -> Path | None:
     """Output examples: which frequencies each network actually built, against the target's (ground truth).
 
-    One panel per network, bars = per-frequency norm of W_L = W_U·W_out (grokviz `wl_fourier_norms`, cos and sin
-    combined; paper Fig. 3), each panel scaled to its own maximum; shaded columns mark the target's key frequencies.
-    Panels: the target, the main simulator's replacements for E3 (true), E1 (algorithm only), W-freq and W-alg, one
-    independent retrain and one random initialisation. HS against the target is printed in each panel title."""
+    One panel per network (`examples.panel_models`), bars = per-frequency norm of W_L = W_U·W_out (grokviz
+    `wl_fourier_norms`, cos and sin combined; paper Fig. 3), each panel scaled to its own maximum; shaded columns
+    mark the target's key frequencies. HS against the target is printed in each panel title."""
     import torch
     from grokviz import fourier as gf
     from grokviz import metrics as gm
-    from grokviz.model import GrokTransformer
-    from vmi import targets, weights
-    from vmi.config import load
-    from vmi.grader.score import grade_models
-    settings = load()
-    runs = [r for r in load_runs(max_round) if not r.get("failed")]
-    M = targets.load_model(settings, target).double()
-    F, _ = gf.fourier_basis(M.cfg.d_vocab - 1 if hasattr(M, "cfg") else 113)
-    panels = [("target " + target + " (ground truth)", M, INK2, None)]
-    for lv, colour in (("E3", TRUE), ("E1", TRUE), ("W-freq", CTRL), ("W-alg", CTRL)):
-        rs = sorted(_select(runs, target=target, level=lv), key=lambda r: r["seed"])
-        npz = rs and settings.runs_dir / rs[0]["run_id"] / "work_out" / "weights.npz"
-        if npz and npz.exists():
-            panels.append((f"agent, {lv}", weights.to_model(weights.load_npz(npz)).double(), colour, rs[0]["hs"]))
-    retrain = targets.resolve("wd1_s2" if targets.resolve(target).run_id != "wd1_s2" else "wd1_s3").run_id
-    for name, model in ((f"independent retrain ({retrain})", targets.load_model(settings, retrain).double()),
-                        ("random initialisation", GrokTransformer(seed=1000).double())):
-        panels.append((name, model, REF, grade_models(M, model, secondary=False)["hs"]))
+
+    from vmi.analysis.examples import panel_models
+    panels = panels or panel_models(max_round, target)
+    F, _ = gf.fourier_basis(113)
     key = set(json.loads((RES / "explanations" / target / "analysis.json").read_text())["key_freqs"])
-    fig, axes = plt.subplots(len(panels), 1, figsize=(7.2, 1.05 * len(panels)), sharex=True)
-    for ax, (name, model, colour, hs) in zip(axes, panels):
+    fig, axes = plt.subplots(len(panels), 1, figsize=(7.2, 1.0 * len(panels)), sharex=True)
+    for ax, p in zip(axes, panels):
         with torch.no_grad():
-            norms = gf.frequency_norms(gm.wl_fourier_norms(model.cpu(), F)).numpy()  # grading moved some models to the GPU
-        k = np.arange(1, len(norms) + 1)
+            norms = gf.frequency_norms(gm.wl_fourier_norms(p["model"], F)).numpy()
         for f in key:
             ax.axvspan(f - 0.5, f + 0.5, color=GRID, zorder=0)
-        ax.bar(k, norms / max(norms.max(), 1e-12), width=0.8, color=colour, zorder=2)
+        ax.bar(np.arange(1, len(norms) + 1), norms / max(norms.max(), 1e-12), width=0.8, color=KIND_COLOUR[p["kind"]], zorder=2)
         ax.set_ylim(0, 1.05)
         ax.set_yticks([0, 1])
         ax.grid(axis="x", visible=False)
-        ax.set_title(name + ("" if hs is None else f" — HS {hs:.2f}"), loc="left", fontsize=8, pad=2)
+        ax.set_title(_title(p), loc="left", fontsize=8, pad=2)
     axes[-1].set_xlabel("frequency k (shaded: the target's key frequencies)")
     fig.supylabel("W_L Fourier norm / max", fontsize=8)
     fig.suptitle(f"Which frequencies each network built (target {target}, round {max_round}, first run per condition)",
                  x=0.01, ha="left", fontsize=10, y=1.0)
     fig.tight_layout()
     return _save(fig, f"examples_{target}")
+
+
+def fig_outputs(max_round: int, target: str = "T0", panels: list[dict] | None = None) -> Path | None:
+    """Outputs vs. internals over all 113×113 inputs: P(correct answer) and the neuron best matching a target neuron.
+
+    Left column: probability each network gives to the true answer (a+b) mod 113 for every input (row a, column b);
+    the ground truth is 1 everywhere. Right column: activation of the network's MLP neuron with the largest |Pearson r|
+    to the target's highest-variance neuron (each panel scaled to its own maximum; r printed). Working networks look
+    the same on the left and differ on the right; that difference is what HS measures and output KL does not."""
+    import torch
+
+    from vmi.analysis.examples import panel_models
+    from vmi.grader.activations import collect
+    panels = panels or panel_models(max_round, target)
+    truth = torch.tensor([(a + b) % 113 for a in range(113) for b in range(113)])
+    acts = {p["name"]: collect(p["model"], "cpu") for p in panels}
+    ref = acts[panels[0]["name"]].mlp_post
+    j0 = int(ref.var(0).argmax())  # the target neuron with the largest activation variance over inputs
+    x0 = (ref[:, j0] - ref[:, j0].mean()) / (ref[:, j0].std() + 1e-12)
+    fig, axes = plt.subplots(2, len(panels), figsize=(1.45 * len(panels), 3.9))  # one column per network
+    for col, p in zip(axes.T, panels):
+        a = acts[p["name"]]
+        prob = torch.softmax(a.logits, -1).gather(1, truth[:, None]).squeeze(1).reshape(113, 113).numpy()
+        X = (a.mlp_post - a.mlp_post.mean(0)) / (a.mlp_post.std(0) + 1e-12)
+        r = (X * x0[:, None]).mean(0)  # Pearson r of every neuron with the target neuron j0
+        j = int(r.abs().argmax())
+        act = a.mlp_post[:, j].reshape(113, 113).numpy()
+        im = col[0].imshow(prob, cmap="Blues", vmin=0, vmax=1, interpolation="nearest")
+        col[1].imshow(act / max(act.max(), 1e-12), cmap="Blues", vmin=0, vmax=1, interpolation="nearest")
+        head = p["name"].replace("agent, ", "agent ").replace(" (", "\n(")
+        col[0].set_title(head + ("\nground truth" if p["kind"] == "target" else f"\nHS {p['hs']:.2f}"),
+                         fontsize=7, pad=3, color=KIND_COLOUR[p["kind"]])
+        col[1].set_xlabel(f"neuron {j0}\n(reference)" if p["kind"] == "target" else f"neuron {j}\nr = {float(r[j]):+.2f}",
+                          fontsize=7)
+        for ax in col:
+            ax.set_xticks([])
+            ax.set_yticks([])
+            ax.grid(False)
+    axes[0][0].set_ylabel("P(correct answer)\nrows a, columns b", fontsize=7)
+    axes[1][0].set_ylabel("best-matching neuron\n(scaled to its max)", fontsize=7)
+    fig.colorbar(im, ax=axes[0].tolist(), fraction=0.012, pad=0.01)
+    fig.suptitle(f"Outputs vs. internals on all 113×113 inputs (target {target}, round {max_round}): top, the probability "
+                 "of the true answer (ground truth: 1 everywhere); bottom, the neuron best matching the target's neuron",
+                 x=0.01, ha="left", fontsize=8)
+    return _save(fig, f"outputs_{target}")
 
 
 def fig_architecture() -> Path:
@@ -333,5 +369,8 @@ def fig_architecture() -> Path:
 def make_all(max_round: int) -> list[Path]:
     """Every figure whose inputs exist (missing inputs are skipped, never faked)."""
     figs = [fig_architecture(), fig_ladder(max_round), fig_kl_vs_hs(max_round), fig_planted(), fig_trajectory(),
-            fig_length(max_round), fig_simulators(max_round), fig_examples(max_round)]
+            fig_length(max_round), fig_simulators(max_round)]
+    from vmi.analysis.examples import panel_models
+    panels = panel_models(max_round)  # load the example networks once for both example figures
+    figs += [fig_examples(max_round, panels=panels), fig_outputs(max_round, panels=panels)]
     return [p for p in figs if p]

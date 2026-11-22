@@ -1,0 +1,1017 @@
+{
+  "target": "T0",
+  "round": 2,
+  "variants": [
+    "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)",
+    "ridge \u03bb \u00d7 100",
+    "ridge \u03bb / 100",
+    "3 folds",
+    "10 folds",
+    "fold seed 1",
+    "fold seed 2",
+    "resid_mid only",
+    "mlp_post only",
+    "resid_post only",
+    "orthogonal alignment (with scale)"
+  ],
+  "rows": [
+    {
+      "kind": "agent",
+      "level": "E0",
+      "id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s0",
+      "npz": "D:\\AI\\vmi-sim\\runs\\controls__T0__E0__claudehaiku55-claudecode__tdef__s0\\work_out\\weights.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.0036951600291003314,
+        "ridge \u03bb \u00d7 100": 0.0034425089512818766,
+        "ridge \u03bb / 100": 0.003745429468485788,
+        "3 folds": 0.003524881964145381,
+        "10 folds": 0.0038166643568976525,
+        "fold seed 1": 0.003679058786351296,
+        "fold seed 2": 0.0037681179897261635,
+        "resid_mid only": 0.011085480087300995,
+        "mlp_post only": 0.0,
+        "resid_post only": 0.0,
+        "orthogonal alignment (with scale)": 0.0
+      }
+    },
+    {
+      "kind": "agent",
+      "level": "E0",
+      "id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s1",
+      "npz": "D:\\AI\\vmi-sim\\runs\\controls__T0__E0__claudehaiku55-claudecode__tdef__s1\\work_out\\weights.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.19128190087590102,
+        "ridge \u03bb \u00d7 100": 0.16234117719983213,
+        "ridge \u03bb / 100": 0.20385680076041623,
+        "3 folds": 0.189064833302354,
+        "10 folds": 0.19238330498313141,
+        "fold seed 1": 0.1914227111339973,
+        "fold seed 2": 0.19088017249678482,
+        "resid_mid only": 0.12594161911249319,
+        "mlp_post only": 0.3031603757257412,
+        "resid_post only": 0.14474370778946866,
+        "orthogonal alignment (with scale)": 0.0069890936528078824
+      }
+    },
+    {
+      "kind": "agent",
+      "level": "E0",
+      "id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s2",
+      "npz": "D:\\AI\\vmi-sim\\runs\\controls__T0__E0__claudehaiku55-claudecode__tdef__s2\\work_out\\weights.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.19358232407689344,
+        "ridge \u03bb \u00d7 100": 0.17634411185584756,
+        "ridge \u03bb / 100": 0.20152448345959192,
+        "3 folds": 0.1909333747209112,
+        "10 folds": 0.1949417899307282,
+        "fold seed 1": 0.19375333977539602,
+        "fold seed 2": 0.1931287554111408,
+        "resid_mid only": 0.17741672546041112,
+        "mlp_post only": 0.2074955909554818,
+        "resid_post only": 0.1958346558147873,
+        "orthogonal alignment (with scale)": 0.010924093146021411
+      }
+    },
+    {
+      "kind": "compiler",
+      "level": "E0",
+      "id": "compiler/T0/E0",
+      "npz": "D:\\AI\\vmi-sim\\runs\\_compiler\\T0\\E0.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.051336976982973875,
+        "ridge \u03bb \u00d7 100": 0.04310971668916122,
+        "ridge \u03bb / 100": 0.054361638696809954,
+        "3 folds": 0.04945561522591744,
+        "10 folds": 0.052342676302546416,
+        "fold seed 1": 0.050893055120931514,
+        "fold seed 2": 0.050846647178230925,
+        "resid_mid only": 0.0,
+        "mlp_post only": 0.15401093094892163,
+        "resid_post only": 0.0,
+        "orthogonal alignment (with scale)": 0.0
+      }
+    },
+    {
+      "kind": "agent",
+      "level": "E1",
+      "id": "main__T0__E1__claudehaiku55-claudecode__tdef__s0",
+      "npz": "D:\\AI\\vmi-sim\\runs\\main__T0__E1__claudehaiku55-claudecode__tdef__s0\\work_out\\weights.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.048345923249513034,
+        "ridge \u03bb \u00d7 100": 0.046151839030836334,
+        "ridge \u03bb / 100": 0.04801164766161816,
+        "3 folds": 0.04659372959437675,
+        "10 folds": 0.04972091329048267,
+        "fold seed 1": 0.048513668307630896,
+        "fold seed 2": 0.048566594552612835,
+        "resid_mid only": 0.013776756101318538,
+        "mlp_post only": 0.13126101364722056,
+        "resid_post only": 0.0,
+        "orthogonal alignment (with scale)": 0.0
+      }
+    },
+    {
+      "kind": "agent",
+      "level": "E1",
+      "id": "main__T0__E1__claudehaiku55-claudecode__tdef__s1",
+      "npz": "D:\\AI\\vmi-sim\\runs\\main__T0__E1__claudehaiku55-claudecode__tdef__s1\\work_out\\weights.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.04482621260495612,
+        "ridge \u03bb \u00d7 100": 0.025103932000786196,
+        "ridge \u03bb / 100": 0.04451647412864116,
+        "3 folds": 0.04314113975832092,
+        "10 folds": 0.046090179258297496,
+        "fold seed 1": 0.04482407017624788,
+        "fold seed 2": 0.044925470406945826,
+        "resid_mid only": 0.013885888006781505,
+        "mlp_post only": 0.12059274980808686,
+        "resid_post only": 0.0,
+        "orthogonal alignment (with scale)": 0.0
+      }
+    },
+    {
+      "kind": "agent",
+      "level": "E1",
+      "id": "main__T0__E1__claudehaiku55-claudecode__tdef__s2",
+      "npz": "D:\\AI\\vmi-sim\\runs\\main__T0__E1__claudehaiku55-claudecode__tdef__s2\\work_out\\weights.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.046219606805840086,
+        "ridge \u03bb \u00d7 100": 0.025769576102678413,
+        "ridge \u03bb / 100": 0.04589744335229998,
+        "3 folds": 0.04441674459679312,
+        "10 folds": 0.04729079462741318,
+        "fold seed 1": 0.0461523891708682,
+        "fold seed 2": 0.04627641591710599,
+        "resid_mid only": 0.01388588800678147,
+        "mlp_post only": 0.1247729324107388,
+        "resid_post only": 0.0,
+        "orthogonal alignment (with scale)": 0.0
+      }
+    },
+    {
+      "kind": "compiler",
+      "level": "E1",
+      "id": "compiler/T0/E1",
+      "npz": "D:\\AI\\vmi-sim\\runs\\_compiler\\T0\\E1.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.051336976982973875,
+        "ridge \u03bb \u00d7 100": 0.04310971668916122,
+        "ridge \u03bb / 100": 0.054361638696809954,
+        "3 folds": 0.04945561522591744,
+        "10 folds": 0.052342676302546416,
+        "fold seed 1": 0.050893055120931514,
+        "fold seed 2": 0.050846647178230925,
+        "resid_mid only": 0.0,
+        "mlp_post only": 0.15401093094892163,
+        "resid_post only": 0.0,
+        "orthogonal alignment (with scale)": 0.0
+      }
+    },
+    {
+      "kind": "agent",
+      "level": "E2",
+      "id": "main__T0__E2__claudehaiku55-claudecode__tdef__s0",
+      "npz": "D:\\AI\\vmi-sim\\runs\\main__T0__E2__claudehaiku55-claudecode__tdef__s0\\work_out\\weights.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.8994455393035308,
+        "ridge \u03bb \u00d7 100": 0.8720727644993796,
+        "ridge \u03bb / 100": 0.9167822551119564,
+        "3 folds": 0.8993501648693852,
+        "10 folds": 0.8995189059142366,
+        "fold seed 1": 0.8994302178006124,
+        "fold seed 2": 0.8994194624229177,
+        "resid_mid only": 0.8836281779361822,
+        "mlp_post only": 0.9448204676414078,
+        "resid_post only": 0.8698879723330024,
+        "orthogonal alignment (with scale)": 0.6153230787953409
+      }
+    },
+    {
+      "kind": "agent",
+      "level": "E2",
+      "id": "main__T0__E2__claudehaiku55-claudecode__tdef__s1",
+      "npz": "D:\\AI\\vmi-sim\\runs\\main__T0__E2__claudehaiku55-claudecode__tdef__s1\\work_out\\weights.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.8945524617726366,
+        "ridge \u03bb \u00d7 100": 0.8703082366324276,
+        "ridge \u03bb / 100": 0.9048656255161243,
+        "3 folds": 0.8944580686250587,
+        "10 folds": 0.8946497049678254,
+        "fold seed 1": 0.8945520615780089,
+        "fold seed 2": 0.8945353400886309,
+        "resid_mid only": 0.8836281779361812,
+        "mlp_post only": 0.9449195861571578,
+        "resid_post only": 0.8551096212245708,
+        "orthogonal alignment (with scale)": 0.6906927622629455
+      }
+    },
+    {
+      "kind": "agent",
+      "level": "E2",
+      "id": "main__T0__E2__claudehaiku55-claudecode__tdef__s2",
+      "npz": "D:\\AI\\vmi-sim\\runs\\main__T0__E2__claudehaiku55-claudecode__tdef__s2\\work_out\\weights.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.8886228825348276,
+        "ridge \u03bb \u00d7 100": 0.8617333666550602,
+        "ridge \u03bb / 100": 0.9048708754847676,
+        "3 folds": 0.8885163876430502,
+        "10 folds": 0.8886901121148209,
+        "fold seed 1": 0.8886066157124768,
+        "fold seed 2": 0.8885877516295287,
+        "resid_mid only": 0.8836281779361819,
+        "mlp_post only": 0.9448204676408463,
+        "resid_post only": 0.8374200020274545,
+        "orthogonal alignment (with scale)": 0.5990105699867896
+      }
+    },
+    {
+      "kind": "compiler",
+      "level": "E2",
+      "id": "compiler/T0/E2",
+      "npz": "D:\\AI\\vmi-sim\\runs\\_compiler\\T0\\E2.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.8948412268400746,
+        "ridge \u03bb \u00d7 100": 0.8704292943705759,
+        "ridge \u03bb / 100": 0.9055537412333282,
+        "3 folds": 0.8947468585724313,
+        "10 folds": 0.8949370725006277,
+        "fold seed 1": 0.8948398373585601,
+        "fold seed 2": 0.8948233950341492,
+        "resid_mid only": 0.8836281779361802,
+        "mlp_post only": 0.9449195861579215,
+        "resid_post only": 0.855975916426122,
+        "orthogonal alignment (with scale)": 0.7050460169109538
+      }
+    },
+    {
+      "kind": "agent",
+      "level": "E3",
+      "id": "main__T0__E3__claudehaiku55-claudecode__tdef__s0",
+      "npz": "D:\\AI\\vmi-sim\\runs\\main__T0__E3__claudehaiku55-claudecode__tdef__s0\\work_out\\weights.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.9394805798904734,
+        "ridge \u03bb \u00d7 100": 0.9144904475884431,
+        "ridge \u03bb / 100": 0.9447683507519845,
+        "3 folds": 0.9394040080708699,
+        "10 folds": 0.9395287331627368,
+        "fold seed 1": 0.9394647613314479,
+        "fold seed 2": 0.9394496996488234,
+        "resid_mid only": 0.9125529466724511,
+        "mlp_post only": 0.975112325407373,
+        "resid_post only": 0.9307764675915957,
+        "orthogonal alignment (with scale)": 0.7939455726580656
+      }
+    },
+    {
+      "kind": "agent",
+      "level": "E3",
+      "id": "main__T0__E3__claudehaiku55-claudecode__tdef__s1",
+      "npz": "D:\\AI\\vmi-sim\\runs\\main__T0__E3__claudehaiku55-claudecode__tdef__s1\\work_out\\weights.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.9324099362097188,
+        "ridge \u03bb \u00d7 100": 0.9240922777248586,
+        "ridge \u03bb / 100": 0.9385333792542762,
+        "3 folds": 0.9323571216374584,
+        "10 folds": 0.9324668334874283,
+        "fold seed 1": 0.9324136075226601,
+        "fold seed 2": 0.9324024394567682,
+        "resid_mid only": 0.9421136338305318,
+        "mlp_post only": 0.9639543165807025,
+        "resid_post only": 0.8911618582179219,
+        "orthogonal alignment (with scale)": 0.7951820601148105
+      }
+    },
+    {
+      "kind": "agent",
+      "level": "E3",
+      "id": "main__T0__E3__claudehaiku55-claudecode__tdef__s2",
+      "npz": "D:\\AI\\vmi-sim\\runs\\main__T0__E3__claudehaiku55-claudecode__tdef__s2\\work_out\\weights.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.9153374040731902,
+        "ridge \u03bb \u00d7 100": 0.875358836751467,
+        "ridge \u03bb / 100": 0.9368245822184561,
+        "3 folds": 0.915267241025146,
+        "10 folds": 0.9153857099486277,
+        "fold seed 1": 0.9153085732086229,
+        "fold seed 2": 0.9153103087325434,
+        "resid_mid only": 0.9125080712582316,
+        "mlp_post only": 0.966905949833235,
+        "resid_post only": 0.8665981911281043,
+        "orthogonal alignment (with scale)": 0.644342414446004
+      }
+    },
+    {
+      "kind": "compiler",
+      "level": "E3",
+      "id": "compiler/T0/E3",
+      "npz": "D:\\AI\\vmi-sim\\runs\\_compiler\\T0\\E3.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.9266229367497472,
+        "ridge \u03bb \u00d7 100": 0.7904064699896417,
+        "ridge \u03bb / 100": 0.9563303815651575,
+        "3 folds": 0.9265819932701819,
+        "10 folds": 0.9266550014061915,
+        "fold seed 1": 0.9266141258414056,
+        "fold seed 2": 0.9265991548349825,
+        "resid_mid only": 0.9125573387351124,
+        "mlp_post only": 0.9726059195767695,
+        "resid_post only": 0.8947055519373595,
+        "orthogonal alignment (with scale)": 0.5230489206322929
+      }
+    },
+    {
+      "kind": "agent",
+      "level": "E4",
+      "id": "main__T0__E4__claudehaiku55-claudecode__tdef__s0",
+      "npz": "D:\\AI\\vmi-sim\\runs\\main__T0__E4__claudehaiku55-claudecode__tdef__s0\\work_out\\weights.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.9115119999542861,
+        "ridge \u03bb \u00d7 100": 0.8874186671211208,
+        "ridge \u03bb / 100": 0.9272357482978615,
+        "3 folds": 0.9114822733900042,
+        "10 folds": 0.9115480245545141,
+        "fold seed 1": 0.9114948523766365,
+        "fold seed 2": 0.9114806077771442,
+        "resid_mid only": 0.883684927020725,
+        "mlp_post only": 0.985675738164603,
+        "resid_post only": 0.8651753346775306,
+        "orthogonal alignment (with scale)": 0.6817039882413582
+      }
+    },
+    {
+      "kind": "agent",
+      "level": "E4",
+      "id": "main__T0__E4__claudehaiku55-claudecode__tdef__s1",
+      "npz": "D:\\AI\\vmi-sim\\runs\\main__T0__E4__claudehaiku55-claudecode__tdef__s1\\work_out\\weights.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.9529163502723045,
+        "ridge \u03bb \u00d7 100": 0.9498018808956056,
+        "ridge \u03bb / 100": 0.9543004697630725,
+        "3 folds": 0.9528769614698541,
+        "10 folds": 0.9529372558457028,
+        "fold seed 1": 0.952906658468229,
+        "fold seed 2": 0.9528984785135476,
+        "resid_mid only": 0.9424808065837343,
+        "mlp_post only": 0.9856675586363823,
+        "resid_post only": 0.9306006855967969,
+        "orthogonal alignment (with scale)": 0.8841948148145496
+      }
+    },
+    {
+      "kind": "agent",
+      "level": "E4",
+      "id": "main__T0__E4__claudehaiku55-claudecode__tdef__s2",
+      "npz": "D:\\AI\\vmi-sim\\runs\\main__T0__E4__claudehaiku55-claudecode__tdef__s2\\work_out\\weights.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.9654774109100147,
+        "ridge \u03bb \u00d7 100": 0.951641430644115,
+        "ridge \u03bb / 100": 0.9678665129409092,
+        "3 folds": 0.9654617745525208,
+        "10 folds": 0.9654977916983348,
+        "fold seed 1": 0.9654789274049457,
+        "fold seed 2": 0.9654689146032691,
+        "resid_mid only": 0.9292665358636815,
+        "mlp_post only": 0.992286715881435,
+        "resid_post only": 0.9748789809849276,
+        "orthogonal alignment (with scale)": 0.8620440757876162
+      }
+    },
+    {
+      "kind": "compiler",
+      "level": "E4",
+      "id": "compiler/T0/E4",
+      "npz": "D:\\AI\\vmi-sim\\runs\\_compiler\\T0\\E4.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.9518100623568961,
+        "ridge \u03bb \u00d7 100": 0.8701851354990803,
+        "ridge \u03bb / 100": 0.9619338757550541,
+        "3 folds": 0.9517894506325447,
+        "10 folds": 0.9518316229221283,
+        "fold seed 1": 0.9518116155531064,
+        "fold seed 2": 0.9517889563302541,
+        "resid_mid only": 0.9125573387351124,
+        "mlp_post only": 0.9921306926464413,
+        "resid_post only": 0.950742155689135,
+        "orthogonal alignment (with scale)": 0.5677945533768618
+      }
+    },
+    {
+      "kind": "agent",
+      "level": "W-freq",
+      "id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s0",
+      "npz": "D:\\AI\\vmi-sim\\runs\\controls__T0__W-freq__claudehaiku55-claudecode__tdef__s0\\work_out\\weights.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.05537189466979208,
+        "ridge \u03bb \u00d7 100": 0.04864037240383227,
+        "ridge \u03bb / 100": 0.06037814860302034,
+        "3 folds": 0.05302927371440599,
+        "10 folds": 0.05632139585437318,
+        "fold seed 1": 0.055222440285300274,
+        "fold seed 2": 0.05485827636183427,
+        "resid_mid only": 0.0,
+        "mlp_post only": 0.16611568400937624,
+        "resid_post only": 0.0,
+        "orthogonal alignment (with scale)": 0.0
+      }
+    },
+    {
+      "kind": "agent",
+      "level": "W-freq",
+      "id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s1",
+      "npz": "D:\\AI\\vmi-sim\\runs\\controls__T0__W-freq__claudehaiku55-claudecode__tdef__s1\\work_out\\weights.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.06125435253934653,
+        "ridge \u03bb \u00d7 100": 0.052542975671158676,
+        "ridge \u03bb / 100": 0.06470231721988504,
+        "3 folds": 0.05940835577346199,
+        "10 folds": 0.062037371257131046,
+        "fold seed 1": 0.06117366596478721,
+        "fold seed 2": 0.061076323427205405,
+        "resid_mid only": 0.0,
+        "mlp_post only": 0.1837630576180396,
+        "resid_post only": 0.0,
+        "orthogonal alignment (with scale)": 0.0
+      }
+    },
+    {
+      "kind": "agent",
+      "level": "W-freq",
+      "id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s2",
+      "npz": "D:\\AI\\vmi-sim\\runs\\controls__T0__W-freq__claudehaiku55-claudecode__tdef__s2\\work_out\\weights.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.0944950263151082,
+        "ridge \u03bb \u00d7 100": 0.07949935945785169,
+        "ridge \u03bb / 100": 0.10404479818839056,
+        "3 folds": 0.09240875495082636,
+        "10 folds": 0.09538734573700268,
+        "fold seed 1": 0.09459414385080729,
+        "fold seed 2": 0.09414744305227542,
+        "resid_mid only": 0.07513293736213053,
+        "mlp_post only": 0.19869132442836152,
+        "resid_post only": 0.0096608171548326,
+        "orthogonal alignment (with scale)": 0.0
+      }
+    },
+    {
+      "kind": "compiler",
+      "level": "W-freq",
+      "id": "compiler/T0/W-freq",
+      "npz": "D:\\AI\\vmi-sim\\runs\\_compiler\\T0\\W-freq.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.09455501321370001,
+        "ridge \u03bb \u00d7 100": 0.0764301472962635,
+        "ridge \u03bb / 100": 0.10487534907122885,
+        "3 folds": 0.09274577424591386,
+        "10 folds": 0.09538036465940526,
+        "fold seed 1": 0.09446968056023071,
+        "fold seed 2": 0.0942830570540905,
+        "resid_mid only": 0.07434063495125275,
+        "mlp_post only": 0.20000102589175134,
+        "resid_post only": 0.009323378798095944,
+        "orthogonal alignment (with scale)": 0.0
+      }
+    },
+    {
+      "kind": "agent",
+      "level": "W-alg",
+      "id": "controls__T0__W-alg__claudehaiku55-claudecode__tdef__s0",
+      "npz": "D:\\AI\\vmi-sim\\runs\\controls__T0__W-alg__claudehaiku55-claudecode__tdef__s0\\work_out\\weights.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.8888378520107217,
+        "ridge \u03bb \u00d7 100": 0.861642486039777,
+        "ridge \u03bb / 100": 0.9058895315703245,
+        "3 folds": 0.8887316273521654,
+        "10 folds": 0.8889026477816663,
+        "fold seed 1": 0.8888197198241897,
+        "fold seed 2": 0.8888008841251752,
+        "resid_mid only": 0.8836281779361819,
+        "mlp_post only": 0.9448204676408463,
+        "resid_post only": 0.8380649104551372,
+        "orthogonal alignment (with scale)": 0.578223782016603
+      }
+    },
+    {
+      "kind": "agent",
+      "level": "W-alg",
+      "id": "controls__T0__W-alg__claudehaiku55-claudecode__tdef__s1",
+      "npz": "D:\\AI\\vmi-sim\\runs\\controls__T0__W-alg__claudehaiku55-claudecode__tdef__s1\\work_out\\weights.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.8988570265709303,
+        "ridge \u03bb \u00d7 100": 0.8743973182135211,
+        "ridge \u03bb / 100": 0.915612644095531,
+        "3 folds": 0.8988184914128343,
+        "10 folds": 0.8988884562564557,
+        "fold seed 1": 0.8988317871694745,
+        "fold seed 2": 0.8988181639751768,
+        "resid_mid only": 0.8836281779361816,
+        "mlp_post only": 0.9725706994250011,
+        "resid_post only": 0.8403722023516078,
+        "orthogonal alignment (with scale)": 0.5732245901416838
+      }
+    },
+    {
+      "kind": "agent",
+      "level": "W-alg",
+      "id": "controls__T0__W-alg__claudehaiku55-claudecode__tdef__s2",
+      "npz": "D:\\AI\\vmi-sim\\runs\\controls__T0__W-alg__claudehaiku55-claudecode__tdef__s2\\work_out\\weights.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.9395328620009175,
+        "ridge \u03bb \u00d7 100": 0.9355412332180676,
+        "ridge \u03bb / 100": 0.940383981735971,
+        "3 folds": 0.9394927225015258,
+        "10 folds": 0.9395577523085828,
+        "fold seed 1": 0.9395283317106181,
+        "fold seed 2": 0.9395140270403649,
+        "resid_mid only": 0.9420930254905602,
+        "mlp_post only": 0.9725018402959333,
+        "resid_post only": 0.9040037202162586,
+        "orthogonal alignment (with scale)": 0.8397195247338889
+      }
+    },
+    {
+      "kind": "compiler",
+      "level": "W-alg",
+      "id": "compiler/T0/W-alg",
+      "npz": "D:\\AI\\vmi-sim\\runs\\_compiler\\T0\\W-alg.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.9205857909430541,
+        "ridge \u03bb \u00d7 100": 0.9046691666004646,
+        "ridge \u03bb / 100": 0.9225118104204033,
+        "3 folds": 0.9205475959155093,
+        "10 folds": 0.9206208910592005,
+        "fold seed 1": 0.9205899124386523,
+        "fold seed 2": 0.9205663674351889,
+        "resid_mid only": 0.8836281779361802,
+        "mlp_post only": 0.9726110671022937,
+        "resid_post only": 0.9055181277906886,
+        "orthogonal alignment (with scale)": 0.7723345170527492
+      }
+    },
+    {
+      "kind": "agent",
+      "level": "W-role",
+      "id": "controls__T0__W-role__claudehaiku55-claudecode__tdef__s0",
+      "npz": "D:\\AI\\vmi-sim\\runs\\controls__T0__W-role__claudehaiku55-claudecode__tdef__s0\\work_out\\weights.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.168074316656719,
+        "ridge \u03bb \u00d7 100": 0.16109382458710897,
+        "ridge \u03bb / 100": 0.18519208823353447,
+        "3 folds": 0.16548923340058158,
+        "10 folds": 0.16949168158641303,
+        "fold seed 1": 0.1678908635891102,
+        "fold seed 2": 0.16760961650156958,
+        "resid_mid only": 0.31906390307321597,
+        "mlp_post only": 0.09919373483718472,
+        "resid_post only": 0.0859653120597562,
+        "orthogonal alignment (with scale)": 0.05542623767849098
+      }
+    },
+    {
+      "kind": "agent",
+      "level": "W-role",
+      "id": "controls__T0__W-role__claudehaiku55-claudecode__tdef__s1",
+      "npz": "D:\\AI\\vmi-sim\\runs\\controls__T0__W-role__claudehaiku55-claudecode__tdef__s1\\work_out\\weights.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.17062011034752003,
+        "ridge \u03bb \u00d7 100": 0.15674131643644798,
+        "ridge \u03bb / 100": 0.18524281317444222,
+        "3 folds": 0.1686451088678408,
+        "10 folds": 0.17171852861184897,
+        "fold seed 1": 0.17062241726081273,
+        "fold seed 2": 0.17062961719395617,
+        "resid_mid only": 0.3190732683233459,
+        "mlp_post only": 0.10139996178854939,
+        "resid_post only": 0.09138710093066484,
+        "orthogonal alignment (with scale)": 0.055914257242416325
+      }
+    },
+    {
+      "kind": "agent",
+      "level": "W-role",
+      "id": "controls__T0__W-role__claudehaiku55-claudecode__tdef__s2",
+      "npz": "D:\\AI\\vmi-sim\\runs\\controls__T0__W-role__claudehaiku55-claudecode__tdef__s2\\work_out\\weights.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.27330249839682996,
+        "ridge \u03bb \u00d7 100": 0.2519222681072764,
+        "ridge \u03bb / 100": 0.2840405538754795,
+        "3 folds": 0.27072045070788675,
+        "10 folds": 0.2745812621374143,
+        "fold seed 1": 0.2728697719232585,
+        "fold seed 2": 0.27277867279514323,
+        "resid_mid only": 0.5883732016835456,
+        "mlp_post only": 0.1346582655963973,
+        "resid_post only": 0.09687602791054704,
+        "orthogonal alignment (with scale)": 0.11909697100189626
+      }
+    },
+    {
+      "kind": "compiler",
+      "level": "W-role",
+      "id": "compiler/T0/W-role",
+      "npz": "D:\\AI\\vmi-sim\\runs\\_compiler\\T0\\W-role.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.4998326517563714,
+        "ridge \u03bb \u00d7 100": 0.46181788677227376,
+        "ridge \u03bb / 100": 0.5129922664432244,
+        "3 folds": 0.49963026936182064,
+        "10 folds": 0.4998357161114409,
+        "fold seed 1": 0.49979350615779944,
+        "fold seed 2": 0.4997660860295586,
+        "resid_mid only": 0.9125573387351124,
+        "mlp_post only": 0.0,
+        "resid_post only": 0.5869406165340021,
+        "orthogonal alignment (with scale)": 0.25731970938954946
+      }
+    },
+    {
+      "kind": "agent",
+      "level": "W-scramble",
+      "id": "controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s0",
+      "npz": "D:\\AI\\vmi-sim\\runs\\controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s0\\work_out\\weights.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.9175709030701787,
+        "ridge \u03bb \u00d7 100": 0.9066501042100515,
+        "ridge \u03bb / 100": 0.924936260577588,
+        "3 folds": 0.9174949888701206,
+        "10 folds": 0.9176418161111695,
+        "fold seed 1": 0.9175751786560226,
+        "fold seed 2": 0.9175576941835083,
+        "resid_mid only": 0.9424808065837336,
+        "mlp_post only": 0.9688633251435942,
+        "resid_post only": 0.8413685774832087,
+        "orthogonal alignment (with scale)": 0.7595774489625388
+      }
+    },
+    {
+      "kind": "agent",
+      "level": "W-scramble",
+      "id": "controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s1",
+      "npz": "D:\\AI\\vmi-sim\\runs\\controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s1\\work_out\\weights.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.9541957040262264,
+        "ridge \u03bb \u00d7 100": 0.9279487737825143,
+        "ridge \u03bb / 100": 0.958804640104435,
+        "3 folds": 0.9541248497316642,
+        "10 folds": 0.9542365516017326,
+        "fold seed 1": 0.9541979539662796,
+        "fold seed 2": 0.9541748615223505,
+        "resid_mid only": 0.9125635635906802,
+        "mlp_post only": 0.9723172143985837,
+        "resid_post only": 0.9777063340894153,
+        "orthogonal alignment (with scale)": 0.7878654555853299
+      }
+    },
+    {
+      "kind": "agent",
+      "level": "W-scramble",
+      "id": "controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s2",
+      "npz": "D:\\AI\\vmi-sim\\runs\\controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s2\\work_out\\weights.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.9377029166304661,
+        "ridge \u03bb \u00d7 100": 0.9203355956174359,
+        "ridge \u03bb / 100": 0.940897966426233,
+        "3 folds": 0.9376341514709109,
+        "10 folds": 0.9377455429382167,
+        "fold seed 1": 0.9377050824347547,
+        "fold seed 2": 0.9376805907202751,
+        "resid_mid only": 0.8836465262035761,
+        "mlp_post only": 0.970999302359111,
+        "resid_post only": 0.9584629213287114,
+        "orthogonal alignment (with scale)": 0.7919393225170507
+      }
+    },
+    {
+      "kind": "compiler",
+      "level": "W-scramble",
+      "id": "compiler/T0/W-scramble",
+      "npz": "D:\\AI\\vmi-sim\\runs\\_compiler\\T0\\W-scramble.npz",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.8587888543763699,
+        "ridge \u03bb \u00d7 100": 0.7485312962199949,
+        "ridge \u03bb / 100": 0.9319864389616493,
+        "3 folds": 0.8587095527551399,
+        "10 folds": 0.8587514789449003,
+        "fold seed 1": 0.8586128831777341,
+        "fold seed 2": 0.8585166741656304,
+        "resid_mid only": 0.9125573387351124,
+        "mlp_post only": 0.9724953243863195,
+        "resid_post only": 0.6913139000076778,
+        "orthogonal alignment (with scale)": 0.49198946089060097
+      }
+    }
+  ],
+  "summary": {
+    "agent": {
+      "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": {
+        "means": {
+          "E0": 0.12951979499396493,
+          "E1": 0.04646391422010308,
+          "E2": 0.894206961203665,
+          "E3": 0.9290759733911275,
+          "E4": 0.9433019203788685,
+          "W-freq": 0.0703737578414156,
+          "W-alg": 0.9090759135275231,
+          "W-role": 0.20399897513368967,
+          "W-scramble": 0.9364898412422904
+        },
+        "kendall_tau_vs_preregistered": 1.0
+      },
+      "ridge \u03bb \u00d7 100": {
+        "means": {
+          "E0": 0.11404259933565386,
+          "E1": 0.032341782378100314,
+          "E2": 0.8680381225956225,
+          "E3": 0.9046471873549229,
+          "E4": 0.9296206595536138,
+          "W-freq": 0.06022756917761421,
+          "W-alg": 0.8905270124904553,
+          "W-role": 0.18991913637694444,
+          "W-scramble": 0.918311491203334
+        },
+        "kendall_tau_vs_preregistered": 1.0
+      },
+      "ridge \u03bb / 100": {
+        "means": {
+          "E0": 0.13637557122949798,
+          "E1": 0.04614185504751977,
+          "E2": 0.9088395853709494,
+          "E3": 0.9400421040749056,
+          "E4": 0.9498009103339476,
+          "W-freq": 0.07637508800376532,
+          "W-alg": 0.9206287191339421,
+          "W-role": 0.2181584850944854,
+          "W-scramble": 0.9415462890360854
+        },
+        "kendall_tau_vs_preregistered": 1.0
+      },
+      "3 folds": {
+        "means": {
+          "E0": 0.12784102999580352,
+          "E1": 0.04471720464983026,
+          "E2": 0.8941082070458314,
+          "E3": 0.9290094569111581,
+          "E4": 0.9432736698041264,
+          "W-freq": 0.06828212814623145,
+          "W-alg": 0.9090142804221751,
+          "W-role": 0.20161826432543636,
+          "W-scramble": 0.9364179966908986
+        },
+        "kendall_tau_vs_preregistered": 1.0
+      },
+      "10 folds": {
+        "means": {
+          "E0": 0.13038058642358574,
+          "E1": 0.04770062905873112,
+          "E2": 0.8942862409989609,
+          "E3": 0.9291270921995975,
+          "E4": 0.9433276906995173,
+          "W-freq": 0.07124870428283564,
+          "W-alg": 0.9091162854489016,
+          "W-role": 0.20526382411189212,
+          "W-scramble": 0.9365413035503729
+        },
+        "kendall_tau_vs_preregistered": 1.0
+      },
+      "fold seed 1": {
+        "means": {
+          "E0": 0.12961836989858155,
+          "E1": 0.04649670921824899,
+          "E2": 0.8941962983636994,
+          "E3": 0.9290623140209102,
+          "E4": 0.9432934794166038,
+          "W-freq": 0.07033008336696493,
+          "W-alg": 0.9090599462347608,
+          "W-role": 0.2037943509243938,
+          "W-scramble": 0.9364927383523524
+        },
+        "kendall_tau_vs_preregistered": 1.0
+      },
+      "fold seed 2": {
+        "means": {
+          "E0": 0.12925901529921727,
+          "E1": 0.04658949362555489,
+          "E2": 0.8941808513803591,
+          "E3": 0.9290541492793783,
+          "E4": 0.9432826669646537,
+          "W-freq": 0.0700273476137717,
+          "W-alg": 0.909044358380239,
+          "W-role": 0.20367263549688966,
+          "W-scramble": 0.9364710488087113
+        },
+        "kendall_tau_vs_preregistered": 1.0
+      },
+      "resid_mid only": {
+        "means": {
+          "E0": 0.10481460822006843,
+          "E1": 0.013849510704960504,
+          "E2": 0.8836281779361818,
+          "E3": 0.9223915505870716,
+          "E4": 0.918477423156047,
+          "W-freq": 0.02504431245404351,
+          "W-alg": 0.9031164604543079,
+          "W-role": 0.4088367910267025,
+          "W-scramble": 0.9128969654593299
+        },
+        "kendall_tau_vs_preregistered": 0.8888888888888888
+      },
+      "mlp_post only": {
+        "means": {
+          "E0": 0.1702186555604077,
+          "E1": 0.12554223195534872,
+          "E2": 0.9448535071464707,
+          "E3": 0.9686575306071035,
+          "E4": 0.9878766708941401,
+          "W-freq": 0.1828566886852591,
+          "W-alg": 0.9632976691205934,
+          "W-role": 0.11175065407404379,
+          "W-scramble": 0.9707266139670963
+        },
+        "kendall_tau_vs_preregistered": 0.7777777777777778
+      },
+      "resid_post only": {
+        "means": {
+          "E0": 0.11352612120141865,
+          "E1": 0.0,
+          "E2": 0.8541391985283425,
+          "E3": 0.8961788389792074,
+          "E4": 0.9235516670864184,
+          "W-freq": 0.0032202723849442,
+          "W-alg": 0.8608136110076678,
+          "W-role": 0.0914094803003227,
+          "W-scramble": 0.9258459443004452
+        },
+        "kendall_tau_vs_preregistered": 0.8888888888888888
+      },
+      "orthogonal alignment (with scale)": {
+        "means": {
+          "E0": 0.005971062266276431,
+          "E1": 0.0,
+          "E2": 0.635008803681692,
+          "E3": 0.7444900157396268,
+          "E4": 0.8093142929478413,
+          "W-freq": 0.0,
+          "W-alg": 0.6637226322973918,
+          "W-role": 0.07681248864093453,
+          "W-scramble": 0.7797940756883065
+        },
+        "kendall_tau_vs_preregistered": 0.9860132971832692
+      }
+    },
+    "compiler": {
+      "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": {
+        "means": {
+          "E0": 0.051336976982973875,
+          "E1": 0.051336976982973875,
+          "E2": 0.8948412268400746,
+          "E3": 0.9266229367497472,
+          "E4": 0.9518100623568961,
+          "W-freq": 0.09455501321370001,
+          "W-alg": 0.9205857909430541,
+          "W-role": 0.4998326517563714,
+          "W-scramble": 0.8587888543763699
+        },
+        "kendall_tau_vs_preregistered": 1.0
+      },
+      "ridge \u03bb \u00d7 100": {
+        "means": {
+          "E0": 0.04310971668916122,
+          "E1": 0.04310971668916122,
+          "E2": 0.8704292943705759,
+          "E3": 0.7904064699896417,
+          "E4": 0.8701851354990803,
+          "W-freq": 0.0764301472962635,
+          "W-alg": 0.9046691666004646,
+          "W-role": 0.46181788677227376,
+          "W-scramble": 0.7485312962199949
+        },
+        "kendall_tau_vs_preregistered": 0.7714285714285714
+      },
+      "ridge \u03bb / 100": {
+        "means": {
+          "E0": 0.054361638696809954,
+          "E1": 0.054361638696809954,
+          "E2": 0.9055537412333282,
+          "E3": 0.9563303815651575,
+          "E4": 0.9619338757550541,
+          "W-freq": 0.10487534907122885,
+          "W-alg": 0.9225118104204033,
+          "W-role": 0.5129922664432244,
+          "W-scramble": 0.9319864389616493
+        },
+        "kendall_tau_vs_preregistered": 0.8857142857142858
+      },
+      "3 folds": {
+        "means": {
+          "E0": 0.04945561522591744,
+          "E1": 0.04945561522591744,
+          "E2": 0.8947468585724313,
+          "E3": 0.9265819932701819,
+          "E4": 0.9517894506325447,
+          "W-freq": 0.09274577424591386,
+          "W-alg": 0.9205475959155093,
+          "W-role": 0.49963026936182064,
+          "W-scramble": 0.8587095527551399
+        },
+        "kendall_tau_vs_preregistered": 1.0
+      },
+      "10 folds": {
+        "means": {
+          "E0": 0.052342676302546416,
+          "E1": 0.052342676302546416,
+          "E2": 0.8949370725006277,
+          "E3": 0.9266550014061915,
+          "E4": 0.9518316229221283,
+          "W-freq": 0.09538036465940526,
+          "W-alg": 0.9206208910592005,
+          "W-role": 0.4998357161114409,
+          "W-scramble": 0.8587514789449003
+        },
+        "kendall_tau_vs_preregistered": 1.0
+      },
+      "fold seed 1": {
+        "means": {
+          "E0": 0.050893055120931514,
+          "E1": 0.050893055120931514,
+          "E2": 0.8948398373585601,
+          "E3": 0.9266141258414056,
+          "E4": 0.9518116155531064,
+          "W-freq": 0.09446968056023071,
+          "W-alg": 0.9205899124386523,
+          "W-role": 0.49979350615779944,
+          "W-scramble": 0.8586128831777341
+        },
+        "kendall_tau_vs_preregistered": 1.0
+      },
+      "fold seed 2": {
+        "means": {
+          "E0": 0.050846647178230925,
+          "E1": 0.050846647178230925,
+          "E2": 0.8948233950341492,
+          "E3": 0.9265991548349825,
+          "E4": 0.9517889563302541,
+          "W-freq": 0.0942830570540905,
+          "W-alg": 0.9205663674351889,
+          "W-role": 0.4997660860295586,
+          "W-scramble": 0.8585166741656304
+        },
+        "kendall_tau_vs_preregistered": 1.0
+      },
+      "resid_mid only": {
+        "means": {
+          "E0": 0.0,
+          "E1": 0.0,
+          "E2": 0.8836281779361802,
+          "E3": 0.9125573387351124,
+          "E4": 0.9125573387351124,
+          "W-freq": 0.07434063495125275,
+          "W-alg": 0.8836281779361802,
+          "W-role": 0.9125573387351124,
+          "W-scramble": 0.9125573387351124
+        },
+        "kendall_tau_vs_preregistered": 0.6388765649999398
+      },
+      "mlp_post only": {
+        "means": {
+          "E0": 0.15401093094892163,
+          "E1": 0.15401093094892163,
+          "E2": 0.9449195861579215,
+          "E3": 0.9726059195767695,
+          "E4": 0.9921306926464413,
+          "W-freq": 0.20000102589175134,
+          "W-alg": 0.9726110671022937,
+          "W-role": 0.0,
+          "W-scramble": 0.9724953243863195
+        },
+        "kendall_tau_vs_preregistered": 0.7142857142857143
+      },
+      "resid_post only": {
+        "means": {
+          "E0": 0.0,
+          "E1": 0.0,
+          "E2": 0.855975916426122,
+          "E3": 0.8947055519373595,
+          "E4": 0.950742155689135,
+          "W-freq": 0.009323378798095944,
+          "W-alg": 0.9055181277906886,
+          "W-role": 0.5869406165340021,
+          "W-scramble": 0.6913139000076778
+        },
+        "kendall_tau_vs_preregistered": 0.9428571428571428
+      },
+      "orthogonal alignment (with scale)": {
+        "means": {
+          "E0": 0.0,
+          "E1": 0.0,
+          "E2": 0.7050460169109538,
+          "E3": 0.5230489206322929,
+          "E4": 0.5677945533768618,
+          "W-freq": 0.0,
+          "W-alg": 0.7723345170527492,
+          "W-role": 0.25731970938954946,
+          "W-scramble": 0.49198946089060097
+        },
+        "kendall_tau_vs_preregistered": 0.7356123579206246
+      }
+    }
+  }
+}

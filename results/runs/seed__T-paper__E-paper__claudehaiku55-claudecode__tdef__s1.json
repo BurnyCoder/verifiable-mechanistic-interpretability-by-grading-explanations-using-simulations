@@ -1,0 +1,79 @@
+{
+  "kl_out": 3.1300448350357256e-05,
+  "argmax_agreement": 1.0,
+  "accuracy": 1.0,
+  "target_accuracy": 1.0,
+  "sites": {
+    "resid_mid": {
+      "completeness": 0.960693332324523,
+      "soundness": 0.6865684343734537,
+      "harmonic": 0.8008219827856871
+    },
+    "mlp_post": {
+      "completeness": 0.9876438151391015,
+      "soundness": 0.9847313609372579,
+      "harmonic": 0.986185437740006
+    },
+    "resid_post": {
+      "completeness": 0.9797905914837399,
+      "soundness": 0.8766377493747108,
+      "harmonic": 0.9253483154428029
+    }
+  },
+  "hs": 0.9041185786561653,
+  "centred_logit_fvu": 36.685225912220275,
+  "calibrated_kl": 7.156396695184302e-07,
+  "calibration_scale": 0.12557796347665304,
+  "cka": {
+    "resid_mid": 0.6705570765428378,
+    "mlp_post": 0.8775424222476145,
+    "resid_post": 0.26714658191852464
+  },
+  "procrustes": {
+    "resid_mid": 0.5131081518329719,
+    "mlp_post": 0.21407041710350638,
+    "resid_post": 0.9295463196443658
+  },
+  "matched_neuron_corr": 0.5219170850533112,
+  "matched_attention_distance": 0.12408922699513948,
+  "stitching_kl": 0.007007387973289491,
+  "embedding_spectrum_cosine": 0.7876994896719487,
+  "failed": false,
+  "error": null,
+  "run_id": "seed__T-paper__E-paper__claudehaiku55-claudecode__tdef__s1",
+  "stage": "seed",
+  "target": "T-paper",
+  "level": "E-paper",
+  "variant": "",
+  "round": 2,
+  "model": "claude-haiku-5-5",
+  "temperature": null,
+  "seed": 1,
+  "selftest": true,
+  "harness": "claudecode",
+  "effort": "medium",
+  "agent": {
+    "exit_code": 0,
+    "seconds": 231,
+    "timeout_s": 3600,
+    "events": 195,
+    "steps": 19,
+    "tool_calls": 10,
+    "errors": 0,
+    "wsl_returncode": 0,
+    "cost_usd": 0.0328,
+    "total_claude_spend_usd": 1.8081,
+    "starter_unchanged": false
+  },
+  "audit": {
+    "flagged": false,
+    "reasons": [],
+    "suspicious_terms": []
+  },
+  "length": {
+    "chars": 3102,
+    "gzip_bytes": 1459,
+    "numbers": 81
+  },
+  "finished": "2026-11-21T23:10:31"
+}

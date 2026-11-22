@@ -1,0 +1,79 @@
+{
+  "kl_out": 0.00019543654813069763,
+  "argmax_agreement": 1.0,
+  "accuracy": 1.0,
+  "target_accuracy": 1.0,
+  "sites": {
+    "resid_mid": {
+      "completeness": 0.9831418499123443,
+      "soundness": 0.9756980534079479,
+      "harmonic": 0.9794058080575208
+    },
+    "mlp_post": {
+      "completeness": 0.9939403178160015,
+      "soundness": 0.9894962990600825,
+      "harmonic": 0.9917133298814965
+    },
+    "resid_post": {
+      "completeness": 0.9726607390425164,
+      "soundness": 0.936097219846654,
+      "harmonic": 0.9540287802666956
+    }
+  },
+  "hs": 0.9750493060685709,
+  "centred_logit_fvu": 0.08075283892619266,
+  "calibrated_kl": 5.115158696102743e-06,
+  "calibration_scale": 1.9955040611825368,
+  "cka": {
+    "resid_mid": 0.952885936841134,
+    "mlp_post": 0.93479381691123,
+    "resid_post": 0.4671366652566526
+  },
+  "procrustes": {
+    "resid_mid": 0.16349677076986557,
+    "mlp_post": 0.09566324536480253,
+    "resid_post": 0.5928986284991651
+  },
+  "matched_neuron_corr": 0.7621840062752769,
+  "matched_attention_distance": 0.03849488806366729,
+  "stitching_kl": 0.026893726932729903,
+  "embedding_spectrum_cosine": 0.9556668009461459,
+  "failed": false,
+  "error": null,
+  "run_id": "hyper__T0__E3-effort-high__claudehaiku55-claudecode__tdef__s1",
+  "stage": "hyper",
+  "target": "T0",
+  "level": "E3",
+  "variant": "effort-high",
+  "round": 2,
+  "model": "claude-haiku-5-5",
+  "temperature": null,
+  "seed": 1,
+  "selftest": true,
+  "harness": "claudecode",
+  "effort": "high",
+  "agent": {
+    "exit_code": 0,
+    "seconds": 286,
+    "timeout_s": 3600,
+    "events": 230,
+    "steps": 44,
+    "tool_calls": 22,
+    "errors": 0,
+    "wsl_returncode": 0,
+    "cost_usd": 0.0386,
+    "total_claude_spend_usd": 1.3592,
+    "starter_unchanged": false
+  },
+  "audit": {
+    "flagged": false,
+    "reasons": [],
+    "suspicious_terms": []
+  },
+  "length": {
+    "chars": 3712,
+    "gzip_bytes": 1772,
+    "numbers": 126
+  },
+  "finished": "2026-11-21T21:56:54"
+}

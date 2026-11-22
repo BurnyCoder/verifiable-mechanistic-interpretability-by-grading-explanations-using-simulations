@@ -1,0 +1,79 @@
+{
+  "kl_out": 4.8704978344762124e-05,
+  "argmax_agreement": 1.0,
+  "accuracy": 1.0,
+  "target_accuracy": 1.0,
+  "sites": {
+    "resid_mid": {
+      "completeness": 0.984323096794555,
+      "soundness": 0.9874961077147894,
+      "harmonic": 0.9859070492827068
+    },
+    "mlp_post": {
+      "completeness": 0.9679504448950076,
+      "soundness": 0.9868027596401281,
+      "harmonic": 0.977285693151669
+    },
+    "resid_post": {
+      "completeness": 0.9466172809333343,
+      "soundness": 0.9495658687952315,
+      "harmonic": 0.9480892823192878
+    }
+  },
+  "hs": 0.9704273415845545,
+  "centred_logit_fvu": 0.08532557745832366,
+  "calibrated_kl": 8.709062521339796e-06,
+  "calibration_scale": 1.3832643940445601,
+  "cka": {
+    "resid_mid": 0.8928957324179185,
+    "mlp_post": 0.846509587247953,
+    "resid_post": 0.40518407839687753
+  },
+  "procrustes": {
+    "resid_mid": 0.1918146676744923,
+    "mlp_post": 0.13184480296893542,
+    "resid_post": 0.5833265983501625
+  },
+  "matched_neuron_corr": 0.8833150410047472,
+  "matched_attention_distance": 0.03627535351005742,
+  "stitching_kl": 6.657391649853097e-05,
+  "embedding_spectrum_cosine": 0.96245548588051,
+  "failed": false,
+  "error": null,
+  "run_id": "seed__T2__E3__claudehaiku55-claudecode__tdef__s1",
+  "stage": "seed",
+  "target": "T2",
+  "level": "E3",
+  "variant": "",
+  "round": 2,
+  "model": "claude-haiku-5-5",
+  "temperature": null,
+  "seed": 1,
+  "selftest": true,
+  "harness": "claudecode",
+  "effort": "medium",
+  "agent": {
+    "exit_code": 0,
+    "seconds": 155,
+    "timeout_s": 3600,
+    "events": 132,
+    "steps": 25,
+    "tool_calls": 12,
+    "errors": 0,
+    "wsl_returncode": 0,
+    "cost_usd": 0.0212,
+    "total_claude_spend_usd": 1.6365,
+    "starter_unchanged": false
+  },
+  "audit": {
+    "flagged": false,
+    "reasons": [],
+    "suspicious_terms": []
+  },
+  "length": {
+    "chars": 3826,
+    "gzip_bytes": 1815,
+    "numbers": 143
+  },
+  "finished": "2026-11-21T22:43:41"
+}

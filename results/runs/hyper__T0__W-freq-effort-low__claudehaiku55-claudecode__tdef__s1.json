@@ -1,0 +1,79 @@
+{
+  "kl_out": 0.00233488298360031,
+  "argmax_agreement": 1.0,
+  "accuracy": 1.0,
+  "target_accuracy": 1.0,
+  "sites": {
+    "resid_mid": {
+      "completeness": 0.0,
+      "soundness": 0.05222941814871951,
+      "harmonic": 0.0
+    },
+    "mlp_post": {
+      "completeness": 0.24407302341990944,
+      "soundness": 0.1543214112710739,
+      "harmonic": 0.18908744775299827
+    },
+    "resid_post": {
+      "completeness": 0.0,
+      "soundness": 0.031912445659317945,
+      "harmonic": 0.0
+    }
+  },
+  "hs": 0.06302914925099942,
+  "centred_logit_fvu": 1.8546074982489027,
+  "calibrated_kl": 2.0419163442190272e-05,
+  "calibration_scale": 2.7763153476925986,
+  "cka": {
+    "resid_mid": 7.996741101400133e-05,
+    "mlp_post": 0.009635863644390279,
+    "resid_post": 0.00018808012883223286
+  },
+  "procrustes": {
+    "resid_mid": 1.9843033767591027,
+    "mlp_post": 1.8771168478311635,
+    "resid_post": 1.9784350327148401
+  },
+  "matched_neuron_corr": 0.03458631553837088,
+  "matched_attention_distance": 0.19719553997022393,
+  "stitching_kl": 12.194181756202529,
+  "embedding_spectrum_cosine": 0.02132892501783042,
+  "failed": false,
+  "error": null,
+  "run_id": "hyper__T0__W-freq-effort-low__claudehaiku55-claudecode__tdef__s1",
+  "stage": "hyper",
+  "target": "T0",
+  "level": "W-freq",
+  "variant": "effort-low",
+  "round": 2,
+  "model": "claude-haiku-5-5",
+  "temperature": null,
+  "seed": 1,
+  "selftest": true,
+  "harness": "claudecode",
+  "effort": "low",
+  "agent": {
+    "exit_code": 0,
+    "seconds": 164,
+    "timeout_s": 3600,
+    "events": 107,
+    "steps": 27,
+    "tool_calls": 13,
+    "errors": 0,
+    "wsl_returncode": 0,
+    "cost_usd": 0.015,
+    "total_claude_spend_usd": 1.3206,
+    "starter_unchanged": false
+  },
+  "audit": {
+    "flagged": false,
+    "reasons": [],
+    "suspicious_terms": []
+  },
+  "length": {
+    "chars": 3724,
+    "gzip_bytes": 1779,
+    "numbers": 126
+  },
+  "finished": "2026-11-21T21:52:03"
+}

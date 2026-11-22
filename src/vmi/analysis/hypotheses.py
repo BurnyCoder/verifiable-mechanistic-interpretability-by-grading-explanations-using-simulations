@@ -76,9 +76,15 @@ def evaluate(max_round: int) -> dict:
         jt_kl = st.jonckheere(kl_groups)
         lv_idx = np.concatenate([np.full(len(g), i) for i, g in enumerate(groups)])
         sp = st.spearman_ci(lv_idx, np.concatenate(groups), groups)
-        ok = jt_hs["p"] < ALPHA and sp["rho"] > 0 and (sp["ci"] is None or sp["ci"][0] > 0)
-        H["H1"] = {"N": n, "label": _n_label(n), "verdict": "supported" if ok else "not supported",
-                   "jt_hs": jt_hs, "jt_neg_kl": jt_kl, "spearman_hs": sp,
+        sp_kl = st.spearman_ci(lv_idx, np.concatenate(kl_groups), kl_groups)
+
+        def trend_ok(jt, s):  # §5: one-sided trend p < α and Spearman ρ > 0 with its CI above 0
+            return jt["p"] < ALPHA and s["rho"] > 0 and (s["ci"] is None or s["ci"][0] > 0)
+        # §5 tests HS and KL_out "separately, same rule" (deviation 7: both parts are reported, as preregistered)
+        H["H1"] = {"N": n, "label": _n_label(n),
+                   "verdicts": {"HS": "supported" if trend_ok(jt_hs, sp) else "not supported",
+                                "KL_out": "supported" if trend_ok(jt_kl, sp_kl) else "not supported"},
+                   "jt_hs": jt_hs, "jt_neg_kl": jt_kl, "spearman_hs": sp, "spearman_neg_kl": sp_kl,
                    "means_hs": {lv: float(g.mean()) for lv, g in zip(levels, groups)},
                    "means_kl": {lv: float(-g.mean()) for lv, g in zip(levels, kl_groups)}}
     # H2 — true vs length-matched false explanations on HS
@@ -93,8 +99,10 @@ def evaluate(max_round: int) -> dict:
         adj = st.holm({k: v["p"] for k, v in tests.items()})
         if nmin < 2:
             verdicts = {k: ("cannot tell at this N" if effects[k] is None or effects[k]["diff"] > 0 else "not supported") for k in pairs}
-        else:
-            verdicts = {k: ("supported" if adj[k] is not None and adj[k] < ALPHA and effects[k]["diff"] > 0 else "not supported") for k in pairs}
+        else:  # §6 / deviation 1: a test whose smallest attainable p is ≥ α cannot decide (3 vs 3: 1/20); deviation 7
+            verdicts = {k: st.verdict(adj[k], effects[k]["diff"] > 0,
+                                      st.min_p_mann_whitney(len(_select(runs, level=a)), len(_select(runs, level=b))))
+                        for k, (a, b) in pairs.items()}
         H["H2"] = {"N": nmin, "label": _n_label(nmin), "verdicts": verdicts, "tests": tests, "holm_p": adj, "effects": effects}
     # H3 — W-freq fools output KL but not HS
     wf = _select(runs, level="W-freq")

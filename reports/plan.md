@@ -17,6 +17,8 @@
 | Round 1 | Post-hoc target swap: the same E0/E1 weights graded against the published checkpoint | the most direct memorisation test | `experiments/01-round1/experiment.md` |
 | Round 1 | **Local Qwen runs stopped** after 5 of 12 (4B × 4, 9B × 1), all at chance; no local conditions in rounds 2–3, so 32 conditions per round; H5/H6 not evaluable | your instruction ("stop doing Qwen runs if they don't work") | deviation 5 in `preregistration.md` |
 | Round 2 | **Round 3 (N = 10) postponed** to a later day; round 2 (N = 3) completes and its verdicts are reported as "at N = 3 — not yet N = 10" | your instruction ("Postpone N=4 - N=10 to some other day") | deviation 6 in `preregistration.md` |
+| Round 2 | Round 2 done (64 runs, no failures); two analysis-code corrections so H1 and H2 follow §5–§6 as written; round reports keep their own round's numbers | found when reading the N = 3 verdicts | deviation 7 in `preregistration.md` |
+| Round 2 | README: predicted vs. measured, highlighted examples, concrete outputs vs. ground truth, the agents' own words; output-examples and outputs-vs-internals figures; ablations table | your requests | README, `reports/agent-examples.md` |
 
 Round 2 (N = 3) runs the 32 Claude Haiku conditions; round 3 (N = 10) is postponed to a later day and starts only when
 you ask for it.

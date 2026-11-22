@@ -204,3 +204,18 @@ deviation 5 with its consequence: H5's capability trend and H6's cross-simulator
 **Learning.** The method has a capability floor: the simulator must write about a hundred lines of correct numpy from a
 page of maths, and the 4–9B models (4-bit, in this harness) cannot. A capability axis needs simulators on both sides
 of that floor, for example Haiku, Sonnet and Opus, rather than models that all sit below it.
+
+## Round 1–2 — reading the agents' own transcripts (2026-11-22)
+
+**What happened.** Extracting the agents' visible messages and self-test results (`analysis/agent_examples.py`)
+showed three things the scores alone did not. (1) The memorisation is explicit: in the algorithm-only run the agent
+writes that the frequencies are unspecified and that it will "pick five standard ones (14, 35, 41, 42, 52)", the
+published paper's set. (2) A run can end on a worse build than its best one: the low-effort E3 run's self-test
+accuracy went up to 0.785 and the run stopped on a build at 0.562, because each rewrite replaced `build_weights.py`.
+(3) The small local model had the right frequencies in its script but never got a working network before its time
+ran out, with replies cut off at the output limit.
+
+**Learning.** Transcripts are evidence, not decoration: they show *why* a score is what it is. For a future protocol,
+keeping the best self-test build instead of the last one would separate "the agent cannot build it" from "the agent
+broke a working build", and the model's hidden thinking is not returned by the API, so only its visible messages can
+be quoted.

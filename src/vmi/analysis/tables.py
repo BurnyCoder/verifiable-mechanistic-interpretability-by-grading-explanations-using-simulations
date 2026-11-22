@@ -148,8 +148,10 @@ def baselines_table(target: str = "T0") -> str:
     return "\n".join(rows)
 
 
-def controls_table(target: str = "T0") -> str:
-    """Deterministic no-agent controls: planted-mechanism calibration (H4b) and wrong-target specificity (H7)."""
+def controls_table(target: str = "T0", max_round: int | None = None) -> str:
+    """Deterministic no-agent controls: planted-mechanism calibration (H4b) and wrong-target specificity (H7).
+
+    The wrong-target file is refreshed every round; with max_round only that round's replacements are listed."""
     out = []
     pc = RES / "controls" / f"planted_calibration_{target}.json"
     if pc.exists():
@@ -159,6 +161,10 @@ def controls_table(target: str = "T0") -> str:
     wt = RES / "controls" / f"wrong_targets_{target}.json"
     if wt.exists():
         rows = json.loads(wt.read_text())["rows"]
+        if max_round is not None:
+            from vmi.analysis.hypotheses import load_runs
+            keep = {r["run_id"] for r in load_runs(max_round)}
+            rows = [r for r in rows if r["run_id"] in keep]
         out += ["", "| Replacement | HS vs T0 | best wrong target (HS) | d = HS(T0) − max HS(wrong) |", "|---|---|---|---|"]
         for r in rows:
             k = max(r["hs_wrong"], key=r["hs_wrong"].get)
@@ -203,15 +209,20 @@ def key_results(max_round: int, target: str = "T0") -> str:
         rows = [r for r in json.loads(fq.read_text())["rows"] if r["model"] == "claude-haiku-5-5" and r["variant"] == ""
                 and r["level"] in ("E0", "E1") and r["target"] != "T-paper"]
         if rows:
-            swap = "; ".join(f"{r['level']}: HS {r['hs']:.2f} against {r['target']}, {r['hs_vs_paper']:.2f} against the published checkpoint"
-                             for r in rows if "hs_vs_paper" in r)
-            out.append(f"- **Memorisation (post hoc):** when the explanation gives no frequencies (E0, E1), the simulator's "
-                       f"{len(rows)} replacement(s) on unpublished targets use the paper's published frequencies (mean overlap "
-                       f"{np.mean([r['jaccard_paper'] for r in rows]):.2f} with {{14, 35, 41, 42, 52}}, "
-                       f"{np.mean([r['jaccard_target'] for r in rows]):.2f} with the target's own). Grading the same weights "
-                       f"against the published checkpoint (target swap): {swap}. A separate algorithm-only run on the published "
-                       f"checkpoint scores HS {np.mean([r['hs'] for r in tp_e1]):.2f}: scores on published models measure "
-                       f"memory, not the explanation.")
+            def per_level(lv):  # replicates differ (round 2: some E0 runs build blocks of consecutive frequencies instead)
+                rs = [r for r in rows if r["level"] == lv]
+                if not rs:
+                    return ""
+                mem = sum(r["jaccard_paper"] >= 0.5 for r in rs)
+                swap = [r["hs_vs_paper"] for r in rs if "hs_vs_paper" in r]
+                return (f"{lv}: {mem} of {len(rs)} replacement(s) built mostly the paper's frequencies (Jaccard ≥ 0.5); mean HS "
+                        f"{np.mean([r['hs'] for r in rs]):.2f} against {rs[0]['target']} but "
+                        f"{np.mean(swap):.2f} against the published checkpoint (target swap: same weights, other target)")
+            out.append(f"- **Memorisation (post hoc):** when the explanation gives no frequencies, the simulator often builds "
+                       f"the published paper's frequencies {{14, 35, 41, 42, 52}} into its replacement. "
+                       + "; ".join(x for x in (per_level("E1"), per_level("E0")) if x)
+                       + f". A separate algorithm-only run on the published checkpoint scores HS "
+                       f"{np.mean([r['hs'] for r in tp_e1]):.2f}: scores on published models measure memory, not the explanation.")
     led = RES / "claude" / "ledger.jsonl"
     if led.exists():
         spend = sum(json.loads(x).get("cost_usd", 0.0) for x in led.read_text(encoding="utf-8").splitlines() if x.strip())
@@ -303,6 +314,78 @@ def predictions_table(max_round: int, plain: bool = False) -> str:
     out += [f"| {r['id']} | " + (f"{r['plain']} | " if plain else "") +
             f"{r['predicted']} | {r['observed']} | {r['matches']} | {r['verdict']} · {r['evidence']} |" for r in rows]
     return "\n".join(out)
+
+
+def highlights_table(max_round: int) -> str:
+    """What works (✅) and what does not (❌): concrete examples with numbers from results/ (README top)."""
+    from vmi.analysis.hypotheses import _select, load_runs
+    from vmi.analysis.predictions import highlight_rows
+    rows = highlight_rows(max_round)
+    if not rows:
+        return "_no results yet_"
+    n = len(_select(load_runs(max_round), level="E3"))
+    out = [f"*Main simulator Claude Haiku 5.5, target T0 unless stated; means over {n} run(s) per condition (round {max_round}).*", "",
+           "| | Example | Measured | What it means |", "|---|---|---|---|"]
+    out += [f"| {'✅' if r['ok'] else '❌'} | **{r['title']}** | {r['evidence']} | {r['means']} |" for r in rows]
+    return "\n".join(out)
+
+
+def outputs_table(max_round: int, target: str = "T0") -> str:
+    """Concrete answers of each example network on a few inputs, next to the true answer (README highlights)."""
+    from vmi.analysis.examples import output_rows, panel_models
+    from vmi.config import P
+    panels = panel_models(max_round, target)
+    inputs, answers, acc = output_rows(panels)
+    names = [p["name"] for p in panels]
+    out = ["| Input | True answer | " + " | ".join(n.replace("agent, ", "agent ") for n in names) + " |",
+           "|---|---|" + "---|" * len(names)]
+    for i, (a, b) in enumerate(inputs):
+        truth = (a + b) % P
+        cells = [f"{ans} {'✓' if ans == truth else '✗'} ({pr:.2f})" for ans, pr in (answers[n][i] for n in names)]
+        out.append(f"| {a} + {b} | {truth} | " + " | ".join(cells) + " |")
+    out.append(f"| **accuracy, all {P * P:,} inputs** | 1.000 | " + " | ".join(f"{acc[n]:.3f}" for n in names) + " |")
+    out.append("| **HS (insides vs. target)** | – | " + " | ".join("1 (itself)" if p["kind"] == "target" else f"{p['hs']:.2f}"
+                                                              for p in panels) + " |")
+    return "\n".join(out)
+
+
+def agent_examples_table(max_round: int) -> str:
+    """What the agent did in example runs chosen by rule: process, a line it wrote, its own words, the result."""
+    from vmi.analysis import agent_examples
+    rows = agent_examples.rows(max_round)
+    if not rows:
+        return "_no agent runs on this machine_"
+    esc = lambda s: s.replace("|", "\\|")  # noqa: E731  markdown table cells
+    out = ["| | Case (run chosen by rule) | What the agent did (its log) | A line it wrote | In its own words (closing message) | Result |",
+           "|---|---|---|---|---|---|"]
+    for x in rows:
+        line = " ".join((x["freq_lines"] or x["choices"] or ["–"])[0].split())
+        line = line if len(line) <= 90 else line[:89] + "…"
+        process = (f"{x['tool_calls']} tool calls, {x['selftest_runs']} self-tests, {x['errors']} errors, {x['minutes']} min"
+                   + (f"; harness: {', '.join(dict.fromkeys(x['harness_errors']))}" if x["harness_errors"] else ""))
+        first = agent_examples.first_sentence(x["final"])
+        result = f"accuracy {x['accuracy']:.4f}, HS {x['hs']:.2f}" + (f" (compiler {x['compiler_hs']:.2f})" if x["compiler_hs"] is not None else "")
+        out.append(f"| {x['kind']} | **{x['label']}**<br>[{x['target']} · {x['level']} · {x['model']}]({x['url']}) | {esc(process)} | "
+                   f"`{esc(line)}` | {esc(first)} | {result} |")
+    return "\n".join(out)
+
+
+def agent_words_md(max_round: int) -> str:
+    """The agent's own words in each example run: its plan, its reaction to the first self-test, its closing line."""
+    from vmi.analysis import agent_examples
+    rows = agent_examples.rows(max_round)
+    if not rows:
+        return "_no agent runs on this machine_"
+    out = []
+    for x in rows:
+        traj = " → ".join(f"{a:.4f}" for a in x["accs"]) or "never reached"
+        out += [f"**{x['kind']} {x['label']}** ({x['target']} · {x['level']} · {x['model']}; self-test accuracy over the "
+                f"run: {traj}; final HS {x['hs']:.2f})", ""]
+        quotes = [("Plan", x["plan"]), ("After the first self-test", x["reaction"]),
+                  ("Closing", agent_examples.first_sentence(x["final"], 260))]
+        out += [f"> *{k}:* “{q}”  " for k, q in quotes if q]
+        out.append("")
+    return "\n".join(out).rstrip()
 
 
 def replications_table(max_round: int) -> str:

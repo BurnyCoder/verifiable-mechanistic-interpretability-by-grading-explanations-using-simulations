@@ -1,0 +1,79 @@
+{
+  "kl_out": 0.3001564327252418,
+  "argmax_agreement": 0.9563004150677422,
+  "accuracy": 0.9563004150677422,
+  "target_accuracy": 1.0,
+  "sites": {
+    "resid_mid": {
+      "completeness": 0.8883921288604527,
+      "soundness": 0.9957554243681633,
+      "harmonic": 0.9390148661795802
+    },
+    "mlp_post": {
+      "completeness": 0.977946307121204,
+      "soundness": 0.9958462005987095,
+      "harmonic": 0.9868150887462852
+    },
+    "resid_post": {
+      "completeness": 0.9299298787544292,
+      "soundness": 0.9795990754410346,
+      "harmonic": 0.9541184986499917
+    }
+  },
+  "hs": 0.959982817858619,
+  "centred_logit_fvu": 0.0749179092659517,
+  "calibrated_kl": 0.18462451856772036,
+  "calibration_scale": 0.4327745332745088,
+  "cka": {
+    "resid_mid": 0.8993240588761068,
+    "mlp_post": 0.9639957074840152,
+    "resid_post": 0.2936450094773176
+  },
+  "procrustes": {
+    "resid_mid": 0.16323982586757024,
+    "mlp_post": 0.0769819918068555,
+    "resid_post": 0.8386652836981605
+  },
+  "matched_neuron_corr": 0.8687041907633843,
+  "matched_attention_distance": 0.2004396468762469,
+  "stitching_kl": 3.1246171210141918,
+  "embedding_spectrum_cosine": 0.9640656771562761,
+  "failed": false,
+  "error": null,
+  "run_id": "seed__T1__E4__claudehaiku55-claudecode__tdef__s2",
+  "stage": "seed",
+  "target": "T1",
+  "level": "E4",
+  "variant": "",
+  "round": 2,
+  "model": "claude-haiku-5-5",
+  "temperature": null,
+  "seed": 2,
+  "selftest": true,
+  "harness": "claudecode",
+  "effort": "medium",
+  "agent": {
+    "exit_code": 0,
+    "seconds": 285,
+    "timeout_s": 3600,
+    "events": 237,
+    "steps": 54,
+    "tool_calls": 25,
+    "errors": 0,
+    "wsl_returncode": 0,
+    "cost_usd": 0.0373,
+    "total_claude_spend_usd": 1.9801,
+    "starter_unchanged": false
+  },
+  "audit": {
+    "flagged": false,
+    "reasons": [],
+    "suspicious_terms": []
+  },
+  "length": {
+    "chars": 49805,
+    "gzip_bytes": 20840,
+    "numbers": 7810
+  },
+  "finished": "2026-11-21T23:35:17"
+}

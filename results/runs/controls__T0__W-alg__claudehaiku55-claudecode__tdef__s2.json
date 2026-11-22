@@ -1,0 +1,79 @@
+{
+  "kl_out": 0.043809910490317405,
+  "argmax_agreement": 1.0,
+  "accuracy": 1.0,
+  "target_accuracy": 1.0,
+  "sites": {
+    "resid_mid": {
+      "completeness": 0.9035732751765275,
+      "soundness": 0.9840432483051038,
+      "harmonic": 0.9420930254905602
+    },
+    "mlp_post": {
+      "completeness": 0.9532775901519231,
+      "soundness": 0.9925174195381218,
+      "harmonic": 0.9725018402959333
+    },
+    "resid_post": {
+      "completeness": 0.840557524972344,
+      "soundness": 0.9778098717159536,
+      "harmonic": 0.9040037202162586
+    }
+  },
+  "hs": 0.9395328620009175,
+  "centred_logit_fvu": 0.2698956608865055,
+  "calibrated_kl": 1.8634243918003337e-05,
+  "calibration_scale": 9.56557718447829,
+  "cka": {
+    "resid_mid": 0.9708322048837135,
+    "mlp_post": 0.8590497752598836,
+    "resid_post": 0.7897971012263454
+  },
+  "procrustes": {
+    "resid_mid": 0.11016273674484678,
+    "mlp_post": 0.13897136572178592,
+    "resid_post": 0.2543309083229277
+  },
+  "matched_neuron_corr": 0.7723838069866793,
+  "matched_attention_distance": 0.16181208583957113,
+  "stitching_kl": 1.4185130614550416,
+  "embedding_spectrum_cosine": 0.9650265237215894,
+  "failed": false,
+  "error": null,
+  "run_id": "controls__T0__W-alg__claudehaiku55-claudecode__tdef__s2",
+  "stage": "controls",
+  "target": "T0",
+  "level": "W-alg",
+  "variant": "",
+  "round": 2,
+  "model": "claude-haiku-5-5",
+  "temperature": null,
+  "seed": 2,
+  "selftest": true,
+  "harness": "claudecode",
+  "effort": "medium",
+  "agent": {
+    "exit_code": 0,
+    "seconds": 92,
+    "timeout_s": 3600,
+    "events": 82,
+    "steps": 14,
+    "tool_calls": 8,
+    "errors": 0,
+    "wsl_returncode": 0,
+    "cost_usd": 0.0126,
+    "total_claude_spend_usd": 1.1292,
+    "starter_unchanged": false
+  },
+  "audit": {
+    "flagged": false,
+    "reasons": [],
+    "suspicious_terms": []
+  },
+  "length": {
+    "chars": 2224,
+    "gzip_bytes": 1189,
+    "numbers": 65
+  },
+  "finished": "2026-11-21T21:23:11"
+}

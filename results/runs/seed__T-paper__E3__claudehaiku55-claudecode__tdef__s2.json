@@ -1,0 +1,79 @@
+{
+  "kl_out": 0.3798073956906925,
+  "argmax_agreement": 0.9011668885582269,
+  "accuracy": 0.9011668885582269,
+  "target_accuracy": 1.0,
+  "sites": {
+    "resid_mid": {
+      "completeness": 0.8926652382095117,
+      "soundness": 0.9952314241131784,
+      "harmonic": 0.9411622087265814
+    },
+    "mlp_post": {
+      "completeness": 0.9297862919370934,
+      "soundness": 0.9574496859866651,
+      "harmonic": 0.9434152418281626
+    },
+    "resid_post": {
+      "completeness": 0.7723014382267339,
+      "soundness": 0.9559413282893567,
+      "harmonic": 0.8543647651845918
+    }
+  },
+  "hs": 0.9129807385797787,
+  "centred_logit_fvu": 0.2541988312187318,
+  "calibrated_kl": 0.3400491677124217,
+  "calibration_scale": 0.6693790822330459,
+  "cka": {
+    "resid_mid": 0.9295429881912214,
+    "mlp_post": 0.877086522238573,
+    "resid_post": 0.3325133285254656
+  },
+  "procrustes": {
+    "resid_mid": 0.12737775855124966,
+    "mlp_post": 0.15289898922334966,
+    "resid_post": 0.6464721417534824
+  },
+  "matched_neuron_corr": 0.7127161170845339,
+  "matched_attention_distance": 0.044846055806468214,
+  "stitching_kl": 1.446267829301023,
+  "embedding_spectrum_cosine": 0.9670711083527203,
+  "failed": false,
+  "error": null,
+  "run_id": "seed__T-paper__E3__claudehaiku55-claudecode__tdef__s2",
+  "stage": "seed",
+  "target": "T-paper",
+  "level": "E3",
+  "variant": "",
+  "round": 2,
+  "model": "claude-haiku-5-5",
+  "temperature": null,
+  "seed": 2,
+  "selftest": true,
+  "harness": "claudecode",
+  "effort": "medium",
+  "agent": {
+    "exit_code": 0,
+    "seconds": 374,
+    "timeout_s": 3600,
+    "events": 168,
+    "steps": 43,
+    "tool_calls": 21,
+    "errors": 0,
+    "wsl_returncode": 0,
+    "cost_usd": 0.0254,
+    "total_claude_spend_usd": 2.2356,
+    "starter_unchanged": false
+  },
+  "audit": {
+    "flagged": false,
+    "reasons": [],
+    "suspicious_terms": []
+  },
+  "length": {
+    "chars": 3731,
+    "gzip_bytes": 1769,
+    "numbers": 128
+  },
+  "finished": "2026-11-22T00:20:34"
+}

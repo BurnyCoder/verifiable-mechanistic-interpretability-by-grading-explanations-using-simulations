@@ -1,0 +1,79 @@
+{
+  "kl_out": 0.015739249901687485,
+  "argmax_agreement": 0.9935781971963349,
+  "accuracy": 0.9935781971963349,
+  "target_accuracy": 1.0,
+  "sites": {
+    "resid_mid": {
+      "completeness": 0.9035865567909225,
+      "soundness": 0.8645675532733853,
+      "harmonic": 0.8836465262035761
+    },
+    "mlp_post": {
+      "completeness": 0.9915850593417073,
+      "soundness": 0.9512509008578461,
+      "harmonic": 0.970999302359111
+    },
+    "resid_post": {
+      "completeness": 0.9594399398481567,
+      "soundness": 0.9574878906233691,
+      "harmonic": 0.9584629213287114
+    }
+  },
+  "hs": 0.9377029166304661,
+  "centred_logit_fvu": 0.09297834285124862,
+  "calibrated_kl": 0.014275427677729179,
+  "calibration_scale": 0.6963701075298951,
+  "cka": {
+    "resid_mid": 0.8533712613717233,
+    "mlp_post": 0.8523791105433911,
+    "resid_post": 0.931143712968208
+  },
+  "procrustes": {
+    "resid_mid": 0.30929800515042727,
+    "mlp_post": 0.2478430430449594,
+    "resid_post": 0.10448670535286153
+  },
+  "matched_neuron_corr": 0.66711300936078,
+  "matched_attention_distance": 0.03847533794275804,
+  "stitching_kl": 1.4183418140436839,
+  "embedding_spectrum_cosine": 0.8944276371811544,
+  "failed": false,
+  "error": null,
+  "run_id": "controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s2",
+  "stage": "controls",
+  "target": "T0",
+  "level": "W-scramble",
+  "variant": "",
+  "round": 2,
+  "model": "claude-haiku-5-5",
+  "temperature": null,
+  "seed": 2,
+  "selftest": true,
+  "harness": "claudecode",
+  "effort": "medium",
+  "agent": {
+    "exit_code": 0,
+    "seconds": 216,
+    "timeout_s": 3600,
+    "events": 186,
+    "steps": 39,
+    "tool_calls": 19,
+    "errors": 0,
+    "wsl_returncode": 0,
+    "cost_usd": 0.03,
+    "total_claude_spend_usd": 1.1794,
+    "starter_unchanged": false
+  },
+  "audit": {
+    "flagged": false,
+    "reasons": [],
+    "suspicious_terms": []
+  },
+  "length": {
+    "chars": 51590,
+    "gzip_bytes": 22226,
+    "numbers": 7854
+  },
+  "finished": "2026-11-21T21:29:50"
+}
