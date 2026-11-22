@@ -19,6 +19,9 @@ explanation states. The compiler builds, in order:
 The logit scale comes from the stated amplitudes, else from the stated loss (1-D search), else a default loss 1e-6.
 Global context: no target weight or activation is used — only the spec — so the compiler measures what the
 explanation alone determines, separating explanation quality from agent skill (preregistration H5).
+E0 (audit 5): E0's spec says `algorithm: "none"`, which this compiler does not treat specially; it builds its default
+Clock network at DEFAULT_FREQS, exactly as for E1, so the compiler's E0 and E1 scores are identical and its E0 score is
+the compiler's own default build, not a reading of the E0 text.
 Sources: Fourier-multiplication algorithm and W_L structure — Nanda et al. 2023 §3–4 (https://arxiv.org/abs/2301.05217);
 Pizza algorithm — Zhong et al. 2023 (https://arxiv.org/abs/2306.17844); quadrature view of single-frequency ReLU
 neurons with uniformly spaced phases — Yip et al. 2024 (https://arxiv.org/abs/2412.03773); closed-form cosine weights —

@@ -9,6 +9,12 @@ Local explanation: `make_spec(analysis, level)` selects which measured quantitie
 The spec is the single source for both the rendered text (`render.py`) and the reference compiler.
 Global context: because text and compiler input come from the same spec, the compiler's score is exactly "what the
 explanation determines", and the agent sees the same information in prose.
+Known limitation (audit 5, 2026-11-22; frozen protocol, so not changed): `embed_freqs = mlp_freqs = key_freqs`, and the
+key frequencies come from W_L = W_U·W_out alone (grokviz, τ = 0.25). On T0, k = 2 passes only in W_L (0.27 of its
+maximum; no clustered neurons; 0.17 in W_E; 2 ≡ −3·37 mod 113, consistent with a ReLU harmonic of 37), while W_E's own
+set is {3, 6, 23, 37, 39}; on T2, T-new and T-paper W_E carries extra above-threshold frequencies (each ≡ −2× a key
+frequency). The rendered "All four steps use these frequencies" is therefore not exact on those targets
+(`results/audit5/checks.json`, preregistration deviation 12).
 Sources: preregistration §3; Pizza algorithm — https://arxiv.org/abs/2306.17844.
 """
 

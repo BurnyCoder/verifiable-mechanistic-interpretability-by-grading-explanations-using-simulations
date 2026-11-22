@@ -1,0 +1,695 @@
+{
+  "round": 2,
+  "recomputed": {
+    "H1": {
+      "HS": {
+        "verdict": "supported",
+        "jt": {
+          "J": 51.0,
+          "p": 9.46969696969697e-05,
+          "orderings": 369600
+        },
+        "spearman": {
+          "rho": 0.9068503858838141,
+          "ci": [
+            0.7869910029407435,
+            0.9872837696818764
+          ],
+          "n_resamples": 531441
+        }
+      },
+      "KL": {
+        "verdict": "not supported",
+        "jt": {
+          "J": 17.0,
+          "p": 0.9309442640692641,
+          "orderings": 369600
+        },
+        "spearman": {
+          "rho": -0.32387513781564786,
+          "ci": [
+            -0.8728715609439696,
+            0.1978141420187361
+          ],
+          "n_resamples": 531441
+        }
+      },
+      "E0_below_E1": false,
+      "means_hs": [
+        0.04646391422010308,
+        0.894206961203665,
+        0.9290759733911275,
+        0.9433019203788685
+      ]
+    },
+    "H2": {
+      "E3>W-freq": {
+        "p": 0.05,
+        "holm_p": 0.2,
+        "min_p": 0.05,
+        "r_rb": 1.0,
+        "ties": 0,
+        "effect": {
+          "diff": 0.8587022155497118,
+          "ci": [
+            0.8345809470760193,
+            0.8797117723164982
+          ]
+        },
+        "verdict": "cannot tell at this N"
+      },
+      "E3>W-alg": {
+        "p": 0.35,
+        "holm_p": 0.7,
+        "min_p": 0.05,
+        "r_rb": 0.33333333333333326,
+        "ties": 0,
+        "effect": {
+          "diff": 0.020000059863604314,
+          "ci": [
+            -0.009985512364406347,
+            0.04474955307413362
+          ]
+        },
+        "verdict": "cannot tell at this N"
+      },
+      "E3>W-role": {
+        "p": 0.05,
+        "holm_p": 0.2,
+        "min_p": 0.05,
+        "r_rb": 1.0,
+        "ties": 0,
+        "effect": {
+          "diff": 0.7250769982574378,
+          "ci": [
+            0.6583257725395504,
+            0.7682007841099024
+          ]
+        },
+        "verdict": "cannot tell at this N"
+      },
+      "E4>W-scramble": {
+        "p": 0.5,
+        "holm_p": 0.7,
+        "min_p": 0.05,
+        "r_rb": 0.11111111111111116,
+        "ties": 0,
+        "effect": {
+          "diff": 0.006812079136578109,
+          "ci": [
+            -0.024977841288004288,
+            0.036746701323300074
+          ]
+        },
+        "verdict": "cannot tell at this N"
+      }
+    },
+    "H3": {
+      "verdict": "supported",
+      "agreement_ok": true,
+      "kl_not_above_max": true,
+      "hs_below_all": true,
+      "kl_within_range": true,
+      "hs_diff": {
+        "E2": {
+          "diff": -0.8238332033622494,
+          "ci": [
+            -0.8404786580757055,
+            -0.8013429607321882
+          ]
+        },
+        "E3": {
+          "diff": -0.8587022155497118,
+          "ci": [
+            -0.8797117723164982,
+            -0.8345809470760193
+          ]
+        },
+        "E4": {
+          "diff": -0.8729281625374529,
+          "ci": [
+            -0.9039576767378011,
+            -0.8411382421128705
+          ]
+        }
+      }
+    },
+    "H4": {
+      "retrains": [
+        "wd1_s0",
+        "wd1_s2",
+        "wd1_s3",
+        "wd1_s4",
+        "wd1_s5",
+        "wd1_s6",
+        "wd1_s7",
+        "wd1_s8",
+        "wd1_s9"
+      ],
+      "E3": {
+        "p": 0.004545454545454545,
+        "holm_p": 0.00909090909090909,
+        "min_p": 0.004545454545454545,
+        "verdict": "supported"
+      },
+      "E4": {
+        "p": 0.004545454545454545,
+        "holm_p": 0.00909090909090909,
+        "min_p": 0.004545454545454545,
+        "verdict": "supported"
+      },
+      "students_two_sided": {
+        "E3": {
+          "p": 0.1,
+          "holm_p": 0.2,
+          "min_p": 0.1,
+          "result": "cannot tell at this N"
+        },
+        "E4": {
+          "p": 0.1,
+          "holm_p": 0.2,
+          "min_p": 0.1,
+          "result": "cannot tell at this N"
+        }
+      }
+    },
+    "H4b": {
+      "verdict": "not supported",
+      "hs": [
+        0.999999966589694,
+        0.9980927411909205,
+        0.9574774979645472,
+        0.8878842738878275
+      ],
+      "kl": [
+        0.0,
+        0.37062174455452224,
+        0.040109442486207875,
+        0.00042517092465205994
+      ]
+    },
+    "H5": {
+      "T0": {
+        "E2": {
+          "gap": -0.0006342656364095589,
+          "agent_ci_low": 0.8899076247030194,
+          "beyond": false
+        },
+        "E3": {
+          "gap": 0.0024530366413803018,
+          "agent_ci_low": 0.9190364527027716,
+          "beyond": false
+        },
+        "E4": {
+          "gap": -0.008508141978027739,
+          "agent_ci_low": 0.9204829425231901,
+          "beyond": false
+        },
+        "W-freq": {
+          "gap": -0.02418125537228441,
+          "agent_ci_low": 0.05664642720819554,
+          "beyond": false
+        }
+      },
+      "local_runs": 5,
+      "local_above_chance": 0
+    },
+    "H7": {
+      "wrong_targets": [
+        "T1",
+        "T2",
+        "dev",
+        "T-paper",
+        "wd0_s0",
+        "wd0_s1",
+        "wd0_s2",
+        "wd0_s3",
+        "wd0_s4",
+        "rand_s0",
+        "rand_s1",
+        "rand_s2"
+      ],
+      "d": [
+        0.6652475673992395,
+        0.6929018479893604,
+        0.625774993866173,
+        0.6853957048190834,
+        0.7263465741818759,
+        0.7078022548646208
+      ],
+      "d_matches_stored": true,
+      "W+": 21.0,
+      "p": 0.015625,
+      "min_p": 0.015625,
+      "median": 0.6891487764042219,
+      "verdict": "supported"
+    },
+    "H8": {
+      "rhos": [
+        0.8204021662262255,
+        0.7508087988982768,
+        0.776555439758812,
+        0.7522559273458147,
+        0.7711582982841405,
+        0.8394353668068636
+      ],
+      "n_checkpoints": 401,
+      "verdict": "supported"
+    },
+    "replications": {
+      "T0": {
+        "levels": [
+          "E2",
+          "E3",
+          "E4"
+        ],
+        "H1": {
+          "verdict": "supported",
+          "jt": {
+            "J": 24.0,
+            "p": 0.010714285714285714,
+            "orderings": 1680
+          },
+          "spearman": {
+            "rho": 0.7905694150420948,
+            "ci": [
+              0.48666426339228763,
+              0.9733285267845753
+            ],
+            "n_resamples": 19683
+          }
+        },
+        "H2": {
+          "p": 0.05,
+          "verdict": "cannot tell at this N"
+        },
+        "H3": {
+          "agreement_ok": true,
+          "kl_ok": true,
+          "hs_ok": true
+        }
+      },
+      "T1": {
+        "levels": [
+          "E2",
+          "E3",
+          "E4"
+        ],
+        "H1": {
+          "verdict": "not supported",
+          "jt": {
+            "J": 14.0,
+            "p": 0.5,
+            "orderings": 1680
+          },
+          "spearman": {
+            "rho": 0.05270462766947299,
+            "ci": [
+              -0.48666426339228763,
+              0.48666426339228763
+            ],
+            "n_resamples": 19683
+          }
+        },
+        "H2": {
+          "p": 0.05,
+          "verdict": "cannot tell at this N"
+        },
+        "H3": {
+          "agreement_ok": false,
+          "kl_ok": false,
+          "hs_ok": true
+        }
+      },
+      "T2": {
+        "levels": [
+          "E2",
+          "E3",
+          "E4"
+        ],
+        "H1": {
+          "verdict": "not supported",
+          "jt": {
+            "J": 14.0,
+            "p": 0.5,
+            "orderings": 1680
+          },
+          "spearman": {
+            "rho": 0.05270462766947299,
+            "ci": [
+              -0.5871365639519861,
+              0.5948118774794626
+            ],
+            "n_resamples": 19683
+          }
+        },
+        "H2": {
+          "p": 0.05,
+          "verdict": "cannot tell at this N"
+        },
+        "H3": {
+          "agreement_ok": true,
+          "kl_ok": true,
+          "hs_ok": true
+        }
+      },
+      "T-new": {
+        "levels": [
+          "E3",
+          "E4"
+        ],
+        "H1": {
+          "verdict": "cannot tell at this N",
+          "jt": {
+            "J": 9.0,
+            "p": 0.05,
+            "orderings": 20
+          },
+          "spearman": {
+            "rho": 0.87831006565368,
+            "ci": [
+              0.87831006565368,
+              0.9486832980505139
+            ],
+            "n_resamples": 729
+          }
+        },
+        "H2": {
+          "p": 0.05,
+          "verdict": "cannot tell at this N"
+        },
+        "H3": {
+          "agreement_ok": false,
+          "kl_ok": false,
+          "hs_ok": true
+        }
+      },
+      "T-paper": {
+        "levels": [
+          "E1",
+          "E3",
+          "E4"
+        ],
+        "H1": {
+          "verdict": "not supported",
+          "jt": {
+            "J": 21.0,
+            "p": 0.06130952380952381,
+            "orderings": 1680
+          },
+          "spearman": {
+            "rho": 0.6324555320336758,
+            "ci": [
+              0.48038446141526137,
+              0.8651809126974002
+            ],
+            "n_resamples": 19683
+          }
+        },
+        "H2": {
+          "p": 0.05,
+          "verdict": "cannot tell at this N"
+        },
+        "H3": {
+          "agreement_ok": true,
+          "kl_ok": true,
+          "hs_ok": true
+        }
+      }
+    }
+  },
+  "comparison": [
+    {
+      "item": "H1 HS JT p",
+      "stored": 9.46969696969697e-05,
+      "recomputed": 9.46969696969697e-05,
+      "agree": true
+    },
+    {
+      "item": "H1 KL JT p",
+      "stored": 0.9309442640692641,
+      "recomputed": 0.9309442640692641,
+      "agree": true
+    },
+    {
+      "item": "H1 HS Spearman ρ",
+      "stored": 0.9068503858838141,
+      "recomputed": 0.9068503858838141,
+      "agree": true
+    },
+    {
+      "item": "H1 HS ρ CI lower > 0",
+      "stored": "True",
+      "recomputed": "True",
+      "agree": true
+    },
+    {
+      "item": "H1 verdict HS",
+      "stored": "supported",
+      "recomputed": "supported",
+      "agree": true
+    },
+    {
+      "item": "H1 verdict KL",
+      "stored": "not supported",
+      "recomputed": "not supported",
+      "agree": true
+    },
+    {
+      "item": "H1 E0 below E1",
+      "stored": "False",
+      "recomputed": "False",
+      "agree": true
+    },
+    {
+      "item": "H2 E3>W-freq p",
+      "stored": 0.05,
+      "recomputed": 0.05,
+      "agree": true
+    },
+    {
+      "item": "H2 E3>W-freq Holm p",
+      "stored": 0.2,
+      "recomputed": 0.2,
+      "agree": true
+    },
+    {
+      "item": "H2 E3>W-freq verdict",
+      "stored": "cannot tell at this N",
+      "recomputed": "cannot tell at this N",
+      "agree": true
+    },
+    {
+      "item": "H2 E3>W-freq CI includes 0",
+      "stored": "False",
+      "recomputed": "False",
+      "agree": true
+    },
+    {
+      "item": "H2 E3>W-alg p",
+      "stored": 0.35,
+      "recomputed": 0.35,
+      "agree": true
+    },
+    {
+      "item": "H2 E3>W-alg Holm p",
+      "stored": 0.7,
+      "recomputed": 0.7,
+      "agree": true
+    },
+    {
+      "item": "H2 E3>W-alg verdict",
+      "stored": "cannot tell at this N",
+      "recomputed": "cannot tell at this N",
+      "agree": true
+    },
+    {
+      "item": "H2 E3>W-alg CI includes 0",
+      "stored": "True",
+      "recomputed": "True",
+      "agree": true
+    },
+    {
+      "item": "H2 E3>W-role p",
+      "stored": 0.05,
+      "recomputed": 0.05,
+      "agree": true
+    },
+    {
+      "item": "H2 E3>W-role Holm p",
+      "stored": 0.2,
+      "recomputed": 0.2,
+      "agree": true
+    },
+    {
+      "item": "H2 E3>W-role verdict",
+      "stored": "cannot tell at this N",
+      "recomputed": "cannot tell at this N",
+      "agree": true
+    },
+    {
+      "item": "H2 E3>W-role CI includes 0",
+      "stored": "False",
+      "recomputed": "False",
+      "agree": true
+    },
+    {
+      "item": "H2 E4>W-scramble p",
+      "stored": 0.5,
+      "recomputed": 0.5,
+      "agree": true
+    },
+    {
+      "item": "H2 E4>W-scramble Holm p",
+      "stored": 0.7,
+      "recomputed": 0.7,
+      "agree": true
+    },
+    {
+      "item": "H2 E4>W-scramble verdict",
+      "stored": "cannot tell at this N",
+      "recomputed": "cannot tell at this N",
+      "agree": true
+    },
+    {
+      "item": "H2 E4>W-scramble CI includes 0",
+      "stored": "True",
+      "recomputed": "True",
+      "agree": true
+    },
+    {
+      "item": "H3 verdict",
+      "stored": "supported",
+      "recomputed": "supported",
+      "agree": true
+    },
+    {
+      "item": "H3 HS diff E2 CI excludes 0",
+      "stored": "True",
+      "recomputed": "True",
+      "agree": true
+    },
+    {
+      "item": "H3 HS diff E3 CI excludes 0",
+      "stored": "True",
+      "recomputed": "True",
+      "agree": true
+    },
+    {
+      "item": "H3 HS diff E4 CI excludes 0",
+      "stored": "True",
+      "recomputed": "True",
+      "agree": true
+    },
+    {
+      "item": "H4 E3 p",
+      "stored": 0.004545454545454545,
+      "recomputed": 0.004545454545454545,
+      "agree": true
+    },
+    {
+      "item": "H4 E3 Holm p",
+      "stored": 0.00909090909090909,
+      "recomputed": 0.00909090909090909,
+      "agree": true
+    },
+    {
+      "item": "H4 E3 verdict",
+      "stored": "supported",
+      "recomputed": "supported",
+      "agree": true
+    },
+    {
+      "item": "H4 E3 vs students",
+      "stored": "cannot tell at this N",
+      "recomputed": "cannot tell at this N",
+      "agree": true
+    },
+    {
+      "item": "H4 E4 p",
+      "stored": 0.004545454545454545,
+      "recomputed": 0.004545454545454545,
+      "agree": true
+    },
+    {
+      "item": "H4 E4 Holm p",
+      "stored": 0.00909090909090909,
+      "recomputed": 0.00909090909090909,
+      "agree": true
+    },
+    {
+      "item": "H4 E4 verdict",
+      "stored": "supported",
+      "recomputed": "supported",
+      "agree": true
+    },
+    {
+      "item": "H4 E4 vs students",
+      "stored": "cannot tell at this N",
+      "recomputed": "cannot tell at this N",
+      "agree": true
+    },
+    {
+      "item": "H4b verdict",
+      "stored": "not supported",
+      "recomputed": "not supported",
+      "agree": true
+    },
+    {
+      "item": "H7 Wilcoxon p",
+      "stored": 0.015625,
+      "recomputed": 0.015625,
+      "agree": true
+    },
+    {
+      "item": "H7 verdict",
+      "stored": "supported",
+      "recomputed": "supported",
+      "agree": true
+    },
+    {
+      "item": "H8 min ρ",
+      "stored": 0.7508087988982768,
+      "recomputed": 0.7508087988982768,
+      "agree": true
+    },
+    {
+      "item": "H8 median ρ",
+      "stored": 0.7738568690214762,
+      "recomputed": 0.7738568690214762,
+      "agree": true
+    },
+    {
+      "item": "H8 verdict",
+      "stored": "supported",
+      "recomputed": "supported",
+      "agree": true
+    },
+    {
+      "item": "H5 T0 E2 gap",
+      "stored": -0.0006342656364095589,
+      "recomputed": -0.0006342656364095589,
+      "agree": true
+    },
+    {
+      "item": "H5 T0 E3 gap",
+      "stored": 0.0024530366413803018,
+      "recomputed": 0.0024530366413803018,
+      "agree": true
+    },
+    {
+      "item": "H5 T0 E4 gap",
+      "stored": -0.008508141978027739,
+      "recomputed": -0.008508141978027739,
+      "agree": true
+    },
+    {
+      "item": "H5 T0 W-freq gap",
+      "stored": -0.02418125537228441,
+      "recomputed": -0.02418125537228441,
+      "agree": true
+    }
+  ],
+  "n_agree": 45,
+  "n_items": 45
+}

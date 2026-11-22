@@ -1,0 +1,95 @@
+{
+  "source": "published analysis/key_freqs.json of BurnyCoder/grokking-modular-addition-runs (revision in .env.example)",
+  "paper_freqs": [
+    14,
+    35,
+    41,
+    42,
+    52
+  ],
+  "key_freqs": {
+    "wd1_s0": [
+      14,
+      35,
+      41,
+      42,
+      52
+    ],
+    "wd1_s1": [
+      2,
+      3,
+      23,
+      37,
+      39
+    ],
+    "wd1_s2": [
+      6,
+      7,
+      15,
+      27,
+      38
+    ],
+    "wd1_s3": [
+      9,
+      27,
+      53,
+      55
+    ],
+    "wd1_s4": [
+      11,
+      25,
+      49
+    ],
+    "wd1_s5": [
+      9,
+      34,
+      38,
+      40
+    ],
+    "wd1_s6": [
+      7,
+      26,
+      35,
+      41
+    ],
+    "wd1_s7": [
+      12,
+      18,
+      20,
+      48,
+      55
+    ],
+    "wd1_s8": [
+      37,
+      44,
+      45,
+      46,
+      47,
+      51
+    ],
+    "wd1_s9": [
+      19,
+      34,
+      35
+    ],
+    "wd1_s10": [
+      19,
+      31,
+      45,
+      47
+    ]
+  },
+  "rule_T0": "wd1_s1",
+  "rule_T1": "wd1_s4",
+  "rule_T2": "wd1_s8",
+  "ties": {
+    "fewest": [
+      "wd1_s4",
+      "wd1_s9"
+    ],
+    "most": [
+      "wd1_s8"
+    ]
+  },
+  "dev": "wd1_s10"
+}

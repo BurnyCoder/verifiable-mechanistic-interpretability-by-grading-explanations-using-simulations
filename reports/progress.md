@@ -1,5 +1,24 @@
 # Progress
 
+## 2026-11-22 11:30 — fifth independent audit (deviation 12)
+
+**Done** (no new agent runs, no API spend; N = 3 — not yet N = 10)
+- Audit made without reading the earlier reviews or audit scripts (`reviews/audit-5-2026-11-22.md`). Every hypothesis
+  verdict re-derived from the raw run records with exact methods and no project analysis code: all 45 stored
+  statistics and verdicts and every replication row reproduce (`results/audit5/hypotheses_check.json`). Metric,
+  statistics and method code read against their sources; three parallel source checks opened every citation.
+- Found and corrected (no verdict changed): T0's "true" E2–E4 call frequency 2 a full key frequency although T0 has it
+  only in its neuron-to-logit map (likely a harmonic of 37), and embeddings carry harmonic frequencies the explanations
+  omit (`results/audit5/checks.json`); the scrambled-table blind spot holds for the agents' builds, not for a literal
+  build on T0; "seven deviations after results" undercounted; wording that overstated "cannot tell" and the KL
+  ordering; Zhong et al.'s Fig. 7 lines, Sutter's wording and the source of the 75 %/80 % coverage figures; the nine
+  retrains, the compiler's E0 build, the H8 lower bound, the plumbing-check count and two file lists.
+- Added: `results/targets_selection.json` (the preregistered target rules applied to the published key frequencies).
+
+**Effect:** no primary metric, preregistered test or verdict changed; two results are described more narrowly.
+
+**Next:** round 3 (N = 10) only when you ask.
+
 ## 2026-11-22 10:15 — fourth independent audit (deviation 11)
 
 **Done** (no new agent runs, no API spend; N = 3 — not yet N = 10)

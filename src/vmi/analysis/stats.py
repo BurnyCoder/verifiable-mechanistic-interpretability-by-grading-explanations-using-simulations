@@ -10,7 +10,10 @@ so permutation p-values are identical;
 Holm 1979 (Scand. J. Stat. 6:65–70); Kendall's W (Kendall & Babington Smith 1939; no tie correction, negligible for
 continuous means); rank-biserial r = 2U/(n₁n₂) − 1 = (U₁ − U₂)/(n₁n₂) (Kerby 2014, Comprehensive Psychology 3,
 doi:10.2466/11.IT.3.1); percentile bootstrap — with 3 runs per group the 95 % interval of a mean is the range of the runs
-(true coverage ≈ 75 %; Hesterberg 2015, https://arxiv.org/abs/1411.5279); scipy.stats mannwhitneyu (method='exact'
+(true coverage ≈ 75 % for a mean, ≈ 80 % for a difference of two means: our calculation — the range misses the median
+when all three runs fall on one side of it, probability 1/4 — and a normal-data simulation in
+`scripts/audit5/checks.py`; Hesterberg 2015, https://arxiv.org/abs/1411.5279, for the general narrowness of percentile
+intervals in small samples); scipy.stats mannwhitneyu (method='exact'
 ignores ties: audit 4 found no tied values in any reported comparison),
 wilcoxon, spearmanr (https://docs.scipy.org/doc/scipy/reference/stats.html).
 """

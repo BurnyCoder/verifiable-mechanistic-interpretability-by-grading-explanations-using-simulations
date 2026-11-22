@@ -223,7 +223,7 @@ of that floor, for example Haiku, Sonnet and Opus, rather than models that all s
 **What happened.** Extracting the agents' visible messages and self-test results (`analysis/agent_examples.py`)
 showed three things the scores alone did not. (1) The memorisation is explicit: in the T0 algorithm-only run (`main__T0__E1…s0`) the
 agent writes that the frequencies are unspecified and that it will "pick five standard ones (14, 35, 41, 42, 52)", the
-published paper's set (the key-frequency rule finds four of them, 14, 35, 41, 52, in its weights). (2) The low-effort E3 run (accuracy 0.562 with the right frequencies) failed because of a layout bug in its own script: its constants put head 3's output and the readout in the same residual dimensions (P3 = RO = 52), so head 3's attention output was added onto the answer. Re-running its script with only that number changed gives accuracy 1.0000 at the same HS (`vmi diagnose`, results/diagnoses/). The agent never found the bug: it blamed bias-free ReLU neurons, tuned four constants around it, and finally rejected its most accurate setting (0.785) as less faithful to the explanation. An earlier version of this entry guessed that the run stopped on a worse build because each rewrite replaced the last; the transcript shows a deliberate choice, and the intervention shows the real cause. (3) The small local model had the right frequencies in its script but never got a working network before its time
+published paper's set (the key-frequency rule finds four of them, 14, 35, 41, 52, in its weights). (2) The low-effort E3 run (accuracy 0.562 with the right frequencies) failed because of a layout bug in its own script: its constants put head 3's output and the readout in the same residual dimensions (P3 = RO = 52), so head 3's attention output was added onto the answer. Re-running its script with only that number changed gives accuracy 1.0000 at almost the same HS (0.91 against 0.92 as submitted; `vmi diagnose`, results/diagnoses/). The agent never found the bug: it blamed bias-free ReLU neurons, tuned four constants around it, and finally rejected its most accurate setting (0.785) as less faithful to the explanation. An earlier version of this entry guessed that the run stopped on a worse build because each rewrite replaced the last; the transcript shows a deliberate choice, and the intervention shows the real cause. (3) The small local model had the right frequencies in its script but never got a working network before its time
 ran out, with replies cut off at the output limit.
 
 **Learning.** Transcripts are evidence, not decoration, but an agent's own diagnosis can be wrong: the cause has to be
@@ -337,7 +337,8 @@ deviation 9).
   score tracks X over training", compare with the end point itself, and ask whether the score adds anything beyond
   similarity to that end point.
 - **Name the real coverage of small-sample intervals.** With three runs, the "95 %" percentile bootstrap interval of a
-  mean is the range of the runs and covers about 75 % (Hesterberg 2015). "Too narrow" understated this. *Learning:*
+  mean is the range of the runs and covers about 75 % (our calculation, confirmed by simulation in audit 5; Hesterberg
+  2015 says only that percentile intervals are too narrow in small samples). "Too narrow" understated this. *Learning:*
   compute what an interval means at the sample size used, not only that it is imperfect.
 - **An independent re-implementation is cheap insurance.** A numpy forward pass and a scikit-learn ridge written from
   the preregistration reproduced every stored score (`results/audit4/regrade.json`), and enumeration-based exact tests
@@ -345,3 +346,23 @@ deviation 9).
 - **Citations drift toward the citing paper's story.** Most corrections were narrowings: a source that compares
   features "does no hidden-state comparison", a hypothesis of the authors becomes a "because", a scoped memorisation
   finding becomes "any evaluation". *Learning:* quote the sentence being cited, with its conditions.
+
+## Fifth independent audit (2026-11-22, deviation 12)
+
+- **A "key frequency" is a property of one matrix.** The explainer takes key frequencies from W_L = W_U·W_out and then
+  tells the agent that every component uses them. On T0, frequency 2 exists only in W_L (no neurons; below threshold in
+  the embedding; consistent with a harmonic of 37), and several embeddings carry harmonic frequencies that no
+  explanation mentions (`results/audit5/checks.json`). The τ = 0.35 sensitivity check had already shown the symptom
+  (the compiler's HS rises when frequency 2 is dropped) without the cause. *Learning:* measure each component's own
+  frequency set before writing a sentence about "all components", and treat a sensitivity result that improves the
+  score as a pointer to a defect, not only as robustness.
+- **Separate a metric's blind spot from the build that feeds it.** The scrambled-table "blind spot" held for the
+  agents' rebuilds, but the agent-free compiler's literal rebuild of the same table lost 0.09 HS on T0. *Learning:*
+  before attributing a non-separation to the metric, check it on a build that follows the wrong explanation literally.
+- **Exact methods make a re-derivation seed-free.** With three runs per group, every bootstrap resample can be listed
+  (27 per group), and every rank-test permutation too, so an independent check of all 45 stored statistics needs no
+  random numbers and no tolerance for Monte-Carlo error (`scripts/audit5/hypotheses_check.py`). *Learning:* at small N,
+  prefer enumeration to sampling in both the analysis and its audit.
+- **Counting "after results" honestly.** A summary said seven deviations followed results; the first deviation itself
+  said per-run scores had been seen. *Learning:* derive such counts from the deviation texts, not from memory of which
+  ones felt results-driven.

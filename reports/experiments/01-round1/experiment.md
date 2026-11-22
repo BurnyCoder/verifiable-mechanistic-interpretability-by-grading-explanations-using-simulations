@@ -294,7 +294,7 @@ puts E4 first), and orthogonal alignment lowers every value while keeping the pa
 wrong-frequency, no-explanation and wrong-role replacements stay at the bottom, and the Pizza and scrambled-neuron
 replacements stay among the true ones, so neither blind spot is an artefact of allowing general linear maps. The
 compiler's builds are more sensitive to the ridge strength. In the explainer, the stricter key-frequency threshold
-(τ = 0.35) drops frequency 2 — a frequency with no neurons in T0 — and the compiler's HS rises for E2–E4: the
+(τ = 0.35) drops frequency 2 — a frequency with no neurons in T0, present only in its neuron-to-logit map (audit 5) — and the compiler's HS rises for E2–E4: the
 preregistered threshold admits a weak frequency that a literal construction then builds in. *Post hoc observation;
 the preregistered threshold stays the analysis default.*
 
