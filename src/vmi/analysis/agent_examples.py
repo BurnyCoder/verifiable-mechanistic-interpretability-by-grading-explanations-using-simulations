@@ -197,8 +197,9 @@ def why(x: dict, target: str, level: str) -> tuple[str, str]:
                     f"match (HS {hs:.2f}), but the answers are wrong (accuracy {acc:.4f}). The wrong detail is {d['cause']}. "
                     f"Re-running its own script with that one fix gives accuracy {fix['accuracy']:.4f} at HS {fix['hs']:.2f} "
                     f"(other changes tested: {others}). " + (f"{d['owner']}. " if d.get("owner") else "")
-                    + f"It stopped by its own choice after {x['tool_calls']} tool calls and {x['minutes']} minutes, well "
-                    f"within the 60-step, 60-minute budget. The agent never found the bug: it blamed the neurons "
+                    + (f"It stopped by its own choice after {x['tool_calls']} tool calls and {x['minutes']} minutes, well "
+                       f"within the 60-step, 60-minute budget. " if x.get("tool_calls") is not None else "")
+                    + f"The agent never found the bug: it blamed the neurons "
                     f"(“{sentence_with(said, d['blamed'], 150)}”), tuned four constants around the bug (self-test peak "
                     f"{best:.4f}) and then kept the setting it judged more faithful to the explanation "
                     f"(“{sentence_with(said, d['kept'], 170)}”).",
