@@ -33,9 +33,11 @@
   internals); ablations table; `reports/agent-examples.md`; round-2 report and self-review.
 
 **Positive (N = 3):** H1's HS trend, H3, H4, H7 and H8 pass their preregistered tests; the wrong-frequency gap holds on
-all five targets; format, self-test and effort barely move HS; the algorithm-only memorisation repeats in 3 of 3 runs.
+all five targets; format, self-test and effort barely move HS; the algorithm-only memorisation shows in most build scripts
+(T0 and T-paper pooled, since the E1 text is identical on every target; counts in the paper's §4.6).
 **Negative (N = 3):** output KL's trend fails (H1, KL part); HS cannot separate Pizza or a shuffled neuron table (H2
-ties); H4b's KL half fails; the agent beats the compiler on T2 (H5); local models never above chance; the round-1
+ties); H4b's KL half fails; the compiler is not a ceiling (H5: within its level on T0, exceeded on the seed targets);
+local models never above chance; the round-1
 low-effort collapse and the E0 memorisation did not replicate in every run.
 
 **Now:** nothing running. **Next:** round 3 (N = 10, 224 Haiku runs, about 10–15 hours, about $5) only when you ask.

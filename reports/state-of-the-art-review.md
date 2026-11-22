@@ -1,7 +1,8 @@
 # State-of-the-art review — metrics, tooling and models this project builds on
 
 *Libor "Burny" Burian, Victor Levoso — 2026-11-21. Companion to [literature-review.md](literature-review.md),
-which covers the scientific background; this file covers the concrete methods and tools chosen, and why.*
+which covers the scientific background; this file covers the concrete methods and tools chosen, and why. Second-audit
+corrections 2026-11-22.*
 
 ## 1. Output fidelity: KL divergence conventions
 
@@ -13,7 +14,8 @@ which covers the scientific background; this file covers the concrete methods an
   ([post](https://www.lesswrong.com/posts/Dkh7pXKjoNWkkxQDz/neural-networks-are-not-already-clean)).
 - Normalised variants: SAELens `kl_div_score` = (KL_ablation − KL_SAE)/KL_ablation; SAEBench "loss recovered"
   ([arXiv:2503.09532](https://arxiv.org/abs/2503.09532)); causal scrubbing "% loss recovered"
-  ([Chan et al. 2022](https://www.alignmentforum.org/posts/JvZhhzycHu2Yd57RN/causal-scrubbing-a-method-for-rigorously-testing-interpretability-hypotheses)).
+  ([Chan et al. 2022](https://www.alignmentforum.org/posts/JvZhhzycHu2Yd57RN/causal-scrubbing-a-method-for-rigorously-testing-interpretability-hypotheses);
+  defined in the [appendix, §2.1](https://www.lesswrong.com/posts/kcZZAsEjwrbczxN2i/causal-scrubbing-appendix)).
 - **Choice here:** primary = mean over all 113² inputs of KL(P_M ‖ P_M̂) over the 113 number classes, in nats, float64
   (the input space is small enough to evaluate exactly, so no sampling error). A known property for grokked targets:
   P_M is nearly one-hot, so KL ≈ the replacement's cross-entropy on M's argmax labels; this is why H3 predicts that
@@ -67,8 +69,8 @@ on PyPI), so the metrics are implemented in
 - **Per-feature activation-prediction scores** — correlation-based simulation (Bills et al. 2023) and the detection
   and fuzzing scorers of [Paulo et al. 2024](https://arxiv.org/abs/2410.13928) — are the most used automated scores
   and the most criticised: simulation scores are weak on false positives
-  ([Huang et al.](https://arxiv.org/abs/2309.10312)); fuzzing and detection scores of SAE features are similar for
-  trained and random transformers in many settings ([Heap et al.](https://arxiv.org/abs/2501.17727)). Relatedly, in
+  ([Huang et al.](https://arxiv.org/abs/2309.10312)); fuzzing scores of SAE latents (detection in an appendix) are similar
+  for trained and random transformers in many settings ([Heap et al.](https://arxiv.org/abs/2501.17727), v2 2026). Relatedly, in
   output-simulatability settings (text classifiers, not per-feature activations), LLM simulators can bypass the
   explanation ([Poché et al. 2026](https://arxiv.org/abs/2609.08585)).
 - **Substitution-based scores** (Bills' ablation score; [Paulo & Belrose 2025](https://arxiv.org/abs/2501.18838);
@@ -100,13 +102,14 @@ on PyPI), so the metrics are implemented in
   download. Installed version: **2.3.2** (Windows and a
   native Linux binary in WSL). Config keys were documented for 2.2.x; stage 0 validates them on 2.3.2.
 - **Isolation without Docker or sudo:** bubblewrap `--unshare-net` in WSL2 (tested on this machine: external HTTP
-  fails, `/mnt/c` and `/home` are hidden). The same pattern (bwrap + a unix-socket bridge) is what Claude Code's own
-  sandbox uses on Linux/WSL2 ([docs](https://code.claude.com/docs/en/sandboxing)). The LLM endpoint is bridged into the
+  fails, `/mnt/c` and `/home` are hidden). A similar pattern — bwrap with its own network namespace, plus a socat relay
+  over Unix domain sockets to a host-side proxy — is what Claude Code's own sandbox uses on Linux/WSL2
+  ([docs](https://code.claude.com/docs/en/sandboxing); [sandbox-runtime README](https://github.com/anthropic-experimental/sandbox-runtime)). The LLM endpoint is bridged into the
   network namespace through a unix socket by a stdlib Python relay (socat is not installed and there is no sudo).
 
 ## 5. Local model and server
 
-- **Server: llama.cpp `llama-server`** (build b12600, CUDA 13.5, [releases](https://github.com/ggml-org/llama.cpp/releases)):
+- **Server: llama.cpp `llama-server`** (build b12600, Windows build with the CUDA 13 runtime, [releases](https://github.com/ggml-org/llama.cpp/releases)):
   OpenAI-compatible API, Jinja chat templates on by default (needed for tool calling), `--n-cpu-moe` keeps
   mixture-of-experts weights in system RAM, fixed model file (no pull endpoint, unlike Ollama's `/api/pull`),
   per-request seed. Ollama was rejected because its OpenAI-compatible endpoint does not set the context size
@@ -116,12 +119,13 @@ on PyPI), so the metrics are implemented in
 - **Model: Qwen3.6-35B-A3B** (35 B total, 3 B active, MoE; [model card](https://huggingface.co/Qwen/Qwen3.6-35B-A3B)),
   GGUF `UD-IQ4_XS` (17.7 GB, [unsloth](https://huggingface.co/unsloth/Qwen3.6-35B-A3B-GGUF), pinned revision
   `a483e9e`). Chosen as the strongest agentic-coding model that fits 8 GB VRAM + 31 GB RAM: independent Terminal-Bench
-  ≈ 24.6 % vs 9.2 % for Qwen3.5-9B (Epoch AI's numbers, re-hosted by
-  [llmrun.dev](https://llmrun.dev/benchmark/terminalbench); vendor numbers are higher). Throughput ≈ 33 tok/s on an
+  ≈ 24.6 % vs 9.2 % for Qwen3.5-9B (attributed by
+  [llmrun.dev](https://llmrun.dev/benchmark/terminalbench) to Epoch AI, benchmark version not stated; vendor numbers are
+  higher). Throughput ≈ 33 tok/s on an
   8 GB RTX 3070 laptop with `--n-cpu-moe` is an unsourced third-party estimate (to be measured here in stage 0). No
   usable Qwen3.8 fits this machine ([27B](https://huggingface.co/Qwen/Qwen3.8-27B) is dense;
-  [Flash-Next](https://huggingface.co/Qwen/Qwen3.8-Flash-Next)'s smallest GGUF ≈ 68 GiB is a reported estimate, not
-  re-verified).
+  [Flash-Next](https://huggingface.co/Qwen/Qwen3.8-Flash-Next)'s smallest GGUFs are ≈ 66 GB / 62 GiB, unsloth UD-IQ1_S,
+  or 58.5 GB for a third-party TQ1_0 quant, all above 8 GB VRAM + 31 GB RAM; checked on the Hub 2026-11-22).
 - **Ablation models:** Qwen3.5-9B and Qwen3.5-4B (already pulled in Ollama; served through the same llama-server for
   comparability).
 

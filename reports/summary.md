@@ -2,8 +2,8 @@
 
 *Libor "Burny" Burian, [Victor Levoso](https://scholar.google.com/citations?user=BBGcEigAAAAJ&hl=en) — 2026-11-22.
 Developed in a mechanistic interpretability hackathon on automatically evaluating mechanistic interpretability
-explanations, co-organized by the authors in the [mechinterp.com](https://mechinterp.com/) community. Every number
-below is generated from `results/` by `vmi analyse`.*
+explanations, co-organized by the authors in the [mechinterp.com](https://mechinterp.com/) community. Every result
+number below is generated from `results/` by `vmi analyse`.*
 
 ## Question
 
@@ -14,8 +14,8 @@ that score a valid measure of explanation quality?
 ## Setup in five lines
 
 1. Target: one-layer modular-addition transformers ([Nanda et al. 2023](https://arxiv.org/abs/2301.05217)); the main
-   target T0 and the seed targets T1, T2 have no published analysis (weights public since October 2026, after the
-   simulator's June 2026 training-data cutoff), T-new was trained after the protocol freeze, and T-paper is the
+   target T0 and the seed targets T1, T2 are analysed in no paper (weights and key frequencies public on Hugging Face
+   since 2026-10-21, after the simulator's June 2026 training-data cutoff; no internet in the sandbox), T-new was trained after the protocol freeze, and T-paper is the
    published checkpoint (flagged for memorisation).
 2. Explanations rendered by script at five levels of true detail (E0–E4) plus wrong ones (W-*), length-matched except the Pizza explanation W-alg (about <!-- v:walg-shorter -->40<!-- /v --> % shorter).
 3. Simulator: Claude Haiku 5.5 in Claude Code, no network except its model endpoint, no path to the weights; local Qwen models were tried and
@@ -53,7 +53,7 @@ that score a valid measure of explanation quality?
 | H8 | HS against T0's checkpoints rises as restricted loss falls (circuit formation) | Spearman ρ(HS, −log restricted loss) per replacement: median 0.774, min 0.751 (6 E3/E4 replacements × 401 checkpoints) | yes | supported · 6 E3/E4 replacements × 401 checkpoints |
 <!-- END predictions -->
 
-Replications on the seed-sensitivity targets (preregistration §5: H1–H3 re-tested per target with the same rules):
+Replications on the seed-sensitivity targets (preregistration §5: H1–H3 re-tested per target with the preregistered tests, deviation 8; first row: T0 restricted to E2–E4 for comparison, post hoc):
 
 <!-- BEGIN replications -->
 | Target | HS per true explanation | H1: HS rises with detail? (trend test) | H2: HS(E3) − HS(W-freq); Mann–Whitney | H3 observed (W-freq) | H3 holds? |
@@ -64,7 +64,7 @@ Replications on the seed-sensitivity targets (preregistration §5: H1–H3 re-te
 | T-paper (flagged: memorisation) | E1 0.590, E3 0.940, E4 0.937 | means do not rise E3→E4; cannot tell at this N (JT p 0.650, ρ -0.10) | +0.823; cannot tell at this N (p 0.050) | agreement 0.998, KL 0.007 (true max 0.413), HS 0.117 | yes |
 <!-- END replications -->
 
-**Reading.** At N = 3 the preregistered tests support H1's HS part, H3, H4, H7 and H8: HS rises with true detail (the big step is E1 → E2; <!-- v:e3-vs-e2 -->every E3 run is above every E2 run<!-- /v --> under the preregistered HS, though E2 and E3 tie under the post-hoc whitened check; E3 → E4 is mixed), a wrong-frequency explanation keeps correct answers while its HS falls below every true explanation that names the frequencies (E2–E4), E3 and E4 replacements beat independent retrains and fit T0 better than any other model, and HS tracks circuit formation. The predictions fail where they assumed that output KL improves with detail (H1's KL part: it is lowest at E2 and rises at E3 and E4), that HS sees below the frequency level (H2: W-alg and W-scramble tie with the true explanations, their bootstrap CIs include 0), that the reference compiler is a ceiling (H5: the agent beats it on T2), or that output KL grows smoothly as a planted model drifts (H4b). "Direction matches" compares directions and preregistered thresholds only (a difference whose bootstrap CI includes 0 counts as a tie; with three runs per group a percentile bootstrap has only ten distinct resamples per group, so these intervals are too narrow and a tie is the safe reading, an "ahead" is not significance); the formal verdict adds the preregistered test, and 3 vs 3 runs cannot reach significance for H2 (smallest attainable p = 0.05). On the seed-sensitivity targets the gap between E3 and the wrong-frequency explanation replicates on every target (its rank test cannot decide at N = 3), while HS's rise with detail does not replicate (its trend test is not supported on T1 and T2; on T-new, with only E3 and E4, the means rise but the test cannot decide at N = 3); where H3 fails there, argmax agreement is below the preregistered 0.99 for the wrong-frequency replacement and also for the true E3 and E4 replacements, so the explanation is not shown to be the cause (not diagnosed).
+**Reading.** At N = 3 the preregistered tests support H1's HS part, H3, H4, H7 and H8: HS rises with true detail (the big step is E1 → E2; <!-- v:e3-vs-e2 -->every E3 run is above every E2 run<!-- /v --> under the preregistered HS, though E2 and E3 tie under the post-hoc whitened check; E3 → E4 is mixed), a wrong-frequency explanation keeps correct answers while its HS falls below every true explanation that names the frequencies (E2–E4), E3 and E4 replacements beat independent retrains and fit T0 better than any other model, and HS tracks circuit formation (descriptively; replacements without T0's mechanism do not, the paper's §4.3). The predictions fail where they assumed that output KL improves with detail (H1's KL part: it is lowest at E2 and rises at E3 and E4), that HS sees below the frequency level (H2: W-alg and W-scramble tie with the true explanations, their bootstrap CIs include 0), that the reference compiler is a ceiling (H5: the agent stays within its level on T0, the preregistered comparison, but exceeds it on the seed targets in <!-- v:h5-seed -->four of twelve target–explanation pairs on three targets<!-- /v -->), or that output KL grows smoothly as a planted model drifts (H4b). "Direction matches" compares directions and preregistered thresholds only (a difference whose bootstrap CI includes 0 counts as a tie; with three runs per group a percentile bootstrap has only ten distinct resamples per group, so these intervals are too narrow and a tie is the safe reading, an "ahead" is not significance); the formal verdict adds the preregistered test, and 3 vs 3 runs cannot reach significance for H2 (smallest attainable p = 0.05). On the seed-sensitivity targets the gap between E3 and the wrong-frequency explanation replicates on every target (its rank test cannot decide at N = 3), while the fine E2 → E4 rise does not replicate (its trend test is not supported on T1 and T2, although on T0 the same E2–E4 test gives <!-- v:t0-e24 -->supported (JT p 0.012, ρ 0.79)<!-- /v -->; on T-new, with only E3 and E4, the means rise but the test cannot decide at N = 3; the large E1 → E2 step was not run on these targets); where H3 fails there, argmax agreement is below the preregistered 0.99 for the wrong-frequency replacement and also for the true E3 and E4 replacements, so the explanation is not shown to be the cause (not diagnosed).
 
 ## What this means
 
@@ -75,16 +75,16 @@ Replications on the seed-sensitivity targets (preregistration §5: H1–H3 re-te
 - **HS works at the level of frequencies, not below it.** It cannot tell the Clock algorithm from the Pizza algorithm
   with the same frequencies, nor a correct neuron table from a scrambled one; a neuron-level or causal second metric
   is needed for finer explanations.
-- **Grade on models with no published analysis.** The simulator fills gaps in an explanation with what it remembers
+- **Grade on models whose mechanism the simulator cannot have seen.** The simulator fills gaps in an explanation with what it remembers
   from the literature, which confounds scores of underspecified explanations on famous models (full explanations
   still scored as expected on the published checkpoint).
 
 ## Status and next steps
 
 Rounds 1 and 2 are complete (N = 3 runs per condition). The local Qwen capability ablation was stopped after <!-- v:n-local -->five<!-- /v -->
-runs, all at chance (user decision; preregistration deviation 5), so H5 and H6 cannot be tested. Round 2 (N = 3)
+runs, all at chance (user decision; preregistration deviation 5), so H5's capability trend and H6 cannot be tested. Round 2 (N = 3)
 runs the 32 Claude Haiku conditions; round 3 (N = 10) is postponed to a later day. Open: a second metric for
 sub-frequency structure. Details:
 [paper](paper.pdf), [round-1 report](experiments/01-round1/experiment.md), [round-2 report](experiments/02-round2/experiment.md),
-[reviews](reviews/round2-review.md), [independent audit](reviews/independent-audit-2026-11-22.md),
+[reviews](reviews/round2-review.md), [independent audit](reviews/independent-audit-2026-11-22.md), [second audit](reviews/audit-2-2026-11-22.md),
 [results explorer](https://burnycoder.github.io/verifiable-mechanistic-interpretability-by-grading-explanations-using-simulations/).

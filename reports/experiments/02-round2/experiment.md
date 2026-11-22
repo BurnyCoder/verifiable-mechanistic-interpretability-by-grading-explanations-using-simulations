@@ -61,10 +61,11 @@ Replications on the seed-sensitivity targets:
 **Reading.** With three runs per condition the preregistered tests decide five hypotheses. HS rises with true detail
 (H1, HS part: supported); the large step is E1 → E2, E2 → E3 adds a few hundredths in every run (preregistered HS; E2 and E3 tie under the post-hoc whitened check of the
 audit) and E3 → E4 is mixed. Output KL does not fall with detail (H1, KL part: not supported) — it is lowest at E2 and rises at E3 and E4.
-The wrong-frequency explanation keeps correct behaviour while HS falls below every true explanation (H3: supported).
+The wrong-frequency explanation keeps correct behaviour while HS falls below every true explanation that names the frequencies (E2–E4; H3: supported).
 E3 and E4 beat independent retrains (H4: supported) and fit T0 better than any other model (H7: supported); HS tracks
-circuit formation (H8: supported, in its preregistered form over all six
-E3/E4 replacements and 401 checkpoints after deviation 8). H2 cannot be decided with 3 vs 3 runs (smallest attainable
+circuit formation (H8: supported, descriptive, in its preregistered form over all six
+E3/E4 replacements and 401 checkpoints after deviation 8; replacements without T0's mechanism do not, post hoc,
+deviation 9). H2 cannot be decided with 3 vs 3 runs (smallest attainable
 p = 0.05), but its bootstrap intervals already separate two arms from two others: E3 beats W-freq and W-role by wide
 margins, while W-alg (Pizza) and W-scramble tie with the true explanations. W-alg is not length-matched (about 60 % of
 E3's characters on every target, `results/explanations/*/W-alg/length.json`), unlike the H2 row's wording. H4b's KL half fails deterministically, as in round 1.
@@ -224,12 +225,13 @@ head's output written onto the readout dimensions; fixing that one number restor
 | T-paper | E-paper | 14, 35, 41, 42, 52 | 14, 35, 41, 42, 52 | 1.00 | 1.00 | 0.961 | – |
 <!-- END frequencies -->
 
-**Reading.** The algorithm-only explanation E1 makes the simulator build four of the published checkpoint's five
-frequencies (14, 35, 41, 52 by the key-frequency rule) in all three T0 runs (s1 and s2 hard-coded
-`[14, 35, 41, 52, 73]`, 73 ≡ −40 mod 113), and the same weights score far higher against the published checkpoint than
-against T0 (target swap). With no explanation at all (E0) this happened in one run of three; the other two built blocks of consecutive
-frequencies and score near the random-initialisation floor. On the published checkpoint itself the algorithm-only
-runs vary widely, so scores there are unreliable as well as confounded.
+**Reading.** E0 and E1 are the same text on every target and the sandbox does not reveal the target, so the E1 runs on
+T0 and on the published checkpoint are replicates of one condition (pooled since the second audit; the key results
+above give the counts). Most E1 build scripts hard-code at least four of the paper's five frequencies (e.g.
+`[14, 35, 41, 52, 73]`, 73 ≡ −40 mod 113), one picks frequencies by a random search, and the same weights score far
+higher against the published checkpoint than against T0 (target swap). With no explanation at all (E0) this happened in
+one run of three; the other two built blocks of consecutive frequencies and score near the random-initialisation floor.
+On the published checkpoint, scores of underspecified explanations measure memory, not the explanation.
 
 ## Grader sensitivity (no new runs)
 
@@ -254,7 +256,9 @@ runs vary widely, so scores there are unreliable as well as confounded.
 <!-- END grader-sensitivity-T0 -->
 
 **Reading.** The ranking of explanations is unchanged by ridge strength, number of folds and fold seed, nearly
-unchanged under orthogonal alignment, and less stable when only one site is used.
+unchanged under orthogonal alignment, and less stable when only one site is used or when soundness is whitened
+(post hoc): whitening ties E2 with E3 and moves W-alg above E3, while the coarse pattern (W-freq, E0, E1, W-role at the
+bottom) stays.
 
 ## All agent runs, rounds 1–2
 
@@ -302,5 +306,6 @@ unchanged under orthogonal alignment, and less stable when only one site is used
 
 ## Deviations in this round
 
-Deviation 6 (round 3 postponed, user decision) and deviation 7 (two analysis-code corrections to match §5–§6) are
-logged at the end of the preregistration.
+Deviation 6 (round 3 postponed, user decision), deviation 7 (two analysis-code corrections to match §5–§6), deviation 8
+(the first audit's missing preregistered statistics and invariance erratum) and deviation 9 (the second audit's errata
+and post-hoc checks) are logged at the end of the preregistration.

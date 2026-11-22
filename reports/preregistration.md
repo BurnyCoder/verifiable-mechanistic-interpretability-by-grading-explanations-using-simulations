@@ -219,7 +219,7 @@ Eleven agent smoke runs on the dev target `wd1_s10` (details and transcripts: `r
 `reports/progress.md`. Prompts, `TASK.md`, sandbox templates, explanation templates, harnesses, simulator settings and
 analysis code are fixed from that commit on. T-new is trained after it.
 
-### Post-freeze deviations (logged as they happen; 1–4 and 6 change no hypothesis, metric, test or condition; 5 removes conditions; 7 corrects how H1/H2 verdicts were computed; 8 adds missing preregistered statistics, discloses analyses not run and corrects §4's rationale)
+### Post-freeze deviations (logged as they happen; 1–4 and 6 change no hypothesis, metric, test or condition; 5 removes conditions; 7 corrects how H1/H2 verdicts were computed; 8 adds missing preregistered statistics, discloses analyses not run and corrects §4's rationale; 9 corrects factual statements, narrows two claims to their evidence and adds post-hoc checks)
 
 1. **2026-11-21, round 1, after the controls stage — analysis code brought in line with amendment 2.** The frozen
    `analysis/hypotheses.py` still selected the main condition as Qwen3.6-35B-A3B at temperature 0.6 (pre-amendment)
@@ -311,3 +311,34 @@ analysis code are fixed from that commit on. T-new is trained after it.
    None of (a)–(f) changes a primary metric or a preregistered verdict rule. Effect on the reported verdicts: (a) adds
    statistics and a "cannot tell" for the student comparison; (b) H8 stays supported in its preregistered form: every one of
    the six replacements has ρ > 0 (0.75–0.84, median 0.77; the superseded single-replacement value was 0.86).
+9. **2026-11-22, after round 2 — second independent audit: errata, scope corrections and post-hoc checks.** Found by
+   an audit made without reading the earlier reviews, after every round-2 number had been seen
+   (`reports/reviews/audit-2-2026-11-22.md`).
+   (a) *Errata.* §9's "T0–T2 … have never appeared in a paper" stays true, but later text in the paper and reports
+   said the targets have "no published analysis": the target repository publishes each run's key frequencies
+   (`wd1_s1/analysis/key_freqs.json`), public since 2026-10-21. The contamination argument now rests on the facts
+   that hold: no paper, publication after Claude Haiku 5.5's June 2026 training-data cutoff, and no internet in the
+   sandbox. Amendment 2 item 6's "Claude Code has no step cap" is wrong: the CLI has a `--max-turns` option, which
+   was not used. `TASK.md` told every agent "about 60 minutes and 60 steps", but only the local harness enforced
+   the step limit.
+   (b) *Scope.* H5's "agent ≤ compiler" is evaluated on T0 (§5's tests use the main simulator on T0); the seed
+   targets are reported as an extension and T-paper apart (memorisation). Earlier text pooled them, silently left
+   T-paper out, and called the agent better than the compiler "on one target". E0 and E1 are identical on every target
+   and the sandbox does not reveal the target, so their runs on T0 and on T-paper are replicates of one condition; the
+   memorisation analysis now pools them (it had reported the T0 runs only).
+   (c) *Undisclosed process.* Agents try constants in scratch copies and keep the one with the best self-test accuracy
+   or least-squares fit; the static audit of `build_weights.py` (§2) does not see this. Both criteria use only the task
+   labels, so no target information enters; this is now counted from the transcripts and disclosed. Agents also turn
+   the self-inconsistent W-role explanation into working adders.
+   (d) *Post-hoc additions (not used by any verdict).* H8 negative controls: the same Spearman ρ for the W-freq, E1
+   and E0 replacements against T0's 401 checkpoints (`results/controls/trajectory_T0.json`). A threshold-free share
+   of W_L's spectrum on the paper's frequencies, and the frequency lists the agents' build scripts declare
+   (`results/frequencies_round{1,2}.json`). Transcript counts of self-test runs and announced sweeps
+   (`results/agent_behaviour.json`). A raw-versus-temperature-calibrated KL table. A T0 row restricted to E2–E4 in the
+   replication table. A cost table split into reported runs, development runs and plumbing checks. A recorded software
+   environment (`results/environment.json`).
+   (e) *Analysis-code correction.* `stats.jonckheere` claimed to be exact whenever there are at most 50,000 distinct
+   assignments, but it enumerated only up to eight values, so nine-value cases (three levels × three runs) used
+   Monte-Carlo. It now enumerates assignments exactly. This changes only the replication table's T1 and T2 p-values,
+   in the third decimal place; no verdict changes.
+   None of (a)–(e) changes a primary metric, a preregistered verdict rule or a reported verdict.
