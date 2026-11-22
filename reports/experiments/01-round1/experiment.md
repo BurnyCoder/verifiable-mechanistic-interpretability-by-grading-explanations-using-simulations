@@ -1,6 +1,6 @@
 # Experiment 01 — Round 1 (N = 1 per condition)
 
-*Status: running. Every number below is generated from `results/` by `vmi analyse 1`. With N = 1 there is no
+*Status: done (round 2 continues in [02-round2](../02-round2/experiment.md)). Every table below is generated from `results/` by `vmi analyse 1` and shows round 1 only; the embedded figures are regenerated with the latest round. With N = 1 there is no
 within-condition spread: verdicts rest on directions, on the trend across conditions and on the deterministic
 no-agent arms, and every verdict is labelled "at N=1 — not yet N=3 or N=10". Protocol: preregistration with
 amendments 1–2, frozen at tag `protocol-freeze`; post-freeze deviations are logged at the end of

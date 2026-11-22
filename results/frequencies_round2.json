@@ -1,0 +1,2474 @@
+{
+  "round": 2,
+  "paper_freqs": [
+    14,
+    35,
+    41,
+    42,
+    52
+  ],
+  "rule": "W_L Fourier norm >= 0.25 max (grokviz key_frequencies)",
+  "rows": [
+    {
+      "run_id": "ablations__T0__E2__qwen354b-mini__t0.6__s0",
+      "target": "T0",
+      "level": "E2",
+      "variant": "",
+      "model": "qwen3.5-4b",
+      "used_freqs": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.08928571428571429,
+      "jaccard_paper": 0.08928571428571429,
+      "hs": 0.0
+    },
+    {
+      "run_id": "ablations__T0__E2__qwen359b-mini__t0.6__s0",
+      "target": "T0",
+      "level": "E2",
+      "variant": "",
+      "model": "qwen3.5-9b",
+      "used_freqs": [
+        23,
+        37
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.4,
+      "jaccard_paper": 0.0,
+      "hs": 0.0
+    },
+    {
+      "run_id": "ablations__T0__E3-fmt-code__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "E3",
+      "variant": "fmt-code",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        3,
+        23,
+        39
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.6,
+      "jaccard_paper": 0.0,
+      "hs": 0.9175968180747128
+    },
+    {
+      "run_id": "ablations__T0__E3-fmt-code__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "E3",
+      "variant": "fmt-code",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        3,
+        23,
+        39
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.6,
+      "jaccard_paper": 0.0,
+      "hs": 0.9100060654221899
+    },
+    {
+      "run_id": "ablations__T0__E3-fmt-code__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "E3",
+      "variant": "fmt-code",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        3,
+        23,
+        39
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.6,
+      "jaccard_paper": 0.0,
+      "hs": 0.862092028345706
+    },
+    {
+      "run_id": "ablations__T0__E3-fmt-math__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "E3",
+      "variant": "fmt-math",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        3,
+        23
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.4,
+      "jaccard_paper": 0.0,
+      "hs": 0.9110264307987057
+    },
+    {
+      "run_id": "ablations__T0__E3-fmt-math__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "E3",
+      "variant": "fmt-math",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        3,
+        23,
+        39
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.6,
+      "jaccard_paper": 0.0,
+      "hs": 0.9170256571790169
+    },
+    {
+      "run_id": "ablations__T0__E3-fmt-math__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "E3",
+      "variant": "fmt-math",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        3,
+        23,
+        39
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.6,
+      "jaccard_paper": 0.0,
+      "hs": 0.9154790932082824
+    },
+    {
+      "run_id": "ablations__T0__E3-noselftest__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "E3",
+      "variant": "noselftest",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        3,
+        23,
+        39
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.6,
+      "jaccard_paper": 0.0,
+      "hs": 0.9641187159435614
+    },
+    {
+      "run_id": "ablations__T0__E3-noselftest__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "E3",
+      "variant": "noselftest",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        23,
+        39
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.4,
+      "jaccard_paper": 0.0,
+      "hs": 0.9475067112404579
+    },
+    {
+      "run_id": "ablations__T0__E3-noselftest__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "E3",
+      "variant": "noselftest",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        3,
+        23,
+        39
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.6,
+      "jaccard_paper": 0.0,
+      "hs": 0.9143616362464725
+    },
+    {
+      "run_id": "ablations__T0__E3__qwen354b-mini__t0.6__s0",
+      "target": "T0",
+      "level": "E3",
+      "variant": "",
+      "model": "qwen3.5-4b",
+      "used_freqs": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.08928571428571429,
+      "jaccard_paper": 0.08928571428571429,
+      "hs": 0.0
+    },
+    {
+      "run_id": "ablations__T0__E4__qwen354b-mini__t0.6__s0",
+      "target": "T0",
+      "level": "E4",
+      "variant": "",
+      "model": "qwen3.5-4b",
+      "used_freqs": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.08928571428571429,
+      "jaccard_paper": 0.08928571428571429,
+      "hs": 0.0
+    },
+    {
+      "run_id": "ablations__T0__W-freq__qwen354b-mini__t0.6__s0",
+      "target": "T0",
+      "level": "W-freq",
+      "variant": "",
+      "model": "qwen3.5-4b",
+      "used_freqs": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.08928571428571429,
+      "jaccard_paper": 0.08928571428571429,
+      "hs": 0.0
+    },
+    {
+      "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "E0",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        14,
+        35,
+        41,
+        52
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.0,
+      "jaccard_paper": 0.8,
+      "hs": 0.0036951600291003314,
+      "hs_vs_paper": 0.6256485617378857
+    },
+    {
+      "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "E0",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.0,
+      "jaccard_paper": 0.08333333333333333,
+      "hs": 0.19128190087590102,
+      "hs_vs_paper": 0.1891855628411103
+    },
+    {
+      "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "E0",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.18181818181818182,
+      "jaccard_paper": 0.0,
+      "hs": 0.19358232407689338,
+      "hs_vs_paper": 0.026655599360949713
+    },
+    {
+      "run_id": "controls__T0__W-alg__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "W-alg",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        3,
+        23,
+        37,
+        39
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.8,
+      "jaccard_paper": 0.0,
+      "hs": 0.8888378520107217
+    },
+    {
+      "run_id": "controls__T0__W-alg__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "W-alg",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        3,
+        23,
+        37,
+        39
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.8,
+      "jaccard_paper": 0.0,
+      "hs": 0.8988570265709303
+    },
+    {
+      "run_id": "controls__T0__W-alg__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "W-alg",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        3,
+        23,
+        37,
+        39
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.8,
+      "jaccard_paper": 0.0,
+      "hs": 0.9395328620009175
+    },
+    {
+      "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "W-freq",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        31,
+        42,
+        52,
+        55
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.0,
+      "jaccard_paper": 0.2857142857142857,
+      "hs": 0.05537189466979208
+    },
+    {
+      "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "W-freq",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        31,
+        42,
+        55
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.0,
+      "jaccard_paper": 0.14285714285714285,
+      "hs": 0.06125435253934653
+    },
+    {
+      "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "W-freq",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        31,
+        42,
+        55
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.0,
+      "jaccard_paper": 0.14285714285714285,
+      "hs": 0.09449502631510821
+    },
+    {
+      "run_id": "controls__T0__W-role__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "W-role",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        32,
+        34,
+        41,
+        54
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.0,
+      "jaccard_paper": 0.125,
+      "hs": 0.168074316656719
+    },
+    {
+      "run_id": "controls__T0__W-role__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "W-role",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        32,
+        34,
+        41,
+        54
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.0,
+      "jaccard_paper": 0.125,
+      "hs": 0.17062011034752003
+    },
+    {
+      "run_id": "controls__T0__W-role__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "W-role",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        32,
+        34,
+        41,
+        54
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.0,
+      "jaccard_paper": 0.125,
+      "hs": 0.27330249839682996
+    },
+    {
+      "run_id": "controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "W-scramble",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        3,
+        23,
+        39
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.6,
+      "jaccard_paper": 0.0,
+      "hs": 0.9175709030701787
+    },
+    {
+      "run_id": "controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "W-scramble",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        3,
+        23,
+        39
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.6,
+      "jaccard_paper": 0.0,
+      "hs": 0.9541957040262264
+    },
+    {
+      "run_id": "controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "W-scramble",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        3,
+        23,
+        39
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.6,
+      "jaccard_paper": 0.0,
+      "hs": 0.9377029166304661
+    },
+    {
+      "run_id": "hyper__T0__E3-effort-high__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "E3",
+      "variant": "effort-high",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        3,
+        23,
+        39
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.6,
+      "jaccard_paper": 0.0,
+      "hs": 0.9233223943442961
+    },
+    {
+      "run_id": "hyper__T0__E3-effort-high__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "E3",
+      "variant": "effort-high",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        3,
+        23,
+        39
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.6,
+      "jaccard_paper": 0.0,
+      "hs": 0.9750493060685709
+    },
+    {
+      "run_id": "hyper__T0__E3-effort-high__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "E3",
+      "variant": "effort-high",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        3,
+        23,
+        39
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.6,
+      "jaccard_paper": 0.0,
+      "hs": 0.910007039416206
+    },
+    {
+      "run_id": "hyper__T0__E3-effort-low__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "E3",
+      "variant": "effort-low",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        3,
+        23
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.4,
+      "jaccard_paper": 0.0,
+      "hs": 0.9223609168218346
+    },
+    {
+      "run_id": "hyper__T0__E3-effort-low__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "E3",
+      "variant": "effort-low",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        3,
+        23,
+        39
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.6,
+      "jaccard_paper": 0.0,
+      "hs": 0.9167886707095926
+    },
+    {
+      "run_id": "hyper__T0__E3-effort-low__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "E3",
+      "variant": "effort-low",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        3,
+        23,
+        39
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.6,
+      "jaccard_paper": 0.0,
+      "hs": 0.9226250345487353
+    },
+    {
+      "run_id": "hyper__T0__W-freq-effort-high__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "W-freq",
+      "variant": "effort-high",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        31,
+        42,
+        55
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.0,
+      "jaccard_paper": 0.14285714285714285,
+      "hs": 0.09843134210918673
+    },
+    {
+      "run_id": "hyper__T0__W-freq-effort-high__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "W-freq",
+      "variant": "effort-high",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        31,
+        42,
+        55
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.0,
+      "jaccard_paper": 0.14285714285714285,
+      "hs": 0.08923788556571512
+    },
+    {
+      "run_id": "hyper__T0__W-freq-effort-high__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "W-freq",
+      "variant": "effort-high",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        31,
+        42,
+        55
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.0,
+      "jaccard_paper": 0.14285714285714285,
+      "hs": 0.09279903651381305
+    },
+    {
+      "run_id": "hyper__T0__W-freq-effort-low__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "W-freq",
+      "variant": "effort-low",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        31,
+        42,
+        52,
+        55
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.0,
+      "jaccard_paper": 0.2857142857142857,
+      "hs": 0.11352221312621381
+    },
+    {
+      "run_id": "hyper__T0__W-freq-effort-low__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "W-freq",
+      "variant": "effort-low",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        31,
+        42,
+        52,
+        55
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.0,
+      "jaccard_paper": 0.2857142857142857,
+      "hs": 0.06302914925099942
+    },
+    {
+      "run_id": "hyper__T0__W-freq-effort-low__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "W-freq",
+      "variant": "effort-low",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        31,
+        42,
+        55
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.0,
+      "jaccard_paper": 0.14285714285714285,
+      "hs": 0.08894654851022428
+    },
+    {
+      "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "E1",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        14,
+        35,
+        41,
+        52
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.0,
+      "jaccard_paper": 0.8,
+      "hs": 0.048345923249513034,
+      "hs_vs_paper": 0.950800281790194
+    },
+    {
+      "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "E1",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        14,
+        35,
+        40,
+        41,
+        52
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.0,
+      "jaccard_paper": 0.6666666666666666,
+      "hs": 0.04482621260495612,
+      "hs_vs_paper": 0.7508823916307494
+    },
+    {
+      "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "E1",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        14,
+        35,
+        40,
+        41,
+        52
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.0,
+      "jaccard_paper": 0.6666666666666666,
+      "hs": 0.046219606805840086,
+      "hs_vs_paper": 0.7552085808497392
+    },
+    {
+      "run_id": "main__T0__E2__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "E2",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        3,
+        23,
+        39
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.6,
+      "jaccard_paper": 0.0,
+      "hs": 0.8994455393035308
+    },
+    {
+      "run_id": "main__T0__E2__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "E2",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        3,
+        23,
+        39
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.6,
+      "jaccard_paper": 0.0,
+      "hs": 0.8945524617726366
+    },
+    {
+      "run_id": "main__T0__E2__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "E2",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 1.0,
+      "jaccard_paper": 0.0,
+      "hs": 0.8886228825348276
+    },
+    {
+      "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "E3",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        3,
+        23
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.4,
+      "jaccard_paper": 0.0,
+      "hs": 0.9394805798904734
+    },
+    {
+      "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "E3",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        3,
+        23,
+        39
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.6,
+      "jaccard_paper": 0.0,
+      "hs": 0.9324099362097188
+    },
+    {
+      "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "E3",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        3,
+        23
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.4,
+      "jaccard_paper": 0.0,
+      "hs": 0.9153374040731904
+    },
+    {
+      "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "E4",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        3,
+        23,
+        39
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.6,
+      "jaccard_paper": 0.0,
+      "hs": 0.9115119999542861
+    },
+    {
+      "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "E4",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        3,
+        23,
+        39
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.6,
+      "jaccard_paper": 0.0,
+      "hs": 0.9529163502723046
+    },
+    {
+      "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "E4",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        3,
+        23,
+        37,
+        39
+      ],
+      "target_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "jaccard_target": 0.8,
+      "jaccard_paper": 0.0,
+      "hs": 0.9654774109100147
+    },
+    {
+      "run_id": "seed__T-new__E3__claudehaiku55-claudecode__tdef__s0",
+      "target": "T-new",
+      "level": "E3",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        22,
+        41
+      ],
+      "target_freqs": [
+        22,
+        37,
+        41,
+        51
+      ],
+      "jaccard_target": 0.5,
+      "jaccard_paper": 0.16666666666666666,
+      "hs": 0.8458142088143057
+    },
+    {
+      "run_id": "seed__T-new__E3__claudehaiku55-claudecode__tdef__s1",
+      "target": "T-new",
+      "level": "E3",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        22,
+        37,
+        41,
+        51
+      ],
+      "target_freqs": [
+        22,
+        37,
+        41,
+        51
+      ],
+      "jaccard_target": 1.0,
+      "jaccard_paper": 0.125,
+      "hs": 0.9160957140644722
+    },
+    {
+      "run_id": "seed__T-new__E3__claudehaiku55-claudecode__tdef__s2",
+      "target": "T-new",
+      "level": "E3",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        22,
+        37,
+        41,
+        51
+      ],
+      "target_freqs": [
+        22,
+        37,
+        41,
+        51
+      ],
+      "jaccard_target": 1.0,
+      "jaccard_paper": 0.125,
+      "hs": 0.9680567085155497
+    },
+    {
+      "run_id": "seed__T-new__E4__claudehaiku55-claudecode__tdef__s0",
+      "target": "T-new",
+      "level": "E4",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        37,
+        41
+      ],
+      "target_freqs": [
+        22,
+        37,
+        41,
+        51
+      ],
+      "jaccard_target": 0.5,
+      "jaccard_paper": 0.16666666666666666,
+      "hs": 0.9841790672729815
+    },
+    {
+      "run_id": "seed__T-new__E4__claudehaiku55-claudecode__tdef__s1",
+      "target": "T-new",
+      "level": "E4",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        22,
+        37,
+        41,
+        51
+      ],
+      "target_freqs": [
+        22,
+        37,
+        41,
+        51
+      ],
+      "jaccard_target": 1.0,
+      "jaccard_paper": 0.125,
+      "hs": 0.9838452511976862
+    },
+    {
+      "run_id": "seed__T-new__E4__claudehaiku55-claudecode__tdef__s2",
+      "target": "T-new",
+      "level": "E4",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        37,
+        41
+      ],
+      "target_freqs": [
+        22,
+        37,
+        41,
+        51
+      ],
+      "jaccard_target": 0.5,
+      "jaccard_paper": 0.16666666666666666,
+      "hs": 0.9841334869958723
+    },
+    {
+      "run_id": "seed__T-new__W-freq__claudehaiku55-claudecode__tdef__s0",
+      "target": "T-new",
+      "level": "W-freq",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        10
+      ],
+      "target_freqs": [
+        22,
+        37,
+        41,
+        51
+      ],
+      "jaccard_target": 0.0,
+      "jaccard_paper": 0.0,
+      "hs": 0.08695534114421206
+    },
+    {
+      "run_id": "seed__T-new__W-freq__claudehaiku55-claudecode__tdef__s1",
+      "target": "T-new",
+      "level": "W-freq",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        10,
+        25,
+        33
+      ],
+      "target_freqs": [
+        22,
+        37,
+        41,
+        51
+      ],
+      "jaccard_target": 0.0,
+      "jaccard_paper": 0.0,
+      "hs": 0.029028486604491092
+    },
+    {
+      "run_id": "seed__T-new__W-freq__claudehaiku55-claudecode__tdef__s2",
+      "target": "T-new",
+      "level": "W-freq",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        10,
+        25,
+        33
+      ],
+      "target_freqs": [
+        22,
+        37,
+        41,
+        51
+      ],
+      "jaccard_target": 0.0,
+      "jaccard_paper": 0.0,
+      "hs": 0.16633002045895892
+    },
+    {
+      "run_id": "seed__T-paper__E-paper__claudehaiku55-claudecode__tdef__s0",
+      "target": "T-paper",
+      "level": "E-paper",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        14,
+        35,
+        41,
+        42,
+        52
+      ],
+      "target_freqs": [
+        14,
+        35,
+        41,
+        42,
+        52
+      ],
+      "jaccard_target": 1.0,
+      "jaccard_paper": 1.0,
+      "hs": 0.9837753766305314
+    },
+    {
+      "run_id": "seed__T-paper__E-paper__claudehaiku55-claudecode__tdef__s1",
+      "target": "T-paper",
+      "level": "E-paper",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        14,
+        35,
+        41,
+        42,
+        52
+      ],
+      "target_freqs": [
+        14,
+        35,
+        41,
+        42,
+        52
+      ],
+      "jaccard_target": 1.0,
+      "jaccard_paper": 1.0,
+      "hs": 0.9041185786561653
+    },
+    {
+      "run_id": "seed__T-paper__E-paper__claudehaiku55-claudecode__tdef__s2",
+      "target": "T-paper",
+      "level": "E-paper",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        14,
+        35,
+        41,
+        42,
+        52
+      ],
+      "target_freqs": [
+        14,
+        35,
+        41,
+        42,
+        52
+      ],
+      "jaccard_target": 1.0,
+      "jaccard_paper": 1.0,
+      "hs": 0.9607697321881722
+    },
+    {
+      "run_id": "seed__T-paper__E1__claudehaiku55-claudecode__tdef__s0",
+      "target": "T-paper",
+      "level": "E1",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        42,
+        52
+      ],
+      "target_freqs": [
+        14,
+        35,
+        41,
+        42,
+        52
+      ],
+      "jaccard_target": 0.4,
+      "jaccard_paper": 0.4,
+      "hs": 0.9245597139522842
+    },
+    {
+      "run_id": "seed__T-paper__E1__claudehaiku55-claudecode__tdef__s1",
+      "target": "T-paper",
+      "level": "E1",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        3,
+        14,
+        17,
+        25,
+        41,
+        46,
+        52
+      ],
+      "target_freqs": [
+        14,
+        35,
+        41,
+        42,
+        52
+      ],
+      "jaccard_target": 0.3333333333333333,
+      "jaccard_paper": 0.3333333333333333,
+      "hs": 0.5999888089269217
+    },
+    {
+      "run_id": "seed__T-paper__E1__claudehaiku55-claudecode__tdef__s2",
+      "target": "T-paper",
+      "level": "E1",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        30,
+        34,
+        44,
+        46
+      ],
+      "target_freqs": [
+        14,
+        35,
+        41,
+        42,
+        52
+      ],
+      "jaccard_target": 0.0,
+      "jaccard_paper": 0.0,
+      "hs": 0.24400468404245146
+    },
+    {
+      "run_id": "seed__T-paper__E3__claudehaiku55-claudecode__tdef__s0",
+      "target": "T-paper",
+      "level": "E3",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        14,
+        35,
+        41,
+        42,
+        52
+      ],
+      "target_freqs": [
+        14,
+        35,
+        41,
+        42,
+        52
+      ],
+      "jaccard_target": 1.0,
+      "jaccard_paper": 1.0,
+      "hs": 0.9435672726734555
+    },
+    {
+      "run_id": "seed__T-paper__E3__claudehaiku55-claudecode__tdef__s1",
+      "target": "T-paper",
+      "level": "E3",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        14,
+        35,
+        41,
+        42,
+        52
+      ],
+      "target_freqs": [
+        14,
+        35,
+        41,
+        42,
+        52
+      ],
+      "jaccard_target": 1.0,
+      "jaccard_paper": 1.0,
+      "hs": 0.9627642436556384
+    },
+    {
+      "run_id": "seed__T-paper__E3__claudehaiku55-claudecode__tdef__s2",
+      "target": "T-paper",
+      "level": "E3",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        14,
+        35,
+        41,
+        42,
+        52
+      ],
+      "target_freqs": [
+        14,
+        35,
+        41,
+        42,
+        52
+      ],
+      "jaccard_target": 1.0,
+      "jaccard_paper": 1.0,
+      "hs": 0.9129807385797787
+    },
+    {
+      "run_id": "seed__T-paper__E4__claudehaiku55-claudecode__tdef__s0",
+      "target": "T-paper",
+      "level": "E4",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        14,
+        35,
+        41,
+        42,
+        52
+      ],
+      "target_freqs": [
+        14,
+        35,
+        41,
+        42,
+        52
+      ],
+      "jaccard_target": 1.0,
+      "jaccard_paper": 1.0,
+      "hs": 0.9291528940166071
+    },
+    {
+      "run_id": "seed__T-paper__E4__claudehaiku55-claudecode__tdef__s1",
+      "target": "T-paper",
+      "level": "E4",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        14,
+        35,
+        41,
+        42,
+        52
+      ],
+      "target_freqs": [
+        14,
+        35,
+        41,
+        42,
+        52
+      ],
+      "jaccard_target": 1.0,
+      "jaccard_paper": 1.0,
+      "hs": 0.9451653133209591
+    },
+    {
+      "run_id": "seed__T-paper__E4__claudehaiku55-claudecode__tdef__s2",
+      "target": "T-paper",
+      "level": "E4",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        35,
+        41
+      ],
+      "target_freqs": [
+        14,
+        35,
+        41,
+        42,
+        52
+      ],
+      "jaccard_target": 0.4,
+      "jaccard_paper": 0.4,
+      "hs": 0.9377165181910629
+    },
+    {
+      "run_id": "seed__T-paper__W-freq__claudehaiku55-claudecode__tdef__s0",
+      "target": "T-paper",
+      "level": "W-freq",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        8,
+        21,
+        39,
+        44,
+        49
+      ],
+      "target_freqs": [
+        14,
+        35,
+        41,
+        42,
+        52
+      ],
+      "jaccard_target": 0.0,
+      "jaccard_paper": 0.0,
+      "hs": 0.09108515508809141
+    },
+    {
+      "run_id": "seed__T-paper__W-freq__claudehaiku55-claudecode__tdef__s1",
+      "target": "T-paper",
+      "level": "W-freq",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        8,
+        21,
+        39,
+        44,
+        49
+      ],
+      "target_freqs": [
+        14,
+        35,
+        41,
+        42,
+        52
+      ],
+      "jaccard_target": 0.0,
+      "jaccard_paper": 0.0,
+      "hs": 0.09880546798184159
+    },
+    {
+      "run_id": "seed__T-paper__W-freq__claudehaiku55-claudecode__tdef__s2",
+      "target": "T-paper",
+      "level": "W-freq",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        8,
+        21,
+        39,
+        44,
+        49
+      ],
+      "target_freqs": [
+        14,
+        35,
+        41,
+        42,
+        52
+      ],
+      "jaccard_target": 0.0,
+      "jaccard_paper": 0.0,
+      "hs": 0.16111421755990124
+    },
+    {
+      "run_id": "seed__T1__E2__claudehaiku55-claudecode__tdef__s0",
+      "target": "T1",
+      "level": "E2",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        11,
+        25,
+        49
+      ],
+      "target_freqs": [
+        11,
+        25,
+        49
+      ],
+      "jaccard_target": 1.0,
+      "jaccard_paper": 0.0,
+      "hs": 0.955339661700579
+    },
+    {
+      "run_id": "seed__T1__E2__claudehaiku55-claudecode__tdef__s1",
+      "target": "T1",
+      "level": "E2",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        11,
+        25,
+        49
+      ],
+      "target_freqs": [
+        11,
+        25,
+        49
+      ],
+      "jaccard_target": 1.0,
+      "jaccard_paper": 0.0,
+      "hs": 0.9607005886533594
+    },
+    {
+      "run_id": "seed__T1__E2__claudehaiku55-claudecode__tdef__s2",
+      "target": "T1",
+      "level": "E2",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        25,
+        49
+      ],
+      "target_freqs": [
+        11,
+        25,
+        49
+      ],
+      "jaccard_target": 0.6666666666666666,
+      "jaccard_paper": 0.0,
+      "hs": 0.955500275233559
+    },
+    {
+      "run_id": "seed__T1__E3__claudehaiku55-claudecode__tdef__s0",
+      "target": "T1",
+      "level": "E3",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        11,
+        49
+      ],
+      "target_freqs": [
+        11,
+        25,
+        49
+      ],
+      "jaccard_target": 0.6666666666666666,
+      "jaccard_paper": 0.0,
+      "hs": 0.9172797861845198
+    },
+    {
+      "run_id": "seed__T1__E3__claudehaiku55-claudecode__tdef__s1",
+      "target": "T1",
+      "level": "E3",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        11,
+        25,
+        49
+      ],
+      "target_freqs": [
+        11,
+        25,
+        49
+      ],
+      "jaccard_target": 1.0,
+      "jaccard_paper": 0.0,
+      "hs": 0.9431099610682755
+    },
+    {
+      "run_id": "seed__T1__E3__claudehaiku55-claudecode__tdef__s2",
+      "target": "T1",
+      "level": "E3",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        11,
+        49
+      ],
+      "target_freqs": [
+        11,
+        25,
+        49
+      ],
+      "jaccard_target": 0.6666666666666666,
+      "jaccard_paper": 0.0,
+      "hs": 0.9484367161432403
+    },
+    {
+      "run_id": "seed__T1__E4__claudehaiku55-claudecode__tdef__s0",
+      "target": "T1",
+      "level": "E4",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        25,
+        49
+      ],
+      "target_freqs": [
+        11,
+        25,
+        49
+      ],
+      "jaccard_target": 0.6666666666666666,
+      "jaccard_paper": 0.0,
+      "hs": 0.955111428249004
+    },
+    {
+      "run_id": "seed__T1__E4__claudehaiku55-claudecode__tdef__s1",
+      "target": "T1",
+      "level": "E4",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        25,
+        49
+      ],
+      "target_freqs": [
+        11,
+        25,
+        49
+      ],
+      "jaccard_target": 0.6666666666666666,
+      "jaccard_paper": 0.0,
+      "hs": 0.9662448644309558
+    },
+    {
+      "run_id": "seed__T1__E4__claudehaiku55-claudecode__tdef__s2",
+      "target": "T1",
+      "level": "E4",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        11,
+        49
+      ],
+      "target_freqs": [
+        11,
+        25,
+        49
+      ],
+      "jaccard_target": 0.6666666666666666,
+      "jaccard_paper": 0.0,
+      "hs": 0.959982817858619
+    },
+    {
+      "run_id": "seed__T1__W-freq__claudehaiku55-claudecode__tdef__s0",
+      "target": "T1",
+      "level": "W-freq",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        38,
+        52
+      ],
+      "target_freqs": [
+        11,
+        25,
+        49
+      ],
+      "jaccard_target": 0.0,
+      "jaccard_paper": 0.16666666666666666,
+      "hs": 0.0342313146163089
+    },
+    {
+      "run_id": "seed__T1__W-freq__claudehaiku55-claudecode__tdef__s1",
+      "target": "T1",
+      "level": "W-freq",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        15,
+        52
+      ],
+      "target_freqs": [
+        11,
+        25,
+        49
+      ],
+      "jaccard_target": 0.0,
+      "jaccard_paper": 0.16666666666666666,
+      "hs": 0.07935037366888621
+    },
+    {
+      "run_id": "seed__T1__W-freq__claudehaiku55-claudecode__tdef__s2",
+      "target": "T1",
+      "level": "W-freq",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        15,
+        38,
+        52
+      ],
+      "target_freqs": [
+        11,
+        25,
+        49
+      ],
+      "jaccard_target": 0.0,
+      "jaccard_paper": 0.14285714285714285,
+      "hs": 0.03942594850581018
+    },
+    {
+      "run_id": "seed__T2__E2__claudehaiku55-claudecode__tdef__s0",
+      "target": "T2",
+      "level": "E2",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        37,
+        44,
+        45,
+        46,
+        47,
+        51
+      ],
+      "target_freqs": [
+        37,
+        44,
+        45,
+        46,
+        47,
+        51
+      ],
+      "jaccard_target": 1.0,
+      "jaccard_paper": 0.0,
+      "hs": 0.9492753355036099
+    },
+    {
+      "run_id": "seed__T2__E2__claudehaiku55-claudecode__tdef__s1",
+      "target": "T2",
+      "level": "E2",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        37,
+        45,
+        46,
+        47,
+        51
+      ],
+      "target_freqs": [
+        37,
+        44,
+        45,
+        46,
+        47,
+        51
+      ],
+      "jaccard_target": 0.8333333333333334,
+      "jaccard_paper": 0.0,
+      "hs": 0.7887576476078108
+    },
+    {
+      "run_id": "seed__T2__E2__claudehaiku55-claudecode__tdef__s2",
+      "target": "T2",
+      "level": "E2",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        37,
+        44,
+        45,
+        46,
+        47,
+        51
+      ],
+      "target_freqs": [
+        37,
+        44,
+        45,
+        46,
+        47,
+        51
+      ],
+      "jaccard_target": 1.0,
+      "jaccard_paper": 0.0,
+      "hs": 0.9630144540534346
+    },
+    {
+      "run_id": "seed__T2__E3__claudehaiku55-claudecode__tdef__s0",
+      "target": "T2",
+      "level": "E3",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        37,
+        45,
+        47,
+        51
+      ],
+      "target_freqs": [
+        37,
+        44,
+        45,
+        46,
+        47,
+        51
+      ],
+      "jaccard_target": 0.6666666666666666,
+      "jaccard_paper": 0.0,
+      "hs": 0.9443616382488306
+    },
+    {
+      "run_id": "seed__T2__E3__claudehaiku55-claudecode__tdef__s1",
+      "target": "T2",
+      "level": "E3",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        45,
+        47,
+        51
+      ],
+      "target_freqs": [
+        37,
+        44,
+        45,
+        46,
+        47,
+        51
+      ],
+      "jaccard_target": 0.5,
+      "jaccard_paper": 0.0,
+      "hs": 0.9704273415845545
+    },
+    {
+      "run_id": "seed__T2__E3__claudehaiku55-claudecode__tdef__s2",
+      "target": "T2",
+      "level": "E3",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        45,
+        47,
+        51
+      ],
+      "target_freqs": [
+        37,
+        44,
+        45,
+        46,
+        47,
+        51
+      ],
+      "jaccard_target": 0.5,
+      "jaccard_paper": 0.0,
+      "hs": 0.9703379665759436
+    },
+    {
+      "run_id": "seed__T2__E4__claudehaiku55-claudecode__tdef__s0",
+      "target": "T2",
+      "level": "E4",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        37,
+        44,
+        45,
+        46,
+        47,
+        51
+      ],
+      "target_freqs": [
+        37,
+        44,
+        45,
+        46,
+        47,
+        51
+      ],
+      "jaccard_target": 1.0,
+      "jaccard_paper": 0.0,
+      "hs": 0.934337621934798
+    },
+    {
+      "run_id": "seed__T2__E4__claudehaiku55-claudecode__tdef__s1",
+      "target": "T2",
+      "level": "E4",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        46,
+        47
+      ],
+      "target_freqs": [
+        37,
+        44,
+        45,
+        46,
+        47,
+        51
+      ],
+      "jaccard_target": 0.3333333333333333,
+      "jaccard_paper": 0.0,
+      "hs": 0.955491567578942
+    },
+    {
+      "run_id": "seed__T2__E4__claudehaiku55-claudecode__tdef__s2",
+      "target": "T2",
+      "level": "E4",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        46
+      ],
+      "target_freqs": [
+        37,
+        44,
+        45,
+        46,
+        47,
+        51
+      ],
+      "jaccard_target": 0.16666666666666666,
+      "jaccard_paper": 0.0,
+      "hs": 0.9624193414044644
+    },
+    {
+      "run_id": "seed__T2__W-freq__claudehaiku55-claudecode__tdef__s0",
+      "target": "T2",
+      "level": "W-freq",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        32
+      ],
+      "target_freqs": [
+        37,
+        44,
+        45,
+        46,
+        47,
+        51
+      ],
+      "jaccard_target": 0.0,
+      "jaccard_paper": 0.0,
+      "hs": 0.08946714085300356
+    },
+    {
+      "run_id": "seed__T2__W-freq__claudehaiku55-claudecode__tdef__s1",
+      "target": "T2",
+      "level": "W-freq",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        9,
+        34
+      ],
+      "target_freqs": [
+        37,
+        44,
+        45,
+        46,
+        47,
+        51
+      ],
+      "jaccard_target": 0.0,
+      "jaccard_paper": 0.0,
+      "hs": 0.09295726060407487
+    },
+    {
+      "run_id": "seed__T2__W-freq__claudehaiku55-claudecode__tdef__s2",
+      "target": "T2",
+      "level": "W-freq",
+      "variant": "",
+      "model": "claude-haiku-5-5",
+      "used_freqs": [
+        9,
+        34
+      ],
+      "target_freqs": [
+        37,
+        44,
+        45,
+        46,
+        47,
+        51
+      ],
+      "jaccard_target": 0.0,
+      "jaccard_paper": 0.0,
+      "hs": 0.11052229434433626
+    }
+  ]
+}

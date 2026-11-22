@@ -1,5 +1,26 @@
 # Progress
 
+## 2026-11-22 01:30 — round 2 (N = 3) complete; round 3 postponed; waiting for your go-ahead
+
+**Done since 20:45** (N = 3 — not yet N = 10)
+- Round 2: 64 Claude Haiku runs (main, controls, ablations, hyperparameter, seed), no failures; no-agent controls and
+  grader sensitivity recomputed; hypotheses, tables, figures, paper, site regenerated. Claude spend $2.33 of $20.
+- Deviation 6 (round 3 postponed, your decision) and deviation 7 (H1 now reports its KL part; H2 applies the §6 power
+  rule at N = 3; round reports keep their own round's numbers) logged in the preregistration.
+- README: predicted vs. measured (plain and expert), highlighted examples, concrete network outputs vs. ground truth,
+  the agents' own words for successes and failure modes; new figures (frequencies each network built; outputs vs.
+  internals); ablations table; `reports/agent-examples.md`; round-2 report and self-review.
+
+**Positive (N = 3):** H1's HS trend, H3, H4, H7 and H8 pass their preregistered tests; the wrong-frequency gap holds on
+all five targets; format, self-test and effort barely move HS; the algorithm-only memorisation repeats in 3 of 3 runs.
+**Negative (N = 3):** output KL's trend fails (H1, KL part); HS cannot separate Pizza or a shuffled neuron table (H2
+ties); H4b's KL half fails; the agent beats the compiler on T2 (H5); local models never above chance; the round-1
+low-effort collapse and the E0 memorisation did not replicate in every run.
+
+**Now:** nothing running. **Next:** round 3 (N = 10, 224 Haiku runs, about 10–15 hours, about $5) only when you ask.
+
+**Estimate:** about 65 % of the full plan is done (101 of 325 agent runs); everything through round 2 is complete.
+
 ## 2026-11-21 20:45 — round 1 complete; local Qwen runs stopped (user decision)
 
 **Done since 18:30** (N = 1 — not yet N = 3 or N = 10)
