@@ -144,14 +144,16 @@ def test_diagnosed_failure_explains_the_bug_with_stored_numbers(tmp_path, monkey
     rid = "fake_run"
     (tmp_path / f"{rid}.json").write_text(json.dumps({
         "run_id": rid, "cause": "a layout bug", "short": "a layout bug", "blamed": ["ReLU"], "kept": ["faithful"],
+        "owner": "The slip is the agent's own",
         "variants": [{"name": "as submitted", "accuracy": 0.56, "hs": 0.92, "kl_out": 2.0},
                      {"name": "head 3 moved to free dimensions", "accuracy": 1.0, "hs": 0.92, "kl_out": 0.0}]}))
     monkeypatch.setattr(diagnose, "OUT", tmp_path)
-    x = {"run_id": rid, "accuracy": 0.56, "hs": 0.92, "accs": [0.68, 0.78, 0.56], "harness_errors": [], "final": "",
+    x = {"run_id": rid, "tool_calls": 22, "minutes": 6.4, "accuracy": 0.56, "hs": 0.92, "accs": [0.68, 0.78, 0.56], "harness_errors": [], "final": "",
          "reaction": "accuracy is only 0.68.", "plan": "", "compiler_hs": 0.93, "freq_lines": ["F = [2, 3, 23, 37, 39]"],
          "said": ["ReLU neurons fit badly.", "I'll keep the faithful setting."]}
     long, short = ae.why(x, "T0", "E3")
     assert "a layout bug" in long and "1.0000" in long and "ReLU neurons fit badly." in long and "faithful" in long
+    assert "The slip is the agent's own." in long and "22 tool calls and 6.4 minutes" in long
     assert "fixing it gives accuracy 1.0000" in short
 
 
