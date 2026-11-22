@@ -43,11 +43,11 @@ def random_init(settings: Settings, target: str = "T0", seeds=range(5)) -> list[
     return rows
 
 
-def _agent_runs(levels=("E3", "E4"), target="T0", max_round=99) -> list[dict]:
+def _agent_runs(levels=("E3", "E4"), target="T0", max_round=99, stages=("main",)) -> list[dict]:
     out = []
     for p in sorted((RES / "runs").glob("*.json")):
         r = json.loads(p.read_text(encoding="utf-8"))
-        if r["target"] == target and r["level"] in levels and r.get("variant", "") == "" and r["stage"] == "main" \
+        if r["target"] == target and r["level"] in levels and r.get("variant", "") == "" and r["stage"] in stages \
                 and int(r.get("round", 0)) <= max_round and not r.get("failed"):
             out.append(r)
     return out
@@ -77,16 +77,22 @@ def trajectory(settings: Settings, max_round: int, every: int = 1) -> dict:
     Spearman ρ of HS(t) with −log restricted loss(t); supported only if every ρ > 0.
 
     Deviation 8 (audit 2026-11-22): rounds 1–2 had used only the highest-HS replacement and every 10th checkpoint (41),
-    labelled "all checkpoints"; this follows §5 as written. Descriptive: checkpoints of one run are not independent."""
+    labelled "all checkpoints"; this follows §5 as written. Descriptive: checkpoints of one run are not independent.
+
+    Negative controls (post hoc, audit 2026-11-22 second pass): ρ between two quantities that both trend over training
+    is positive for many pairs, so the same ρ is computed for replacements built without T0's mechanism — W-freq (wrong
+    frequencies), E1 (algorithm only) and E0 (no explanation). If HS tracks circuit formation specifically, their ρ
+    should not be positive like the E3/E4 replacements'. They do not enter the preregistered verdict."""
     from grokviz import metrics as gm
     from grokviz.runstore import RunStore
     runs = _agent_runs(max_round=max_round)
     if not runs:
         return {}
+    controls = _agent_runs(levels=("W-freq", "E1", "E0"), max_round=max_round, stages=("main", "controls"))
     store = RunStore(targets.run_dir(settings, targets.resolve("T0").run_id))
     grid = targets.grid("T0", "cuda" if torch.cuda.is_available() else "cpu")
     key = targets.published_key_freqs(settings, "T0")
-    npz = {r["run_id"]: settings.runs_dir / r["run_id"] / "work_out" / "weights.npz" for r in runs}
+    npz = {r["run_id"]: settings.runs_dir / r["run_id"] / "work_out" / "weights.npz" for r in runs + controls}
     steps, rl, hs = [], [], {rid: [] for rid in npz}
     for t, step, model in store.iter_models("cpu", every=every):
         acts = gm.evaluate(model.to(grid.F.device), grid)
@@ -95,12 +101,18 @@ def trajectory(settings: Settings, max_round: int, every: int = 1) -> dict:
         for rid, p in npz.items():
             hs[rid].append(grade_npz(model, p, secondary=False)["hs"])
     neg_log_rl = -np.log(np.array(rl))
-    reps = [{"run_id": rid, "rho": float(st.stats.spearmanr(v, neg_log_rl).statistic), "hs": v} for rid, v in hs.items()]
+    rho = lambda v: float(st.stats.spearmanr(v, neg_log_rl).statistic)  # noqa: E731
+    reps = [{"run_id": r["run_id"], "rho": rho(hs[r["run_id"]]), "hs": hs[r["run_id"]]} for r in runs]
+    ctrl = [{"run_id": r["run_id"], "level": r["level"], "rho": rho(hs[r["run_id"]]), "hs": hs[r["run_id"]]} for r in controls]
+    by_level = {}
+    for c in ctrl:
+        by_level.setdefault(c["level"], []).append(c["rho"])
     rhos = [r["rho"] for r in reps]
-    rows = [{"step": s, "hs": float(np.mean([v[i] for v in hs.values()])), "restricted_loss": rl[i]} for i, s in enumerate(steps)]
+    rows = [{"step": s, "hs": float(np.mean([hs[r["run_id"]][i] for r in runs])), "restricted_loss": rl[i]} for i, s in enumerate(steps)]
     out = {"N": f"{len(reps)} E3/E4 replacements × {len(steps)} checkpoints", "steps": steps, "restricted_loss": rl,
            "replacements": reps, "spearman_min": min(rhos), "spearman_hs_vs_neglog_restricted_loss": float(np.median(rhos)),
-           "verdict": "supported" if min(rhos) > 0 else "not supported", "rows": rows}
+           "verdict": "supported" if min(rhos) > 0 else "not supported", "rows": rows,
+           "negative_controls": ctrl, "negative_controls_by_level": by_level}
     _dump(RES / "controls" / "trajectory_T0.json", out)
     return out
 

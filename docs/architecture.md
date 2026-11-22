@@ -40,13 +40,13 @@ flowchart TB
 | `explainer/ladder.py` | which measured quantities each level reveals; seeded corruptions for W-* |
 | `explainer/render.py` | explanation text (Clock/Pizza templates), neurons.csv, format variants, length statistics |
 | `explainer/paper.py` | the published explanation (E-paper) with the paper's own numbers |
-| `reference/compile.py` | deterministic spec → weights construction (agent-free ceiling) |
+| `reference/compile.py` | deterministic spec → weights construction (agent-free reference point, not a ceiling) |
 | `grader/` | activations on all 113² inputs; KL_out; cross-validated ridge HS; CKA, Procrustes, neuron matching, stitching |
 | `simulator/` | sandbox folder, WSL runner, unix-socket relay, Anthropic proxy (key injection, model allowlist, budget ledger), bash-only agent harness, llama-server manager, static audit |
 | `training.py` | grokviz trainer for fresh runs; small loop for distillation and continued training |
 | `nonagent.py` | random init, wrong targets, trajectory, planted calibration, baselines |
 | `manifests.py` | the agent conditions (amendment 2: 44 in round 1; 32 Claude Haiku conditions in rounds 2–3 after deviation 5) and per-round manifests |
-| `analysis/` | statistical tests, hypothesis verdicts labelled with N, tables, figures, and `report.py` (one command refills every marked block, including the paper's text; `vmi paper` builds the PDF) |
+| `analysis/` | statistical tests, hypothesis verdicts labelled with N, tables, figures, post-hoc frequency/memorisation analysis (`frequencies.py`), agent process counts from transcripts (`agent_behaviour.py`), the recorded software environment (`environment.py`), and `report.py` (one command refills every marked block, including the paper's text; `vmi paper` builds the PDF) |
 | `pipeline.py` | CLI wrapper (`uv run vmi ...`) |
 
 ## Why these design choices

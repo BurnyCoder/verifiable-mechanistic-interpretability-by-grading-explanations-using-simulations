@@ -19,9 +19,9 @@ Newest entries at the bottom. Per-experiment learnings live in each experiment's
   CKA < 1 under a random invertible change of basis) and
   `test_soundness_depends_on_the_replacement_basis_and_whitened_soundness_does_not`.
 - **Agents can recall published circuits** ([Haklay et al. 2026](https://arxiv.org/abs/2603.20101)); the paper's
-  frequencies {14, 35, 41, 42, 52} are public. Hence targets with no published analysis (weights public on Hugging Face
-  since 2026-10-21, after Claude Haiku 5.5's June 2026 training-data cutoff) and a held-out target trained after the
-  freeze.
+  frequencies {14, 35, 41, 42, 52} are public. Hence targets analysed in no paper (weights and key frequencies public on
+  Hugging Face only since 2026-10-21, after Claude Haiku 5.5's June 2026 training-data cutoff; no internet in the
+  sandbox) and a held-out target trained after the freeze.
 - **Simulators can ignore explanations** ([Poché et al. 2026](https://arxiv.org/abs/2609.08585)) → E0 (no explanation)
   and E1 (no model-specific numbers) controls.
 
@@ -182,7 +182,7 @@ least one model response?) and archive, never delete, the failed record.
 ## Round 1 — the simulator fills gaps from memory (2026-11-21)
 
 **What happened.** On the published checkpoint (T-paper), the algorithm-only explanation E1 produced a replacement
-that scored like a full explanation, while E1 on T0 (no published analysis) scored at the floor. The T0 E1 build script
+that scored like a full explanation, while E1 on T0 (analysed in no paper) scored at the floor. The T0 E1 build script
 (`main__T0__E1…s0`) hard-coded `KEY_FREQS = [14, 35, 41, 42, 52]` with the comment "choice: not specified by
 EXPLANATION.md" — the paper's published frequencies; the T-paper E1 script (s0) used `KEYS = [14, 35, 41, 42, 52, 71]`.
 By the key-frequency rule all three T0 E1 replacements contain four of the paper's five frequencies (14, 35, 41, 52;
@@ -197,8 +197,9 @@ higher than against T0. Comparing two runs (E1 on T0 vs. E1 on T-paper) mixes ag
 re-grading one set of weights against two targets isolates the target.
 
 **Learning.** Weights-blind does not mean knowledge-blind. Any simulation score on a published model is confounded by
-memorisation; targets with no published analysis (weights public since 2026-10-21, after the simulator's June 2026
-training-data cutoff) and a held-out target trained after the freeze are necessary, not optional. The
+memorisation; targets whose mechanism the simulator cannot have seen (no paper; weights and key frequencies public only
+since 2026-10-21, after the simulator's June 2026 training-data cutoff; no internet in the sandbox) and a held-out target
+trained after the freeze are necessary, not optional. The
 same applies to any LLM-based interpretability evaluation on famous models ([Haklay et al. 2026](https://arxiv.org/abs/2603.20101)).
 
 ## Round 1 — small local simulators never build a working network (2026-11-21)
@@ -257,9 +258,37 @@ can be requested; these runs did not), so only the visible messages can be quote
 - **Citations cited for more than they say.** iWSP (Mehta et al. 2026) already uses CKA and a no-description control;
   Heap et al. 2025 evaluate SAE features with fuzzing and detection scores; Zhong et al. 2023's Clock and Pizza differ
   in their logit patterns, so they are not a same-outputs, different-internals example. Reviews corrected.
-- **Claude Code has no step cap.** Text describing a Claude run "within the 60-step budget" used the local harness's
-  limit; Claude runs are limited by time and budget only (amendment 2 item 6).
+- **Claude runs had no step cap.** Text describing a Claude run "within the 60-step budget" used the local harness's
+  limit; Claude runs were limited by time and budget only. (The second audit corrected the wording "Claude Code has no
+  step cap": the CLI has a `--max-turns` option, which was not used.)
 
 **Learning.** Check the code's own measurements (the key-frequency rule, the length files) before writing "built X" or
 "length-matched", and check that each preregistered statistic is actually computed by the analysis code rather than
 only described in the preregistration.
+
+## Second independent audit — what a fresh pass caught (2026-11-22)
+
+**What happened.** A second audit, made without reading the earlier reviews, re-read the code, the agents' own build
+scripts and transcripts, the Hugging Face target repository and every citation (`reviews/audit-2-2026-11-22.md`,
+deviation 9).
+
+- **"No published analysis" was false.** The target repository publishes each run's key frequencies
+  (`wd1_s1/analysis/key_freqs.json` lists T0's). The contamination argument still holds, but for different reasons:
+  no paper, publication only after the simulator's training cutoff, no internet in the sandbox. *Learning:* check a
+  data source's own files before describing what is and is not public.
+- **Identical inputs are replicates.** E0 and E1 contain nothing target-specific, so their runs on T0 and on T-paper
+  are draws from one condition. Reporting only the T0 runs selected half of the evidence, and the key-frequency
+  threshold under-counted what the agents built (a script listing all five paper frequencies was detected as two).
+  *Learning:* before comparing conditions, check whether the agent's input differs at all; prefer threshold-free
+  measures (spectrum share) and the agent's own declarations next to thresholded ones.
+- **A preregistered hypothesis has a scope.** H5's "agent ≤ compiler" was tested on T0; the seed targets are an
+  extension. Mixing them produced six different phrasings across documents. *Learning:* generate one wording from one
+  function and keep the preregistered comparison apart from extensions.
+- **The agent is not a literal compiler.** It repairs a self-inconsistent explanation into a working adder and tunes
+  constants against its task self-test in scratch copies the static audit never sees. *Learning:* audit the process
+  (transcripts), not only the final script, and say what the score then measures.
+- **Correlation along one training run needs a control.** Two quantities that both trend with training correlate;
+  replacements built without the target's mechanism give the specificity check H8 lacked.
+- **Small details that were simply wrong:** "Claude Code has no step cap" (it has `--max-turns`, unused here); Yip et
+  al. give no closed-form construction; two cited works were missing from the reference list; the cited Heap et al.
+  title belongs to a later arXiv version; the exact JT branch silently fell back to Monte-Carlo for nine values.

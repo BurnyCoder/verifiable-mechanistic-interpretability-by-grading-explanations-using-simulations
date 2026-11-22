@@ -7,7 +7,7 @@ adds the per-neuron and per-head fits the most detailed explanation level (E4) n
   dominant frequency w = 2πk/p, reported as bias + amplitude/phase pairs, and
 - the neuron's output map (its column of W_L = W_U W_out) fitted as g·cos(w c − φ_out).
 Global context: `render.py` turns this dict into explanation text; `reference/compile.py` turns the same dict back
-into weights (agent-free ceiling). No number in any explanation is typed by hand — all come from here.
+into weights (agent-free reference point; not a ceiling, the agent exceeds it on some targets). No number in any explanation is typed by hand — all come from here.
 Sources: grokviz.metrics / grokviz.interventions (MIT) implementing paper Sec. 4 (key frequencies, Table 1, Table 2,
 neuron clusters; https://arxiv.org/abs/2301.05217); trig identities cos wa cos wb = ½[cos w(a−b) + cos w(a+b)] etc.
 """

@@ -225,13 +225,13 @@ each replacement built by the main simulator. Frequencies with small amplitude f
 **Reading.** With no frequencies in the explanation (E0, E1), Haiku builds four of the published paper's five
 frequencies (14, 35, 41, 52 by the key-frequency rule) into the replacement; the T0 E1 build script hard-codes the
 paper's set (`KEY_FREQS = [14, 35, 41, 42, 52]  # key frequencies (choice: not specified by EXPLANATION.md)`). On
-targets with no published analysis that yields a working adder with the wrong mechanism and near-zero HS; on the
+targets analysed in no paper that yields a working adder with the wrong mechanism and near-zero HS; on the
 published checkpoint (T-paper) the algorithm-only E1 scores like a full explanation. The last column is a target
 swap, the most direct test: the *same* T0 E0/E1 weights, graded against the published checkpoint instead of T0, score
 far higher there than against T0, so the simulator built the published mechanism, not the explained one. Scores on a published model
-therefore measure what the simulator remembers, not what the explanation says; the targets with no published
-analysis (T0–T2, weights public on Hugging Face since 2026-10-21, after Claude Haiku 5.5's June 2026 training-data
-cutoff; T-new, trained after the freeze), which the preregistration introduced for exactly this risk, are what make the
+therefore measure what the simulator remembers, not what the explanation says; the targets analysed in no
+paper (T0–T2, weights and key frequencies public on Hugging Face since 2026-10-21, after Claude Haiku 5.5's June 2026
+training-data cutoff, with no internet in the sandbox; T-new, trained after the freeze), which the preregistration introduced for exactly this risk, are what make the
 score interpretable. This is
 an existence proof at N = 1, consistent with [Haklay et al. 2026](https://arxiv.org/abs/2603.20101) (agents reproduce
 published circuits from memory).
@@ -349,7 +349,7 @@ T1, T2 and T-new, E2–E4 reach HS in the range of the reference compiler's buil
 compiler's W-freq build (compiler tables above); random, retrain and student baselines exist only for T0, so there is
 no no-agent floor on these targets. By sign, the agent's HS is above the compiler's in 7 of 15 target–explanation
 pairs, largest on T2 (H5 row below; on T2 the compiler is misled by the rendered E3, the agent is not); whether a
-difference lies beyond its bootstrap CI is reported in the predictions table. Every finished local Qwen run (Qwen3.5-4B on E2, E3,
+difference lies beyond its bootstrap CI was not computed in round 1 (added at N = 3; see the round-2 report). Every finished local Qwen run (Qwen3.5-4B on E2, E3,
 E4 and W-freq; Qwen3.5-9B on E2) built a network with constant output: task accuracy 1/113 and HS 0, whatever the
 explanation. Each run used up its 60 steps or its 60 minutes without reaching a working build. The local runs were
 then stopped (deviation 5), so H5's capability trend and H6's cross-simulator ranking cannot be tested.

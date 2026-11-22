@@ -8,6 +8,7 @@
     52
   ],
   "rule": "W_L Fourier norm >= 0.25 max (grokviz key_frequencies)",
+  "chance_share": 0.08928571428571429,
   "rows": [
     {
       "run_id": "ablations__T0__E2__qwen354b-mini__t0.6__s0",
@@ -82,7 +83,16 @@
       ],
       "jaccard_target": 0.08928571428571429,
       "jaccard_paper": 0.08928571428571429,
-      "hs": 0.0
+      "hs": 0.0,
+      "paper_norm_share": 0.0,
+      "target_norm_share": 0.0,
+      "declared_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ]
     },
     {
       "run_id": "ablations__T0__E2__qwen359b-mini__t0.6__s0",
@@ -103,7 +113,16 @@
       ],
       "jaccard_target": 0.4,
       "jaccard_paper": 0.0,
-      "hs": 0.0
+      "hs": 0.0,
+      "paper_norm_share": 1.7881910269692889e-29,
+      "target_norm_share": 1.0,
+      "declared_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ]
     },
     {
       "run_id": "ablations__T0__E3-fmt-code__claudehaiku55-claudecode__tdef__s0",
@@ -125,7 +144,16 @@
       ],
       "jaccard_target": 0.6,
       "jaccard_paper": 0.0,
-      "hs": 0.9175968180747128
+      "hs": 0.9175968180747128,
+      "paper_norm_share": 4.4431450021535476e-30,
+      "target_norm_share": 1.0,
+      "declared_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ]
     },
     {
       "run_id": "ablations__T0__E3-fmt-math__claudehaiku55-claudecode__tdef__s0",
@@ -146,7 +174,10 @@
       ],
       "jaccard_target": 0.4,
       "jaccard_paper": 0.0,
-      "hs": 0.9110264307987057
+      "hs": 0.9110264307987057,
+      "paper_norm_share": 5.334923666367494e-30,
+      "target_norm_share": 1.0,
+      "declared_freqs": null
     },
     {
       "run_id": "ablations__T0__E3-noselftest__claudehaiku55-claudecode__tdef__s0",
@@ -168,7 +199,16 @@
       ],
       "jaccard_target": 0.6,
       "jaccard_paper": 0.0,
-      "hs": 0.9641187159435614
+      "hs": 0.9641187159435614,
+      "paper_norm_share": 9.228311737597921e-30,
+      "target_norm_share": 1.0000000000000002,
+      "declared_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ]
     },
     {
       "run_id": "ablations__T0__E3__qwen354b-mini__t0.6__s0",
@@ -243,7 +283,10 @@
       ],
       "jaccard_target": 0.08928571428571429,
       "jaccard_paper": 0.08928571428571429,
-      "hs": 0.0
+      "hs": 0.0,
+      "paper_norm_share": 0.0,
+      "target_norm_share": 0.0,
+      "declared_freqs": null
     },
     {
       "run_id": "ablations__T0__E4__qwen354b-mini__t0.6__s0",
@@ -318,7 +361,10 @@
       ],
       "jaccard_target": 0.08928571428571429,
       "jaccard_paper": 0.08928571428571429,
-      "hs": 0.0
+      "hs": 0.0,
+      "paper_norm_share": 0.0,
+      "target_norm_share": 0.0,
+      "declared_freqs": null
     },
     {
       "run_id": "ablations__T0__W-freq__qwen354b-mini__t0.6__s0",
@@ -393,7 +439,16 @@
       ],
       "jaccard_target": 0.08928571428571429,
       "jaccard_paper": 0.08928571428571429,
-      "hs": 0.0
+      "hs": 0.0,
+      "paper_norm_share": 0.0,
+      "target_norm_share": 0.0,
+      "declared_freqs": [
+        22,
+        31,
+        42,
+        52,
+        55
+      ]
     },
     {
       "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s0",
@@ -417,6 +472,15 @@
       "jaccard_target": 0.0,
       "jaccard_paper": 0.8,
       "hs": 0.0036951600291003314,
+      "paper_norm_share": 0.9999999999999999,
+      "target_norm_share": 4.752110882620661e-30,
+      "declared_freqs": [
+        14,
+        35,
+        41,
+        52
+      ],
+      "hs_vs_T0": 0.0036951600291003314,
       "hs_vs_paper": 0.6256485617378857
     },
     {
@@ -440,7 +504,16 @@
       ],
       "jaccard_target": 0.8,
       "jaccard_paper": 0.0,
-      "hs": 0.8888378520107217
+      "hs": 0.8888378520107217,
+      "paper_norm_share": 7.09436255195218e-30,
+      "target_norm_share": 1.0000000000000002,
+      "declared_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ]
     },
     {
       "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s0",
@@ -463,7 +536,16 @@
       ],
       "jaccard_target": 0.0,
       "jaccard_paper": 0.2857142857142857,
-      "hs": 0.05537189466979208
+      "hs": 0.05537189466979208,
+      "paper_norm_share": 0.4824963740049822,
+      "target_norm_share": 5.992584896462484e-30,
+      "declared_freqs": [
+        22,
+        31,
+        42,
+        52,
+        55
+      ]
     },
     {
       "run_id": "controls__T0__W-role__claudehaiku55-claudecode__tdef__s0",
@@ -486,7 +568,16 @@
       ],
       "jaccard_target": 0.0,
       "jaccard_paper": 0.125,
-      "hs": 0.168074316656719
+      "hs": 0.168074316656719,
+      "paper_norm_share": 0.1298865357870644,
+      "target_norm_share": 6.99595465027602e-30,
+      "declared_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ]
     },
     {
       "run_id": "controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s0",
@@ -508,7 +599,16 @@
       ],
       "jaccard_target": 0.6,
       "jaccard_paper": 0.0,
-      "hs": 0.9175709030701787
+      "hs": 0.9175709030701787,
+      "paper_norm_share": 4.1043524210457766e-30,
+      "target_norm_share": 1.0,
+      "declared_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ]
     },
     {
       "run_id": "hyper__T0__E3-effort-high__claudehaiku55-claudecode__tdef__s0",
@@ -530,7 +630,16 @@
       ],
       "jaccard_target": 0.6,
       "jaccard_paper": 0.0,
-      "hs": 0.9233223943442961
+      "hs": 0.9233223943442961,
+      "paper_norm_share": 9.104273704918853e-30,
+      "target_norm_share": 1.0,
+      "declared_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ]
     },
     {
       "run_id": "hyper__T0__E3-effort-low__claudehaiku55-claudecode__tdef__s0",
@@ -551,7 +660,10 @@
       ],
       "jaccard_target": 0.4,
       "jaccard_paper": 0.0,
-      "hs": 0.9223609168218346
+      "hs": 0.9223609168218346,
+      "paper_norm_share": 4.259150251373599e-30,
+      "target_norm_share": 0.9999999999999999,
+      "declared_freqs": null
     },
     {
       "run_id": "hyper__T0__W-freq-effort-high__claudehaiku55-claudecode__tdef__s0",
@@ -573,7 +685,16 @@
       ],
       "jaccard_target": 0.0,
       "jaccard_paper": 0.14285714285714285,
-      "hs": 0.09843134210918673
+      "hs": 0.09843134210918673,
+      "paper_norm_share": 0.38791583427687476,
+      "target_norm_share": 6.195900420337391e-30,
+      "declared_freqs": [
+        22,
+        31,
+        42,
+        52,
+        55
+      ]
     },
     {
       "run_id": "hyper__T0__W-freq-effort-low__claudehaiku55-claudecode__tdef__s0",
@@ -596,7 +717,16 @@
       ],
       "jaccard_target": 0.0,
       "jaccard_paper": 0.2857142857142857,
-      "hs": 0.11352221312621381
+      "hs": 0.11352221312621381,
+      "paper_norm_share": 0.3553648936785972,
+      "target_norm_share": 5.9805511407195016e-30,
+      "declared_freqs": [
+        22,
+        31,
+        42,
+        52,
+        55
+      ]
     },
     {
       "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s0",
@@ -620,6 +750,16 @@
       "jaccard_target": 0.0,
       "jaccard_paper": 0.8,
       "hs": 0.048345923249513034,
+      "paper_norm_share": 1.0,
+      "target_norm_share": 3.0975324643253834e-30,
+      "declared_freqs": [
+        14,
+        35,
+        41,
+        42,
+        52
+      ],
+      "hs_vs_T0": 0.048345923249513034,
       "hs_vs_paper": 0.950800281790194
     },
     {
@@ -642,7 +782,16 @@
       ],
       "jaccard_target": 0.6,
       "jaccard_paper": 0.0,
-      "hs": 0.8994455393035308
+      "hs": 0.8994455393035308,
+      "paper_norm_share": 5.454932825607708e-30,
+      "target_norm_share": 1.0,
+      "declared_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ]
     },
     {
       "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s0",
@@ -663,7 +812,16 @@
       ],
       "jaccard_target": 0.4,
       "jaccard_paper": 0.0,
-      "hs": 0.9394805798904734
+      "hs": 0.9394805798904734,
+      "paper_norm_share": 8.160367778113735e-30,
+      "target_norm_share": 1.0000000000000002,
+      "declared_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ]
     },
     {
       "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s0",
@@ -685,7 +843,10 @@
       ],
       "jaccard_target": 0.6,
       "jaccard_paper": 0.0,
-      "hs": 0.9115119999542861
+      "hs": 0.9115119999542861,
+      "paper_norm_share": 1.8633234380081657e-29,
+      "target_norm_share": 1.0,
+      "declared_freqs": null
     },
     {
       "run_id": "seed__T-new__E3__claudehaiku55-claudecode__tdef__s0",
@@ -705,7 +866,15 @@
       ],
       "jaccard_target": 0.5,
       "jaccard_paper": 0.16666666666666666,
-      "hs": 0.8458142088143057
+      "hs": 0.8458142088143057,
+      "paper_norm_share": 0.8482533365693313,
+      "target_norm_share": 1.0,
+      "declared_freqs": [
+        22,
+        37,
+        41,
+        51
+      ]
     },
     {
       "run_id": "seed__T-new__E4__claudehaiku55-claudecode__tdef__s0",
@@ -725,7 +894,15 @@
       ],
       "jaccard_target": 0.5,
       "jaccard_paper": 0.16666666666666666,
-      "hs": 0.9841790672729815
+      "hs": 0.9841790672729815,
+      "paper_norm_share": 0.8274201288527707,
+      "target_norm_share": 0.9999999999999999,
+      "declared_freqs": [
+        22,
+        37,
+        41,
+        51
+      ]
     },
     {
       "run_id": "seed__T-new__W-freq__claudehaiku55-claudecode__tdef__s0",
@@ -744,7 +921,15 @@
       ],
       "jaccard_target": 0.0,
       "jaccard_paper": 0.0,
-      "hs": 0.08695534114421206
+      "hs": 0.08695534114421206,
+      "paper_norm_share": 8.668876550610504e-30,
+      "target_norm_share": 1.010947477573723e-29,
+      "declared_freqs": [
+        10,
+        25,
+        33,
+        39
+      ]
     },
     {
       "run_id": "seed__T-paper__E-paper__claudehaiku55-claudecode__tdef__s0",
@@ -768,7 +953,16 @@
       ],
       "jaccard_target": 1.0,
       "jaccard_paper": 1.0,
-      "hs": 0.9837753766305314
+      "hs": 0.9837753766305314,
+      "paper_norm_share": 1.0,
+      "target_norm_share": 1.0,
+      "declared_freqs": [
+        14,
+        35,
+        41,
+        42,
+        52
+      ]
     },
     {
       "run_id": "seed__T-paper__E1__claudehaiku55-claudecode__tdef__s0",
@@ -789,7 +983,18 @@
       ],
       "jaccard_target": 0.4,
       "jaccard_paper": 0.4,
-      "hs": 0.9245597139522842
+      "hs": 0.9245597139522842,
+      "paper_norm_share": 1.0,
+      "target_norm_share": 1.0,
+      "declared_freqs": [
+        14,
+        35,
+        41,
+        42,
+        52
+      ],
+      "hs_vs_T0": 0.005940702940394896,
+      "hs_vs_paper": 0.9245597139522842
     },
     {
       "run_id": "seed__T-paper__E3__claudehaiku55-claudecode__tdef__s0",
@@ -813,7 +1018,16 @@
       ],
       "jaccard_target": 1.0,
       "jaccard_paper": 1.0,
-      "hs": 0.9435672726734555
+      "hs": 0.9435672726734555,
+      "paper_norm_share": 0.9999999999999999,
+      "target_norm_share": 0.9999999999999999,
+      "declared_freqs": [
+        14,
+        35,
+        41,
+        42,
+        52
+      ]
     },
     {
       "run_id": "seed__T-paper__E4__claudehaiku55-claudecode__tdef__s0",
@@ -837,7 +1051,16 @@
       ],
       "jaccard_target": 1.0,
       "jaccard_paper": 1.0,
-      "hs": 0.9291528940166071
+      "hs": 0.9291528940166071,
+      "paper_norm_share": 1.0,
+      "target_norm_share": 1.0,
+      "declared_freqs": [
+        14,
+        35,
+        41,
+        42,
+        52
+      ]
     },
     {
       "run_id": "seed__T-paper__W-freq__claudehaiku55-claudecode__tdef__s0",
@@ -861,7 +1084,10 @@
       ],
       "jaccard_target": 0.0,
       "jaccard_paper": 0.0,
-      "hs": 0.09108515508809141
+      "hs": 0.09108515508809141,
+      "paper_norm_share": 1.2176369360590948e-29,
+      "target_norm_share": 1.2176369360590948e-29,
+      "declared_freqs": null
     },
     {
       "run_id": "seed__T1__E2__claudehaiku55-claudecode__tdef__s0",
@@ -881,7 +1107,14 @@
       ],
       "jaccard_target": 1.0,
       "jaccard_paper": 0.0,
-      "hs": 0.955339661700579
+      "hs": 0.955339661700579,
+      "paper_norm_share": 1.5790062192112572e-29,
+      "target_norm_share": 1.0,
+      "declared_freqs": [
+        11,
+        25,
+        49
+      ]
     },
     {
       "run_id": "seed__T1__E3__claudehaiku55-claudecode__tdef__s0",
@@ -900,7 +1133,14 @@
       ],
       "jaccard_target": 0.6666666666666666,
       "jaccard_paper": 0.0,
-      "hs": 0.9172797861845198
+      "hs": 0.9172797861845198,
+      "paper_norm_share": 1.748095200083319e-29,
+      "target_norm_share": 1.0,
+      "declared_freqs": [
+        11,
+        25,
+        49
+      ]
     },
     {
       "run_id": "seed__T1__E4__claudehaiku55-claudecode__tdef__s0",
@@ -919,7 +1159,14 @@
       ],
       "jaccard_target": 0.6666666666666666,
       "jaccard_paper": 0.0,
-      "hs": 0.955111428249004
+      "hs": 0.955111428249004,
+      "paper_norm_share": 2.0744679512062368e-29,
+      "target_norm_share": 1.0,
+      "declared_freqs": [
+        11,
+        25,
+        49
+      ]
     },
     {
       "run_id": "seed__T1__W-freq__claudehaiku55-claudecode__tdef__s0",
@@ -938,7 +1185,14 @@
       ],
       "jaccard_target": 0.0,
       "jaccard_paper": 0.16666666666666666,
-      "hs": 0.0342313146163089
+      "hs": 0.0342313146163089,
+      "paper_norm_share": 0.6616963060974278,
+      "target_norm_share": 1.5383144150732845e-29,
+      "declared_freqs": [
+        15,
+        38,
+        52
+      ]
     },
     {
       "run_id": "seed__T2__E2__claudehaiku55-claudecode__tdef__s0",
@@ -964,7 +1218,17 @@
       ],
       "jaccard_target": 1.0,
       "jaccard_paper": 0.0,
-      "hs": 0.9492753355036099
+      "hs": 0.9492753355036099,
+      "paper_norm_share": 2.099965708578021e-29,
+      "target_norm_share": 1.0000000000000002,
+      "declared_freqs": [
+        37,
+        44,
+        45,
+        46,
+        47,
+        51
+      ]
     },
     {
       "run_id": "seed__T2__E3__claudehaiku55-claudecode__tdef__s0",
@@ -988,7 +1252,17 @@
       ],
       "jaccard_target": 0.6666666666666666,
       "jaccard_paper": 0.0,
-      "hs": 0.9443616382488306
+      "hs": 0.9443616382488306,
+      "paper_norm_share": 1.8661312746795413e-29,
+      "target_norm_share": 0.9999999999999998,
+      "declared_freqs": [
+        37,
+        44,
+        45,
+        46,
+        47,
+        51
+      ]
     },
     {
       "run_id": "seed__T2__E4__claudehaiku55-claudecode__tdef__s0",
@@ -1014,7 +1288,17 @@
       ],
       "jaccard_target": 1.0,
       "jaccard_paper": 0.0,
-      "hs": 0.934337621934798
+      "hs": 0.934337621934798,
+      "paper_norm_share": 2.0364611193588585e-29,
+      "target_norm_share": 1.0000000000000002,
+      "declared_freqs": [
+        37,
+        44,
+        45,
+        46,
+        47,
+        51
+      ]
     },
     {
       "run_id": "seed__T2__W-freq__claudehaiku55-claudecode__tdef__s0",
@@ -1035,7 +1319,10 @@
       ],
       "jaccard_target": 0.0,
       "jaccard_paper": 0.0,
-      "hs": 0.08946714085300356
+      "hs": 0.08946714085300356,
+      "paper_norm_share": 6.938361726611426e-30,
+      "target_norm_share": 2.681322531631063e-29,
+      "declared_freqs": null
     }
   ]
 }

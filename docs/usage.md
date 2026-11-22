@@ -9,7 +9,7 @@ All commands run from the repository root on Windows; agent runs call into WSL a
 3. Targets: download the pinned runs (revision in `.env.example`):
    `hf download BurnyCoder/grokking-modular-addition-runs --revision <rev> --local-dir D:/AI/vmi-sim/data/grokking-runs`.
    The paper's checkpoint is downloaded and sha256-checked on first use.
-4. Local LLM: llama.cpp b12600 (Windows CUDA 13.5 build) in `D:\AI\vmi-sim\llama.cpp\b12600`, the GGUF files in
+4. Local LLM: llama.cpp b12600 (Windows build with the CUDA 13 runtime) in `D:\AI\vmi-sim\llama.cpp\b12600`, the GGUF files in
    `D:\AI\vmi-sim\models` (Qwen3.6-35B-A3B UD-IQ4_XS; Qwen3.5-9B and -4B Q4_K_M for the ablation).
 5. WSL (Ubuntu, bubblewrap ≥ 0.9, ripgrep; OpenCode 2.3.2 at `~/.opencode/bin` only for the OpenCode harness): run
    `scripts/setup_wsl.sh` inside WSL once (copies numpy for the sandbox and builds the seccomp filter). WSL must use
@@ -31,12 +31,12 @@ All commands run from the repository root on Windows; agent runs call into WSL a
 | `run TARGET LEVEL SEED [--stage S] [--harness H] [--model M]` | one agent run (`H` = `claudecode`, `mini` or `opencode`) | `results/runs/<run_id>.json`, run folder under `VMI_RUNS_DIR` |
 | `manifests ROUND` | write the round's JSONL manifests (one per stage) | `results/manifests/` |
 | `queue MANIFEST [--only-model M]` | run every condition of a manifest without a result (resumable); local-model conditions only while llama-server serves that model; `--only-model` lets a Claude queue and a local queue run side by side | `results/runs/` |
-| `controls ROUND` | planted calibration, random init, wrong targets, trajectory | `results/controls/` |
+| `controls ROUND` | planted calibration, random init, wrong targets, trajectory (with W-freq/E1/E0 negative controls, post hoc) | `results/controls/` |
 | `baselines TARGET` | retrains, distilled students, Fourier-restricted M, weights dump | `results/baselines/` |
 | `train RUN_IDS...` | train fresh runs with the paper recipe (e.g. `new_s11` = T-new) | `VMI_DATA_DIR/trained/` |
 | `regrade` | recompute secondary metrics of graded runs from saved weights (primary metrics must reproduce) | `results/runs/` |
 | `diagnose` | re-run agents' build scripts with single edits (interventions) to find what made a run fail; read by the README examples | `results/diagnoses/` |
-| `analyse ROUND` | evaluate all hypotheses at the round's N, draw all figures, refill every marked table in README, reports and paper | `results/hypotheses_round*.json`, `results/report_round*.json`, `results/frequencies_round*.json`, `reports/figures/`, `reports/agent-examples.md`, `docs/data.json`, marked blocks |
+| `analyse ROUND` | evaluate all hypotheses at the round's N, draw all figures, refill every marked table in README, reports and paper | `results/hypotheses_round*.json`, `results/report_round*.json`, `results/frequencies_round*.json`, `results/agent_behaviour.json`, `results/environment.json`, `reports/figures/`, `reports/agent-examples.md`, `docs/data.json`, marked blocks |
 | `sensitivity ROUND` | grader sensitivity (ridge, folds, fold seeds, sites, orthogonal and whitened alignment, retrains and random networks, H7 under whitening) and explainer-threshold sensitivity, no agent | `results/sensitivity/` |
 | `local MANIFEST` | serve each local model in turn and run its pending conditions | `results/runs/` |
 | `publish [--dry-run]` | export redacted, scanned artefacts and upload them to the Hugging Face Hub | `VMI_DATA_DIR/../hf_export/` |
@@ -56,5 +56,5 @@ Levels: `E0`–`E4`, `W-freq`, `W-alg`, `W-role`, `W-scramble`, `E-paper` (T-pap
    the bash-only harness (`simulator/harness.py`) or OpenCode. The agent's events stream to the terminal and
    `logs/runner.log`.
 3. Afterwards `work_out/`, `logs/events.ndjson`, `logs/transcript.md`, the gzipped wire log and OpenCode's own data are
-   in the run folder; `simulator/audit.py` checks `build_weights.py` for training loops; `grader/score.py` grades
+   in the run folder; `simulator/audit.py` checks `build_weights.py` for training loops (it does not see what the agent tries in scratch copies; `analysis/agent_behaviour.py` counts self-test runs and announced sweeps from the transcript); `grader/score.py` grades
    `weights.npz` against the target (failures are graded as the all-zero model).

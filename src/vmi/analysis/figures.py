@@ -151,22 +151,29 @@ def fig_planted(target: str = "T0") -> Path | None:
 
 
 def fig_trajectory(target: str = "T0") -> Path | None:
-    """H8: every E3/E4 replacement graded against each training checkpoint (one thin line each), above the restricted loss."""
+    """H8: every E3/E4 replacement graded against each training checkpoint (one thin line each), with the post-hoc
+    negative controls (W-freq, E1, E0 replacements) behind them, above the restricted loss."""
     d = _json(RES / "controls" / f"trajectory_{target}.json")
     if not d or "replacements" not in d:
         return None
     steps = d["steps"]
     fig, axes = plt.subplots(2, 1, figsize=(6.4, 4.2), sharex=True)
+    for c in d.get("negative_controls", []):  # post hoc: replacements without T0's mechanism, drawn behind
+        axes[0].plot(steps, c["hs"], color=CTRL, lw=0.8, alpha=0.6)
     for r in d["replacements"]:
         axes[0].plot(steps, r["hs"], color=TRUE, lw=0.8, alpha=0.7)
     axes[0].set_ylim(0, 1)
-    axes[0].set_title(f"HS of each of the {len(d['replacements'])} E3/E4 replacements vs checkpoint ↑", loc="left")
+    nc = len(d.get("negative_controls", []))
+    axes[0].set_title(f"HS vs checkpoint ↑: {len(d['replacements'])} E3/E4 replacements (blue)"
+                      + (f", {nc} W-freq/E1/E0 controls (orange, post hoc)" if nc else ""), loc="left")
     axes[1].plot(steps, d["restricted_loss"], color=TRUE)
     axes[1].set_yscale("log")
     axes[1].set_title("Restricted loss of the checkpoint (key frequencies only; log) ↓", loc="left")
     axes[1].set_xlabel(f"training step of the target checkpoint ({len(steps)} checkpoints)")
-    fig.suptitle(f"Training trajectory ({target}); Spearman(HS, −log restricted loss) per replacement: "
-                 f"min {d['spearman_min']:.2f}, median {d['spearman_hs_vs_neglog_restricted_loss']:.2f}", x=0.01, ha="left")
+    ctrl_rho = [c["rho"] for c in d.get("negative_controls", [])]
+    fig.suptitle(f"Training trajectory ({target}); Spearman(HS, −log restricted loss): E3/E4 min "
+                 f"{d['spearman_min']:.2f}, median {d['spearman_hs_vs_neglog_restricted_loss']:.2f}"
+                 + (f"; controls max {max(ctrl_rho):+.2f}" if ctrl_rho else ""), x=0.01, ha="left")
     return _save(fig, f"trajectory_{target}")
 
 

@@ -9,7 +9,7 @@ no-agent arms.*
 |---|---|---|---|
 | 00 | Stage 0 — tooling and smoke tests on the dev target (never reported as results) | done | [00-stage0-dev/experiment.md](00-stage0-dev/experiment.md) |
 | 01 | Round 1 (N = 1) — main method → controls → baselines → ablations → hyperparameter → seed sensitivity | done | [01-round1/experiment.md](01-round1/experiment.md) |
-| 02 | Round 2 (N = 3) — the same stages, two more replicates per condition, Claude Haiku only | agent runs done; H8 trajectory re-run as preregistered (still supported); redrawn W-freq/W-scramble and T-paper's extra retrains not run (deviation 8) | [02-round2/experiment.md](02-round2/experiment.md) |
+| 02 | Round 2 (N = 3) — the same stages, two more replicates per condition, Claude Haiku only | agent runs done; H8 trajectory re-run as preregistered (still supported); redrawn W-freq/W-scramble and T-paper's extra retrains not run (deviation 8); second audit: post-hoc H8 negative controls, pooled E0/E1 memorisation analysis, transcript counts of self-test tuning, exact trend test (deviation 9) | [02-round2/experiment.md](02-round2/experiment.md) |
 | 03 | Round 3 (N = 10) | postponed to a later day (user decision, deviation 6) | – |
 
 Learnings across experiments: [learnings.md](learnings.md).
@@ -32,13 +32,13 @@ correct answers?
 | **M**, target | A trained one-layer transformer for (a + b) mod 113 ([Nanda et al. 2023](https://arxiv.org/abs/2301.05217) architecture: d_model 128, 4 heads, d_mlp 512, no LayerNorm). |
 | **M̂**, replacement | The network whose weights the agent wrote (same architecture, `weights.npz`). |
 | **KL_out** | Mean KL(P_M ‖ P_M̂) over all 113² = 12,769 inputs, in nats (float64). Lower = more similar behaviour. |
-| **HS** | Hidden-state similarity: 5-fold cross-validated linear-regression R² in both directions (M̂ → M and M → M̂) at three sites (residual stream after attention, MLP activations, final residual stream), harmonic mean per site, averaged over sites. Completeness (M̂ → M) is invariant to invertible linear maps of the replacement's basis, soundness (M → M̂) only to orthogonal maps and uniform scaling; HS = 1 under any exact invertible linear equivalence. Higher = more similar internals. |
+| **HS** | Hidden-state similarity: 5-fold cross-validated ridge-regression R² (λ = 10⁻⁶·tr(XᵀX)/d) in both directions (M̂ → M and M → M̂) at three sites (residual stream after attention, MLP activations, final residual stream), harmonic mean per site, averaged over sites. Completeness (M̂ → M) is invariant to invertible linear maps of the replacement's basis, soundness (M → M̂) only to orthogonal maps and uniform scaling; HS = 1 under any exact invertible linear equivalence. Higher = more similar internals. |
 | **Matched-neuron corr** | Secondary metric: mean correlation of MLP neurons after Hungarian matching; sensitive to per-neuron assignments, which HS is not. |
 | **Key frequencies** | The few Fourier frequencies w_k = 2πk/113 the model uses ([Nanda et al. 2023](https://arxiv.org/abs/2301.05217), Sec. 4). |
-| **E0–E4** | Explanation ladder of increasing true detail: E0 task only; E1 algorithm without model-specific numbers; E2 key frequencies and component roles; E3 + per-frequency amplitudes, attention fits, neurons per frequency and the precise neuron function; E4 + per-neuron table. |
+| **E0–E4** | Explanation ladder of increasing true detail: E0 task only; E1 algorithm, including the precise neuron function, without model-specific numbers; E2 key frequencies and component roles; E3 + per-frequency amplitudes, attention fits, neurons per frequency and the logit scale; E4 + per-neuron table. |
 | **W-freq / W-alg / W-role / W-scramble** | Controls: E3 with wrong key frequencies; a different algorithm (the "Pizza" algorithm of [Zhong et al. 2023](https://arxiv.org/abs/2306.17844)); E3 with component roles misattributed; E4 with each neuron's frequency reassigned at random. |
 | **E-paper** | The published explanation of the paper's own checkpoint (T-paper only). |
-| **Reference compiler** | A deterministic script that turns an explanation's parameter file into weights — the agent-free ceiling for what each explanation contains. |
+| **Reference compiler** | A deterministic script that turns an explanation's parameter file into weights — what a literal, agent-free build of each explanation yields (a reference point, not a ceiling: the agent exceeds it on some targets). |
 | **Simulator** | The agent that writes the weights: Claude Haiku 5.5 in Claude Code (main), or local Qwen models in a bash-only harness (capability ablation). |
 | **N** | Agent runs per condition (replicates; for the local models the index is the sampling seed, Claude cannot be seeded). Round 1: N = 1; round 2: N = 3; round 3: N = 10. |
 
@@ -129,8 +129,10 @@ scripts are reviewed by hand (`results/audit_reviews.json`).
 ## Claude API spend
 
 <!-- BEGIN cost -->
-| Model | runs (incl. checks) | requests | spend (USD) |
-|---|---|---|---|
-| claude-haiku-5-5 | 103 | 953 | 2.328 |
-| **total** | 103 | 953 | **2.328** |
+| Kind of run | model | runs | requests | spend (USD) |
+|---|---|---|---|---|
+| reported runs | claude-haiku-5-5 | 96 | 881 | 2.200 |
+| development runs (stage 0, dev target) | claude-haiku-5-5 | 6 | 68 | 0.128 |
+| plumbing checks | claude-haiku-5-5 | 1 | 4 | 0.000 |
+| **total** | | 103 | 953 | **2.328** |
 <!-- END cost -->

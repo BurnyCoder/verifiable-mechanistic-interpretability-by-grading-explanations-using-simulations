@@ -1,5 +1,24 @@
 # Progress
 
+## 2026-11-22 07:00 — second independent audit (deviation 9)
+
+**Done** (no new agent runs, no API spend; N = 3 — not yet N = 10)
+- Audit made without reading the earlier reviews: code against its definitions, every hand-written number against
+  `results/`, every citation against its source (two web passes), the agents' build scripts and transcripts, the
+  Hugging Face target repository. Report: `reviews/audit-2-2026-11-22.md`.
+- Corrected: the targets' key frequencies *are* public (but only since after the simulator's cutoff, and the sandbox
+  has no internet); H5 described on T0 (preregistered) apart from the seed targets and T-paper; memorisation reported
+  on all interchangeable E0/E1 runs; agents' self-test tuning and explanation repair disclosed; "no step cap"
+  erratum; overclaims narrowed; citations reworded (Yip, Heap, Sutter, Haklay, Poché, Stander, FADE, Flash-Next,
+  Claude Code sandbox) and two missing references added.
+- Added (post hoc, no verdict uses them): H8 negative controls, threshold-free spectrum share and declared frequency
+  lists, transcript counts of self-test use, calibrated-KL table, T0 E2–E4 replication row, cost split, recorded
+  software environment, exact trend test.
+
+**Effect:** no preregistered verdict changed (see the audit report, §4).
+
+**Next:** round 3 (N = 10) only when you ask.
+
 ## 2026-11-22 04:00 — independent audit of results, methods and claims
 
 **Done** (no new agent runs; N = 3 — not yet N = 10)
@@ -33,9 +52,11 @@
   internals); ablations table; `reports/agent-examples.md`; round-2 report and self-review.
 
 **Positive (N = 3):** H1's HS trend, H3, H4, H7 and H8 pass their preregistered tests; the wrong-frequency gap holds on
-all five targets; format, self-test and effort barely move HS; the algorithm-only memorisation repeats in 3 of 3 runs.
+all five targets; format, self-test and effort barely move HS; the algorithm-only memorisation shows in most build scripts
+(T0 and T-paper pooled, since the E1 text is identical on every target; counts in the paper's §4.6).
 **Negative (N = 3):** output KL's trend fails (H1, KL part); HS cannot separate Pizza or a shuffled neuron table (H2
-ties); H4b's KL half fails; the agent beats the compiler on T2 (H5); local models never above chance; the round-1
+ties); H4b's KL half fails; the compiler is not a ceiling (H5: within its level on T0, exceeded on the seed targets);
+local models never above chance; the round-1
 low-effort collapse and the E0 memorisation did not replicate in every run.
 
 **Now:** nothing running. **Next:** round 3 (N = 10, 224 Haiku runs, about 10–15 hours, about $5) only when you ask.

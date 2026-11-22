@@ -1,0 +1,1056 @@
+{
+  "round": 2,
+  "definition": "Self-test runs: commands that run selftest.py with python. Announced sweep or tuning: the agent's narration before its closing message mentions sweeping, tuning, a grid search, scanning over, or trying several values of a constant (pattern SWEEP in src/vmi/analysis/agent_behaviour.py); this is stated intent, and Claude's thinking is not returned by the API. Post hoc, audit 2026-11-22.",
+  "summary": {
+    "runs": 96,
+    "selftest_median": 3.0,
+    "selftest_min": 0,
+    "selftest_max": 9,
+    "multi_selftest": 80,
+    "sweep_said": 41
+  },
+  "by_level": {
+    "E0": {
+      "runs": 3,
+      "selftest_median": 3.0,
+      "selftest_min": 2,
+      "selftest_max": 3,
+      "multi_selftest": 3,
+      "sweep_said": 1
+    },
+    "E1": {
+      "runs": 6,
+      "selftest_median": 3.0,
+      "selftest_min": 2,
+      "selftest_max": 5,
+      "multi_selftest": 6,
+      "sweep_said": 6
+    },
+    "E2": {
+      "runs": 9,
+      "selftest_median": 3.0,
+      "selftest_min": 2,
+      "selftest_max": 6,
+      "multi_selftest": 9,
+      "sweep_said": 3
+    },
+    "E3": {
+      "runs": 30,
+      "selftest_median": 3.0,
+      "selftest_min": 0,
+      "selftest_max": 8,
+      "multi_selftest": 22,
+      "sweep_said": 13
+    },
+    "E4": {
+      "runs": 15,
+      "selftest_median": 4.0,
+      "selftest_min": 1,
+      "selftest_max": 8,
+      "multi_selftest": 13,
+      "sweep_said": 6
+    },
+    "W-freq": {
+      "runs": 21,
+      "selftest_median": 3.0,
+      "selftest_min": 1,
+      "selftest_max": 9,
+      "multi_selftest": 18,
+      "sweep_said": 12
+    },
+    "W-alg": {
+      "runs": 3,
+      "selftest_median": 1.0,
+      "selftest_min": 1,
+      "selftest_max": 2,
+      "multi_selftest": 1,
+      "sweep_said": 0
+    },
+    "W-role": {
+      "runs": 3,
+      "selftest_median": 2.0,
+      "selftest_min": 1,
+      "selftest_max": 3,
+      "multi_selftest": 2,
+      "sweep_said": 0
+    },
+    "W-scramble": {
+      "runs": 3,
+      "selftest_median": 3.0,
+      "selftest_min": 2,
+      "selftest_max": 5,
+      "multi_selftest": 3,
+      "sweep_said": 0
+    },
+    "E-paper": {
+      "runs": 3,
+      "selftest_median": 3.0,
+      "selftest_min": 2,
+      "selftest_max": 5,
+      "multi_selftest": 3,
+      "sweep_said": 0
+    }
+  },
+  "rows": [
+    {
+      "run_id": "ablations__T0__E3-fmt-code__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "E3",
+      "variant": "fmt-code",
+      "selftest_runs": 1,
+      "tool_calls": 8,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "ablations__T0__E3-fmt-code__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "E3",
+      "variant": "fmt-code",
+      "selftest_runs": 1,
+      "tool_calls": 9,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "ablations__T0__E3-fmt-code__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "E3",
+      "variant": "fmt-code",
+      "selftest_runs": 1,
+      "tool_calls": 9,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "ablations__T0__E3-fmt-math__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "E3",
+      "variant": "fmt-math",
+      "selftest_runs": 1,
+      "tool_calls": 8,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "ablations__T0__E3-fmt-math__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "E3",
+      "variant": "fmt-math",
+      "selftest_runs": 2,
+      "tool_calls": 4,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "ablations__T0__E3-fmt-math__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "E3",
+      "variant": "fmt-math",
+      "selftest_runs": 1,
+      "tool_calls": 8,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "ablations__T0__E3-noselftest__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "E3",
+      "variant": "noselftest",
+      "selftest_runs": 0,
+      "tool_calls": 7,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "ablations__T0__E3-noselftest__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "E3",
+      "variant": "noselftest",
+      "selftest_runs": 0,
+      "tool_calls": 10,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "ablations__T0__E3-noselftest__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "E3",
+      "variant": "noselftest",
+      "selftest_runs": 0,
+      "tool_calls": 4,
+      "sweep_said": true,
+      "sweep_quote": "The network already gets 99.94% accuracy, but cross-entropy is 0.0044 against the original's 2e-7. Next I'll sweep the neuron bias and amplitude to see whether the fit improves."
+    },
+    {
+      "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "E0",
+      "variant": "",
+      "selftest_runs": 2,
+      "tool_calls": 4,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "E0",
+      "variant": "",
+      "selftest_runs": 3,
+      "tool_calls": 17,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "E0",
+      "variant": "",
+      "selftest_runs": 3,
+      "tool_calls": 11,
+      "sweep_said": true,
+      "sweep_quote": "Accuracy is 100%. Mean probability of the correct answer is only 0.665, which is a calibration issue. I'll sweep the logit scale and a couple of K/breakpoint settings to pick the best."
+    },
+    {
+      "run_id": "controls__T0__W-alg__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "W-alg",
+      "variant": "",
+      "selftest_runs": 2,
+      "tool_calls": 4,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "controls__T0__W-alg__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "W-alg",
+      "variant": "",
+      "selftest_runs": 1,
+      "tool_calls": 7,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "controls__T0__W-alg__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "W-alg",
+      "variant": "",
+      "selftest_runs": 1,
+      "tool_calls": 8,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "W-freq",
+      "variant": "",
+      "selftest_runs": 3,
+      "tool_calls": 11,
+      "sweep_said": true,
+      "sweep_quote": "The self-test passes at 99.92% accuracy. The mean correct-answer probability is 0.995, below the original's near-1 confidence, so I'll try a small sweep over the neuron bias range and attention offset."
+    },
+    {
+      "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "W-freq",
+      "variant": "",
+      "selftest_runs": 2,
+      "tool_calls": 9,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "W-freq",
+      "variant": "",
+      "selftest_runs": 1,
+      "tool_calls": 9,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "controls__T0__W-role__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "W-role",
+      "variant": "",
+      "selftest_runs": 1,
+      "tool_calls": 8,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "controls__T0__W-role__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "W-role",
+      "variant": "",
+      "selftest_runs": 2,
+      "tool_calls": 12,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "controls__T0__W-role__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "W-role",
+      "variant": "",
+      "selftest_runs": 3,
+      "tool_calls": 10,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "W-scramble",
+      "variant": "",
+      "selftest_runs": 3,
+      "tool_calls": 11,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "W-scramble",
+      "variant": "",
+      "selftest_runs": 2,
+      "tool_calls": 10,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "W-scramble",
+      "variant": "",
+      "selftest_runs": 5,
+      "tool_calls": 19,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "hyper__T0__E3-effort-high__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "E3",
+      "variant": "effort-high",
+      "selftest_runs": 2,
+      "tool_calls": 13,
+      "sweep_said": true,
+      "sweep_quote": "The read-out fit is loose (RMS error about 0.2 on unit waves), so the MLP's bias/threshold is the main lever. I'll sweep the bias ratio and check the least-squares fit error for each value."
+    },
+    {
+      "run_id": "hyper__T0__E3-effort-high__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "E3",
+      "variant": "effort-high",
+      "selftest_runs": 3,
+      "tool_calls": 22,
+      "sweep_said": true,
+      "sweep_quote": "Attention to \"=\" is 0.0021, which matches the explanation. The MLP pre-activations look sane, so the weak point is the ReLU-based readout. I'll print the error per frequency and scan the bias ratio."
+    },
+    {
+      "run_id": "hyper__T0__E3-effort-high__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "E3",
+      "variant": "effort-high",
+      "selftest_runs": 6,
+      "tool_calls": 15,
+      "sweep_said": true,
+      "sweep_quote": "The first build already reaches 94.7% accuracy. The read-out fit has a max error of 1.35, so I'll sweep the neuron bias to see whether a better regime exists."
+    },
+    {
+      "run_id": "hyper__T0__E3-effort-low__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "E3",
+      "variant": "effort-low",
+      "selftest_runs": 8,
+      "tool_calls": 22,
+      "sweep_said": true,
+      "sweep_quote": "The fit is poor even for frequency 3, which has 128 neurons. Bias-free ReLU neurons don't span cos(w(a+b)) well. I'll sweep the neuron bias to see whether it helps."
+    },
+    {
+      "run_id": "hyper__T0__E3-effort-low__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "E3",
+      "variant": "effort-low",
+      "selftest_runs": 3,
+      "tool_calls": 9,
+      "sweep_said": true,
+      "sweep_quote": "Accuracy is 0.80 and the readout fit is poor (RMS error ~0.46). I'll sweep the MLP bias to see whether the ReLU nonlinearity is the limit."
+    },
+    {
+      "run_id": "hyper__T0__E3-effort-low__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "E3",
+      "variant": "effort-low",
+      "selftest_runs": 3,
+      "tool_calls": 9,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "hyper__T0__W-freq-effort-high__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "W-freq",
+      "variant": "effort-high",
+      "selftest_runs": 2,
+      "tool_calls": 13,
+      "sweep_said": true,
+      "sweep_quote": "The first build runs and gets 90% accuracy. Next I'll look at how well the readout targets are fit, and sweep the neuron bias, to see where the error is."
+    },
+    {
+      "run_id": "hyper__T0__W-freq-effort-high__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "W-freq",
+      "variant": "effort-high",
+      "selftest_runs": 3,
+      "tool_calls": 13,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "hyper__T0__W-freq-effort-high__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "W-freq",
+      "variant": "effort-high",
+      "selftest_runs": 3,
+      "tool_calls": 9,
+      "sweep_said": true,
+      "sweep_quote": "Accuracy is 99.86% on the first full build. The k=22 answer features fit poorly (R\u00b2 \u2248 0.63), which is expected since the explanation gives that frequency no MLP neurons. I'll try a quick sweep of the neuron bias range to see whether the fit"
+    },
+    {
+      "run_id": "hyper__T0__W-freq-effort-low__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "W-freq",
+      "variant": "effort-low",
+      "selftest_runs": 4,
+      "tool_calls": 15,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "hyper__T0__W-freq-effort-low__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "W-freq",
+      "variant": "effort-low",
+      "selftest_runs": 5,
+      "tool_calls": 13,
+      "sweep_said": true,
+      "sweep_quote": "The first build passes the shape check but gets only 76.7% accuracy, and the least-squares fit residual is 0.47. The neuron bias is probably too large, which keeps the ReLU almost linear and removes the product terms the mechanism relies on"
+    },
+    {
+      "run_id": "hyper__T0__W-freq-effort-low__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "W-freq",
+      "variant": "effort-low",
+      "selftest_runs": 1,
+      "tool_calls": 7,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "E1",
+      "variant": "",
+      "selftest_runs": 2,
+      "tool_calls": 9,
+      "sweep_said": true,
+      "sweep_quote": "The folder has no CSV, so the key frequencies are unspecified. I'll pick five standard ones (14, 35, 41, 42, 52) and build the network in closed form: a head that copies the cos/sin features of a and b into the \"=\" position, MLP neurons wit"
+    },
+    {
+      "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "E1",
+      "variant": "",
+      "selftest_runs": 5,
+      "tool_calls": 12,
+      "sweep_said": true,
+      "sweep_quote": "Accuracy is 100% and the self-test passes, but the mean correct-answer probability is only 0.64 and the least-squares fit R\u00b2 is 0.81. I'll sweep the neuron count, bias, and gain to improve the fit."
+    },
+    {
+      "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "E1",
+      "variant": "",
+      "selftest_runs": 2,
+      "tool_calls": 14,
+      "sweep_said": true,
+      "sweep_quote": "Correlations are around 0.96, so the MLP fit is imperfect. I'll scan the MLP bias to see whether the ReLU features fit the targets better."
+    },
+    {
+      "run_id": "main__T0__E2__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "E2",
+      "variant": "",
+      "selftest_runs": 3,
+      "tool_calls": 4,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "main__T0__E2__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "E2",
+      "variant": "",
+      "selftest_runs": 3,
+      "tool_calls": 10,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "main__T0__E2__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "E2",
+      "variant": "",
+      "selftest_runs": 2,
+      "tool_calls": 9,
+      "sweep_said": true,
+      "sweep_quote": "The self-test passes with 100% accuracy, but the build took 42 s, too close to the 60 s limit. I'll drop the grid search to the one setting that scored best (B=0, S=30)."
+    },
+    {
+      "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "E3",
+      "variant": "",
+      "selftest_runs": 4,
+      "tool_calls": 7,
+      "sweep_said": true,
+      "sweep_quote": "The first build is already at 99.6% accuracy. Before tuning, I'll check whether the errors come from the missing k=2 neurons or from the attention and ReLU approximations, by trying a few bias and amplitude settings in scratch copies."
+    },
+    {
+      "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "E3",
+      "variant": "",
+      "selftest_runs": 2,
+      "tool_calls": 3,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "E3",
+      "variant": "",
+      "selftest_runs": 5,
+      "tool_calls": 6,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s0",
+      "target": "T0",
+      "level": "E4",
+      "variant": "",
+      "selftest_runs": 3,
+      "tool_calls": 8,
+      "sweep_said": true,
+      "sweep_quote": "First build runs: 87% accuracy. Before tuning, I'll check whether the attention and the summed residual match the design."
+    },
+    {
+      "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s1",
+      "target": "T0",
+      "level": "E4",
+      "variant": "",
+      "selftest_runs": 4,
+      "tool_calls": 14,
+      "sweep_said": true,
+      "sweep_quote": "Baseline is 87.4% accuracy. Before tuning, I'll check where the error comes from: attention to \"=\", the MLP fit, and the logits against the table's formula."
+    },
+    {
+      "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s2",
+      "target": "T0",
+      "level": "E4",
+      "variant": "",
+      "selftest_runs": 1,
+      "tool_calls": 9,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "seed__T-new__E3__claudehaiku55-claudecode__tdef__s0",
+      "target": "T-new",
+      "level": "E3",
+      "variant": "",
+      "selftest_runs": 6,
+      "tool_calls": 13,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "seed__T-new__E3__claudehaiku55-claudecode__tdef__s1",
+      "target": "T-new",
+      "level": "E3",
+      "variant": "",
+      "selftest_runs": 7,
+      "tool_calls": 18,
+      "sweep_said": true,
+      "sweep_quote": "No CSV is present. I'll write the full construction in one pass, then tune and check it."
+    },
+    {
+      "run_id": "seed__T-new__E3__claudehaiku55-claudecode__tdef__s2",
+      "target": "T-new",
+      "level": "E3",
+      "variant": "",
+      "selftest_runs": 5,
+      "tool_calls": 10,
+      "sweep_said": true,
+      "sweep_quote": "Accuracy is 0.838 and the readout R\u00b2 is only 0.73. Before I change anything I want the MLP pre-activation scale to matter, so I'll scan the neuron amplitude as well as the bias. To keep the run under 60 seconds I'll compute the \"=\" position"
+    },
+    {
+      "run_id": "seed__T-new__E4__claudehaiku55-claudecode__tdef__s0",
+      "target": "T-new",
+      "level": "E4",
+      "variant": "",
+      "selftest_runs": 3,
+      "tool_calls": 11,
+      "sweep_said": true,
+      "sweep_quote": "The task has a clear mechanism to implement: Fourier embeddings, attention weights tuned by the explanation's \u03b1/\u03b2, neurons from the CSV table, and a linear readout. I'll build it in stages, starting with the embedding and attention."
+    },
+    {
+      "run_id": "seed__T-new__E4__claudehaiku55-claudecode__tdef__s1",
+      "target": "T-new",
+      "level": "E4",
+      "variant": "",
+      "selftest_runs": 5,
+      "tool_calls": 7,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "seed__T-new__E4__claudehaiku55-claudecode__tdef__s2",
+      "target": "T-new",
+      "level": "E4",
+      "variant": "",
+      "selftest_runs": 1,
+      "tool_calls": 10,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "seed__T-new__W-freq__claudehaiku55-claudecode__tdef__s0",
+      "target": "T-new",
+      "level": "W-freq",
+      "variant": "",
+      "selftest_runs": 2,
+      "tool_calls": 17,
+      "sweep_said": true,
+      "sweep_quote": "A working `weights.npz` now exists, but the output fit is weak (R\u00b2 0.58, accuracy 0.66). Next I'll scan the MLP bias and gain, which the explanation leaves open, and keep the best fit."
+    },
+    {
+      "run_id": "seed__T-new__W-freq__claudehaiku55-claudecode__tdef__s1",
+      "target": "T-new",
+      "level": "W-freq",
+      "variant": "",
+      "selftest_runs": 8,
+      "tool_calls": 13,
+      "sweep_said": true,
+      "sweep_quote": "The first build works end to end (74.9% accuracy, R\u00b2 0.69). The fit quality depends on the MLP's amplitude and bias, so I'll sweep those two constants."
+    },
+    {
+      "run_id": "seed__T-new__W-freq__claudehaiku55-claudecode__tdef__s2",
+      "target": "T-new",
+      "level": "W-freq",
+      "variant": "",
+      "selftest_runs": 4,
+      "tool_calls": 18,
+      "sweep_said": true,
+      "sweep_quote": "The first build already passes the shape checks at 88.9% accuracy. The frequency-10 and frequency-25 outputs fit poorly (R\u00b2 \u2248 0.7), so I'll scan the neuron scale and bias to improve the fit."
+    },
+    {
+      "run_id": "seed__T-paper__E-paper__claudehaiku55-claudecode__tdef__s0",
+      "target": "T-paper",
+      "level": "E-paper",
+      "variant": "",
+      "selftest_runs": 2,
+      "tool_calls": 11,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "seed__T-paper__E-paper__claudehaiku55-claudecode__tdef__s1",
+      "target": "T-paper",
+      "level": "E-paper",
+      "variant": "",
+      "selftest_runs": 3,
+      "tool_calls": 10,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "seed__T-paper__E-paper__claudehaiku55-claudecode__tdef__s2",
+      "target": "T-paper",
+      "level": "E-paper",
+      "variant": "",
+      "selftest_runs": 5,
+      "tool_calls": 12,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "seed__T-paper__E1__claudehaiku55-claudecode__tdef__s0",
+      "target": "T-paper",
+      "level": "E1",
+      "variant": "",
+      "selftest_runs": 3,
+      "tool_calls": 10,
+      "sweep_said": true,
+      "sweep_quote": "The self-test passes at 98.97% accuracy. The mean correct-answer probability is low (0.21), so I'll try a quick sweep of the MLP bias to see whether accuracy improves."
+    },
+    {
+      "run_id": "seed__T-paper__E1__claudehaiku55-claudecode__tdef__s1",
+      "target": "T-paper",
+      "level": "E1",
+      "variant": "",
+      "selftest_runs": 3,
+      "tool_calls": 10,
+      "sweep_said": true,
+      "sweep_quote": "Accuracy is 100% and the self-test passes. The lstsq fit residual of 0.23 is still sizeable, so I'll sweep the neuron bias to see whether the fit improves."
+    },
+    {
+      "run_id": "seed__T-paper__E1__claudehaiku55-claudecode__tdef__s2",
+      "target": "T-paper",
+      "level": "E1",
+      "variant": "",
+      "selftest_runs": 3,
+      "tool_calls": 10,
+      "sweep_said": true,
+      "sweep_quote": "Accuracy is 100%, but the mean correct-answer probability is only 0.28. I'll remove a leftover placeholder line and sweep the logit scale and neuron bias."
+    },
+    {
+      "run_id": "seed__T-paper__E3__claudehaiku55-claudecode__tdef__s0",
+      "target": "T-paper",
+      "level": "E3",
+      "variant": "",
+      "selftest_runs": 3,
+      "tool_calls": 20,
+      "sweep_said": true,
+      "sweep_quote": "The residual stream and attention match the design: about 0.5/0.5 attention split and cos(wa)+cos(wb) at the expected scale. The weak point is the MLP fit, which relies on ReLU curvature, so the threshold spread probably matters. I'll sweep"
+    },
+    {
+      "run_id": "seed__T-paper__E3__claudehaiku55-claudecode__tdef__s1",
+      "target": "T-paper",
+      "level": "E3",
+      "variant": "",
+      "selftest_runs": 3,
+      "tool_calls": 9,
+      "sweep_said": true,
+      "sweep_quote": "The first build already passes the self-test at 84% accuracy, with read-out R\u00b2 around 0.70. I'll sweep the neuron bias, which is a closed-form choice, to see how much the ReLU nonlinearity can help."
+    },
+    {
+      "run_id": "seed__T-paper__E3__claudehaiku55-claudecode__tdef__s2",
+      "target": "T-paper",
+      "level": "E3",
+      "variant": "",
+      "selftest_runs": 4,
+      "tool_calls": 21,
+      "sweep_said": true,
+      "sweep_quote": "Stage 1 works at 79% accuracy. Next I'll sweep the neuron bias and gain, since the ReLU nonlinearity is what produces the products."
+    },
+    {
+      "run_id": "seed__T-paper__E4__claudehaiku55-claudecode__tdef__s0",
+      "target": "T-paper",
+      "level": "E4",
+      "variant": "",
+      "selftest_runs": 5,
+      "tool_calls": 14,
+      "sweep_said": true,
+      "sweep_quote": "Self-test already passes at 86.7% accuracy. Before tuning, I'll check the attention pattern and how well the output fit matches the target."
+    },
+    {
+      "run_id": "seed__T-paper__E4__claudehaiku55-claudecode__tdef__s1",
+      "target": "T-paper",
+      "level": "E4",
+      "variant": "",
+      "selftest_runs": 2,
+      "tool_calls": 7,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "seed__T-paper__E4__claudehaiku55-claudecode__tdef__s2",
+      "target": "T-paper",
+      "level": "E4",
+      "variant": "",
+      "selftest_runs": 4,
+      "tool_calls": 23,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "seed__T-paper__W-freq__claudehaiku55-claudecode__tdef__s0",
+      "target": "T-paper",
+      "level": "W-freq",
+      "variant": "",
+      "selftest_runs": 5,
+      "tool_calls": 20,
+      "sweep_said": true,
+      "sweep_quote": "Accuracy is 85% and the read-out fit is only about 0.7 R\u00b2, so the zero-bias neurons aren't giving enough nonlinearity. I'll sweep the neuron bias, since the least-squares read-out is free to adapt to it."
+    },
+    {
+      "run_id": "seed__T-paper__W-freq__claudehaiku55-claudecode__tdef__s1",
+      "target": "T-paper",
+      "level": "W-freq",
+      "variant": "",
+      "selftest_runs": 9,
+      "tool_calls": 20,
+      "sweep_said": true,
+      "sweep_quote": "Cross-frequency leakage is only about 3%, so that isn't the cause. Next I'll sweep the bias range in the ideal oracle to see how sensitive the fit is to it."
+    },
+    {
+      "run_id": "seed__T-paper__W-freq__claudehaiku55-claudecode__tdef__s2",
+      "target": "T-paper",
+      "level": "W-freq",
+      "variant": "",
+      "selftest_runs": 3,
+      "tool_calls": 13,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "seed__T1__E2__claudehaiku55-claudecode__tdef__s0",
+      "target": "T1",
+      "level": "E2",
+      "variant": "",
+      "selftest_runs": 4,
+      "tool_calls": 11,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "seed__T1__E2__claudehaiku55-claudecode__tdef__s1",
+      "target": "T1",
+      "level": "E2",
+      "variant": "",
+      "selftest_runs": 6,
+      "tool_calls": 11,
+      "sweep_said": true,
+      "sweep_quote": "Self-test passes at 99.97% accuracy, but the mean probability on the correct answer is only 0.936. I'll check how well the MLP fit reproduces the targets before deciding whether to tune anything."
+    },
+    {
+      "run_id": "seed__T1__E2__claudehaiku55-claudecode__tdef__s2",
+      "target": "T1",
+      "level": "E2",
+      "variant": "",
+      "selftest_runs": 3,
+      "tool_calls": 4,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "seed__T1__E3__claudehaiku55-claudecode__tdef__s0",
+      "target": "T1",
+      "level": "E3",
+      "variant": "",
+      "selftest_runs": 3,
+      "tool_calls": 6,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "seed__T1__E3__claudehaiku55-claudecode__tdef__s1",
+      "target": "T1",
+      "level": "E3",
+      "variant": "",
+      "selftest_runs": 7,
+      "tool_calls": 22,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "seed__T1__E3__claudehaiku55-claudecode__tdef__s2",
+      "target": "T1",
+      "level": "E3",
+      "variant": "",
+      "selftest_runs": 2,
+      "tool_calls": 12,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "seed__T1__E4__claudehaiku55-claudecode__tdef__s0",
+      "target": "T1",
+      "level": "E4",
+      "variant": "",
+      "selftest_runs": 4,
+      "tool_calls": 17,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "seed__T1__E4__claudehaiku55-claudecode__tdef__s1",
+      "target": "T1",
+      "level": "E4",
+      "variant": "",
+      "selftest_runs": 4,
+      "tool_calls": 17,
+      "sweep_said": true,
+      "sweep_quote": "The sweep gives only small differences, so I'll keep the best setting (threshold \u22120.5, low weight 0.02), rebuild, and run the self-test."
+    },
+    {
+      "run_id": "seed__T1__E4__claudehaiku55-claudecode__tdef__s2",
+      "target": "T1",
+      "level": "E4",
+      "variant": "",
+      "selftest_runs": 6,
+      "tool_calls": 25,
+      "sweep_said": true,
+      "sweep_quote": "A pure ReLU of R caps the fit near 0.93. The residual isn't purely R, though: the attention deviation A_a(cos a \u2212 cos b) contains cos a\u00b7cos b cross-terms, which is the product mechanism the explanation describes. I'll test whether sharpenin"
+    },
+    {
+      "run_id": "seed__T1__W-freq__claudehaiku55-claudecode__tdef__s0",
+      "target": "T1",
+      "level": "W-freq",
+      "variant": "",
+      "selftest_runs": 4,
+      "tool_calls": 22,
+      "sweep_said": true,
+      "sweep_quote": "The first build runs, but accuracy is only 39% and the fit is poor for k=38 and k=52. The neuron bias and amplitude are probably off, so I'll grid-search those per frequency using the same closed-form fit."
+    },
+    {
+      "run_id": "seed__T1__W-freq__claudehaiku55-claudecode__tdef__s1",
+      "target": "T1",
+      "level": "W-freq",
+      "variant": "",
+      "selftest_runs": 4,
+      "tool_calls": 22,
+      "sweep_said": true,
+      "sweep_quote": "The best fit is around R\u00b2\u22480.97 for k=15 but only \u22480.75\u20130.85 for k=52, so the fit is limited by the features. I'll sweep the bias range and the number of phase-spread neurons per group to find a better configuration."
+    },
+    {
+      "run_id": "seed__T1__W-freq__claudehaiku55-claudecode__tdef__s2",
+      "target": "T1",
+      "level": "W-freq",
+      "variant": "",
+      "selftest_runs": 3,
+      "tool_calls": 16,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "seed__T2__E2__claudehaiku55-claudecode__tdef__s0",
+      "target": "T2",
+      "level": "E2",
+      "variant": "",
+      "selftest_runs": 5,
+      "tool_calls": 11,
+      "sweep_said": true,
+      "sweep_quote": "Accuracy is 98.8%, but the readout R\u00b2 is only 0.54. I'll scan the MLP bias to see whether a better value improves the fit."
+    },
+    {
+      "run_id": "seed__T2__E2__claudehaiku55-claudecode__tdef__s1",
+      "target": "T2",
+      "level": "E2",
+      "variant": "",
+      "selftest_runs": 3,
+      "tool_calls": 4,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "seed__T2__E2__claudehaiku55-claudecode__tdef__s2",
+      "target": "T2",
+      "level": "E2",
+      "variant": "",
+      "selftest_runs": 2,
+      "tool_calls": 3,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "seed__T2__E3__claudehaiku55-claudecode__tdef__s0",
+      "target": "T2",
+      "level": "E3",
+      "variant": "",
+      "selftest_runs": 4,
+      "tool_calls": 18,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "seed__T2__E3__claudehaiku55-claudecode__tdef__s1",
+      "target": "T2",
+      "level": "E3",
+      "variant": "",
+      "selftest_runs": 3,
+      "tool_calls": 12,
+      "sweep_said": true,
+      "sweep_quote": "Two problems show up. Frequencies 37, 44, 45 and 46 have no attention heads feeding them, and the readout correlations are weak. I'll test the MLP feature fit by itself, sweeping the bias, before changing the layout."
+    },
+    {
+      "run_id": "seed__T2__E3__claudehaiku55-claudecode__tdef__s2",
+      "target": "T2",
+      "level": "E3",
+      "variant": "",
+      "selftest_runs": 3,
+      "tool_calls": 14,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "seed__T2__E4__claudehaiku55-claudecode__tdef__s0",
+      "target": "T2",
+      "level": "E4",
+      "variant": "",
+      "selftest_runs": 3,
+      "tool_calls": 16,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "seed__T2__E4__claudehaiku55-claudecode__tdef__s1",
+      "target": "T2",
+      "level": "E4",
+      "variant": "",
+      "selftest_runs": 8,
+      "tool_calls": 21,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "seed__T2__E4__claudehaiku55-claudecode__tdef__s2",
+      "target": "T2",
+      "level": "E4",
+      "variant": "",
+      "selftest_runs": 4,
+      "tool_calls": 10,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "seed__T2__W-freq__claudehaiku55-claudecode__tdef__s0",
+      "target": "T2",
+      "level": "W-freq",
+      "variant": "",
+      "selftest_runs": 1,
+      "tool_calls": 8,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "seed__T2__W-freq__claudehaiku55-claudecode__tdef__s1",
+      "target": "T2",
+      "level": "W-freq",
+      "variant": "",
+      "selftest_runs": 2,
+      "tool_calls": 11,
+      "sweep_said": false,
+      "sweep_quote": ""
+    },
+    {
+      "run_id": "seed__T2__W-freq__claudehaiku55-claudecode__tdef__s2",
+      "target": "T2",
+      "level": "W-freq",
+      "variant": "",
+      "selftest_runs": 4,
+      "tool_calls": 8,
+      "sweep_said": true,
+      "sweep_quote": "Target fit is weak (R\u00b2 0.5\u20130.8). With zero bias the ReLU features are dominated by |cos d|, so I'll sweep the neuron bias and gain to see which gives the best fit."
+    }
+  ]
+}

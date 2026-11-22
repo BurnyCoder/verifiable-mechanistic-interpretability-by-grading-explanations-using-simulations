@@ -209,36 +209,91 @@ def key_results(max_round: int, target: str = "T0") -> str:
                    f"or the scrambled neuron table (W-scramble, HS {m('W-scramble'):.2f}) from the true explanations; the "
                    f"secondary matched-neuron correlation separates W-scramble ({_f(m('W-scramble', 'matched_neuron_corr'), 2)}) "
                    f"from E4 ({_f(m('E4', 'matched_neuron_corr'), 2)}).")
-    fq = RES / f"frequencies_round{max_round}.json"
-    tp_e1 = [r for r in runs if r["target"] == "T-paper" and r["level"] == "E1" and r.get("variant", "") == "" and r["model"] == "claude-haiku-5-5"]
-    if fq.exists() and tp_e1 and m("E1") is not None:
-        rows = [r for r in json.loads(fq.read_text())["rows"] if r["model"] == "claude-haiku-5-5" and r["variant"] == ""
-                and r["level"] in ("E0", "E1") and r["target"] != "T-paper"]
-        if rows:
-            def per_level(lv):  # replicates differ (round 2: some E0 runs build blocks of consecutive frequencies instead)
-                rs = [r for r in rows if r["level"] == lv]
-                if not rs:
-                    return ""
-                paper = set(json.loads(fq.read_text())["paper_freqs"])
-                mem = sum(len(set(r["used_freqs"]) & paper) >= 4 for r in rs)  # measured by the key-frequency rule
-                none = sum(not set(r["used_freqs"]) & set(r["target_freqs"]) for r in rs)
-                swap = [r["hs_vs_paper"] for r in rs if "hs_vs_paper" in r]
-                return (f"{lv}: {mem} of {len(rs)} replacement(s) used at least four of the paper's five frequencies, and "
-                        f"{none} of {len(rs)} used none of {rs[0]['target']}'s; mean HS "
-                        f"{np.mean([r['hs'] for r in rs]):.2f} against {rs[0]['target']} but "
-                        f"{np.mean(swap):.2f} against the published checkpoint (target swap: same weights, other target)")
-            out.append(f"- **Memorisation (post hoc):** when the explanation gives no frequencies, the simulator often builds "
-                       f"most of the published paper's frequencies {{14, 35, 41, 42, 52}} into its replacement. "
-                       + "; ".join(x for x in (per_level("E1"), per_level("E0")) if x)
-                       + f". The {len(tp_e1)} algorithm-only run(s) on the published checkpoint itself score HS "
-                       f"{np.mean([r['hs'] for r in tp_e1]):.2f} on average (range {min(r['hs'] for r in tp_e1):.2f}–"
-                       f"{max(r['hs'] for r in tp_e1):.2f}): on a published model, a high score can come from the simulator's "
-                       f"memory rather than the explanation (one published model and one simulator tested).")
-    led = RES / "claude" / "ledger.jsonl"
-    if led.exists():
-        spend = sum(json.loads(x).get("cost_usd", 0.0) for x in led.read_text(encoding="utf-8").splitlines() if x.strip())
-        out.append(f"- **Cost:** all Claude Haiku 5.5 runs so far cost ${spend:.2f} in total.")
+    mem = memorisation(max_round)
+    if mem and mem.get("E1"):
+        def per_level(lv):  # replicates differ (some E0 runs build blocks of consecutive frequencies instead)
+            d = mem.get(lv)
+            if not d:
+                return ""
+            return (f"{lv} ({d['n']} runs on {' and '.join(d['targets'])}): {d['listed']} of {d['n']} build scripts list at "
+                    f"least four of the paper's five frequencies ({d['built']} of {d['n']} replacements build at least four "
+                    f"by the key-frequency rule, a lower bound); on average {d['share']:.0%} of the replacements' W_L "
+                    f"spectrum lies on those five frequencies (chance {mem['chance']:.0%}); mean HS {d['hs_T0']:.2f} against "
+                    f"T0 but {d['hs_paper']:.2f} against the published checkpoint (target swap: same weights, other target; "
+                    f"range {d['hs_paper_min']:.2f}–{d['hs_paper_max']:.2f})")
+        out.append("- **Memorisation (post hoc):** E0 and E1 contain nothing target-specific (identical text on every "
+                   "target, and the sandbox does not reveal the target), so their runs on T0 and on the published "
+                   "checkpoint are replicates of one condition. When the explanation gives no frequencies, the simulator "
+                   "often builds most of the published paper's frequencies {14, 35, 41, 42, 52} into its replacement. "
+                   + "; ".join(x for x in (per_level("E1"), per_level("E0")) if x)
+                   + ". On a published model, a high score can therefore come from the simulator's memory rather than the "
+                   "explanation (one published model and one simulator tested).")
+    c = cost_split()
+    if c:
+        rep = c.get("reported runs", {"runs": 0, "spend": 0.0})
+        out.append(f"- **Cost:** the {rep['runs']} reported Claude Haiku 5.5 runs cost ${rep['spend']:.2f} "
+                   f"(${sum(v['spend'] for v in c.values()):.2f} including development runs and plumbing checks).")
     return out[0] + "\n\n" + "\n".join(out[1:])  # blank line: a markdown list must not continue the paragraph above
+
+
+def memorisation(max_round: int, model: str = "claude-haiku-5-5") -> dict:
+    """Post hoc: E0/E1 replacements pooled over targets (their input text is identical everywhere), with how many build
+    scripts list ≥ 4 of the paper's five frequencies, how many replacements build ≥ 4 by the key-frequency rule, the mean
+    share of W_L's spectrum on the paper's frequencies and the HS of the same weights against T0 and the published
+    checkpoint (audit 2026-11-22, second pass: earlier versions reported the T0 runs only)."""
+    fq = RES / f"frequencies_round{max_round}.json"
+    if not fq.exists():
+        return {}
+    F = json.loads(fq.read_text())
+    paper = set(F["paper_freqs"])
+    out: dict = {"chance": F.get("chance_share", len(paper) / 56)}
+    rows = []
+    for r in F["rows"]:  # files written before the second audit lack hs_vs_T0 (and T-paper rows lack hs_vs_paper)
+        r = dict(r)
+        own = {"T0": "hs_vs_T0", "T-paper": "hs_vs_paper"}.get(r["target"])
+        if own:
+            r.setdefault(own, r["hs"])  # a run's grade against its own target is its HS
+        rows.append(r)
+    for lv in ("E1", "E0"):
+        rs = [r for r in rows if r["model"] == model and r["variant"] == "" and r["level"] == lv
+              and "hs_vs_paper" in r and "hs_vs_T0" in r]
+        if not rs:
+            continue
+        listed = [r for r in rs if r.get("declared_freqs") and len(set(r["declared_freqs"]) & paper) >= 4]
+        hp = [r["hs_vs_paper"] for r in rs]
+        out[lv] = {"n": len(rs), "targets": sorted({r["target"] for r in rs}, key=lambda t: (t != "T0", t)),
+                   "listed": len(listed), "listed_T0": sum(r["target"] == "T0" for r in listed),
+                   "n_T0": sum(r["target"] == "T0" for r in rs),
+                   "built": sum(len(set(r["used_freqs"]) & paper) >= 4 for r in rs),
+                   "share": float(np.mean([r.get("paper_norm_share", 0.0) for r in rs])),
+                   "hs_T0": float(np.mean([r["hs_vs_T0"] for r in rs])), "hs_paper": float(np.mean(hp)),
+                   "hs_paper_min": float(min(hp)), "hs_paper_max": float(max(hp)),
+                   "common": sorted(set.intersection(*(set(r["declared_freqs"]) & paper for r in listed))) if listed else [],
+                   "k": min((len(set(r["declared_freqs"]) & paper) for r in listed), default=0)}
+    return out
+
+
+def cost_split() -> dict[str, dict]:
+    """Claude API spend by kind of run: reported runs (results/runs, not stage 0), stage-0 development runs, and
+    plumbing checks (`vmi check --claude`), from the proxy's request ledger."""
+    led = RES / "claude" / "ledger.jsonl"
+    if not led.exists():
+        return {}
+    reported = {p.stem for p in (RES / "runs").glob("*.json") if not p.stem.startswith("dev__")}
+    out: dict[str, dict] = {}
+    for line in led.read_text(encoding="utf-8").splitlines():
+        if line.strip():
+            d = json.loads(line)
+            kind = ("reported runs" if d["run_id"] in reported else
+                    "development runs (stage 0, dev target)" if d["run_id"].startswith("dev__") else "plumbing checks")
+            e = out.setdefault(kind, {"ids": set(), "requests": 0, "spend": 0.0, "models": set()})
+            e["ids"].add(d["run_id"])
+            e["requests"] += 1
+            e["spend"] += d.get("cost_usd", 0.0)
+            e["models"].add(d["model"])
+    for e in out.values():
+        e["runs"] = len(e.pop("ids"))
+    return out
 
 
 _WORDS = {0: "none", 1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine",
@@ -267,20 +322,57 @@ def inline_values(max_round: int) -> dict[str, str]:
             ratios.append(1 - json.loads(a.read_text())["chars"] / json.loads(e.read_text())["chars"])
     if ratios:
         v["walg-shorter"] = f"{round(float(np.mean(ratios)) * 100, -1):.0f}"
-    fq = RES / f"frequencies_round{max_round}.json"
-    if fq.exists():
-        F = json.loads(fq.read_text())
-        paper = set(F["paper_freqs"])
-        rows = [r for r in F["rows"] if r["model"] == MAIN_MODEL and r["variant"] == "" and r["target"] == "T0"]
-        for lv, key in (("E1", "e1"), ("E0", "e0")):
-            rs = [r for r in rows if r["level"] == lv]
-            mem = [r for r in rs if len(set(r["used_freqs"]) & paper) >= 4]
-            v[f"{key}-n"] = _w(len(rs))
-            v[f"{key}-mem"] = ("all " + _w(len(rs))) if rs and len(mem) == len(rs) else f"{_w(len(mem))} of {_w(len(rs))}"
-            v[f"{key}-mem-in"] = f"{_w(len(mem))} run{'' if len(mem) == 1 else 's'} in {_w(len(rs))}"
-            if mem:
-                v[f"{key}-k"] = _w(min(len(set(r["used_freqs"]) & paper) for r in mem))
-                v[f"{key}-common"] = ", ".join(map(str, sorted(set.intersection(*(set(r["used_freqs"]) & paper for r in mem)))))
+    mem = memorisation(max_round, MAIN_MODEL)  # E0/E1 pooled over targets (identical input text); counts from build scripts
+    of = lambda k, n: ("all " + _w(n)) if n and k == n else f"{_w(k)} of {_w(n)}"  # noqa: E731
+    for lv, key in (("E1", "e1"), ("E0", "e0")):
+        d = mem.get(lv)
+        if not d:
+            continue
+        v[f"{key}-n"] = _w(d["n"])
+        v[f"{key}-mem"] = of(d["listed"], d["n"])
+        v[f"{key}-mem-t0"] = of(d["listed_T0"], d["n_T0"])
+        v[f"{key}-mem-in"] = f"{_w(d['listed'])} run{'' if d['listed'] == 1 else 's'} in {_w(d['n'])}"
+        v[f"{key}-built"] = of(d["built"], d["n"])
+        v[f"{key}-share"] = f"{d['share']:.0%}".replace("%", " %")
+        v[f"{key}-hs-paper"] = f"{d['hs_paper']:.2f}"
+        v[f"{key}-hs-t0"] = f"{d['hs_T0']:.2f}"
+        if d["listed"]:
+            v[f"{key}-k"] = _w(d["k"])
+            v[f"{key}-common"] = ", ".join(map(str, d["common"]))
+    if mem:
+        v["chance-share"] = f"{mem['chance']:.0%}".replace("%", " %")
+    from vmi.analysis.predictions import h5_gaps, h5_summary  # agent vs compiler, one wording everywhere
+    s5 = h5_summary(h5_gaps(runs))
+    for k in ("t0", "seed", "max", "tpaper"):
+        v[f"h5-{k}"] = s5[k]
+    from vmi.analysis.predictions import _trend_test  # T0's own E2–E4 trend, for comparison with the seed targets
+    g24 = [np.array([r["hs"] for r in _select(runs, level=lv)]) for lv in ("E2", "E3", "E4")]
+    if all(len(g) for g in g24):
+        v["t0-e24"] = _trend_test(g24)
+    tr = RES / "controls" / "trajectory_T0.json"
+    ctrl = json.loads(tr.read_text()).get("negative_controls_by_level", {}) if tr.exists() else {}
+    if ctrl:
+        allc = [x for vals in ctrl.values() for x in vals]
+        v["h8-ctrl-max"] = f"{max(allc):+.2f}"
+        v["h8-ctrl-neg"] = of(sum(x < 0 for x in allc), len(allc))
+    hj = RES / f"hypotheses_round{max_round}.json"  # what a Bonferroni correction over the 8 hypotheses would do (post hoc)
+    if hj.exists():
+        H = json.loads(hj.read_text())["hypotheses"]
+        thr = 0.05 / 8
+        tests = ([("H1's HS trend", H["H1"]["jt_hs"]["p"])] if "H1" in H else []) + \
+                ([(f"H4 ({lv}, Holm-adjusted)", p) for lv, p in H["H4"]["holm_p"].items() if p is not None] if "H4" in H else []) + \
+                ([("H7", H["H7"]["wilcoxon"]["p"])] if "H7" in H and H["H7"].get("wilcoxon") else [])
+        v["bonferroni"] = "; ".join(f"{k} p = {_f(float(p))} {'survives' if p < thr else 'would not survive'}" for k, p in tests)
+    wr, wc = _select(runs, level="W-role"), RES / "compiler" / "T0" / "W-role.json"  # literal build vs agent repair
+    if wr and wc.exists():
+        v["wrole-comp-acc"] = f"{json.loads(wc.read_text())['accuracy']:.3f}"
+        v["wrole-agent-acc"] = (f"{min(r['accuracy'] for r in wr):.3f}" if f"{min(r['accuracy'] for r in wr):.3f}" == f"{max(r['accuracy'] for r in wr):.3f}"
+                                else f"{min(r['accuracy'] for r in wr):.3f}–{max(r['accuracy'] for r in wr):.3f}")
+    beh = RES / "agent_behaviour.json"
+    if beh.exists():
+        B = json.loads(beh.read_text())["summary"]
+        v["tune-said"] = of(B["sweep_said"], B["runs"])
+        v["selftest-median"] = f"{B['selftest_median']:g}"
     for lv, key in (("E3", "e3"), ("W-freq", "wfreq")):  # low-effort runs whose answers broke (task accuracy < 0.95)
         rs = [r for r in runs if r["target"] == "T0" and r["level"] == lv and r.get("variant") == "effort-low" and r["model"] == MAIN_MODEL]
         v[f"lowfx-{key}"] = f"{_w(sum(r['accuracy'] < 0.95 for r in rs))} of {_w(len(rs))}"
@@ -352,13 +444,17 @@ def frequencies_table(max_round: int, model: str = "claude-haiku-5-5") -> str:
     if not p.exists():
         return "_not computed yet_"
     d = json.loads(p.read_text())
-    rows = ["| Target | Explanation | frequencies used by the replacement | target's key frequencies | overlap with target (Jaccard) | overlap with paper's {14, 35, 41, 42, 52} | HS | same weights: HS against the published checkpoint |",
+    rows = ["| Target | Explanation | frequencies built (key-frequency rule) | frequencies the script lists | target's key frequencies "
+            "| W_L norm share: target's / paper's frequencies | HS | E0/E1, same weights: HS vs T0 / vs published checkpoint |",
             "|---|---|---|---|---|---|---|---|"]
     order = {t: i for i, t in enumerate(["T0", "T1", "T2", "T-new", "T-paper"])}
     for r in sorted((x for x in d["rows"] if x["model"] == model and x["variant"] == ""),
                     key=lambda x: (order.get(x["target"], 9), LEVEL_ORDER.index(x["level"]) if x["level"] in LEVEL_ORDER else 99)):
-        rows.append(f"| {r['target']} | {r['level']} | {', '.join(map(str, r['used_freqs']))} | {', '.join(map(str, r['target_freqs']))} | "
-                    f"{r['jaccard_target']:.2f} | {r['jaccard_paper']:.2f} | {r['hs']:.3f} | {_f(r.get('hs_vs_paper'), 3)} |")
+        listed = ", ".join(map(str, r["declared_freqs"])) if r.get("declared_freqs") else "computed"
+        share = (f"{r['target_norm_share']:.2f} / {r['paper_norm_share']:.2f}" if "paper_norm_share" in r else "–")
+        swap = (f"{r['hs_vs_T0']:.3f} / {r['hs_vs_paper']:.3f}" if "hs_vs_T0" in r and "hs_vs_paper" in r else "–")
+        rows.append(f"| {r['target']} | {r['level']} | {', '.join(map(str, r['used_freqs']))} | {listed} | "
+                    f"{', '.join(map(str, r['target_freqs']))} | {share} | {r['hs']:.3f} | {swap} |")
     return "\n".join(rows)
 
 
@@ -429,7 +525,26 @@ def outputs_table(max_round: int, target: str = "T0") -> str:
     out.append(f"| **accuracy, all {P * P:,} inputs** | 1.000 | " + " | ".join(f"{acc[n]:.3f}" for n in names) + " |")
     out.append("| **HS (insides vs. target)** | – | " + " | ".join("1 (itself)" if p["kind"] == "target" else f"{p['hs']:.2f}"
                                                               for p in panels) + " |")
+    out.append("\n*One network per condition: the first replicate (seed 0) of each agent condition, one retrain and one "
+               "random initialisation; the tables above give means over replicates.*")
     return "\n".join(out)
+
+
+def agent_behaviour_table() -> str:
+    """How the agents worked (post hoc, from their transcripts): self-test runs and stated parameter sweeps per run."""
+    p = RES / "agent_behaviour.json"
+    if not p.exists():
+        return "_not computed yet_"
+    d = json.loads(p.read_text())
+    rows = ["| Explanation | runs | self-test runs per run (median, range) | runs whose narration states a sweep or tuning | "
+            "runs with ≥ 2 self-test runs |", "|---|---|---|---|---|"]
+    for lv, s in d["by_level"].items():
+        rows.append(f"| {lv} | {s['runs']} | {s['selftest_median']:g} ({s['selftest_min']}–{s['selftest_max']}) | "
+                    f"{s['sweep_said']} | {s['multi_selftest']} |")
+    S = d["summary"]
+    rows.append(f"| **all** | {S['runs']} | {S['selftest_median']:g} ({S['selftest_min']}–{S['selftest_max']}) | "
+                f"{S['sweep_said']} | {S['multi_selftest']} |")
+    return "\n".join(rows) + "\n\n*" + d["definition"] + "*"
 
 
 def agent_examples_table(max_round: int) -> str:
@@ -518,20 +633,35 @@ def targets_table() -> str:
 
 
 def cost_table() -> str:
-    """Claude API spend from the proxy's request ledger (every request, priced at the published rates)."""
-    led = RES / "claude" / "ledger.jsonl"
-    if not led.exists():
+    """Claude API spend from the proxy's request ledger (every request, priced at the published rates), split into
+    reported runs, stage-0 development runs and plumbing checks (audit 2026-11-22, second pass: the total used to be
+    labelled "runs (incl. checks)" without saying it also contains the development runs)."""
+    c = cost_split()
+    if not c:
         return "_no Claude runs_"
-    spend, reqs, runs = defaultdict(float), defaultdict(int), defaultdict(set)
-    for line in led.read_text(encoding="utf-8").splitlines():
-        if line.strip():
-            d = json.loads(line)
-            spend[d["model"]] += d.get("cost_usd", 0.0)
-            reqs[d["model"]] += 1
-            runs[d["model"]].add(d["run_id"])
-    rows = ["| Model | runs (incl. checks) | requests | spend (USD) |", "|---|---|---|---|"]
-    rows += [f"| {m} | {len(runs[m])} | {reqs[m]} | {spend[m]:.3f} |" for m in sorted(spend)]
-    rows.append(f"| **total** | {len(set().union(*runs.values()))} | {sum(reqs.values())} | **{sum(spend.values()):.3f}** |")
+    rows = ["| Kind of run | model | runs | requests | spend (USD) |", "|---|---|---|---|---|"]
+    order = ["reported runs", "development runs (stage 0, dev target)", "plumbing checks"]
+    for k in sorted(c, key=lambda k: order.index(k) if k in order else 9):
+        e = c[k]
+        rows.append(f"| {k} | {', '.join(sorted(e['models']))} | {e['runs']} | {e['requests']} | {e['spend']:.3f} |")
+    rows.append(f"| **total** | | {sum(e['runs'] for e in c.values())} | {sum(e['requests'] for e in c.values())} | "
+                f"**{sum(e['spend'] for e in c.values()):.3f}** |")
+    return "\n".join(rows)
+
+
+def kl_calibration_table(max_round: int, target: str = "T0") -> str:
+    """How much of output KL is the replacement's logit scale: KL before and after rescaling M̂'s logits by the single
+    temperature that minimises it (secondary metric `calibrated_kl`, preregistration §4), per explanation."""
+    from vmi.analysis.hypotheses import _select, load_runs
+    runs = [r for r in load_runs(max_round) if not r.get("failed")]
+    rows = ["| Explanation | N | task accuracy | KL_out ↓ | KL after temperature calibration ↓ | KL / calibrated KL (median over runs) |",
+            "|---|---|---|---|---|---|"]
+    for lv in LEVEL_ORDER:
+        rs = [r for r in _select(runs, target=target, level=lv) if r.get("calibrated_kl") is not None]
+        if rs:
+            ratio = float(np.median([r["kl_out"] / max(r["calibrated_kl"], 1e-300) for r in rs]))
+            rows.append(f"| {lv} | {len(rs)} | {_ms([r['accuracy'] for r in rs])} | {_ms([r['kl_out'] for r in rs])} | "
+                        f"{_ms([r['calibrated_kl'] for r in rs])} | {ratio:.3g} |")
     return "\n".join(rows)
 
 

@@ -79,6 +79,50 @@ def _mean_hs(runs, **kw):
     return float(np.mean([r["hs"] for r in rs])) if rs else None
 
 
+def h5_gaps(runs) -> dict[str, list[dict]]:
+    """Agent minus reference-compiler HS per (target, explanation) on H5's explanations {E2, E3, E4, W-freq}, grouped by
+    what the comparison is: "T0" (the preregistered H5 test — §5's tests use the main simulator on T0), "seed" (T1, T2,
+    T-new: an extension, post hoc) and "T-paper" (contamination-flagged: memorisation can lift the agent, so it is
+    reported apart and not counted). `beyond` applies §5's falsifier: the agent mean exceeds the compiler by more than
+    the agent mean's 95 % bootstrap CI (with three runs the CI is too narrow, so this flags more than it should).
+    Audit 2026-11-22 (second pass): earlier versions pooled T0 with the seed targets and silently dropped T-paper."""
+    from vmi.analysis import stats as st
+    out: dict[str, list[dict]] = {"T0": [], "seed": [], "T-paper": []}
+    for t in ["T0"] + SEED_TARGETS:
+        group = "T0" if t == "T0" else "T-paper" if t == "T-paper" else "seed"
+        for lv in ("E2", "E3", "E4", "W-freq"):
+            rs, c = _select(runs, target=t, level=lv), compiler(t, lv)
+            if rs and c:
+                v = np.array([r["hs"] for r in rs])
+                ci = st.bootstrap_mean_diff(v, np.zeros(2))["ci"]  # CI of the agent mean (second group is a constant 0)
+                gap = float(v.mean() - c["hs"])
+                out[group].append({"target": t, "level": lv, "gap": gap,
+                                   "beyond": bool(gap > 0 and ci is not None and ci[0] > c["hs"])})
+    return out
+
+
+def h5_summary(g: dict[str, list[dict]]) -> dict[str, str]:
+    """Words for the agent-versus-compiler result, used in the predictions table and in prose (`v:h5-*` values)."""
+    words = {0: "none", 1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight",
+             9: "nine", 10: "ten", 11: "eleven", 12: "twelve"}
+    w = lambda n: words.get(n, str(n))  # noqa: E731
+    above = lambda rows: [r for r in rows if r["gap"] > 0]  # noqa: E731
+    beyond = lambda rows: [r for r in rows if r["beyond"]]  # noqa: E731
+    t0, seed, tp = g["T0"], g["seed"], g["T-paper"]
+    top = max(seed, key=lambda r: r["gap"]) if seed else None
+    n_t = len({r["target"] for r in beyond(seed)})
+    return {
+        "t0": (f"{w(len(beyond(t0)))} of the {w(len(t0))} explanations" if beyond(t0) else
+               f"none of the {w(len(t0))} explanations") + " beyond the bootstrap CI",
+        "seed": (f"{w(len(beyond(seed)))} of {w(len(seed))} target–explanation pairs on {w(n_t)} target{'s' if n_t != 1 else ''}"
+                 if seed else "no pairs"),
+        "seed-sign": f"{w(len(above(seed)))} of {w(len(seed))}",
+        "max": f"{top['gap']:+.3f} ({top['target']} {top['level']})" if top else "–",
+        "list": ", ".join(f"{r['target']} {r['level']}" for r in beyond(seed)) or "none",
+        "tpaper": ", ".join(f"{r['level']} {r['gap']:+.3f}" + (" beyond the CI" if r["beyond"] else "") for r in tp) or "–",
+    }
+
+
 def prediction_rows(max_round: int) -> list[dict]:
     p = RES / f"hypotheses_round{max_round}.json"
     if not p.exists():
@@ -136,28 +180,18 @@ def prediction_rows(max_round: int) -> list[dict]:
         add("H4b", "HS " + " → ".join(_f(x) for x in hs) + "; KL " + " → ".join(_f(x) for x in kl),
             _match({"HS not strictly falling": abs(hs[0] - 1) < 1e-6 and _mono(hs, increasing=False),
                     "KL not strictly rising": kl[0] < 1e-9 and _mono(kl)}))
-    gaps = []  # agent minus compiler HS, main simulator, every target and explanation H5 covers
-    for t in ["T0"] + SEED_TARGETS[:-1]:
-        for lv in ("E2", "E3", "E4", "W-freq"):
-            a, c = _mean_hs(runs, target=t, level=lv), compiler(t, lv)
-            if a is not None and c:
-                gaps.append((t, lv, a - c["hs"]))
-    if gaps:
-        top = max(gaps, key=lambda g: g[2])
-        obs = "agent − compiler on T0: " + ", ".join(f"{lv} {g:+.3f}" for t, lv, g in gaps if t == "T0")
-        from vmi.analysis import stats as st
-
-        def beyond(t, lv):  # §5's falsifier: the agent mean exceeds the compiler by more than its bootstrap CI
-            v = np.array([r["hs"] for r in _select(runs, target=t, level=lv)])
-            ci = st.bootstrap_mean_diff(v, np.zeros(2))["ci"]  # CI of the agent mean (second group is a constant 0)
-            return ci is not None and ci[0] > compiler(t, lv)["hs"]
-        clear = [(t, lv) for t, lv, g in gaps if g > 0 and beyond(t, lv)]
-        obs += (f"; agent above compiler in {sum(g > 0 for *_, g in gaps)} of {len(gaps)} target–explanation pairs by "
-                f"sign, {len(clear)} beyond the bootstrap CI ({', '.join(f'{t} {lv}' for t, lv in clear) or 'none'}; largest "
-                f"{top[2]:+.3f}, {top[0]} {top[1]})")
+    g5 = h5_gaps(runs)
+    if g5["T0"]:
+        s5 = h5_summary(g5)
+        obs = ("T0 (preregistered): agent − compiler " + ", ".join(f"{r['level']} {r['gap']:+.3f}" for r in g5["T0"])
+               + f", {s5['t0']}; seed targets T1, T2, T-new (extension, post hoc): agent above compiler in {s5['seed-sign']} "
+               f"pairs by sign, {s5['seed']} beyond the bootstrap CI ({s5['list']}; largest {s5['max']}); "
+               f"T-paper (memorisation-flagged, not counted): {s5['tpaper']}")
         local = [r for r in runs if r["model"] in LOCAL_MODELS]
         add("H5", obs + f"; {len(local)} local runs, {sum(r['accuracy'] > 2 / 113 for r in local)} above chance",
-            _match({"agent above compiler beyond its CI": not clear, "capability trend not testable": False}))
+            _match({"T0: agent above compiler beyond its CI": not any(r["beyond"] for r in g5["T0"]),
+                    "seed targets: agent above compiler beyond its CI": not any(r["beyond"] for r in g5["seed"]),
+                    "capability trend not testable": False}))
         add("H6", f"{len(local)} local runs, {sum(r['accuracy'] > 2 / 113 for r in local)} above chance: nothing to rank",
             "not testable")
     if "H7" in H:
@@ -168,7 +202,10 @@ def prediction_rows(max_round: int) -> list[dict]:
     if "H8" in H:
         h = H["H8"]
         rho, lo = h["spearman_hs_vs_neglog_restricted_loss"], h.get("spearman_min", h["spearman_hs_vs_neglog_restricted_loss"])
-        add("H8", f"Spearman ρ(HS, −log restricted loss) per replacement: median {_f(rho)}, min {_f(lo)} ({h['N']})",
+        ctrl = h.get("negative_controls_by_level", {})  # post hoc (audit 2026-11-22, second pass): specificity of ρ
+        add("H8", f"Spearman ρ(HS, −log restricted loss) per replacement: median {_f(rho)}, min {_f(lo)} ({h['N']})"
+                  + ("; negative controls (post hoc), ρ per replacement: " + "; ".join(
+                      f"{lv} " + ", ".join(f"{x:+.2f}" for x in v) for lv, v in ctrl.items()) if ctrl else ""),
             _match({"ρ ≤ 0 for some replacement": lo > 0}))
     return out
 
@@ -238,12 +275,18 @@ def highlight_rows(max_round: int, target: str = "T0") -> list[dict]:
          "not significant at N = 3; why KL rises with detail was not tested).")
     fq = RES / f"frequencies_round{max_round}.json"
     if fq.exists():
-        e1 = [r for r in json.loads(fq.read_text())["rows"] if r["level"] == "E1" and r["target"] == target
-              and r["model"] == MAIN_MODEL and r["variant"] == "" and "hs_vs_paper" in r]
+        F = json.loads(fq.read_text())
+        # E1 is identical on every target, so its runs on T0 and T-paper are replicates of one condition (pooled)
+        e1 = [r for r in F["rows"] if r["level"] == "E1" and r["model"] == MAIN_MODEL and r["variant"] == ""
+              and "hs_vs_paper" in r and "hs_vs_T0" in r]
         if e1:
+            paper = set(F["paper_freqs"])
+            listed = sum(bool(r.get("declared_freqs")) and len(set(r["declared_freqs"]) & paper) >= 4 for r in e1)
             add(False, "The AI fills gaps from memory of the published paper",
-                ("algorithm-only rebuilds of T0: HS {} against T0 but {} against the published checkpoint (same weights)",
-                 [np.mean([r["hs"] for r in e1]), np.mean([r["hs_vs_paper"] for r in e1])]),
+                ("algorithm-only rebuilds ({} runs on T0 and the published checkpoint; same input text): {} build scripts "
+                 "list at least four of the paper's five frequencies; HS {} against T0 but {} against the published "
+                 "checkpoint (same weights)",
+                 [len(e1), listed, np.mean([r["hs_vs_T0"] for r in e1]), np.mean([r["hs_vs_paper"] for r in e1])]),
                 "On a published network, a high score can come from the AI's memory instead of the explanation "
                 "(one simulator, one published model).")
     local = [r for r in runs if r["model"] in LOCAL_MODELS]
@@ -251,8 +294,8 @@ def highlight_rows(max_round: int, target: str = "T0") -> list[dict]:
         add(False, "Small local AI models cannot do the task at all",
             ("{} local runs (Qwen3.5-4B, 9B): task accuracy {} (chance = 1/113), HS {}",
              [len(local), np.mean([r["accuracy"] for r in local]), np.mean([r["hs"] for r in local])]),
-            "In this harness and time budget the small local models never built a working network; the task needed a "
-            "more capable coding agent here.")
+            "In this harness, with 4-bit weights and a 60-step, 60-minute budget, the small local models never built a "
+            "working network; model size, quantisation and harness are not separated.")
     return out
 
 
@@ -271,12 +314,15 @@ def _trend_test(groups: list[np.ndarray]) -> str:
 def replication_rows(max_round: int) -> list[dict]:
     """H1–H3 re-tested per seed-sensitivity target with the preregistered tests (main simulator): H1 by the trend test
     over the true levels each target has, H2 by the one-sided Mann–Whitney E3 > W-freq (the only wrong explanation run
-    on these targets), H3 by its rule on condition means."""
+    on these targets), H3 by its rule on condition means.
+
+    The first row is T0 restricted to E2–E4 (post hoc, audit 2026-11-22 second pass): the seed targets ran no E1, so
+    their trend test covers only the fine E2 → E4 part of the ladder; the T0 row shows what the same test gives there."""
     from vmi.analysis import stats as st
     runs = load_runs(max_round)
     out = []
-    for t in SEED_TARGETS:
-        hs = {lv: _mean_hs(runs, target=t, level=lv) for lv in ("E1", "E2", "E3", "E4")}
+    for t in ["T0"] + SEED_TARGETS:
+        hs = {lv: _mean_hs(runs, target=t, level=lv) for lv in (("E2", "E3", "E4") if t == "T0" else ("E1", "E2", "E3", "E4"))}
         hs = {lv: v for lv, v in hs.items() if v is not None}
         wf = _select(runs, target=t, level="W-freq")
         if not hs or not wf:
@@ -289,7 +335,8 @@ def replication_rows(max_round: int) -> list[dict]:
         mw = st.mann_whitney_greater(e3, wfv) if len(e3) else {"p": None}
         h2v = st.verdict(mw["p"], len(e3) > 0 and e3.mean() > wfv.mean(), st.min_p_mann_whitney(len(e3), len(wfv)))
         out.append({
-            "target": t + (" (flagged: memorisation)" if t == "T-paper" else ""),
+            "target": t + (" (flagged: memorisation)" if t == "T-paper" else
+                           " (E2–E4 only; post hoc, for comparison)" if t == "T0" else ""),
             "hs_by_level": ", ".join(f"{lv} {_f(v)}" for lv, v in hs.items()),
             "h1": (("means rise" if _mono([hs[lv] for lv in true_lv]) else "means do not rise") + f" {'→'.join(true_lv)}; "
                    + _trend_test([np.array([r["hs"] for r in _select(runs, target=t, level=lv)]) for lv in true_lv])),

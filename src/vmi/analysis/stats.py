@@ -1,7 +1,7 @@
 """Statistical tests used by the preregistered hypotheses (preregistration §5).
 
-Local explanation: Jonckheere–Terpstra trend test (exact permutation when the number of distinct orderings is small,
-Monte-Carlo permutation otherwise), Spearman ρ with a bootstrap CI that resamples runs within groups, one-sided
+Local explanation: Jonckheere–Terpstra trend test (exact permutation when there are ≤ 50,000 distinct assignments of
+runs to levels, Monte-Carlo permutation otherwise), Spearman ρ with a bootstrap CI that resamples runs within groups, one-sided
 Mann–Whitney U, Holm correction, Kendall's W with a permutation p-value, Wilcoxon signed-rank, rank-biserial effect size.
 Global context: `hypotheses.py` applies these to per-run scores; every function returns plain floats for JSON.
 Sources: Jonckheere–Terpstra trend test — Terpstra 1952 (Indagationes Math. 14:327–333) statistic J = Σ_{i<j} #{(x, y):
@@ -32,8 +32,28 @@ def jt_statistic(groups: list[np.ndarray]) -> float:
     return J
 
 
+def _splits(items: list[int], sizes: list[int]):
+    """Every distinct way to put `items` into ordered groups of the given sizes (multinomial many), as index tuples.
+
+    Local explanation: choose the first group's members with itertools.combinations, then recurse on the rest; each
+    assignment of runs to explanation levels appears exactly once, which is the permutation null of the JT test.
+    Source: itertools.combinations (https://docs.python.org/3/library/itertools.html#itertools.combinations)."""
+    if not sizes:
+        yield []
+        return
+    for first in itertools.combinations(items, sizes[0]):
+        rest = [i for i in items if i not in first]
+        for tail in _splits(rest, sizes[1:]):
+            yield [first, *tail]
+
+
 def jonckheere(groups: list[np.ndarray], n_perm: int = 20000) -> dict:
-    """One-sided JT test for an increasing trend; p-value by exact or Monte-Carlo permutation of group labels."""
+    """One-sided JT test for an increasing trend; p-value by exact or Monte-Carlo permutation of group labels.
+
+    Exact (every distinct assignment of the pooled values to groups) when there are at most 50,000 assignments,
+    e.g. 3 levels × 3 runs = 1,680; Monte-Carlo with n_perm label shuffles otherwise (4 levels × 3 runs = 369,600).
+    Audit 2026-11-22 (second pass): the exact branch used to enumerate index permutations only for ≤ 8 values, so the
+    9-value case fell back to Monte-Carlo despite this docstring; it now enumerates assignments with `_splits`."""
     sizes = [len(g) for g in groups]
     pooled = np.concatenate([np.asarray(g, dtype=float) for g in groups])
     obs = jt_statistic(groups)
@@ -41,11 +61,10 @@ def jonckheere(groups: list[np.ndarray], n_perm: int = 20000) -> dict:
     cuts = np.cumsum(sizes)[:-1]
     if n_orderings <= 50000:  # exact: enumerate distinct assignments of values to groups
         count = total = 0
-        for perm in set(itertools.permutations(range(len(pooled)))) if len(pooled) <= 8 else []:
+        for split in _splits(list(range(len(pooled))), sizes):
             total += 1
-            count += jt_statistic(np.split(pooled[list(perm)], cuts)) >= obs - 1e-12
-        if total:
-            return {"J": obs, "p": count / total, "method": "exact", "orderings": n_orderings}
+            count += jt_statistic([pooled[list(idx)] for idx in split]) >= obs - 1e-12
+        return {"J": obs, "p": count / total, "method": "exact", "orderings": n_orderings}
     rng = np.random.default_rng(RNG_SEED)
     hits = sum(jt_statistic(np.split(rng.permutation(pooled), cuts)) >= obs - 1e-12 for _ in range(n_perm))
     return {"J": obs, "p": (hits + 1) / (n_perm + 1), "method": f"monte-carlo {n_perm}", "orderings": n_orderings}

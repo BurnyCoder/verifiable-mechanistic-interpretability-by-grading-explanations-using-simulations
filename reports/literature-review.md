@@ -1,7 +1,8 @@
 # Literature review — grading mechanistic explanations by simulation
 
 *Libor "Burny" Burian, Victor Levoso — 2026-11-21. Written before any experiment of this project was run;
-citation corrections and post-freeze facts (simulator, target contamination) added 2026-11-22.*
+citation corrections and post-freeze facts (simulator, target contamination) added 2026-11-22; second-audit
+corrections (Haklay, Heap, Poché, contamination wording) the same day.*
 
 **How this review was made.** Primary sources (arXiv HTML/PDF, LaTeX sources, official repositories, LessWrong
 posts and comments) were read in full by research subagents on 2026-11-20/21 and summarised with locations; every
@@ -66,8 +67,8 @@ not name the key frequencies cannot reproduce a specific model's hidden states.
 | Yip, Agrawal, Chan, Gross 2024, *Modular addition without black-boxes* — [arXiv:2412.03773](https://arxiv.org/abs/2412.03773) | ReLU neurons implement a quadrature of ∫ReLU(cos(k(a+b)/2+φ))cos(kc+2φ)dφ ∝ cos(k(a+b−c)); per-neuron phase ψ ≈ 2φ; error bounds. Pizza models, p = 59. | Shows that per-neuron phases are needed for a faithful neuron-level account (our E4 level). |
 | Gross et al. 2024, *Compact proofs of model performance* — [arXiv:2406.11779](https://arxiv.org/abs/2406.11779) | Explanation quality as a trade-off between proof length (FLOPs) and bound tightness; brute force = exact but longest. Max-of-K, not modular addition. | The degenerate "explanation = the weights" endpoint; we report every score against explanation length. |
 | Wu, Jaburi, Drori, Gross 2024 — [arXiv:2410.07476](https://arxiv.org/abs/2410.07476) | Builds an idealized model from the interpretation plus trained parameters to obtain accuracy bounds for group-operation networks. | Closest construction-from-interpretation; uses trained parameters, which our simulator is forbidden to see. |
-| Chughtai, Chan, Nanda 2023 — [arXiv:2302.03025](https://arxiv.org/abs/2302.03025); Stander et al. 2023 — [arXiv:2312.06581](https://arxiv.org/abs/2312.06581) | Group-representation explanation; later shown to be partly wrong (coset circuits instead). | Cautionary tale: plausible explanations can be wrong — motivates wrong-explanation controls (W-*). |
-| Morwani et al. 2023 — [arXiv:2311.07568](https://arxiv.org/abs/2311.07568) | Max-margin solutions use single-frequency cosine neurons with θ_u + θ_v = θ_w. | Theory for the phase constraint the explainer reports. |
+| Chughtai, Chan, Nanda 2023 — [arXiv:2302.03025](https://arxiv.org/abs/2302.03025); Stander et al. 2023 — [arXiv:2312.06581](https://arxiv.org/abs/2312.06581) | Group-representation explanation; Stander et al. (ICML 2024) argue the models implement coset circuits instead, and Wu et al. 2024 find both accounts incomplete and partly reconcile them. | Cautionary tale: plausible explanations can be wrong — motivates wrong-explanation controls (W-*). |
+| Morwani et al. 2023 — [arXiv:2311.07568](https://arxiv.org/abs/2311.07568) | Max-margin solutions of one-hidden-layer quadratic-activation networks use single-frequency cosine neurons with θ_u + θ_v = θ_w (Theorem 7). | Theory for the phase constraint the explainer reports. |
 
 A targeted search found **no prior work that writes all weights of the Nanda transformer from a text explanation
 alone and measures closeness to the trained model** (searched 2026-11-20; absence is not proof).
@@ -91,7 +92,7 @@ alone and measures closeness to the trained model** (searched 2026-11-20; absenc
   GPT-2 XL neurons that GPT-4 scored highly, F1 was 0.56 and correlated −0.1 with the simulation score.
 - **Kopf et al. 2024, CoSy** ([arXiv:2405.20331](https://arxiv.org/abs/2405.20331)) and Puri et al., *FADE: Why Bad
   Descriptions Happen to Good Features*, Findings ACL 2025 ([arXiv:2502.16994](https://arxiv.org/abs/2502.16994)) —
-  explanation scoring for vision neurons and SAE features.
+  explanation scoring for vision neurons (CoSy) and for LLM features, both MLP neurons and SAE features (FADE).
 - **Leo Gao, *Neural networks are not already clean*** (LessWrong, 2026-10-17,
   [post](https://www.lesswrong.com/posts/Dkh7pXKjoNWkkxQDz/neural-networks-are-not-already-clean)): argues
   correlation-based simulation scores are too weak and proposes scoring by **substituting simulated activations and
@@ -143,12 +144,15 @@ alone and measures closeness to the trained model** (searched 2026-11-20; absenc
   explains an LLM's behaviour, scored by output agreement — behavioural only.
 - **Interpretability agents and their evaluation:** MAIA ([arXiv:2404.14394](https://arxiv.org/abs/2404.14394));
   AgenticInterpBench ([arXiv:2606.24026](https://arxiv.org/abs/2606.24026)); **Haklay et al. 2026, *Pitfalls in
-  Evaluating Interpretability Agents*** ([arXiv:2603.20101](https://arxiv.org/abs/2603.20101)) — agents can reproduce
-  published circuits from memory; Pando ([arXiv:2604.11061](https://arxiv.org/abs/2604.11061)).
-- **Critiques of auto-interp scores:** Heap et al. 2025 — fuzzing and detection scores of SAE features do not
-  distinguish trained and random transformers in many settings ([arXiv:2501.17727](https://arxiv.org/abs/2501.17727)); **Poché et al. 2026 — LLM simulators can bypass
+  Evaluating Interpretability Agents*** ([arXiv:2603.20101](https://arxiv.org/abs/2603.20101)) — asked directly, the
+  LLM behind an interpretability agent (Claude Opus 4.1) listed the IOI circuit's components from memory (§4.3.1), so
+  agents may recall rather than discover published circuits; Pando ([arXiv:2604.11061](https://arxiv.org/abs/2604.11061)).
+- **Critiques of auto-interp scores:** Heap et al. 2025 (v2 2026, retitled) — fuzzing scores of SAE latents (detection
+  in an appendix) are similar for trained and randomised transformers in many settings, with a larger gap for small
+  Pythia models ([arXiv:2501.17727](https://arxiv.org/abs/2501.17727)); **Poché et al. 2026 — LLM simulators can bypass
   explanations** ([arXiv:2609.08585](https://arxiv.org/abs/2609.08585)): in output-simulatability evaluation of text
-  classifiers (a ConSim replication with meaningful class names), simulators matched no-explanation baselines; they
+  classifiers (a ConSim replication with meaningful class names), explanations added little over no-explanation
+  baselines because simulators can solve the task from the class names; they
   recommend label-leakage baselines, multiple simulators, enough seeds and novel tasks;
   Lermen et al. 2025 — explainer and simulator can collude via steganography
   ([arXiv:2504.07831](https://arxiv.org/abs/2504.07831)).
@@ -176,8 +180,8 @@ ML pitfalls* ([arXiv:2108.02497](https://arxiv.org/abs/2108.02497)); Nanda's res
 ([Alignment Forum](https://www.alignmentforum.org/s/5GT3yoYM9gRmMEKqL)); NeurIPS checklist
 ([guide](https://neurips.cc/public/guides/PaperChecklist)). Concretely: preregistered hypotheses and falsifiers,
 discriminating controls, explanation-free baselines, contamination controls, and reporting of negative results.
-Contamination: targets T0–T2 have no published analysis, and their weights have been public on Hugging Face only since
-2026-10-21 — after Claude Haiku 5.5's training-data cutoff (June 2026,
-[models overview](https://platform.claude.com/docs/en/about-claude/models/overview)) — so they cannot be in its
-training data; a held-out target was trained after the protocol freeze. Run `wd1_s0` learned exactly the paper's
+Contamination: no paper analyses targets T0–T2; their weights and an automated analysis that lists their key
+frequencies have been public on Hugging Face only since 2026-10-21 — after Claude Haiku 5.5's training-data cutoff
+(June 2026, [models overview](https://platform.claude.com/docs/en/about-claude/models/overview)) — so they cannot be
+in its training data, and the sandbox has no internet access; a held-out target was trained after the protocol freeze. Run `wd1_s0` learned exactly the paper's
 frequencies {14, 35, 41, 42, 52}, so it is not a clean target; it serves as the paper's-twin baseline, not as a target.
