@@ -12,6 +12,9 @@ exactly when each model's states are an affine function of the other's, whatever
 invariant to any invertible linear map of M̂'s basis (the regression absorbs it, up to the tiny ridge); soundness
 R²(M→M̂) pools over M̂'s dimensions, so it weights M̂'s directions by their variance and is invariant only to orthogonal
 maps and uniform scaling of M̂'s basis. `sensitivity.cv_r2_whitened` is the fully invariant post-hoc check.
+The GL argument covers the residual sites; at `mlp_post` the neurons' symmetry is permutation and positive scaling, so
+regression there is wider than the symmetry group (audit 3, deviation 10); `matched_neuron_corr` is the group-matched
+secondary metric.
 CKA/Procrustes are invariant only to orthogonal maps and are reported for comparability.
 Sources: KL convention KL(original ‖ modified) — Conmy et al. 2023 (https://arxiv.org/abs/2304.14997); linear CKA —
 Kornblith et al. 2019 eq. (https://arxiv.org/abs/1905.00414); Procrustes distance 2 − 2‖XᵀY‖_* after centring and

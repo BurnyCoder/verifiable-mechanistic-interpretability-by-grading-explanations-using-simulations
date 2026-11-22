@@ -1,0 +1,402 @@
+{
+  "definition": "Clock-versus-Pizza diagnostics of Zhong et al. (2023) for the targets and for literal Clock/Pizza builds (post hoc).\n\nLocal explanation:\n- `distance_irrelevance(L)`: Zhong et al. Def. 4.2 (\u00a74.1.2). L is the correct-logit matrix, L[a, b] = logit of the\n  answer (a + b) mod p for input (a, b). q = mean over differences d of std_a L[a, a + d], divided by std of L over all\n  p\u00b2 inputs. Clock's logits do not depend on a \u2212 b (q near 1); Pizza's carry the factor |cos(w_k(a \u2212 b)/2)|, so within\n  one difference the logits barely vary (q near 0).\n- `gradient_symmetricity(model)`: Zhong et al. Def. 4.1 (\u00a74.1.1). For random (a, b, c), the cosine similarity of the\n  gradients of logit c with respect to the input embeddings of a and of b, averaged; Pizza's constant attention makes\n  the two gradients nearly equal (> 0.98), Clock's input-dependent attention does not. Zhong et al.'s Pizza models have\n  constant attention by construction; our hand-built replacements compute their (near-constant) attention from the\n  embeddings, so the gradient through the attention scores points off the data manifold and in opposite directions\n  for a and b, and the full gradient gives strongly negative values. `fixed_attention=True` (a variant, not Zhong et\n  al.'s definition) holds the attention pattern fixed when differentiating; observed after the first run (literal\n  Pizza build: \u22120.87 full, +1.00 with the pattern fixed), so the reading rule below uses distance irrelevance only,\n  which Zhong et al. call the decisive factor (\u00a74.1.3).",
+  "reading_rule": "Clock if distance irrelevance \u2265 0.4, Pizza if < 0.4 (Zhong et al. \u00a74.1.2); W-alg negative result stands if T0 is Clock and the literal Pizza build (compiler W-alg) is Pizza",
+  "rows": [
+    {
+      "kind": "target",
+      "name": "T0",
+      "distance_irrelevance": 0.7503748460523431,
+      "gradient_symmetricity": 0.47290605132201835,
+      "gradient_symmetricity_fixed_attention": 0.7450559994193676,
+      "accuracy": 1.0,
+      "side": "Clock"
+    },
+    {
+      "kind": "target",
+      "name": "T1",
+      "distance_irrelevance": 0.8087514694749612,
+      "gradient_symmetricity": 0.19623566705910672,
+      "gradient_symmetricity_fixed_attention": 0.5784450432461037,
+      "accuracy": 1.0,
+      "side": "Clock"
+    },
+    {
+      "kind": "target",
+      "name": "T2",
+      "distance_irrelevance": 0.5889365491189824,
+      "gradient_symmetricity": 0.5667073920491016,
+      "gradient_symmetricity_fixed_attention": 0.8088771072473747,
+      "accuracy": 1.0,
+      "side": "Clock"
+    },
+    {
+      "kind": "target",
+      "name": "T-new",
+      "distance_irrelevance": 0.7258692262017737,
+      "gradient_symmetricity": 0.503878928004923,
+      "gradient_symmetricity_fixed_attention": 0.78756617769279,
+      "accuracy": 1.0,
+      "side": "Clock"
+    },
+    {
+      "kind": "target",
+      "name": "T-paper",
+      "distance_irrelevance": 0.7440639354647303,
+      "gradient_symmetricity": 0.3006076038436437,
+      "gradient_symmetricity_fixed_attention": 0.6405804433035135,
+      "accuracy": 1.0,
+      "side": "Clock"
+    },
+    {
+      "kind": "compiler",
+      "name": "T0 E0",
+      "distance_irrelevance": 0.21872809706598131,
+      "gradient_symmetricity": -0.9212923794638318,
+      "gradient_symmetricity_fixed_attention": 1.0,
+      "accuracy": 1.0,
+      "side": "Pizza"
+    },
+    {
+      "kind": "compiler",
+      "name": "T0 E1",
+      "distance_irrelevance": 0.21872809706598131,
+      "gradient_symmetricity": -0.9212923794638318,
+      "gradient_symmetricity_fixed_attention": 1.0,
+      "accuracy": 1.0,
+      "side": "Pizza"
+    },
+    {
+      "kind": "compiler",
+      "name": "T0 E2",
+      "distance_irrelevance": 0.2010137159244768,
+      "gradient_symmetricity": -0.8843064198269368,
+      "gradient_symmetricity_fixed_attention": 1.0,
+      "accuracy": 1.0,
+      "side": "Pizza"
+    },
+    {
+      "kind": "compiler",
+      "name": "T0 E3",
+      "distance_irrelevance": 0.17904758675389415,
+      "gradient_symmetricity": -0.9150873901356162,
+      "gradient_symmetricity_fixed_attention": 0.9875101688603632,
+      "accuracy": 1.0,
+      "side": "Pizza"
+    },
+    {
+      "kind": "compiler",
+      "name": "T0 E4",
+      "distance_irrelevance": 0.2997453773840681,
+      "gradient_symmetricity": -0.9821139631269371,
+      "gradient_symmetricity_fixed_attention": 0.8060280275293786,
+      "accuracy": 0.9998433706633253,
+      "side": "Pizza"
+    },
+    {
+      "kind": "compiler",
+      "name": "T0 W-freq",
+      "distance_irrelevance": 0.10302997105556684,
+      "gradient_symmetricity": -0.9248386595222461,
+      "gradient_symmetricity_fixed_attention": 0.9885689268221384,
+      "accuracy": 1.0,
+      "side": "Pizza"
+    },
+    {
+      "kind": "compiler",
+      "name": "T0 W-alg",
+      "distance_irrelevance": 0.0026272764354076023,
+      "gradient_symmetricity": -0.8737677934232994,
+      "gradient_symmetricity_fixed_attention": 1.0,
+      "accuracy": 1.0,
+      "side": "Pizza"
+    },
+    {
+      "kind": "compiler",
+      "name": "T0 W-role",
+      "distance_irrelevance": 0.8702673354464607,
+      "gradient_symmetricity": -0.9816877936342072,
+      "gradient_symmetricity_fixed_attention": -0.18050234864234452,
+      "accuracy": 0.027801707259769756,
+      "side": "Clock"
+    },
+    {
+      "kind": "compiler",
+      "name": "T0 W-scramble",
+      "distance_irrelevance": 0.6092651219166165,
+      "gradient_symmetricity": -0.9673090100399919,
+      "gradient_symmetricity_fixed_attention": 0.8192334205687769,
+      "accuracy": 1.0,
+      "side": "Clock"
+    },
+    {
+      "kind": "agent",
+      "name": "T0 E0 s0",
+      "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s0",
+      "distance_irrelevance": 0.9307170538030358,
+      "gradient_symmetricity": -0.054474011714703625,
+      "gradient_symmetricity_fixed_attention": -0.054474011714703625,
+      "accuracy": 1.0,
+      "side": "Clock"
+    },
+    {
+      "kind": "agent",
+      "name": "T0 E0 s1",
+      "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s1",
+      "distance_irrelevance": 0.2810572506877903,
+      "gradient_symmetricity": 1.0,
+      "gradient_symmetricity_fixed_attention": 1.0,
+      "accuracy": 1.0,
+      "side": "Pizza"
+    },
+    {
+      "kind": "agent",
+      "name": "T0 E0 s2",
+      "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s2",
+      "distance_irrelevance": 0.9303289336994226,
+      "gradient_symmetricity": 0.013074164921274601,
+      "gradient_symmetricity_fixed_attention": 0.013074164921274601,
+      "accuracy": 1.0,
+      "side": "Clock"
+    },
+    {
+      "kind": "agent",
+      "name": "T0 W-alg s0",
+      "run_id": "controls__T0__W-alg__claudehaiku55-claudecode__tdef__s0",
+      "distance_irrelevance": 0.0009591342361719599,
+      "gradient_symmetricity": -0.8862094696525901,
+      "gradient_symmetricity_fixed_attention": 1.0,
+      "accuracy": 1.0,
+      "side": "Pizza"
+    },
+    {
+      "kind": "agent",
+      "name": "T0 W-alg s1",
+      "run_id": "controls__T0__W-alg__claudehaiku55-claudecode__tdef__s1",
+      "distance_irrelevance": 0.0007753647267570039,
+      "gradient_symmetricity": -0.8874798451055274,
+      "gradient_symmetricity_fixed_attention": 1.0,
+      "accuracy": 1.0,
+      "side": "Pizza"
+    },
+    {
+      "kind": "agent",
+      "name": "T0 W-alg s2",
+      "run_id": "controls__T0__W-alg__claudehaiku55-claudecode__tdef__s2",
+      "distance_irrelevance": 0.0008042908817085334,
+      "gradient_symmetricity": -0.6692399718456886,
+      "gradient_symmetricity_fixed_attention": 1.0,
+      "accuracy": 1.0,
+      "side": "Pizza"
+    },
+    {
+      "kind": "agent",
+      "name": "T0 W-freq s0",
+      "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s0",
+      "distance_irrelevance": 0.4430470972282665,
+      "gradient_symmetricity": -0.10998325220603687,
+      "gradient_symmetricity_fixed_attention": 1.0,
+      "accuracy": 1.0,
+      "side": "Clock"
+    },
+    {
+      "kind": "agent",
+      "name": "T0 W-freq s1",
+      "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s1",
+      "distance_irrelevance": 0.12175020864717928,
+      "gradient_symmetricity": -0.1248841904313235,
+      "gradient_symmetricity_fixed_attention": 1.0,
+      "accuracy": 1.0,
+      "side": "Pizza"
+    },
+    {
+      "kind": "agent",
+      "name": "T0 W-freq s2",
+      "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s2",
+      "distance_irrelevance": 0.31834052300754906,
+      "gradient_symmetricity": -0.8382629028954389,
+      "gradient_symmetricity_fixed_attention": 1.0,
+      "accuracy": 0.9998433706633253,
+      "side": "Pizza"
+    },
+    {
+      "kind": "agent",
+      "name": "T0 W-role s0",
+      "run_id": "controls__T0__W-role__claudehaiku55-claudecode__tdef__s0",
+      "distance_irrelevance": 0.19114202367860592,
+      "gradient_symmetricity": -0.4204661915549313,
+      "gradient_symmetricity_fixed_attention": 1.0,
+      "accuracy": 1.0,
+      "side": "Pizza"
+    },
+    {
+      "kind": "agent",
+      "name": "T0 W-role s1",
+      "run_id": "controls__T0__W-role__claudehaiku55-claudecode__tdef__s1",
+      "distance_irrelevance": 0.15341990763879745,
+      "gradient_symmetricity": -0.5514426415378909,
+      "gradient_symmetricity_fixed_attention": 1.0,
+      "accuracy": 1.0,
+      "side": "Pizza"
+    },
+    {
+      "kind": "agent",
+      "name": "T0 W-role s2",
+      "run_id": "controls__T0__W-role__claudehaiku55-claudecode__tdef__s2",
+      "distance_irrelevance": 0.4539413528432125,
+      "gradient_symmetricity": -0.8490835831135616,
+      "gradient_symmetricity_fixed_attention": 1.0,
+      "accuracy": 0.9995301119899758,
+      "side": "Clock"
+    },
+    {
+      "kind": "agent",
+      "name": "T0 W-scramble s0",
+      "run_id": "controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s0",
+      "distance_irrelevance": 0.504883261664743,
+      "gradient_symmetricity": 0.043751804175510764,
+      "gradient_symmetricity_fixed_attention": 0.9999922214444852,
+      "accuracy": 0.9995301119899758,
+      "side": "Clock"
+    },
+    {
+      "kind": "agent",
+      "name": "T0 W-scramble s1",
+      "run_id": "controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s1",
+      "distance_irrelevance": 0.6584013432863737,
+      "gradient_symmetricity": -0.7706681824390823,
+      "gradient_symmetricity_fixed_attention": 0.864822910401398,
+      "accuracy": 1.0,
+      "side": "Clock"
+    },
+    {
+      "kind": "agent",
+      "name": "T0 W-scramble s2",
+      "run_id": "controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s2",
+      "distance_irrelevance": 0.5358029142360434,
+      "gradient_symmetricity": -0.42695619910321025,
+      "gradient_symmetricity_fixed_attention": 1.0,
+      "accuracy": 0.9935781971963349,
+      "side": "Clock"
+    },
+    {
+      "kind": "agent",
+      "name": "T0 E1 s0",
+      "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s0",
+      "distance_irrelevance": 0.19526988926554364,
+      "gradient_symmetricity": -0.8120611242048512,
+      "gradient_symmetricity_fixed_attention": 1.0,
+      "accuracy": 1.0,
+      "side": "Pizza"
+    },
+    {
+      "kind": "agent",
+      "name": "T0 E1 s1",
+      "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s1",
+      "distance_irrelevance": 0.1753373806553178,
+      "gradient_symmetricity": -0.7997978113986788,
+      "gradient_symmetricity_fixed_attention": 1.0,
+      "accuracy": 1.0,
+      "side": "Pizza"
+    },
+    {
+      "kind": "agent",
+      "name": "T0 E1 s2",
+      "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s2",
+      "distance_irrelevance": 0.17358727360907192,
+      "gradient_symmetricity": 1.0,
+      "gradient_symmetricity_fixed_attention": 1.0,
+      "accuracy": 1.0,
+      "side": "Pizza"
+    },
+    {
+      "kind": "agent",
+      "name": "T0 E2 s0",
+      "run_id": "main__T0__E2__claudehaiku55-claudecode__tdef__s0",
+      "distance_irrelevance": 0.19750411087715558,
+      "gradient_symmetricity": -0.638267686384588,
+      "gradient_symmetricity_fixed_attention": 1.0,
+      "accuracy": 1.0,
+      "side": "Pizza"
+    },
+    {
+      "kind": "agent",
+      "name": "T0 E2 s1",
+      "run_id": "main__T0__E2__claudehaiku55-claudecode__tdef__s1",
+      "distance_irrelevance": 0.20136707251082417,
+      "gradient_symmetricity": -0.835171224134615,
+      "gradient_symmetricity_fixed_attention": 1.0,
+      "accuracy": 1.0,
+      "side": "Pizza"
+    },
+    {
+      "kind": "agent",
+      "name": "T0 E2 s2",
+      "run_id": "main__T0__E2__claudehaiku55-claudecode__tdef__s2",
+      "distance_irrelevance": 0.0009666379759328107,
+      "gradient_symmetricity": -0.9203889202294847,
+      "gradient_symmetricity_fixed_attention": 1.0,
+      "accuracy": 1.0,
+      "side": "Pizza"
+    },
+    {
+      "kind": "agent",
+      "name": "T0 E3 s0",
+      "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s0",
+      "distance_irrelevance": 0.05375484384997995,
+      "gradient_symmetricity": -0.4766206115506107,
+      "gradient_symmetricity_fixed_attention": 0.9999988168000542,
+      "accuracy": 0.9995301119899758,
+      "side": "Pizza"
+    },
+    {
+      "kind": "agent",
+      "name": "T0 E3 s1",
+      "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s1",
+      "distance_irrelevance": 0.18207348132154716,
+      "gradient_symmetricity": -0.09883832568852466,
+      "gradient_symmetricity_fixed_attention": 1.0,
+      "accuracy": 0.9990602239799514,
+      "side": "Pizza"
+    },
+    {
+      "kind": "agent",
+      "name": "T0 E3 s2",
+      "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s2",
+      "distance_irrelevance": 0.14403851515680977,
+      "gradient_symmetricity": -0.8863748988405732,
+      "gradient_symmetricity_fixed_attention": 1.0,
+      "accuracy": 1.0,
+      "side": "Pizza"
+    },
+    {
+      "kind": "agent",
+      "name": "T0 E4 s0",
+      "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s0",
+      "distance_irrelevance": 0.46286378562833896,
+      "gradient_symmetricity": -0.8793399945432172,
+      "gradient_symmetricity_fixed_attention": 0.999999976509069,
+      "accuracy": 0.9790116688855822,
+      "side": "Clock"
+    },
+    {
+      "kind": "agent",
+      "name": "T0 E4 s1",
+      "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s1",
+      "distance_irrelevance": 0.463978262123487,
+      "gradient_symmetricity": -0.4323158598436645,
+      "gradient_symmetricity_fixed_attention": 0.9999973587052505,
+      "accuracy": 0.9788550395489075,
+      "side": "Clock"
+    },
+    {
+      "kind": "agent",
+      "name": "T0 E4 s2",
+      "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s2",
+      "distance_irrelevance": 0.3171209304431583,
+      "gradient_symmetricity": -0.4231810315630038,
+      "gradient_symmetricity_fixed_attention": 0.8346711039339338,
+      "accuracy": 1.0,
+      "side": "Pizza"
+    }
+  ]
+}

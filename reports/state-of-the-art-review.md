@@ -32,7 +32,7 @@ Formulas and invariance classes follow Klabunde et al., *Similarity of Neural Ne
 | Metric | Invariant to | Notes |
 |---|---|---|
 | Linear regression R² (cross-validated) | invertible linear maps of the predictor | asymmetric → compute both directions |
-| Linear CKA ([Kornblith et al. 2019](https://arxiv.org/abs/1905.00414)) | orthogonal maps, isotropic scaling | dominated by top PCs; manipulable ([Davari et al.](https://arxiv.org/abs/2210.16156)) |
+| Linear CKA ([Kornblith et al. 2019](https://arxiv.org/abs/1905.00414)) | orthogonal maps, isotropic scaling | dominated by top PCs ([Ding et al.](https://arxiv.org/abs/2108.01661) §5: insensitive to differences in smaller singular values); manipulable ([Davari et al.](https://arxiv.org/abs/2210.16156)) |
 | Orthogonal Procrustes (Ding et al.) | orthogonal maps (after normalisation) | consistently good baseline in Ding et al. |
 | Hard neuron matching ([Li et al. 2016](https://arxiv.org/abs/1511.07543)) | permutation, per-neuron scaling | optimal one-to-one assignment on correlations (scipy [`linear_sum_assignment`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.linear_sum_assignment.html), modified Jonker–Volgenant) |
 | Model stitching ([Bansal et al. 2021](https://arxiv.org/abs/2106.07682)) | whatever the stitch class allows | functional (causal) test |
@@ -55,7 +55,10 @@ network can be mapped to any algorithm. They leave the map class to be decided c
 "may be advised" if one accepts the linear representation hypothesis. With N = 12,769 inputs ≫ 128 dimensions, the
 regression is well-determined; 5-fold cross-validation guards against over-fitting. MLP neurons are compared by
 correlation after optimal one-to-one assignment (permutation and scale invariant), attention patterns directly after
-head matching. CKA and Procrustes are reported as secondary metrics for comparability with the literature.
+head matching. The GL(128) argument covers the residual sites only: the primary HS also regresses at `mlp_post`,
+where the neurons' symmetry is permutation and positive scaling, so the linear alignment there is wider than the
+symmetry group and cannot see per-neuron assignments (audit 3, deviation 10); the matched-neuron correlation is the
+group-matched comparison. CKA and Procrustes are reported as secondary metrics for comparability with the literature.
 
 **Reference implementations** for cross-checking: netrep ([MIT](https://github.com/ahwillia/netrep)) and Google's CKA
 code ([Apache-2.0](https://github.com/google-research/google-research/tree/master/representation_similarity)).
@@ -70,9 +73,10 @@ on PyPI), so the metrics are implemented in
   and fuzzing scorers of [Paulo et al. 2024](https://arxiv.org/abs/2410.13928) — are the most used automated scores
   and the most criticised: simulation scores are weak on false positives
   ([Huang et al.](https://arxiv.org/abs/2309.10312)); fuzzing scores of SAE latents (detection in an appendix) are similar
-  for trained and random transformers in many settings ([Heap et al.](https://arxiv.org/abs/2501.17727), v2 2026). Relatedly, in
-  output-simulatability settings (text classifiers, not per-feature activations), LLM simulators can bypass the
-  explanation ([Poché et al. 2026](https://arxiv.org/abs/2609.08585)).
+  for trained and random transformers in many settings ([Heap et al.](https://arxiv.org/abs/2501.17727), v2 2026). Relatedly, when
+  LLM simulators predict a text classifier's outputs from concept explanations (not per-feature activations), the
+  explanations add little over matched no-explanation baselines, because with meaningful class names the simulator
+  can solve the task directly ([Poché et al. 2026](https://arxiv.org/abs/2609.08585)).
 - **Substitution-based scores** (Bills' ablation score; [Paulo & Belrose 2025](https://arxiv.org/abs/2501.18838);
   Gao's downstream-KL proposal) replace activations by explanation-driven predictions and measure output damage.
 - **Whole-model rebuilds** exist for agent-written models (iWSP, [arXiv:2611.18114](https://arxiv.org/abs/2611.18114))
@@ -95,7 +99,9 @@ on PyPI), so the metrics are implemented in
 
 - **OpenCode v2** (repo `anomalyco/opencode`, docs [opencode.ai/docs](https://opencode.ai/docs)): headless
   `opencode run --format json` emits an NDJSON event stream (text, reasoning with `--thinking`, tool calls with
-  inputs/outputs); `--auto` approves permissions not explicitly denied; `--standalone` uses a private server.
+  inputs/outputs); `--auto` approves permissions not explicitly denied (these three flags are documented only in the
+  v2.3.2 source, `packages/cli/src/commands/commands.ts` and `run/noninteractive.ts`, not on the docs site);
+  `--standalone` uses a private server (docs).
   Permissions are ordered `{action, resource, effect}` rules (last match wins); `webfetch`, `websearch`, MCP, subagents
   and code mode can be denied; custom agents take a system prompt. Local observations on this machine (not in the
   docs): the model catalog falls back to a built-in snapshot when offline, and ripgrep must be on PATH to avoid a
@@ -115,17 +121,21 @@ on PyPI), so the metrics are implemented in
   per-request seed. Ollama was rejected because its OpenAI-compatible endpoint does not set the context size
   ([OpenAI compatibility](https://docs.ollama.com/api/openai-compatibility)), so the default applies (4k on
   < 24 GiB GPUs, which breaks tool calls; [context length](https://docs.ollama.com/context-length)), and it has no
-  `--n-cpu-moe`.
+  `--n-cpu-moe` equivalent (requests for exact MoE expert-offload controls are open issues on
+  [ollama/ollama](https://github.com/ollama/ollama/issues?q=is%3Aissue+expert+offload); our check, 2026-11-22).
 - **Model: Qwen3.6-35B-A3B** (35 B total, 3 B active, MoE; [model card](https://huggingface.co/Qwen/Qwen3.6-35B-A3B)),
   GGUF `UD-IQ4_XS` (17.7 GB, [unsloth](https://huggingface.co/unsloth/Qwen3.6-35B-A3B-GGUF), pinned revision
   `a483e9e`). Chosen as the strongest agentic-coding model that fits 8 GB VRAM + 31 GB RAM: independent Terminal-Bench
   ≈ 24.6 % vs 9.2 % for Qwen3.5-9B (attributed by
   [llmrun.dev](https://llmrun.dev/benchmark/terminalbench) to Epoch AI, benchmark version not stated; vendor numbers are
-  higher). Throughput ≈ 33 tok/s on an
-  8 GB RTX 3070 laptop with `--n-cpu-moe` is an unsourced third-party estimate (to be measured here in stage 0). No
+  higher). A throughput of ≈ 33 tok/s on an
+  8 GB RTX 3070 laptop with `--n-cpu-moe` was an unsourced third-party estimate for a different GPU than ours (RTX 5070
+  Laptop); it was measured here in stage 0 instead (amendment 1). No
   usable Qwen3.8 fits this machine ([27B](https://huggingface.co/Qwen/Qwen3.8-27B) is dense;
-  [Flash-Next](https://huggingface.co/Qwen/Qwen3.8-Flash-Next)'s smallest GGUFs are ≈ 66 GB / 62 GiB, unsloth UD-IQ1_S,
-  or 58.5 GB for a third-party TQ1_0 quant, all above 8 GB VRAM + 31 GB RAM; checked on the Hub 2026-11-22).
+  [Flash-Next](https://huggingface.co/Qwen/Qwen3.8-Flash-Next)'s smallest unpruned GGUFs are ≈ 66 GB / 62 GiB, unsloth
+  UD-IQ1_S, or 58.5 GB for a third-party TQ1_0 quant, all above 8 GB VRAM + 31 GB RAM; smaller third-party builds are
+  expert-pruned (REAP, 13–20 GB, e.g. [anik-jha/Qwen3.8-Flash-Next-24GB-GGUF](https://huggingface.co/anik-jha/Qwen3.8-Flash-Next-24GB-GGUF)) or embedding-split, which we excluded as no longer the published model; a 4-bit
+  27B would fit but is dense and too slow with CPU offload (our judgement); checked on the Hub 2026-11-22).
 - **Ablation models:** Qwen3.5-9B and Qwen3.5-4B (already pulled in Ollama; served through the same llama-server for
   comparability).
 
@@ -136,8 +146,8 @@ on PyPI), so the metrics are implemented in
   exact parameter layout and hooks, `RunStore`, the Fourier basis, key frequencies, neuron clusters, restricted and
   excluded loss, attention fits (paper Table 2), the W_L read-off (Table 1) and deterministic vectorised training.
   Its definitions reproduce the paper's and ARENA's published numbers (433 neurons above 0.85 FVE; loss 5.5474e-8 on
-  the paper model when each MLP neuron is restricted to its key-frequency cos/sin(w_k(a+b)) terms, matching Nanda et
-  al. §4.4's 5.54×10⁻⁸ — not to be confused with §4.4's logit-level ablation that keeps only the key-frequency
+  the paper model when each MLP neuron is restricted to its key-frequency cos/sin(w_k(a+b)) terms, agreeing with Nanda
+  et al. §4.4's 5.54×10⁻⁸ to within 0.2 % — not to be confused with §4.4's logit-level ablation that keeps only the key-frequency
   components of the logits, 7.24×10⁻⁸), per its module docstrings.
 - Targets: `BurnyCoder/grokking-modular-addition-runs` (pinned revision `98c61de`), trained on this same GPU model
   with torch 2.14.1+cu130.

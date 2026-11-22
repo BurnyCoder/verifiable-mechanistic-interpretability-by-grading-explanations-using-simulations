@@ -46,7 +46,7 @@ flowchart TB
 | `training.py` | grokviz trainer for fresh runs; small loop for distillation and continued training |
 | `nonagent.py` | random init, wrong targets, trajectory, planted calibration, baselines |
 | `manifests.py` | the agent conditions (amendment 2: 44 in round 1; 32 Claude Haiku conditions in rounds 2–3 after deviation 5) and per-round manifests |
-| `analysis/` | statistical tests, hypothesis verdicts labelled with N, tables, figures, post-hoc frequency/memorisation analysis (`frequencies.py`), agent process counts from transcripts (`agent_behaviour.py`), the recorded software environment (`environment.py`), and `report.py` (one command refills every marked block, including the paper's text; `vmi paper` builds the PDF) |
+| `analysis/` | statistical tests, hypothesis verdicts labelled with N, tables, figures, post-hoc frequency/memorisation analysis (`frequencies.py`), agent process counts from transcripts incl. own label checks (`agent_behaviour.py`), Zhong et al. Clock/Pizza diagnostics (`clock_pizza.py`), the recorded software environment (`environment.py`), and `report.py` (one command refills every marked block, including the paper's text; `vmi paper` builds the PDF) |
 | `pipeline.py` | CLI wrapper (`uv run vmi ...`) |
 
 ## Why these design choices
@@ -56,11 +56,14 @@ flowchart TB
   R²(M̂→M) is invariant to any change of the replacement's basis; soundness R²(M→M̂), pooled over the replacement's
   dimensions, only to orthogonal maps and uniform scaling; HS = 1 exactly under an affine equivalence. A post-hoc
   whitened soundness, invariant in both directions, is in the grader sensitivity analysis (audit 2026-11-22; see
-  `reports/state-of-the-art-review.md`).
+  `reports/state-of-the-art-review.md`). The GL(128) argument covers the residual sites only: at `mlp_post` the MLP's
+  symmetry is permutation and positive per-neuron scaling, so a linear map is wider than needed there, and the
+  matched-neuron correlation is the group-matched secondary metric (audit 3, deviation 10).
 - **float64 grading**: matches the agent's numpy self-test, so numerical cancellations cannot make a model pass the
   self-test and fail grading.
 - **Spec as single source**: the explanation text and the compiler input come from the same dict, so the compiler
-  measures exactly what the explanation determines.
+  builds what the explanation's parameters determine, plus fixed defaults where the explanation is silent (e.g. the
+  ridge read-out, E-paper's equal split of unlisted neurons).
 - **bubblewrap + unix-socket relay**: no Docker, no sudo, no firewall change; the only path out of the sandbox is the
   LLM endpoint, and every request and response body through it is logged (headers excluded).
 - **Credentials outside the sandbox**: the API key is read by the pipeline and handed only to the proxy in WSL; the

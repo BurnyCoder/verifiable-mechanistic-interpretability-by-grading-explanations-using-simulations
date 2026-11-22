@@ -343,7 +343,8 @@ the preregistered threshold stays the analysis default.*
 <!-- END runs -->
 
 **Reading.** Presenting E3 as math or as code, or removing the self-test, does not lower the simulator's HS in these
-single runs. Low effort lowers task accuracy while E3's HS stays high: the replacement has the right frequency
+single runs (audit 3: the run without the self-test still measured accuracy with its own code, so this ablation does
+not remove label feedback). Low effort lowers task accuracy while E3's HS stays high: the replacement has the right frequency
 structure but wrong details (behaviour and mechanism dissociate in this direction too). On the seed-sensitivity targets
 T1, T2 and T-new, E2–E4 reach HS in the range of the reference compiler's builds and W-freq stays low, like the
 compiler's W-freq build (compiler tables above); random, retrain and student baselines exist only for T0, so there is

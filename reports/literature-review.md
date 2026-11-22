@@ -62,7 +62,7 @@ not name the key frequencies cannot reproduce a specific model's hidden states.
 
 | Work | What it adds | Relevance here |
 |---|---|---|
-| Zhong et al. 2023, *The Clock and the Pizza* — [arXiv:2306.17844](https://arxiv.org/abs/2306.17844) | Two algorithms reach perfect accuracy: Clock (logits ≈ cos(w(a+b−c)), needs multiplication) and Pizza (logits ≈ \|cos(w(a−b)/2)\|·cos(w(a+b−c)), needs only \|·\|). Same accuracy but **different logit patterns** (§3.2, "First Evidence for Pizza: Logit Patterns"); also separated by distance irrelevance (computed from the correct-logit matrix, i.e. output-level) and gradient symmetricity (input gradients). Full attention (Nanda's setting) gives Clock. | Existence proof that this task family admits distinct algorithms at equal accuracy, so a replacement must be checked for *which* algorithm it implements. It is **not** a "same outputs, different internals" case: output KL over the full logits would likely separate Clock from Pizza (our expectation, untested). H3's claim that output KL is insufficient rests instead on Tracr (§4) and on near-one-hot targets ([state-of-the-art review §1](state-of-the-art-review.md)). |
+| Zhong et al. 2023, *The Clock and the Pizza* — [arXiv:2306.17844](https://arxiv.org/abs/2306.17844) | Two algorithms reach perfect accuracy: Clock (logits ≈ cos(w(a+b−c)), needs multiplication) and Pizza (logits ≈ \|cos(w(a−b)/2)\|·cos(w(a+b−c)), needs only \|·\|). Same accuracy but **different logit patterns** (§3.2, "First Evidence for Pizza: Logit Patterns"); also separated by distance irrelevance (computed from the correct-logit matrix, i.e. output-level; the decisive factor, §4.1.3) and gradient symmetricity (input gradients). Full attention at Nanda's width typically gives Clock, but not always (a width-1024 model with full attention learned Pizza, App. H). | Existence proof that this task family admits distinct algorithms at equal accuracy, so a replacement must be checked for *which* algorithm it implements. It is **not** a "same outputs, different internals" case: output KL separates the literal builds (reference compiler on T0, W-alg vs E3: paper Appendix A), though not the agents' builds (paper §4.1). Post hoc (audit 3) we apply Zhong et al.'s distance irrelevance: every target is Clock-like, but the replacements built from our true explanations are Pizza-like (paper §5). H3's claim that output KL is insufficient rests instead on Tracr (§4) and on near-one-hot targets ([state-of-the-art review §1](state-of-the-art-review.md)). |
 | Gromov 2023, *Grokking modular arithmetic* — [arXiv:2301.02679](https://arxiv.org/abs/2301.02679) | Closed-form weights for a 2-layer MLP with x² activation: W⁽¹⁾ = cos(2πkn/p + φ), W⁽²⁾ = cos(−2πkq/p − φ₃), with φ₁ + φ₂ = φ₃; works for ReLU empirically at larger width. | A hand-written-weights construction for the same algorithm; template for what a "reference compiler" can do. |
 | Yip, Agrawal, Chan, Gross 2024, *Modular addition without black-boxes* — [arXiv:2412.03773](https://arxiv.org/abs/2412.03773) | ReLU neurons implement a quadrature of ∫ReLU(cos(k(a+b)/2+φ))cos(kc+2φ)dφ ∝ cos(k(a+b−c)); per-neuron phase ψ ≈ 2φ; error bounds. Pizza models, p = 59. | Shows that per-neuron phases are needed for a faithful neuron-level account (our E4 level). |
 | Gross et al. 2024, *Compact proofs of model performance* — [arXiv:2406.11779](https://arxiv.org/abs/2406.11779) | Explanation quality as a trade-off between proof length (FLOPs) and bound tightness; brute force = exact but longest. Max-of-K, not modular addition. | The degenerate "explanation = the weights" endpoint; we report every score against explanation length. |
@@ -110,9 +110,11 @@ alone and measures closeness to the trained model** (searched 2026-11-20; absenc
 - **Causal abstraction** (Geiger et al., [arXiv:2301.04709](https://arxiv.org/abs/2301.04709)) and **causal scrubbing**
   (Chan et al. 2022, [appendix](https://www.lesswrong.com/posts/kcZZAsEjwrbczxN2i/causal-scrubbing-appendix)):
   faithfulness via interchange interventions / resampling ablations. **Sutter et al. 2025**
-  ([arXiv:2507.08802](https://arxiv.org/abs/2507.08802)): with unrestricted non-linear alignment maps any network
-  can be mapped to any algorithm — the alignment class must be justified. This is why our hidden-state metric uses
-  linear maps only.
+  ([arXiv:2507.08802](https://arxiv.org/abs/2507.08802)): under their assumptions (countable inputs, input-injective
+  and strictly output-surjective hidden layers, matchable partial orderings, a network that solves the task), with
+  unrestricted alignment maps any network can be mapped to any algorithm — the alignment class must be decided case
+  by case. This is why our hidden-state metric uses linear maps only (justified by the residual stream's symmetry; at
+  the MLP site linear maps are wider than the neurons' permutation-and-scaling symmetry, paper §3.4).
 - **MIPS** (Michaud et al. 2024, [arXiv:2402.05110](https://arxiv.org/abs/2402.05110)): distils RNNs into Python
   programs; success = program reaches 100 % accuracy.
 - **MIB** (Mueller et al. 2025, [arXiv:2504.13151](https://arxiv.org/abs/2504.13151)): circuit faithfulness
@@ -120,10 +122,12 @@ alone and measures closeness to the trained model** (searched 2026-11-20; absenc
 - **Open Problems in Mechanistic Interpretability** (Sharkey et al. 2025,
   [arXiv:2501.16496](https://arxiv.org/abs/2501.16496)): descriptions should be validated by whether they predict
   counterfactual behaviour; discusses hand-crafting replacement networks, citing Cammarata et al. 2020,
-  [*Curve Detectors*](https://distill.pub/2020/circuits/curve-detectors/) (Distill), which validated its account by
-  substituting handcrafted replacements. The hand-built curve-detector network itself is detailed in
-  [*Curve Circuits*](https://distill.pub/2020/circuits/curve-circuits/) (Cammarata et al., Distill 2021) — our idea,
-  done by hand for one circuit.
+  [*Curve Detectors*](https://distill.pub/2020/circuits/curve-detectors/) (Distill), which Sharkey et al. describe as
+  validating its account with handcrafted replacements; *Curve Detectors* itself only says the circuit was
+  "reimplemented by hand" in the next article. That article,
+  [*Curve Circuits*](https://distill.pub/2020/circuits/curve-circuits/) (Cammarata et al., Distill 2021), builds a
+  hand-crafted curve network from scratch and compares its neurons with InceptionV1's — our idea, done by hand for one
+  circuit.
 - **Parameter decomposition:** APD ([arXiv:2501.14926](https://arxiv.org/abs/2501.14926), "…Minimizing Mechanistic
   Description Length") fits replacement components to the weights and frames this as minimising mechanistic
   description length; SPD ([arXiv:2506.20790](https://arxiv.org/abs/2506.20790)) presents itself as a more scalable
@@ -150,8 +154,8 @@ alone and measures closeness to the trained model** (searched 2026-11-20; absenc
 - **Critiques of auto-interp scores:** Heap et al. 2025 (v2 2026, retitled) — fuzzing scores of SAE latents (detection
   in an appendix) are similar for trained and randomised transformers in many settings, with a larger gap for small
   Pythia models ([arXiv:2501.17727](https://arxiv.org/abs/2501.17727)); **Poché et al. 2026 — LLM simulators can bypass
-  explanations** ([arXiv:2609.08585](https://arxiv.org/abs/2609.08585)): in output-simulatability evaluation of text
-  classifiers (a ConSim replication with meaningful class names), explanations added little over no-explanation
+  explanations** ([arXiv:2609.08585](https://arxiv.org/abs/2609.08585)): when LLM simulators predict a text
+  classifier's outputs from concept explanations (a ConSim replication with meaningful class names), explanations added little over no-explanation
   baselines because simulators can solve the task from the class names; they
   recommend label-leakage baselines, multiple simulators, enough seeds and novel tasks;
   Lermen et al. 2025 — explainer and simulator can collude via steganography
@@ -167,7 +171,7 @@ controls**. The contribution is that combination and a careful validation of it,
 
 | Resource | Licence | Use |
 |---|---|---|
-| `BurnyCoder/grokking-modular-addition-runs` ([HF](https://huggingface.co/BurnyCoder/grokking-modular-addition-runs), public since 2026-10-21): 22 one-layer models trained deterministically — 14 with the paper's settings (11 seeds `wd1_s0`–`wd1_s10`, plus 3 initialisations on one split, `split0_init100`–`102`), 5 with weight decay 0 (`wd0_s*`), 3 random-label controls (`rand_s*`); 40,000 steps (the official code defaults to 50,000); 401 checkpoints each | MIT | Targets, retrain baselines, no-mechanism controls |
+| `BurnyCoder/grokking-modular-addition-runs` ([HF](https://huggingface.co/BurnyCoder/grokking-modular-addition-runs), created and uploaded 2026-10-21): 22 one-layer models trained deterministically — 14 with the paper's settings (11 seeds `wd1_s0`–`wd1_s10`, plus 3 initialisations on one split, `split0_init100`–`102`), 5 with weight decay 0 (`wd0_s*`), 3 random-label controls (`rand_s*`); 40,000 steps (the official code defaults to 50,000); 401 checkpoints each | MIT | Targets, retrain baselines, no-mechanism controls |
 | `grokviz` ([GitHub](https://github.com/BurnyCoder/visualizing-grokking-modular-addition-in-transformer)): paper-faithful model, training, Fourier analysis, paper-checkpoint conversion | MIT | Analysis and training code (pinned commit) |
 | Paper mainline checkpoint ([HF mirror](https://huggingface.co/callummcdougall/grokking_full_run_data), byte-identical to [ARENA's](https://huggingface.co/arena-education/grokking_full_run_data)) | none stated | Target T-paper; not redistributed |
 | ARENA 1.5.2 code ([ARENA_materials](https://github.com/ARENA-education/ARENA_materials)) | none | Not copied; its published numbers used as test oracles |
@@ -181,7 +185,7 @@ ML pitfalls* ([arXiv:2108.02497](https://arxiv.org/abs/2108.02497)); Nanda's res
 ([guide](https://neurips.cc/public/guides/PaperChecklist)). Concretely: preregistered hypotheses and falsifiers,
 discriminating controls, explanation-free baselines, contamination controls, and reporting of negative results.
 Contamination: no paper analyses targets T0–T2; their weights and an automated analysis that lists their key
-frequencies have been public on Hugging Face only since 2026-10-21 — after Claude Haiku 5.5's training-data cutoff
+frequencies were uploaded to Hugging Face only on 2026-10-21 — after Claude Haiku 5.5's training-data cutoff
 (June 2026, [models overview](https://platform.claude.com/docs/en/about-claude/models/overview)) — so they cannot be
 in its training data, and the sandbox has no internet access; a held-out target was trained after the protocol freeze. Run `wd1_s0` learned exactly the paper's
 frequencies {14, 35, 41, 42, 52}, so it is not a clean target; it serves as the paper's-twin baseline, not as a target.

@@ -113,8 +113,9 @@ def test_verdict_rules_follow_preregistration_sections_5_and_6():
     assert st.verdict(0.3, True, st.min_p_mann_whitney(3, 9)) == "not supported"
     from vmi.analysis import hypotheses
     H = hypotheses.evaluate(2)["hypotheses"]
-    if "H1" in H:  # §5: HS and KL_out are tested separately, both reported
-        assert set(H["H1"]["verdicts"]) == {"HS", "KL_out"}
+    if "H1" in H:  # §5: HS and KL_out are tested separately, both reported; the E0 clause gets its own verdict (audit 3)
+        assert set(H["H1"]["verdicts"]) == {"HS trend E1→E4", "E0 below E1", "KL_out"}
+        assert H["H1"]["verdicts"]["E0 below E1"].startswith(("observed", "not observed", "not run"))
     if "H2" in H and H["H2"]["N"] == 3:
         assert set(H["H2"]["verdicts"].values()) == {"cannot tell at this N"}
 
@@ -299,3 +300,23 @@ def test_memorisation_pools_the_identical_e0_e1_runs_over_targets():
     if m.get("E1") and m["E1"]["n"] > m["E1"]["n_T0"]:
         assert m["E1"]["targets"][0] == "T0" and "T-paper" in m["E1"]["targets"]
         assert 0 <= m["E1"]["listed"] <= m["E1"]["n"] and 0 < m["chance"] < 1
+
+
+def test_own_label_check_detects_accuracy_computed_without_selftest():
+    """Audit 3: commands that score the network against the task labels without selftest.py are counted."""
+    from vmi.analysis.agent_behaviour import own_label_check
+    assert own_label_check("python3 -c \"from forward import labels; print((lg.argmax(1)==labels()).mean())\"")
+    assert own_label_check("python3 - <<EOF\ny = (inp[:,0]+inp[:,1])%113\nprint((L.argmax(1)==y).mean())\nEOF")
+    assert not own_label_check("python3 selftest.py")  # the provided self-test is counted separately
+    assert not own_label_check("python3 build_weights.py && python3 selftest.py | tail -3")
+    assert not own_label_check("cat EXPLANATION.md")
+    assert not own_label_check(None)
+
+
+def test_jonckheere_is_exact_for_h1s_four_levels_of_three_runs():
+    """Audit 3: H1's 4 × 3 design (369,600 assignments) is enumerated exactly; a perfect order has p = 1/369,600."""
+    import numpy as np
+    from vmi.analysis import stats as st
+    r = st.jonckheere([np.array([1.0, 2, 3]), np.array([4.0, 5, 6]), np.array([7.0, 8, 9]), np.array([10.0, 11, 12])])
+    assert r["method"] == "exact" and r["orderings"] == 369600
+    assert abs(r["p"] - 1 / 369600) < 1e-15

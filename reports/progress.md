@@ -1,5 +1,26 @@
 # Progress
 
+## 2026-11-22 09:00 — third independent audit (deviation 10)
+
+**Done** (no new agent runs, no API spend; N = 3 — not yet N = 10)
+- Audit made without reading the earlier reviews (`reviews/audit-3-2026-11-22.md`): every hypothesis verdict recomputed
+  by an independent script written from the preregistration (all test results reproduce), the primary metric
+  re-implemented (five runs agree to 1e-12), every condition mean and the cost recomputed, all 96 transcripts read
+  for accuracy checks, every citation in the paper, README and both reviews checked against its source on the web.
+- Corrected: H1's verdict now reports its failed "E0 below E1" clause; the T-paper replication of H1 uses every level
+  it ran (E1 < E3 < E4: not supported); H1's trend test is exact; the self-test ablation is shown not to remove label
+  feedback (all three runs measured accuracy with their own code), so the claim built on it is withdrawn; the
+  alignment-class rationale is corrected for `mlp_post`; T1's "fewest frequencies" is a tie; citation wording
+  (Sutter, Poché, Paulo, Huang, Yip, Haklay, Zhong, Cammarata, OpenCode, Qwen3.8 GGUFs).
+- Added (post hoc): Zhong et al.'s Clock/Pizza diagnostics (`vmi clockpizza`): every target is Clock-like and the
+  literal Pizza build Pizza-like (the W-alg control is valid), but the replacements built from the true E1–E3
+  explanations are Pizza-like too, and HS still rates them about 0.9. Own label checks counted in Appendix D.
+
+**Effect:** no primary metric or preregistered test result changed; H1's reported verdict and the T-paper replication
+changed as above.
+
+**Next:** round 3 (N = 10) only when you ask.
+
 ## 2026-11-22 07:00 — second independent audit (deviation 9)
 
 **Done** (no new agent runs, no API spend; N = 3 — not yet N = 10)

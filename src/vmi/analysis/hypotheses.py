@@ -80,9 +80,15 @@ def evaluate(max_round: int) -> dict:
 
         def trend_ok(jt, s):  # §5: one-sided trend p < α and Spearman ρ > 0 with its CI above 0
             return jt["p"] < ALPHA and s["rho"] > 0 and (s["ci"] is None or s["ci"][0] > 0)
-        # §5 tests HS and KL_out "separately, same rule" (deviation 7: both parts are reported, as preregistered)
+        # §5 tests HS and KL_out "separately, same rule" (deviation 7: both parts are reported, as preregistered).
+        # H1's hypothesis also states "E0 … lies below E1"; §5 preregisters no test for that clause, but "supported
+        # requires the stated direction", so the clause gets its own direction-only verdict (deviation 10, audit 3).
+        e0 = _vals(_select(runs, level="E0"))
+        e0_clause = ("not run" if not len(e0) else "observed (direction only, no test preregistered)"
+                     if e0.mean() < groups[0].mean() else "not observed (E0 above E1; direction only, no test preregistered)")
         H["H1"] = {"N": n, "label": _n_label(n),
-                   "verdicts": {"HS": "supported" if trend_ok(jt_hs, sp) else "not supported",
+                   "verdicts": {"HS trend E1→E4": "supported" if trend_ok(jt_hs, sp) else "not supported",
+                                "E0 below E1": e0_clause,
                                 "KL_out": "supported" if trend_ok(jt_kl, sp_kl) else "not supported"},
                    "jt_hs": jt_hs, "jt_neg_kl": jt_kl, "spearman_hs": sp, "spearman_neg_kl": sp_kl,
                    "means_hs": {lv: float(g.mean()) for lv, g in zip(levels, groups)},

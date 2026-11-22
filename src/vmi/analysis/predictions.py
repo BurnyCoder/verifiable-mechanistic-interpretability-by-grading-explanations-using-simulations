@@ -229,7 +229,7 @@ def highlight_rows(max_round: int, target: str = "T0") -> list[dict]:
         ("HS {} with the algorithm only (E1) → {} once the frequencies are named (E2); the AI-free compiler gets {} from E2",
          [m("E1"), m("E2"), c["E2"] and c["E2"]["hs"]]),
         "The score rewards the part of the explanation that pins down this network's mechanism.")
-    add(True, "Right answers, wrong mechanism: caught by HS, missed by output KL",
+    add(True, "Right answers from the wrong key frequencies: caught by HS, missed by output KL",
         ("wrong-frequency explanation: accuracy {}, output KL {} (true E3: {}), but HS {} (true E3: {})",
          [m("W-freq", "accuracy"), m("W-freq", "kl_out"), m("E3", "kl_out"), m("W-freq"), m("E3")]),
         "Checking only the answers would rate a wrong explanation as good as a true one.")
@@ -256,12 +256,14 @@ def highlight_rows(max_round: int, target: str = "T0") -> list[dict]:
              [np.mean([r["hs_T0"] for r in rows]), max(max(r["hs_wrong"].values()) for r in rows), len(rows[0]["hs_wrong"])]),
             "The score was specific to the network that was explained.")
     add(True, "Holds on a network trained after the protocol was frozen",
-        ("T-new: HS {} (E4) vs {} (wrong frequencies)", [m("E4", t="T-new"), m("W-freq", t="T-new")]),
+        ("T-new: HS {} (E3) and {} (E4) vs {} (wrong frequencies)",
+         [m("E3", t="T-new"), m("E4", t="T-new"), m("W-freq", t="T-new")]),
         "Prompts and templates were frozen before this network was trained, so they cannot have been tuned to it.")
     add(False, "Cannot tell the Clock algorithm from the Pizza algorithm",
         ("Pizza explanation (W-alg): HS {}; true explanation (E3): HS {}", [m("W-alg"), m("E3")]),
         "Both builds use the same frequency features; HS, a linear fit over whole layers, did not separate what is "
-        "computed from them (difference within noise at N = 3).")
+        "computed from them (difference within noise at N = 3). Post hoc, Zhong et al.'s output diagnostic finds T0 "
+        "Clock-like but the true-explanation rebuilds Pizza-like too, and HS still rates them high (paper §5).")
     add(False, "Cannot tell a correct neuron table from a shuffled one",
         ("shuffled table (W-scramble): HS {}; true table (E4): HS {}; matched-neuron correlation {} vs {} does separate them",
          [m("W-scramble"), m("E4"), m("W-scramble", "matched_neuron_corr"), m("E4", "matched_neuron_corr")]),
@@ -316,8 +318,11 @@ def replication_rows(max_round: int) -> list[dict]:
     over the true levels each target has, H2 by the one-sided Mann–Whitney E3 > W-freq (the only wrong explanation run
     on these targets), H3 by its rule on condition means.
 
-    The first row is T0 restricted to E2–E4 (post hoc, audit 2026-11-22 second pass): the seed targets ran no E1, so
-    their trend test covers only the fine E2 → E4 part of the ladder; the T0 row shows what the same test gives there."""
+    The first row is T0 restricted to E2–E4 (post hoc, audit 2026-11-22 second pass): T1, T2 and T-new ran no E1, so
+    their trend test covers only the fine E2 → E4 part of the ladder; the T0 row shows what the same test gives there.
+    Audit 3 (deviation 10): the trend test uses every ladder level E1–E4 a target ran, as §5's "same tests" require;
+    T-paper ran E1, so its test is E1 < E3 < E4 (earlier versions dropped E1 and tested E3 < E4 only). H3's "true
+    range" stays E2–E4, as §5 defines it."""
     from vmi.analysis import stats as st
     runs = load_runs(max_round)
     out = []
@@ -328,6 +333,7 @@ def replication_rows(max_round: int) -> list[dict]:
         if not hs or not wf:
             continue
         true_lv = [lv for lv in ("E2", "E3", "E4") if lv in hs]  # §5 compares with condition means, not single runs
+        trend_lv = [lv for lv in ("E1", "E2", "E3", "E4") if lv in hs]  # H1's ladder levels this target ran
         kl_true = [float(np.mean([r["kl_out"] for r in _select(runs, target=t, level=lv)])) for lv in true_lv]
         w_agree = float(np.mean([r["argmax_agreement"] for r in wf]))
         w_kl, w_hs = float(np.mean([r["kl_out"] for r in wf])), float(np.mean([r["hs"] for r in wf]))
@@ -338,8 +344,8 @@ def replication_rows(max_round: int) -> list[dict]:
             "target": t + (" (flagged: memorisation)" if t == "T-paper" else
                            " (E2–E4 only; post hoc, for comparison)" if t == "T0" else ""),
             "hs_by_level": ", ".join(f"{lv} {_f(v)}" for lv, v in hs.items()),
-            "h1": (("means rise" if _mono([hs[lv] for lv in true_lv]) else "means do not rise") + f" {'→'.join(true_lv)}; "
-                   + _trend_test([np.array([r["hs"] for r in _select(runs, target=t, level=lv)]) for lv in true_lv])),
+            "h1": (("means rise" if _mono([hs[lv] for lv in trend_lv]) else "means do not rise") + f" {'→'.join(trend_lv)}; "
+                   + _trend_test([np.array([r["hs"] for r in _select(runs, target=t, level=lv)]) for lv in trend_lv])),
             "h2": (f"{hs['E3'] - w_hs:+.3f}; {h2v}" + (f" (p {_f(mw['p'])})" if mw["p"] is not None else "")) if "E3" in hs else "–",
             "h3_observed": f"agreement {_f(w_agree)}, KL {_f(w_kl)} (true max {_f(max(kl_true))}), HS {_f(w_hs)}",
             "h3": _match({"agreement < 0.99": w_agree >= 0.99, "KL above the true range": w_kl <= max(kl_true),

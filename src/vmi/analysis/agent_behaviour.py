@@ -11,6 +11,9 @@ the one whose self-test accuracy or least-squares fit is best. Both criteria use
 never the target, so no target information leaks; but the score then reflects explanation plus agent repair. Claude's
 thinking is not returned by the API (display "omitted"), so only the narration between tool calls is visible: a sweep
 the agent ran without announcing it is missed, and an announcement is not proof that a sweep ran.
+Audit 3 (2026-11-22): also counts own label checks — accuracy computed without selftest.py, through forward.py's
+`labels()` or (a + b) % 113. All three runs of the self-test ablation did this, so that ablation removed the script and
+the instruction to maximise accuracy, not the label feedback (the labels are the task itself).
 Source: Claude Code stream-json event format (https://code.claude.com/docs/en/headless).
 """
 
@@ -31,16 +34,33 @@ RES = REPO_ROOT / "results"
 # "no tuning" / "without tuning" are not counted
 SWEEP = re.compile(r"(?<!no )(?<!without )\b(sweep\w*|grid[- ]search\w*|tun(?:e|es|ed|ing)\b|scan(?:s|ned|ning)? (?:over|the)"
                    r"|try(?:ing)? (?:a few|several|different|other|a range of) (?:values|settings|scales|biases|amplitudes|offsets))", re.I)
-DEFINITION = ("Self-test runs: commands that run selftest.py with python. Announced sweep or tuning: the agent's narration "
+# Own label checks (audit 3, 2026-11-22): a command that scores the network against the task labels without
+# selftest.py — it calls forward.py's labels() or compares an argmax with (a + b) % 113 itself. The labels are the task
+# itself, so removing selftest.py (the self-test ablation) cannot remove this feedback.
+OWN_CHECK = re.compile(r"labels\(")
+OWN_MOD = re.compile(r"%\s*(?:113|P)\b")  # "(a + b) % 113", or "% P" with P = 113
+DEFINITION = ("Self-test runs: commands that run selftest.py with python. Own label checks: commands that score the network "
+              "against the task labels without selftest.py (they call forward.py's labels() or compare an argmax with "
+              "(a + b) % 113). Announced sweep or tuning: the agent's narration "
               "before its closing message mentions sweeping, tuning, a grid search, scanning over, or trying several values "
               "of a constant (pattern SWEEP in src/vmi/analysis/agent_behaviour.py); this is stated intent, and Claude's "
-              "thinking is not returned by the API. Post hoc, audit 2026-11-22.")
+              "thinking is not returned by the API. Post hoc, audits 2026-11-22.")
+
+
+def own_label_check(cmd: str | None) -> bool:
+    """True if a shell command scores the network against the task labels without running selftest.py."""
+    c = cmd or ""
+    if "selftest" in c:
+        return False
+    return bool(OWN_CHECK.search(c) or ("argmax" in c and OWN_MOD.search(c)))
 
 
 def _stats(rows: list[dict]) -> dict:
     st = [r["selftest_runs"] for r in rows]
     return {"runs": len(rows), "selftest_median": float(np.median(st)), "selftest_min": int(min(st)), "selftest_max": int(max(st)),
-            "multi_selftest": sum(x >= 2 for x in st), "sweep_said": sum(r["sweep_said"] for r in rows)}
+            "multi_selftest": sum(x >= 2 for x in st), "sweep_said": sum(r["sweep_said"] for r in rows),
+            "own_check": sum(r["own_label_checks"] > 0 for r in rows),
+            "any_label_check": sum(r["own_label_checks"] > 0 or r["selftest_runs"] > 0 for r in rows)}
 
 
 def analyse(max_round: int) -> dict:
@@ -56,13 +76,17 @@ def analyse(max_round: int) -> dict:
         said = [s for _, s in says[:-1] if SWEEP.search(s)]  # narration before the closing message
         rows.append({"run_id": r["run_id"], "target": r["target"], "level": r["level"], "variant": r.get("variant", ""),
                      "selftest_runs": sum("selftest" in (c or "") and "python" in (c or "") for c in calls),
+                     "own_label_checks": sum(own_label_check(c) for c in calls),
                      "tool_calls": len(calls), "sweep_said": bool(said),
                      "sweep_quote": " ".join(said[0].split())[:240] if said else ""})
     by = defaultdict(list)
     for x in rows:
         by[x["level"]].append(x)
     from vmi.analysis.tables import LEVEL_ORDER
+    nst = [x for x in rows if x["variant"] == "noselftest"]  # the self-test ablation (E3 on T0)
     out = {"round": max_round, "definition": DEFINITION, "summary": _stats(rows) if rows else {},
+           "noselftest": {"runs": len(nst), "own_check": sum(x["own_label_checks"] > 0 for x in nst),
+                          "sweep_said": sum(x["sweep_said"] for x in nst)},
            "by_level": {lv: _stats(by[lv]) for lv in sorted(by, key=lambda lv: LEVEL_ORDER.index(lv) if lv in LEVEL_ORDER else 99)},
            "rows": rows}
     (RES / "agent_behaviour.json").write_text(json.dumps(out, indent=2), encoding="utf-8", newline="\n")

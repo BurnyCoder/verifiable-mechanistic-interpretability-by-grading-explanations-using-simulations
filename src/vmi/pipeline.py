@@ -289,6 +289,7 @@ def main(argv: list[str] | None = None) -> None:
     an.add_argument("round", type=int)
     sub.add_parser("regrade", help="recompute secondary metrics of graded runs from saved weights")
     sub.add_parser("diagnose", help="re-run agents' build scripts with single edits to find what made them fail")
+    sub.add_parser("clockpizza", help="Zhong et al. Clock/Pizza diagnostics of the targets and T0 builds (post hoc, audit 3)")
     sub.add_parser("paper", help="build reports/paper.pdf from reports/paper/paper.md")
     sub.add_parser("sensitivity", help="grader and explainer sensitivity analyses (no agent)").add_argument("round", type=int)
     pub = sub.add_parser("publish", help="export artefacts (redacted, scanned) and upload them to the Hugging Face Hub")
@@ -367,6 +368,9 @@ def main(argv: list[str] | None = None) -> None:
         from vmi.analysis.diagnose import diagnose_all
         for d in diagnose_all():
             log.info("diagnosed %s: %s", d["run_id"], [(v["name"], round(v["accuracy"], 4)) for v in d["variants"]])
+    elif a.cmd == "clockpizza":  # post hoc (audit 3): is T0 a Clock model? → results/controls/clock_pizza.json
+        from vmi.analysis.clock_pizza import analyse as clock_pizza
+        log.info("clock/pizza diagnostics: %s", clock_pizza(settings))
     elif a.cmd == "analyse":  # hypotheses + figures + every table in README/reports/paper, from results/
         from vmi.analysis.report import regenerate
         log.info("report: %s", json.dumps(regenerate(a.round)))

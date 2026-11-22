@@ -36,7 +36,8 @@ def blocks(max_round: int) -> dict[str, str]:
            "ablations-T0": tables.ablations_table(max_round, "T0"), "highlights": tables.highlights_table(max_round),
            "outputs-T0": tables.outputs_table(max_round, "T0"), "agent-examples": tables.agent_examples_table(max_round),
            "agent-words": tables.agent_words_md(max_round),
-           "kl-calibration-T0": tables.kl_calibration_table(max_round, "T0"), "agent-behaviour": tables.agent_behaviour_table()}
+           "kl-calibration-T0": tables.kl_calibration_table(max_round, "T0"), "agent-behaviour": tables.agent_behaviour_table(),
+           "clock-pizza-T0": tables.clock_pizza_table()}
     for t in TARGETS:
         if (REPO_ROOT / "results" / "compiler" / t).exists():
             out[f"compiler-{t}"] = tables.compiler_table(t)

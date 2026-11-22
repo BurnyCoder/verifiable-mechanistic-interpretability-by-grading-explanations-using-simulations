@@ -190,7 +190,7 @@ def key_results(max_round: int, target: str = "T0") -> str:
                    + ("" if e0 is None else "; E0 lies above E1, against the preregistered prediction." if e0 > m("E1")
                       else "; E0 lies below E1, as predicted."))
     if m("W-freq") is not None:
-        out.append(f"- **Correct behaviour, wrong mechanism is caught by HS, not by output KL:** the wrong-frequency "
+        out.append(f"- **Correct behaviour from the wrong key frequencies is caught by HS, not by output KL:** the wrong-frequency "
                    f"replacement reaches KL {_f(m('W-freq', 'kl_out'))} nats (true E3: {_f(m('E3', 'kl_out'))}) but HS "
                    f"{m('W-freq'):.2f}.")
     b = RES / "baselines" / f"{target}.json"
@@ -208,7 +208,7 @@ def key_results(max_round: int, target: str = "T0") -> str:
         out.append(f"- **Negative result:** the primary HS does not separate the Pizza explanation (W-alg, HS {m('W-alg'):.2f}) "
                    f"or the scrambled neuron table (W-scramble, HS {m('W-scramble'):.2f}) from the true explanations; the "
                    f"secondary matched-neuron correlation separates W-scramble ({_f(m('W-scramble', 'matched_neuron_corr'), 2)}) "
-                   f"from E4 ({_f(m('E4', 'matched_neuron_corr'), 2)}).")
+                   f"from E4 ({_f(m('E4', 'matched_neuron_corr'), 2)})." + _clock_pizza_sentence(m))
     mem = memorisation(max_round)
     if mem and mem.get("E1"):
         def per_level(lv):  # replicates differ (some E0 runs build blocks of consecutive frequencies instead)
@@ -349,6 +349,15 @@ def inline_values(max_round: int) -> dict[str, str]:
     g24 = [np.array([r["hs"] for r in _select(runs, level=lv)]) for lv in ("E2", "E3", "E4")]
     if all(len(g) for g in g24):
         v["t0-e24"] = _trend_test(g24)
+    gtp = [np.array([r["hs"] for r in _select(runs, target="T-paper", level=lv)]) for lv in ("E1", "E3", "E4")]
+    if all(len(g) for g in gtp):  # audit 3: T-paper's preregistered trend test over every ladder level it ran
+        v["tpaper-trend"] = _trend_test(gtp)
+    hm = [np.mean([r["hs"] for r in _select(runs, level=lv)]) for lv in ("E2", "E3", "E4") if _select(runs, level=lv)]
+    if len(hm) == 3:
+        v["hs-e24"] = f"{min(hm):.2f}–{max(hm):.2f}"  # mean HS range of the true explanations that name the frequencies
+    e0v, e1v = _select(runs, level="E0"), _select(runs, level="E1")
+    if e0v and e1v:  # H1's E0 clause (direction only)
+        v["e0-vs-e1"] = (f"E0 {np.mean([r['hs'] for r in e0v]):.3f} vs E1 {np.mean([r['hs'] for r in e1v]):.3f}")
     tr = RES / "controls" / "trajectory_T0.json"
     ctrl = json.loads(tr.read_text()).get("negative_controls_by_level", {}) if tr.exists() else {}
     if ctrl:
@@ -368,11 +377,32 @@ def inline_values(max_round: int) -> dict[str, str]:
         v["wrole-comp-acc"] = f"{json.loads(wc.read_text())['accuracy']:.3f}"
         v["wrole-agent-acc"] = (f"{min(r['accuracy'] for r in wr):.3f}" if f"{min(r['accuracy'] for r in wr):.3f}" == f"{max(r['accuracy'] for r in wr):.3f}"
                                 else f"{min(r['accuracy'] for r in wr):.3f}–{max(r['accuracy'] for r in wr):.3f}")
+    S = clock_pizza_summary()  # post hoc Clock/Pizza diagnostics (audit 3)
+    if S and "T0" in S["targets"]:
+        tq = [r["distance_irrelevance"] for r in S["targets"].values()]
+        v["cp-t0"] = f"{S['targets']['T0']['distance_irrelevance']:.2f}"
+        v["cp-targets"] = f"{min(tq):.2f}–{max(tq):.2f}"
+        if "W-alg" in S["compiler"]:
+            v["cp-walg"] = f"{S['compiler']['W-alg']['distance_irrelevance']:.3f}"
+        aq = {lv: [x["distance_irrelevance"] for x in S["agent"].get(lv, [])] for lv in ("E1", "E2", "E3", "E4")}
+        if all(aq.values()):
+            e13 = [float(np.mean(aq[lv])) for lv in ("E1", "E2", "E3")]
+            v["cp-e13"] = f"{min(e13):.2f}–{max(e13):.2f}"
+            v["cp-e4"] = f"{np.mean(aq['E4']):.2f}"
+        cq = [S["compiler"][lv]["distance_irrelevance"] for lv in ("E1", "E2", "E3", "E4") if lv in S["compiler"]]
+        if cq:
+            v["cp-comp"] = f"{min(cq):.2f}–{max(cq):.2f}"
     beh = RES / "agent_behaviour.json"
     if beh.exists():
         B = json.loads(beh.read_text())["summary"]
         v["tune-said"] = of(B["sweep_said"], B["runs"])
         v["selftest-median"] = f"{B['selftest_median']:g}"
+        if "own_check" in B:  # audit 3: accuracy computed without selftest.py; any label check at all
+            v["own-check"] = of(B["own_check"], B["runs"])
+            v["any-label"] = of(B["any_label_check"], B["runs"])
+        ns = json.loads(beh.read_text()).get("noselftest", {})
+        if ns.get("runs"):
+            v["noselftest-own"] = of(ns["own_check"], ns["runs"])
     for lv, key in (("E3", "e3"), ("W-freq", "wfreq")):  # low-effort runs whose answers broke (task accuracy < 0.95)
         rs = [r for r in runs if r["target"] == "T0" and r["level"] == lv and r.get("variant") == "effort-low" and r["model"] == MAIN_MODEL]
         v[f"lowfx-{key}"] = f"{_w(sum(r['accuracy'] < 0.95 for r in rs))} of {_w(len(rs))}"
@@ -537,13 +567,13 @@ def agent_behaviour_table() -> str:
         return "_not computed yet_"
     d = json.loads(p.read_text())
     rows = ["| Explanation | runs | self-test runs per run (median, range) | runs whose narration states a sweep or tuning | "
-            "runs with ≥ 2 self-test runs |", "|---|---|---|---|---|"]
+            "runs with ≥ 2 self-test runs | runs with own label checks (no selftest.py) |", "|---|---|---|---|---|---|"]
     for lv, s in d["by_level"].items():
         rows.append(f"| {lv} | {s['runs']} | {s['selftest_median']:g} ({s['selftest_min']}–{s['selftest_max']}) | "
-                    f"{s['sweep_said']} | {s['multi_selftest']} |")
+                    f"{s['sweep_said']} | {s['multi_selftest']} | {s.get('own_check', '–')} |")
     S = d["summary"]
     rows.append(f"| **all** | {S['runs']} | {S['selftest_median']:g} ({S['selftest_min']}–{S['selftest_max']}) | "
-                f"{S['sweep_said']} | {S['multi_selftest']} |")
+                f"{S['sweep_said']} | {S['multi_selftest']} | {S.get('own_check', '–')} |")
     return "\n".join(rows) + "\n\n*" + d["definition"] + "*"
 
 
@@ -647,6 +677,65 @@ def cost_table() -> str:
     rows.append(f"| **total** | | {sum(e['runs'] for e in c.values())} | {sum(e['requests'] for e in c.values())} | "
                 f"**{sum(e['spend'] for e in c.values()):.3f}** |")
     return "\n".join(rows)
+
+
+def clock_pizza_summary() -> dict | None:
+    """Zhong et al. Clock/Pizza diagnostics (post hoc, audit 3) from results/controls/clock_pizza.json: per target, and
+    per T0 explanation the reference-compiler build and the agent replacements."""
+    p = RES / "controls" / "clock_pizza.json"
+    if not p.exists():
+        return None
+    rows = json.loads(p.read_text(encoding="utf-8"))["rows"]
+    ag = defaultdict(list)
+    for r in rows:
+        if r["kind"] == "agent":
+            ag[r["name"].split(" ")[1]].append(r)  # name "T0 <level> s<seed>"
+    return {"targets": {r["name"]: r for r in rows if r["kind"] == "target"},
+            "compiler": {r["name"].split(" ", 1)[1]: r for r in rows if r["kind"] == "compiler"}, "agent": dict(ag)}
+
+
+def clock_pizza_table() -> str:
+    """Distance irrelevance and gradient symmetricity (Zhong et al. 2023) of the targets and of every T0 build."""
+    S = clock_pizza_summary()
+    if not S:
+        return "_not computed yet (`vmi clockpizza`)_"
+    q, g, gf = "distance_irrelevance", "gradient_symmetricity", "gradient_symmetricity_fixed_attention"
+    rng = lambda xs: f"{np.mean(xs):.2f} ({min(xs):.2f} to {max(xs):.2f})"  # noqa: E731  mean (range) over runs
+    out = ["| Network | distance irrelevance q (Clock ≈ 1, Pizza ≈ 0) | gradient symmetricity | same, attention held fixed (variant) | task accuracy |",
+           "|---|---|---|---|---|"]
+    for t, r in S["targets"].items():
+        out.append(f"| target {t} | {r[q]:.2f} | {r[g]:+.2f} | {r[gf]:+.2f} | {r['accuracy']:.4f} |")
+    for lv in LEVEL_ORDER:
+        if lv in S["compiler"]:
+            r = S["compiler"][lv]
+            out.append(f"| T0 {lv}, reference compiler | {r[q]:.2f} | {r[g]:+.2f} | {r[gf]:+.2f} | {r['accuracy']:.4f} |")
+        if lv in S["agent"]:
+            a = S["agent"][lv]
+            out.append(f"| T0 {lv}, agent (n = {len(a)}) | {rng([x[q] for x in a])} | {rng([x[g] for x in a])} | "
+                       f"{rng([x[gf] for x in a])} | {np.mean([x['accuracy'] for x in a]):.4f} |")
+    note = ("*Zhong et al. (2023), Defs. 4.1–4.2: distance irrelevance q compares the spread of the correct-answer logit "
+            "within one difference a − b with its spread over all inputs (§4.1.2: 0–0.4 typical of Pizza, 0.4–1 of Clock; "
+            "the decisive diagnostic, §4.1.3); gradient symmetricity is the mean cosine of the logit's gradients with "
+            "respect to the input embeddings of a and b (Pizza > 0.98). The variant holds the attention pattern fixed: the "
+            "hand-built replacements compute near-constant attention from their embeddings, and the full gradient then "
+            "points off the data manifold. A build that answers almost nothing correctly (compiler W-role) has no "
+            "meaningful q. Post hoc (audit 3); `src/vmi/analysis/clock_pizza.py`, `results/controls/clock_pizza.json`.*")
+    return "\n".join(out) + "\n\n" + note
+
+
+def _clock_pizza_sentence(m) -> str:
+    """Post-hoc Clock/Pizza diagnostic for the key results (audit 3); empty until `vmi clockpizza` has run."""
+    S = clock_pizza_summary()
+    if not S or "T0" not in S["targets"] or not all(lv in S["agent"] for lv in ("E1", "E2", "E3", "E4")):
+        return ""
+    aq = {lv: float(np.mean([x["distance_irrelevance"] for x in S["agent"][lv]])) for lv in ("E1", "E2", "E3", "E4")}
+    e13 = [aq[lv] for lv in ("E1", "E2", "E3")]
+    return (f" Post hoc, by Zhong et al.'s distance irrelevance (≥ 0.4 Clock-like, < 0.4 Pizza-like) T0 is a Clock "
+            f"({S['targets']['T0']['distance_irrelevance']:.2f}) and the literal Pizza build a Pizza "
+            f"({S['compiler']['W-alg']['distance_irrelevance']:.3f}), but the agents' replacements from the true E1–E3 are "
+            f"Pizza-like too (means {min(e13):.2f}–{max(e13):.2f}; E4 {aq['E4']:.2f}), and HS still rates the E2–E4 ones "
+            f"{m('E2'):.2f}–{max(m('E3'), m('E4')):.2f}: HS does not see the Clock/Pizza distinction, even among the true "
+            f"explanations.")
 
 
 def kl_calibration_table(max_round: int, target: str = "T0") -> str:

@@ -5,8 +5,8 @@ Newest entries at the bottom. Per-experiment learnings live in each experiment's
 
 ## From the literature and SOTA review (2026-11-21)
 
-- **Same behaviour ≠ same mechanism is documented in exactly this task family.** Clock vs Pizza networks
-  ([Zhong et al. 2023](https://arxiv.org/abs/2306.17844)) and Tracr's compressed models (layer cosine ≈ 0.8 at full
+- **Same accuracy ≠ same mechanism is documented in exactly this task family.** Clock vs Pizza networks
+  ([Zhong et al. 2023](https://arxiv.org/abs/2306.17844); same accuracy, different logit patterns) and Tracr's compressed models (layer cosine ≈ 0.8 at full
   accuracy; [Lindner et al. 2023](https://arxiv.org/abs/2301.05062)) motivated a hidden-state metric next to output KL.
 - **The alignment class must match the model's symmetries.** Without LayerNorm an invertible linear change of the
   residual basis (compensated in the reading and writing weights) leaves the function unchanged, so CKA/Procrustes
@@ -20,7 +20,7 @@ Newest entries at the bottom. Per-experiment learnings live in each experiment's
   `test_soundness_depends_on_the_replacement_basis_and_whitened_soundness_does_not`.
 - **Agents can recall published circuits** ([Haklay et al. 2026](https://arxiv.org/abs/2603.20101)); the paper's
   frequencies {14, 35, 41, 42, 52} are public. Hence targets analysed in no paper (weights and key frequencies public on
-  Hugging Face only since 2026-10-21, after Claude Haiku 5.5's June 2026 training-data cutoff; no internet in the
+  Hugging Face only on 2026-10-21, after Claude Haiku 5.5's June 2026 training-data cutoff; no internet in the
   sandbox) and a held-out target trained after the freeze.
 - **Simulators can ignore explanations** ([Poché et al. 2026](https://arxiv.org/abs/2609.08585)) → E0 (no explanation)
   and E1 (no model-specific numbers) controls.
@@ -292,3 +292,30 @@ deviation 9).
 - **Small details that were simply wrong:** "Claude Code has no step cap" (it has `--max-turns`, unused here); Yip et
   al. give no closed-form construction; two cited works were missing from the reference list; the cited Heap et al.
   title belongs to a later arXiv version; the exact JT branch silently fell back to Monte-Carlo for nine values.
+
+## Third independent audit (2026-11-22, deviation 10)
+
+- **Recompute verdicts from the preregistration, not from the code.** An independent script written from §5 (exact
+  permutation tests, scipy exact rank tests) reproduced every stored test result, and still found two reporting
+  errors: H1's hypothesis has a clause ("E0 lies below E1") with no preregistered test, and the verdict silently
+  dropped it although the clause fails; the T-paper replication left out the E1 runs it had. *Learning:* every clause
+  of a hypothesis needs a verdict, even a direction-only one, and "the same tests" means the same levels.
+- **An ablation must remove what it claims to remove.** The self-test ablation took away `selftest.py`, but the task
+  labels are the task itself and `forward.py` exposes them; all three agents measured accuracy with their own code.
+  The counter of "self-test runs" only counted `selftest.py`, so it hid this. *Learning:* read the transcripts of an
+  ablation before interpreting it, and count the behaviour (accuracy checks), not the tool.
+- **A symmetry argument covers only the sites it was made for.** "The residual stream is defined up to GL(128), so use
+  linear maps and no wider" was applied to `mlp_post` too, where the symmetry is permutation and positive scaling; that
+  wider alignment is a plausible reason the scrambled neuron table passes HS. *Learning:* derive the alignment class
+  per site.
+- **Test the ground truth of a control.** W-alg assumes T0 is a Clock. Zhong et al.'s distance irrelevance confirms
+  it, and confirms that the literal Pizza build is a Pizza; but it also shows that the replacements built from the
+  *true* explanations are Pizza-like: the rendered explanations prescribe the same MLP neuron function as Pizza and do
+  not convey what makes T0 a Clock. *Learning:* measure the property a wrong explanation is supposed to get wrong on
+  the true explanation's replacements as well.
+- **Gradient-based diagnostics can point off the data manifold.** Hand-built replacements compute near-constant
+  attention from their embeddings; the full gradient through the attention scores then makes Zhong et al.'s gradient
+  symmetricity strongly negative even for a literal Pizza. Holding the pattern fixed recovers the expected value.
+  *Learning:* prefer output-level diagnostics (distance irrelevance) and check gradient diagnostics on a known case.
+- **Ties count.** "T1 has the fewest key frequencies" was a tie with `wd1_s9`; "public since" was a creation date.
+  *Learning:* state the selection rule and the evidence exactly.

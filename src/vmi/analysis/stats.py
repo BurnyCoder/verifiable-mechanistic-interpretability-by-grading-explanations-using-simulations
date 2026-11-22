@@ -47,24 +47,42 @@ def _splits(items: list[int], sizes: list[int]):
             yield [first, *tail]
 
 
-def jonckheere(groups: list[np.ndarray], n_perm: int = 20000) -> dict:
+def _jt_all(pooled: np.ndarray, sizes: list[int]) -> np.ndarray:
+    """J for every distinct assignment of the pooled values to groups of the given sizes (vectorised).
+
+    Local explanation: one label row per assignment (group index of each value, from `_splits`); with
+    C[u, v] = 1 if pooled[u] < pooled[v] (½ if equal), J = Σ_{u, v} C[u, v]·[label_u < label_v], the same count as
+    `jt_statistic`. Rows are processed in chunks to bound memory."""
+    n = len(pooled)
+    rows = []
+    for split in _splits(list(range(n)), sizes):
+        lab = np.empty(n, dtype=np.int8)
+        for g, idx in enumerate(split):
+            lab[list(idx)] = g
+        rows.append(lab)
+    L = np.array(rows)
+    C = (pooled[:, None] < pooled[None, :]) + 0.5 * (pooled[:, None] == pooled[None, :])
+    out = [(C * (L[i:i + 20000, :, None] < L[i:i + 20000, None, :])).sum(axis=(1, 2)) for i in range(0, len(L), 20000)]
+    return np.concatenate(out)
+
+
+def jonckheere(groups: list[np.ndarray], n_perm: int = 20000, max_exact: int = 400000) -> dict:
     """One-sided JT test for an increasing trend; p-value by exact or Monte-Carlo permutation of group labels.
 
-    Exact (every distinct assignment of the pooled values to groups) when there are at most 50,000 assignments,
-    e.g. 3 levels × 3 runs = 1,680; Monte-Carlo with n_perm label shuffles otherwise (4 levels × 3 runs = 369,600).
+    Exact (every distinct assignment of the pooled values to groups) when there are at most `max_exact` assignments,
+    e.g. 3 levels × 3 runs = 1,680 and 4 levels × 3 runs = 369,600; Monte-Carlo with n_perm label shuffles otherwise.
     Audit 2026-11-22 (second pass): the exact branch used to enumerate index permutations only for ≤ 8 values, so the
-    9-value case fell back to Monte-Carlo despite this docstring; it now enumerates assignments with `_splits`."""
+    9-value case fell back to Monte-Carlo despite this docstring; it now enumerates assignments with `_splits`.
+    Audit 3 (deviation 10): the exact limit was 50,000, so H1's 4 × 3 design used Monte-Carlo (p = 1.0e-4, one hit in
+    20,000); the vectorised `_jt_all` makes it exact."""
     sizes = [len(g) for g in groups]
     pooled = np.concatenate([np.asarray(g, dtype=float) for g in groups])
     obs = jt_statistic(groups)
     n_orderings = math.factorial(len(pooled)) // math.prod(math.factorial(s) for s in sizes)
     cuts = np.cumsum(sizes)[:-1]
-    if n_orderings <= 50000:  # exact: enumerate distinct assignments of values to groups
-        count = total = 0
-        for split in _splits(list(range(len(pooled))), sizes):
-            total += 1
-            count += jt_statistic([pooled[list(idx)] for idx in split]) >= obs - 1e-12
-        return {"J": obs, "p": count / total, "method": "exact", "orderings": n_orderings}
+    if n_orderings <= max_exact:  # exact: enumerate distinct assignments of values to groups
+        J = _jt_all(pooled, sizes)
+        return {"J": obs, "p": float((J >= obs - 1e-12).mean()), "method": "exact", "orderings": n_orderings}
     rng = np.random.default_rng(RNG_SEED)
     hits = sum(jt_statistic(np.split(rng.permutation(pooled), cuts)) >= obs - 1e-12 for _ in range(n_perm))
     return {"J": obs, "p": (hits + 1) / (n_perm + 1), "method": f"monte-carlo {n_perm}", "orderings": n_orderings}
