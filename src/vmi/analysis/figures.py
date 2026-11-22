@@ -175,6 +175,7 @@ def fig_length(max_round: int, target: str = "T0") -> Path | None:
     runs = [r for r in load_runs(max_round) if not r.get("failed")]
     fig, ax = plt.subplots(figsize=(6.4, 3.8))
     any_point = False
+    placed = []  # label positions already used, so neighbouring labels do not overlap
     for lv in LADDER:
         L = _json(RES / "explanations" / target / lv / "length.json")
         if not L:
@@ -188,8 +189,12 @@ def fig_length(max_round: int, target: str = "T0") -> Path | None:
         if rs:
             ax.scatter([L["chars"]] * len(rs), [r["hs"] for r in rs], s=40, color=col, edgecolor=SURFACE, linewidth=1.5, zorder=4)
             any_point = True
-        ax.annotate(lv, (L["chars"], c["hs"] if c else rs[0]["hs"] if rs else 0), xytext=(7, 5), textcoords="offset points",
-                    fontsize=7, color=INK2)
+        y = c["hs"] if c else rs[0]["hs"] if rs else 0
+        near = any(abs(np.log(L["chars"] / x)) < 0.3 and abs(y - yy) < 0.1 for x, yy in placed)  # a label close by
+        left = lv in ("E1", "E2", "E3", "E4")  # true explanations labelled on the left, controls on the right
+        ax.annotate(lv, (L["chars"], y), xytext=(-7, 5) if left else (7, -13) if near else (7, 5), textcoords="offset points",
+                    fontsize=7, color=INK2, ha="right" if left else "left")
+        placed.append((L["chars"], y))
     if not any_point:
         plt.close(fig)
         return None
@@ -215,6 +220,7 @@ def fig_simulators(max_round: int, target: str = "T0") -> Path | None:
         return None
     fig, ax = plt.subplots(figsize=(6.4, 3.6))
     markers = ["o", "s", "^", "v"]
+    n_of = {m: max(len(_select(runs, target=target, level=lv, model=m)) for lv in levels) for m in models}  # runs per condition
     for j, m in enumerate(models):
         off = (j - (len(models) - 1) / 2) * 0.12
         for i, lv in enumerate(levels):
@@ -227,10 +233,10 @@ def fig_simulators(max_round: int, target: str = "T0") -> Path | None:
     ax.set_xticks(range(len(levels)), levels)
     ax.set_ylim(-0.02, 1.02)
     ax.set_ylabel("HS ↑")
-    h = [plt.Line2D([], [], marker=markers[j], color=SERIES[j], linestyle="", label=m) for j, m in enumerate(models)]
+    h = [plt.Line2D([], [], marker=markers[j], color=SERIES[j], linestyle="", label=f"{m} (N = {n_of[m]} per condition)") for j, m in enumerate(models)]
     h.append(plt.Line2D([], [], marker="D", markerfacecolor="none", color=INK2, linestyle="", label="reference compiler"))
     ax.legend(handles=h, loc="center left", bbox_to_anchor=(1.0, 0.5), fontsize=7)
-    ax.set_title(f"Target {target}: simulator capability ablation (round {max_round})", loc="left")
+    ax.set_title(f"Target {target}: simulator capability ablation (rounds 1–{max_round}; local runs stopped after round 1)", loc="left")
     return _save(fig, f"simulators_{target}")
 
 
