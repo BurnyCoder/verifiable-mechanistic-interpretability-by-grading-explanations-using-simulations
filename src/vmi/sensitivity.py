@@ -5,13 +5,16 @@ Local explanation:
                         reference compiler's build for each explanation) under other grader settings — ridge λ × 10^±2,
                         3 and 10 folds, other fold seeds, each site alone, orthogonal instead of general linear
                         alignment — and checks whether the ordering of explanations by mean HS survives (Kendall τ
-                        against the preregistered settings).
+                        against the preregistered settings). Post hoc (audit 2026-11-22): whitened soundness (fully
+                        invariant to invertible linear maps), the retrains and random-initialisation networks under
+                        every variant, and H7's margin over the wrong targets under the whitened variants.
 - `explainer_sensitivity` re-runs the explainer on T0 with other key-frequency (τ ∈ {0.15, 0.35}) and neuron-FVE
                         (0.75, 0.9) thresholds, re-compiles E2–E4 and grades the builds (no agent).
 Results go to results/sensitivity/; tables are generated from them.
 Global context: part of the hyperparameter-sensitivity stage; the agent-side hyperparameter (effort) needs new runs and
-is in the manifests. Orthogonal alignment: orthogonal Procrustes with an isotropic scale (Schönemann 1966; scipy
-`orthogonal_procrustes`), fitted on training folds exactly like the ridge map.
+is in the manifests. Orthogonal alignment: orthogonal Procrustes rotation R = UVᵀ (Schönemann 1966) with the
+least-squares isotropic scale s = tr(S)/‖X‖²_F (Schönemann & Carroll 1970, Psychometrika 35:245–255,
+https://doi.org/10.1007/BF02291266), fitted on training folds exactly like the ridge map.
 """
 
 from __future__ import annotations  # postponed annotations
@@ -41,7 +44,12 @@ VARIANTS: dict[str, dict] = {
     "mlp_post only": {"sites": ("mlp_post",)},
     "resid_post only": {"sites": ("resid_post",)},
     "orthogonal alignment (with scale)": {"orth": True},
+    # Post hoc (audit 2026-11-22): soundness pooled over M̂'s dimensions is not invariant to non-orthogonal maps of M̂;
+    # whitening M̂'s states first makes both directions invariant to any invertible linear map (two eigenvalue cut-offs).
+    "whitened soundness, eig > 1e-6·max (post hoc)": {"whiten": 1e-6},
+    "whitened soundness, eig > 1e-3·max (post hoc)": {"whiten": 1e-3},
 }
+WHITENED = [name for name, kw in VARIANTS.items() if "whiten" in kw]
 
 
 def cv_r2_orth(X: torch.Tensor, Y: torch.Tensor, k: int = mt.N_FOLDS, seed: int = mt.FOLD_SEED) -> float:
@@ -68,13 +76,51 @@ def cv_r2_orth(X: torch.Tensor, Y: torch.Tensor, k: int = mt.N_FOLDS, seed: int 
     return float(min(max(1.0 - sse / sst, 0.0), 1.0))
 
 
-def hs_variant(acts_m, acts_r, *, ridge_rel=mt.RIDGE_REL, k=mt.N_FOLDS, seed=mt.FOLD_SEED, sites=SITES, orth=False) -> float:
+def cv_r2_whitened(X: torch.Tensor, Y: torch.Tensor, k: int = mt.N_FOLDS, seed: int = mt.FOLD_SEED,
+                   rel_eig: float = 1e-6, ridge_rel: float = mt.RIDGE_REL) -> float:
+    """Held-out R² of Y from X after whitening Y with its training-fold covariance (post hoc, audit 2026-11-22).
+
+    `metrics.cv_r2` pools SSE/SST over Y's dimensions, so Y's high-variance directions dominate and the score changes
+    under a non-orthogonal map of Y. Here, per fold, Y is centred with the training mean and projected on the
+    eigenvectors of its training covariance whose eigenvalue exceeds rel_eig·max, each scaled to unit variance; then the
+    same ridge map as `metrics.cv_r2` predicts the whitened held-out rows, and SSE/SST is pooled. Every direction of Y
+    counts equally, so the score is invariant to any invertible linear map of Y (and, through the regression, of X): it
+    is a held-out version of R²_CCA, the mean squared canonical correlation (Kornblith et al. 2019, §3,
+    https://arxiv.org/abs/1905.00414; Raghu et al. 2017, https://arxiv.org/abs/1706.05806). The cut-off drops
+    directions with numerically zero variance, which have no meaning to whiten."""
+    X, Y = X.double(), Y.double()
+    sse = sst = 0.0
+    for test_idx in mt.folds(X.shape[0], k, seed):
+        test = torch.as_tensor(test_idx, device=X.device)
+        mask = torch.ones(X.shape[0], dtype=torch.bool, device=X.device)
+        mask[test] = False
+        mx, my = X[mask].mean(0), Y[mask].mean(0)
+        Yc = Y[mask] - my
+        evals, evecs = torch.linalg.eigh(Yc.T @ Yc / Yc.shape[0])  # training-fold covariance of Y
+        keep = evals > rel_eig * float(evals.max().clamp_min(1e-300))
+        if not bool(keep.any()):
+            continue  # Y has no variance in this fold: contributes nothing (score 0 if never any)
+        Wh = evecs[:, keep] / evals[keep].sqrt()  # whitening map onto the kept directions
+        W = mt.ridge_map(X[mask] - mx, Yc @ Wh, ridge_rel)
+        yt = (Y[test] - my) @ Wh  # whitened held-out rows (centred with the training mean)
+        sse += float(((yt - (X[test] - mx) @ W) ** 2).sum())
+        sst += float((yt ** 2).sum())
+    if sst <= 1e-12 * X.shape[0]:
+        return 0.0
+    return float(min(max(1.0 - sse / sst, 0.0), 1.0))
+
+
+def hs_variant(acts_m, acts_r, *, ridge_rel=mt.RIDGE_REL, k=mt.N_FOLDS, seed=mt.FOLD_SEED, sites=SITES, orth=False,
+               whiten: float | None = None) -> float:
     """HS (mean over `sites` of the harmonic mean of both directions) under one grader setting."""
     vals = []
     for s in sites:
         xm, xr = acts_m.site(s), acts_r.site(s)
         if orth:
             comp, sound = cv_r2_orth(xr, xm, k=k, seed=seed), cv_r2_orth(xm, xr, k=k, seed=seed)
+        elif whiten is not None:  # completeness unchanged (already invariant); soundness on M̂'s whitened states
+            comp = mt.cv_r2(xr, xm, k=k, ridge_rel=ridge_rel, seed=seed)
+            sound = cv_r2_whitened(xm, xr, k=k, seed=seed, rel_eig=whiten, ridge_rel=ridge_rel)
         else:
             comp, sound = mt.cv_r2(xr, xm, k=k, ridge_rel=ridge_rel, seed=seed), mt.cv_r2(xm, xr, k=k, ridge_rel=ridge_rel, seed=seed)
         vals.append(0.0 if comp + sound == 0 else 2 * comp * sound / (comp + sound))
@@ -114,18 +160,39 @@ def grader_sensitivity(settings: Settings, max_round: int, target: str = "T0") -
         acts_r = collect(rep, dev)
         rows.append({**{k: str(v) if k == "npz" else v for k, v in u.items()},
                      "hs": {name: hs_variant(acts_m, acts_r, **kw) for name, kw in VARIANTS.items()}})
+    # No-agent comparison networks (H4's retrains and the random-initialisation floor) under every variant
+    from grokviz.model import GrokTransformer
+    from vmi.nonagent import WRONG
+    own = targets.resolve(target).run_id
+    others = [f"wd1_s{s}" for s in range(10) if f"wd1_s{s}" != own][:9]  # same 9 retrains as nonagent.baselines
+    nets = [("retrain", r, targets.load_model(settings, r)) for r in others]
+    nets += [("random init", f"seed {1000 + s}", GrokTransformer(seed=1000 + s)) for s in range(5)]
+    for level, name, net in nets:
+        acts_r = collect(net.to(dev, torch.float64).eval(), dev)
+        rows.append({"kind": "baseline", "level": level, "id": name, "hs": {v: hs_variant(acts_m, acts_r, **kw) for v, kw in VARIANTS.items()}})
     default = next(iter(VARIANTS))
     summary = {}
-    for kind in ("agent", "compiler"):
+    for kind in ("agent", "compiler", "baseline"):
         means = {name: {} for name in VARIANTS}
         for name in VARIANTS:
-            for lv in LEVELS:
+            for lv in LEVELS + ["retrain", "random init"]:
                 v = [r["hs"][name] for r in rows if r["kind"] == kind and r["level"] == lv]
                 if v:
                     means[name][lv] = float(np.mean(v))
         summary[kind] = {name: {"means": means[name], "kendall_tau_vs_preregistered": _order_tau(means[default], means[name])}
                          for name in VARIANTS}
-    out = {"target": target, "round": max_round, "variants": list(VARIANTS), "rows": rows, "summary": summary}
+    # H7 under the whitened variants: each E3/E4 agent replacement against every wrong target, d = HS(T0) − max HS(wrong)
+    e34 = [r for r in rows if r["kind"] == "agent" and r["level"] in ("E3", "E4")]
+    wrong = {name: {r["id"]: [] for r in e34} for name in [default] + WHITENED}
+    for t in WRONG:
+        acts_t = collect(targets.load_model(settings, t).to(dev, torch.float64).eval(), dev)
+        for r in e34:
+            acts_r = collect(weights.to_model(weights.load_npz(Path(r["npz"]))).to(dev, torch.float64).eval(), dev)
+            for name in wrong:
+                wrong[name][r["id"]].append(hs_variant(acts_t, acts_r, **VARIANTS[name]))
+    h7 = {name: {rid: r_hs - max(wrong[name][rid]) for rid, r_hs in ((r["id"], r["hs"][name]) for r in e34)} for name in wrong}
+    out = {"target": target, "round": max_round, "variants": list(VARIANTS), "rows": rows, "summary": summary,
+           "h7_d": h7, "wrong_targets": WRONG}
     p = RES / "sensitivity" / f"grader_{target}_round{max_round}.json"
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(json.dumps(out, indent=2), encoding="utf-8", newline="\n")
