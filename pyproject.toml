@@ -33,6 +33,7 @@ vmi = "vmi.pipeline:main"
 [dependency-groups]
 dev = [
     "pytest>=8.4",
+    "scikit-learn>=1.7",
 ]
 
 [build-system]
