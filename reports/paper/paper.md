@@ -28,20 +28,22 @@ preregistered before any result. Results after two rounds (three runs per condit
 *Round 2, N = 3 run(s) per condition — not yet N=10*
 
 - **Model-specific detail raises hidden-state similarity:** HS on T0 is 0.05 (E1, algorithm only), 0.89 (E2), 0.93 (E3) and 0.94 (E4); with no explanation (E0) it is 0.13. Monotone from E1 to E4; E0 lies above E1, against the preregistered prediction.
-- **Correct behaviour, wrong mechanism is caught by HS, not by output KL:** the wrong-frequency replacement reaches KL 0.003 nats (true E3: 0.010) but HS 0.07.
+- **Correct behaviour from the wrong key frequencies is caught by HS, not by output KL:** the wrong-frequency replacement reaches KL 0.003 nats (true E3: 0.010) but HS 0.07.
 - **Copying behaviour does not copy the mechanism:** independent retrains (HS 0.12) and logit-distilled students (HS 0.23, KL 2.38e-06) score no higher than randomly initialised networks (HS 0.24). HS's scale is therefore not anchored at 0 for unrelated networks: it measures overlap of internal features, and working networks built on other frequencies score below random ones.
-- **Negative result:** the primary HS does not separate the Pizza explanation (W-alg, HS 0.91) or the scrambled neuron table (W-scramble, HS 0.94) from the true explanations; the secondary matched-neuron correlation separates W-scramble (0.65) from E4 (0.91).
+- **Negative result:** the primary HS does not separate the Pizza explanation (W-alg, HS 0.91) or the scrambled neuron table (W-scramble, HS 0.94) from the true explanations; the secondary matched-neuron correlation separates W-scramble (0.65) from E4 (0.91). Post hoc, by Zhong et al.'s distance irrelevance (≥ 0.4 Clock-like, < 0.4 Pizza-like) T0 is a Clock (0.75) and the literal Pizza build a Pizza (0.003), but the agents' replacements from the true E1–E3 are Pizza-like too (means 0.13–0.18; E4 0.41), and HS still rates the E2–E4 ones 0.89–0.94: HS does not see the Clock/Pizza distinction, even among the true explanations.
 - **Memorisation (post hoc):** E0 and E1 contain nothing target-specific (identical text on every target, and the sandbox does not reveal the target), so their runs on T0 and on the published checkpoint are replicates of one condition. When the explanation gives no frequencies, the simulator often builds most of the published paper's frequencies {14, 35, 41, 42, 52} into its replacement. E1 (6 runs on T0 and T-paper): 5 of 6 build scripts list at least four of the paper's five frequencies (3 of 6 replacements build at least four by the key-frequency rule, a lower bound); on average 68% of the replacements' W_L spectrum lies on those five frequencies (chance 9%); mean HS 0.08 against T0 but 0.70 against the published checkpoint (target swap: same weights, other target; range 0.24–0.95); E0 (3 runs on T0): 1 of 3 build scripts list at least four of the paper's five frequencies (1 of 3 replacements build at least four by the key-frequency rule, a lower bound); on average 36% of the replacements' W_L spectrum lies on those five frequencies (chance 9%); mean HS 0.13 against T0 but 0.28 against the published checkpoint (target swap: same weights, other target; range 0.03–0.63). On a published model, a high score can therefore come from the simulator's memory rather than the explanation (one published model and one simulator tested).
 - **Cost:** the 96 reported Claude Haiku 5.5 runs cost $2.20 ($2.33 including development runs and plumbing checks).
 <!-- END key-results -->
 
 Output KL alone ranks a wrong-frequency explanation, independent retrains and distilled students as good as the true
 explanations (the wrong-frequency one above E3 and E4); HS does not. HS is blind to the per-neuron frequency assignment and to the Clock-versus-Pizza
-distinction, both of which keep the key frequencies. When an explanation leaves the frequencies open, the simulator fills them in with
+distinction, both of which keep the key frequencies: by the output diagnostic of Zhong et al. (post hoc), T0 is a Clock but even the
+replacements built from the true explanations are Pizza-like, and HS still rates them about 0.9. When an explanation leaves the frequencies open, the simulator fills them in with
 most of the published paper's frequencies from memory (a target swap shows the same weights fit the published
 checkpoint), so targets whose mechanism is not in the simulator's training data are needed for interpretable scores.
-The agent is not a literal compiler: it repairs explanations toward a working adder, guided by its task self-test.
-At N = 3 the preregistered tests support the HS trend over the explanation ladder, the behaviour-mechanism dissociation,
+The agent is not a literal compiler: it repairs explanations toward a working adder, guided by task accuracy (every run
+checks it, through the provided self-test or its own code), so a score measures the explanation together with that repair.
+At N = 3 the preregistered tests support the HS trend from E1 to E4 (H1's further prediction that E0 lies below E1 fails), the behaviour-mechanism dissociation,
 the advantage over independent retrains, specificity to the explained network and (descriptively) tracking of circuit
 formation; output KL's trend over the ladder is not supported, the true-versus-wrong comparisons cannot reach
 significance with three runs per arm, and output KL does not behave as a calibrated distance on the planted mechanism
@@ -58,9 +60,11 @@ at scale, grading them becomes the bottleneck, and the top rung is the one harde
 
 Existing automated scores simulate single features' activations with an LLM and correlate them with the real ones
 ([Bills et al. 2023](https://openaipublic.blob.core.windows.net/neuron-explainer/paper/index.html)), or replace
-simulation with cheaper classification-based scorers ([Paulo et al. 2024](https://arxiv.org/abs/2410.13928)).
-Explanations with high simulation scores show little causal efficacy ([Huang et al. 2023](https://arxiv.org/abs/2309.10312));
-in output-simulatability settings a simulator can match no-explanation baselines by solving the task directly
+simulation with cheaper scorers such as detection and fuzzing ([Paulo et al. 2024](https://arxiv.org/abs/2410.13928)).
+Even the most confident of Bills et al.'s GPT-2 XL neuron explanations (score ≥ 0.8) have high error rates and little to
+no causal efficacy ([Huang et al. 2023](https://arxiv.org/abs/2309.10312)); when LLM simulators predict a text
+classifier's outputs from concept explanations, the explanations add little over matched no-explanation baselines,
+because with meaningful class names the simulator can solve the task directly
 ([Poché et al. 2026](https://arxiv.org/abs/2609.08585)); and per-feature fuzzing scores of sparse-autoencoder latents
 (detection in an appendix) are similar for trained and randomised transformers in many settings ([Heap et al. 2025](https://arxiv.org/abs/2501.17727)). [Gao (2026)](https://www.lesswrong.com/posts/Dkh7pXKjoNWkkxQDz/neural-networks-are-not-already-clean)
 proposes substituting simulated activations and scoring downstream KL (cf. the ablation score of Bills et al., which
@@ -94,15 +98,19 @@ unspecified. [Zhong et al. (2023)](https://arxiv.org/abs/2306.17844)
 showed that a second algorithm ("Pizza") solves the same task with the same accuracy; its logits differ by a factor
 |cos(w_k(a − b)/2)|, so full output distributions can still tell the two apart. [Gromov (2023)](https://arxiv.org/abs/2301.02679)
 gives analytic weights for a two-layer MLP that solves the same task, and [Yip et al. (2024)](https://arxiv.org/abs/2412.03773)
-explain the MLPs of trained Pizza models as numerical integration, with compact error bounds.
+explain the MLPs of trained constant-attention (Pizza) models at p = 59 as numerical integration, with compact error
+bounds; they also find these models' logits closer to the Clock form than to the Pizza form. Zhong et al. tell the two
+algorithms apart by *distance irrelevance* (how little the correct-answer logit depends on a − b) and *gradient
+symmetricity*; we apply both post hoc (§5).
 
 **Explanations checked against weights.** Tracr ([Lindner et al. 2023](https://arxiv.org/abs/2301.05062)) compiles
 programs to weights; causal abstraction ([Geiger et al. 2025, v1 2023](https://arxiv.org/abs/2301.04709)) and causal scrubbing
 ([Chan et al. 2022](https://www.alignmentforum.org/posts/JvZhhzycHu2Yd57RN/causal-scrubbing-a-method-for-rigorously-testing-interpretability-hypotheses))
 test faithfulness by interventions, and [Sutter et al. (2025)](https://arxiv.org/abs/2507.08802) show that, under their
-assumptions (countable inputs, injective and surjective hidden layers, a network that solves the task — two of which
-they call strong), unrestricted non-linear alignment maps make any network a causal abstraction of any algorithm, so
-the alignment class must be justified.
+assumptions (countable inputs, input-injective and strictly output-surjective hidden layers, matchable partial
+orderings of algorithm and network, and a network that solves the task; they call injectivity and surjectivity
+strong), unrestricted alignment maps make any algorithm an input-restricted distributed abstraction of any network,
+so the alignment class must be justified case by case.
 [Cammarata et al. (2021)](https://distill.pub/2020/circuits/curve-circuits/) hand-built one curve-detector circuit and
 compared its activations with the natural one — our idea, done by hand for one circuit. Compact proofs
 ([Gross et al. 2024](https://arxiv.org/abs/2406.11779)) make explanation length explicit, with brute-force evaluation on every input
@@ -111,9 +119,9 @@ as the longest proof.
 **Agents that write weights.** The closest work, iWSP ([Mehta et al. 2026](https://arxiv.org/abs/2611.18114)), has
 Claude Code write small models' weights in code and rebuild them in fresh sessions from a ≤ 200-word description, with
 a no-description control; it rebuilds only agent-written models, scores by accuracy and prediction correlation
-(feature CKA for one model) and uses no output KL. The LLM behind an interpretability agent can recall a published
-circuit from memory ([Haklay et al. 2026](https://arxiv.org/abs/2603.20101)), which is why our main targets have no
-published analysis.
+(feature CKA for one model) and uses no output KL. The LLM behind an interpretability agent (Claude Opus 4.1) listed
+the published IOI circuit's components from memory when prompted ([Haklay et al. 2026](https://arxiv.org/abs/2603.20101)),
+which is why our main targets are analysed in no paper.
 
 **What is new here** is the combination: an SGD-trained target, a weights-blind agent that compiles a
 mechanistic explanation into a full replacement, output KL plus a symmetry-aware hidden-state metric, explanation-length
@@ -128,13 +136,14 @@ precedent (full review: `reports/literature-review.md`).
 
 All targets share the architecture and training recipe of Nanda et al. (full-batch AdamW, lr 10⁻³, weight decay 1,
 30 % training split, 40,000 full-batch steps — the paper's 40,000 epochs) and reach 100 % test accuracy. T0 is the main
-target; T1 and T2 have the fewest and most key frequencies among the published seeds; T-new was trained after the
+target; among the eleven published `wd1` seeds T2 has the most key frequencies (six) and T1 the fewest (three, tied with
+`wd1_s9`; the preregistered rule took the lower seed); T-new was trained after the
 protocol freeze, so no development choice could be tuned to it; T-paper is the paper's own checkpoint
 (contamination-flagged: its explanation is published); the dev target was used for all development, and no dev-target
 agent result is reported (it serves only as one of the wrong targets in H7). No paper analyses T0–T2, but their
-weights and an automated analysis that lists their key frequencies (e.g. `wd1_s1/analysis/key_freqs.json`) have been
-public in [BurnyCoder/grokking-modular-addition-runs](https://huggingface.co/BurnyCoder/grokking-modular-addition-runs)
-(with dev) since 2026-10-21 — after Claude Haiku 5.5's June 2026 training-data cutoff
+weights and an automated analysis that lists their key frequencies (e.g. `wd1_s1/analysis/key_freqs.json`) were
+uploaded to the public [BurnyCoder/grokking-modular-addition-runs](https://huggingface.co/BurnyCoder/grokking-modular-addition-runs)
+(with dev) on 2026-10-21 (repository creation and first upload commit) — after Claude Haiku 5.5's June 2026 training-data cutoff
 ([models overview](https://platform.claude.com/docs/en/about-claude/models/overview)) — and the sandbox has no internet
 access, so the simulator cannot have seen them. T-paper is the paper's checkpoint
 ([callummcdougall/grokking_full_run_data](https://huggingface.co/callummcdougall/grokking_full_run_data)); T-new
@@ -176,8 +185,11 @@ that checks shapes and accuracy against the task labels (never against M), and a
 loops and iterative optimisation are forbidden in the build script; build scripts are audited and flagged ones
 reviewed by hand. The audit does not see what an agent tries in scratch copies: in <!-- v:tune-said -->41 of 96<!-- /v --> reported runs its
 narration announces sweeping or tuning a constant (an MLP bias, the logit scale) and keeping the value with the best
-self-test accuracy or least-squares fit (post hoc count, Appendix D). Both criteria use only the task labels, so no
-target information enters, but the replacement is shaped by the task as well as by the explanation. Runs are capped at
+self-test accuracy or least-squares fit (post hoc count, Appendix D); <!-- v:own-check -->27 of 96<!-- /v --> runs also
+scored accuracy with their own code (`forward.labels()` or (a + b) mod 113) rather than `selftest.py`. Both criteria
+use only the task labels, so no target information enters, but the replacement is shaped by the task as well as by
+the explanation. `TASK.md` describes the hidden-state comparison as allowing "any reordering/positive rescaling of
+neurons"; the metric in fact allows any linear recombination of them (§3.4). Runs are capped at
 60 minutes and $2 (`--max-budget-usd`); no turn cap was set (Claude Code's `--max-turns` was not used), although
 `TASK.md` tells every agent it has about 60 minutes and 60 steps, a step limit only the local harness enforces. Local Qwen models (Qwen3.6-35B-A3B, Qwen3.5-9B, Qwen3.5-4B) in a bash-only harness modelled on
 [mini-SWE-agent](https://github.com/SWE-agent/mini-swe-agent) were planned as the simulator-capability ablation: in
@@ -193,12 +205,15 @@ similarity (HS):** at three final-position sites (residual stream after attentio
 stream), 5-fold cross-validated ridge-regression R² in both directions (M̂ → M and M → M̂), combined by harmonic mean
 per site and averaged over sites. Linear maps are the alignment class because, without LayerNorm, the residual stream
 is defined only up to an invertible linear map; unrestricted non-linear maps can make every network match every
-algorithm ([Sutter et al. 2025](https://arxiv.org/abs/2507.08802)), so we restrict to linear maps (our assumption,
-motivated by theirs). Completeness R²(M̂ → M) is invariant to any invertible linear map of M̂'s basis (up to the small
+algorithm under Sutter et al.'s assumptions ([Sutter et al. 2025](https://arxiv.org/abs/2507.08802)), so we restrict to linear maps (our assumption,
+motivated by theirs). This rationale holds for the two residual sites only: the MLP neurons' symmetry group is
+permutation and positive per-neuron scaling, and a linear regression over `mlp_post` also allows any linear
+recombination of neurons, a wider class than the symmetry group (erratum, deviation 10). The matched-neuron correlation
+below is the metric matched to that group. Completeness R²(M̂ → M) is invariant to any invertible linear map of M̂'s basis (up to the small
 ridge term); soundness
 R²(M → M̂), pooled over M̂'s dimensions, only to orthogonal maps and uniform scaling of M̂'s basis (regression R² is
 invariant only in its predictor; [Kornblith et al. 2019](https://arxiv.org/abs/1905.00414), Table 1), and HS = 1
-exactly when each model's states are an affine function of the other's. A whitened soundness, invariant in both
+(up to the ridge term) when each model's states are an affine function of the other's. A whitened soundness, invariant in both
 directions, is reported as a post-hoc check (Appendix B). HS's scale is not anchored at 0 for unrelated networks. Secondary metrics include matched-neuron correlation (optimal one-to-one assignment), centred-logit FVU and temperature-calibrated KL. A run without valid weights is scored as a failure.
 
 ### 3.5 Controls, baselines and statistics
@@ -215,13 +230,18 @@ postponed; Claude's sampling cannot be seeded, so a run's seed index labels a re
 and Spearman trend tests (H1), one-sided Mann–Whitney tests with Holm correction (H2, H4), Kendall's W (H6) and
 Wilcoxon signed-rank tests (H7); H5 compares the agent with the compiler on T0 (other targets are reported as an
 extension). A test whose smallest attainable p-value at the current N is ≥ 0.05 returns "cannot tell at this N".
+Trend-test p-values enumerate every assignment of runs to levels exactly (369,600 for H1's four levels × three runs;
+earlier versions used a Monte-Carlo estimate above 50,000 assignments, which covered H1, deviation 10).
 As preregistered, Holm correction is applied within H2 and within H4 only, with no correction across hypotheses. The preregistration, two dated amendments and every post-freeze deviation are in
 `reports/preregistration.md`; three of them followed results and are disclosed as such: the results-driven stop of
 the local runs (deviation 5), two analysis-code corrections made when the N = 3 verdicts were first read (deviation
 7; neither turned a verdict into "supported"), the audit's additions of missing preregistered statistics, the
 preregistered form of H8 and an erratum on HS's invariance (deviation 8; no verdict changed), and a second audit's
 errata and post-hoc checks (deviation 9: contamination wording, scope of H5, self-test tuning, turn cap, H8 negative
-controls, pooled memorisation analysis, exact trend test; no verdict changed).
+controls, pooled memorisation analysis, exact trend test; no verdict changed), and a third audit's corrections
+(deviation 10: H1's E0 clause given its own verdict, the T-paper replication run over every ladder level it has, an
+exact trend test for H1, the self-test ablation's scope, the alignment class at `mlp_post`, and post-hoc Clock/Pizza
+diagnostics; no preregistered test result changed, H1's reported verdict now shows its failed E0 clause).
 
 ## 4 Results (rounds 1–2, N = 3 per condition)
 
@@ -382,7 +402,11 @@ All agent runs of the round:
 <!-- END runs -->
 
 **Reading.** Presenting E3 as math or as code, or removing the self-test, moves the simulator's HS by a few
-hundredths at most. Low effort lowered task accuracy in <!-- v:lowfx-e3 -->one of three<!-- /v --> E3 runs while its HS stayed high: the replacement has
+hundredths at most. The self-test ablation removed `selftest.py` and the instruction to raise accuracy, not the
+feedback: the task's labels are the task itself ((a + b) mod 113, also returned by `forward.labels()`), and
+<!-- v:noselftest-own -->all three<!-- /v --> runs without the self-test computed task accuracy with their own code
+(<!-- v:own-check -->27 of 96<!-- /v --> reported runs did so; Appendix D). So this ablation does not show that label
+feedback leaves the score unchanged. Low effort lowered task accuracy in <!-- v:lowfx-e3 -->one of three<!-- /v --> E3 runs while its HS stayed high: the replacement has
 the right frequency structure, and the wrong answers come from a layout bug in the agent's own script (one head's
 output written onto the readout dimensions); re-running the script with that one number changed restores full accuracy
 at almost the same HS (`vmi diagnose`). Behaviour and mechanism dissociate in this direction too. On the
@@ -505,14 +529,15 @@ simulator remembers, not what the explanation says; targets whose mechanism the 
 T-new: no paper, analyses public only after its training cutoff, no internet in the sandbox), which the preregistration
 introduced for exactly this risk, are what make the score interpretable. This is post hoc evidence from
 <!-- v:e1-n -->six<!-- /v --> algorithm-only runs and <!-- v:e0-n -->three<!-- /v --> no-explanation runs of one simulator, consistent with [Haklay et al. 2026](https://arxiv.org/abs/2603.20101) (an LLM
-used by interpretability agents listed a published circuit's components from memory when asked).
+behind an interpretability agent, Claude Opus 4.1, listed the published IOI circuit's components from memory when
+prompted).
 
 ### 4.7 Hypotheses: predicted vs. observed (N = 3)
 
 <!-- BEGIN predictions -->
 | Hypothesis | Predicted (preregistration §5) | Measured with the main simulator (T0) | Direction matches? | Formal verdict |
 |---|-------|---------|-----|------|
-| H1 | HS rises and output KL falls from E1 to E4 on T0; E0 lies below E1 | HS E0 0.130, E1 0.046, E2 0.894, E3 0.929, E4 0.943; KL E1 0.097, E2 2.12e-04, E3 0.010, E4 0.060 | partly (KL does not fall E1→E4; E0 not below E1) | HS: supported; KL_out: not supported · at N=3 — not yet N=10 |
+| H1 | HS rises and output KL falls from E1 to E4 on T0; E0 lies below E1 | HS E0 0.130, E1 0.046, E2 0.894, E3 0.929, E4 0.943; KL E1 0.097, E2 2.12e-04, E3 0.010, E4 0.060 | partly (KL does not fall E1→E4; E0 not below E1) | HS trend E1→E4: supported; E0 below E1: not observed (E0 above E1; direction only, no test preregistered); KL_out: not supported · at N=3 — not yet N=10 |
 | H2 | true explanations beat length-matched false ones on HS: E3 > W-freq, W-alg, W-role; E4 > W-scramble | HS difference E3>W-freq +0.859 [+0.835, +0.880]; E3>W-alg +0.020 [-0.008, +0.045]; E3>W-role +0.725 [+0.661, +0.768]; E4>W-scramble +0.007 [-0.025, +0.037] | partly (E3>W-alg tie (CI includes 0); E4>W-scramble tie (CI includes 0)) | E3>W-freq: cannot tell at this N; E3>W-alg: cannot tell at this N; E3>W-role: cannot tell at this N; E4>W-scramble: cannot tell at this N · at N=3 — not yet N=10 |
 | H3 | W-freq: argmax agreement ≥ 0.99, KL not above the true E2–E4 range, HS below each of E2–E4 | W-freq: agreement 1.000, KL 0.003 (true 2.12e-04–0.060), HS 0.070 (true 0.894–0.943); HS − E2 -0.824 [-0.840, -0.801], E3 -0.859 [-0.880, -0.835], E4 -0.873 [-0.904, -0.841] | yes | supported · at N=3 — not yet N=10 |
 | H4 | E3 and E4 beat independent retrains on HS (vs. distilled students: open question, no direction) | E3 0.929, E4 0.943; 9 retrains mean 0.119 (max 0.329); 3 students mean 0.233 (max 0.282); vs students, two-sided: E3 cannot tell at this N, E4 cannot tell at this N | yes | E3: supported; E4: supported · at N=3 — not yet N=10 |
@@ -533,19 +558,66 @@ tests, which earlier versions only checked by direction; deviation 8):
 | T1 | E2 0.957, E3 0.936, E4 0.960 | means do not rise E2→E3→E4; not supported (JT p 0.500, ρ 0.05) | +0.885; cannot tell at this N (p 0.050) | agreement 0.854, KL 0.537 (true max 0.498), HS 0.051 | partly (agreement < 0.99; KL above the true range) |
 | T2 | E2 0.900, E3 0.962, E4 0.951 | means do not rise E2→E3→E4; not supported (JT p 0.500, ρ 0.05) | +0.864; cannot tell at this N (p 0.050) | agreement 0.999, KL 0.006 (true max 0.049), HS 0.098 | yes |
 | T-new | E3 0.910, E4 0.984 | means rise E3→E4; cannot tell at this N (JT p 0.050, ρ 0.88) | +0.816; cannot tell at this N (p 0.050) | agreement 0.907, KL 0.432 (true max 0.328), HS 0.094 | partly (agreement < 0.99; KL above the true range) |
-| T-paper (flagged: memorisation) | E1 0.590, E3 0.940, E4 0.937 | means do not rise E3→E4; cannot tell at this N (JT p 0.650, ρ -0.10) | +0.823; cannot tell at this N (p 0.050) | agreement 0.998, KL 0.007 (true max 0.413), HS 0.117 | yes |
+| T-paper (flagged: memorisation) | E1 0.590, E3 0.940, E4 0.937 | means do not rise E1→E3→E4; not supported (JT p 0.061, ρ 0.63) | +0.823; cannot tell at this N (p 0.050) | agreement 0.998, KL 0.007 (true max 0.413), HS 0.117 | yes |
 <!-- END replications -->
 
-**Reading.** At N = 3 the preregistered tests support H1's HS part, H3, H4, H7 and H8: HS rises with true detail (the big step is E1 → E2; <!-- v:e3-vs-e2 -->every E3 run is above every E2 run<!-- /v --> under the preregistered HS, though E2 and E3 tie under the post-hoc whitened check; E3 → E4 is mixed), a wrong-frequency explanation keeps correct answers while its HS falls below every true explanation that names the frequencies (E2–E4), E3 and E4 replacements beat independent retrains and fit T0 better than any other model, and HS tracks circuit formation (descriptively; replacements without T0's mechanism do not, §4.3). The predictions fail where they assumed that output KL improves with detail (H1's KL part: it is lowest at E2 and rises at E3 and E4), that HS sees below the frequency level (H2: W-alg and W-scramble tie with the true explanations, their bootstrap CIs include 0), that the reference compiler is a ceiling (H5: the agent stays within its level on T0, the preregistered comparison, but exceeds it on the seed targets in <!-- v:h5-seed -->four of eleven target–explanation pairs on three targets<!-- /v -->), or that output KL grows smoothly as a planted model drifts (H4b). "Direction matches" compares directions and preregistered thresholds only (a difference whose bootstrap CI includes 0 counts as a tie; with three runs per group a percentile bootstrap has only ten distinct resamples per group, so these intervals are too narrow and a tie is the safe reading, an "ahead" is not significance); the formal verdict adds the preregistered test, and 3 vs 3 runs cannot reach significance for H2 (smallest attainable p = 0.05). On the seed-sensitivity targets the gap between E3 and the wrong-frequency explanation replicates on every target (its rank test cannot decide at N = 3), while the fine E2 → E4 rise does not replicate (its trend test is not supported on T1 and T2, although on T0 the same E2–E4 test gives <!-- v:t0-e24 -->supported (JT p 0.011, ρ 0.79)<!-- /v -->; on T-new, with only E3 and E4, the means rise but the test cannot decide at N = 3; the large E1 → E2 step was not run on these targets); where H3 fails there, argmax agreement is below the preregistered 0.99 for the wrong-frequency replacement and also for the true E3 and E4 replacements, so the explanation is not shown to be the cause (not diagnosed).
+**Reading.** At N = 3 the preregistered tests support H1's HS trend from E1 to E4, H3, H4, H7 and H8 (H1's further prediction that E0 lies below E1 fails, <!-- v:e0-vs-e1 -->E0 0.130 vs E1 0.046<!-- /v -->; no test was preregistered for it): HS rises with true detail (the big step is E1 → E2; <!-- v:e3-vs-e2 -->every E3 run is above every E2 run<!-- /v --> under the preregistered HS, though E2 and E3 tie under the post-hoc whitened check; E3 → E4 is mixed), a wrong-frequency explanation keeps correct answers while its HS falls below every true explanation that names the frequencies (E2–E4), E3 and E4 replacements beat independent retrains and fit T0 better than any other model, and HS tracks circuit formation (descriptively; replacements without T0's mechanism do not, §4.3). The predictions fail where they assumed that output KL improves with detail (H1's KL part: it is lowest at E2 and rises at E3 and E4), that HS sees below the frequency level (H2: W-alg and W-scramble tie with the true explanations, their bootstrap CIs include 0; post hoc, the true explanations' own replacements are Pizza-like while T0 is a Clock, §5), that the reference compiler is a ceiling (H5: the agent stays within its level on T0, the preregistered comparison, but exceeds it on the seed targets in <!-- v:h5-seed -->four of eleven target–explanation pairs on three targets<!-- /v -->), or that output KL grows smoothly as a planted model drifts (H4b). "Direction matches" compares directions and preregistered thresholds only (a difference whose bootstrap CI includes 0 counts as a tie; with three runs per group a percentile bootstrap has only ten distinct resamples per group, so these intervals are too narrow and a tie is the safe reading, an "ahead" is not significance); the formal verdict adds the preregistered test, and 3 vs 3 runs cannot reach significance for H2 (smallest attainable p = 0.05). On the seed-sensitivity targets the gap between E3 and the wrong-frequency explanation replicates on every target (its rank test cannot decide at N = 3), while the fine E2 → E4 rise does not replicate (its trend test is not supported on T1 and T2, although on T0 the same E2–E4 test gives <!-- v:t0-e24 -->supported (JT p 0.011, ρ 0.79)<!-- /v -->; on T-new, with only E3 and E4, the means rise but the test cannot decide at N = 3; T1, T2 and T-new ran no E1, so the large E1 → E2 step was not tested there, and on T-paper, the one seed target that ran E1, the trend test over E1 < E3 < E4 gives <!-- v:tpaper-trend -->not supported (JT p 0.061, ρ 0.63)<!-- /v -->, where E1's memorised published frequencies raise E1's HS and flatten the trend); where H3 fails there, argmax agreement is below the preregistered 0.99 for the wrong-frequency replacement and also for the true E3 and E4 replacements, so the explanation is not shown to be the cause (not diagnosed).
 
 ## 5 Discussion
 
 **What the score measures.** On this task HS measures whether the replacement uses the target's key frequencies in the
 same places. That is the level at which the paper's explanation is stated, and HS separates it sharply from correct
 behaviour obtained with other frequencies (independent retrains, distilled students, W-freq, E0/E1). It does not
-measure the per-neuron assignment (W-scramble) or the non-linearity that distinguishes Clock from Pizza (W-alg): both
-keep every key-frequency subspace, and our interpretation — not tested separately — is that a linear map over a whole
-site cannot see what is computed inside them. A complete grader needs a second, neuron-level or causal metric; the matched-neuron
+measure the per-neuron assignment (W-scramble) or the Clock-versus-Pizza distinction (W-alg): both keep every
+key-frequency subspace. For the per-neuron blind spot the alignment class is a likely cause: at `mlp_post` a linear
+regression may recombine neurons freely, while the MLP's own symmetry allows only permutation and positive scaling,
+and the metric restricted to that group (matched-neuron correlation) does separate W-scramble from E4. Clock and Pizza,
+as our explanations render them, prescribe the same MLP neuron function, ReLU(cos(w_k a + φ) + cos(w_k b + φ)); the
+texts differ in the attention (input-dependent fits versus constant ½–½) and in the predicted factor
+|cos(w_k(a − b)/2)| on the logits. *Clock or Pizza, measured (post hoc).* Zhong et al.'s distance irrelevance q (Clock ≈ 1,
+Pizza ≈ 0) puts every target on the Clock side (<!-- v:cp-targets -->0.59–0.81<!-- /v -->; T0 <!-- v:cp-t0 -->0.75<!-- /v -->) and the
+literal Pizza build on the Pizza side (<!-- v:cp-walg -->0.003<!-- /v -->), so W-alg is a wrong explanation of T0, as the
+design assumed (reading rule fixed before computing, `src/vmi/analysis/clock_pizza.py`). But the replacements built
+from the *true* explanations are Pizza-like as well: the compiler's literal E1–E4 builds give
+<!-- v:cp-comp -->0.18–0.30<!-- /v -->, the agents' E1–E3 replacements <!-- v:cp-e13 -->0.13–0.18<!-- /v --> and E4
+<!-- v:cp-e4 -->0.41<!-- /v -->. HS nonetheless rates the E2–E4 replacements <!-- v:hs-e24 -->0.89–0.94<!-- /v --> against a Clock target. So
+the rendered explanations do not convey what makes T0 a Clock, and HS does not notice; the E3 > W-alg comparison
+(H2) compares two Pizza-like builds, but the high HS of Pizza-like E3 replacements against a Clock target shows the
+same blind spot directly. The gradient-symmetricity column needs care: our hand-built replacements compute their
+near-constant attention from their embeddings, so the full gradient points off the data manifold and is strongly
+negative; with the attention pattern held fixed it agrees with q.
+
+<!-- BEGIN clock-pizza-T0 -->
+| Network | distance irrelevance q (Clock ≈ 1, Pizza ≈ 0) | gradient symmetricity | same, attention held fixed (variant) | task accuracy |
+|---|---|---|---|---|
+| target T0 | 0.75 | +0.47 | +0.75 | 1.0000 |
+| target T1 | 0.81 | +0.20 | +0.58 | 1.0000 |
+| target T2 | 0.59 | +0.57 | +0.81 | 1.0000 |
+| target T-new | 0.73 | +0.50 | +0.79 | 1.0000 |
+| target T-paper | 0.74 | +0.30 | +0.64 | 1.0000 |
+| T0 E0, reference compiler | 0.22 | -0.92 | +1.00 | 1.0000 |
+| T0 E0, agent (n = 3) | 0.71 (0.28 to 0.93) | 0.32 (-0.05 to 1.00) | 0.32 (-0.05 to 1.00) | 1.0000 |
+| T0 E1, reference compiler | 0.22 | -0.92 | +1.00 | 1.0000 |
+| T0 E1, agent (n = 3) | 0.18 (0.17 to 0.20) | -0.20 (-0.81 to 1.00) | 1.00 (1.00 to 1.00) | 1.0000 |
+| T0 E2, reference compiler | 0.20 | -0.88 | +1.00 | 1.0000 |
+| T0 E2, agent (n = 3) | 0.13 (0.00 to 0.20) | -0.80 (-0.92 to -0.64) | 1.00 (1.00 to 1.00) | 1.0000 |
+| T0 E3, reference compiler | 0.18 | -0.92 | +0.99 | 1.0000 |
+| T0 E3, agent (n = 3) | 0.13 (0.05 to 0.18) | -0.49 (-0.89 to -0.10) | 1.00 (1.00 to 1.00) | 0.9995 |
+| T0 E4, reference compiler | 0.30 | -0.98 | +0.81 | 0.9998 |
+| T0 E4, agent (n = 3) | 0.41 (0.32 to 0.46) | -0.58 (-0.88 to -0.42) | 0.94 (0.83 to 1.00) | 0.9860 |
+| T0 W-freq, reference compiler | 0.10 | -0.92 | +0.99 | 1.0000 |
+| T0 W-freq, agent (n = 3) | 0.29 (0.12 to 0.44) | -0.36 (-0.84 to -0.11) | 1.00 (1.00 to 1.00) | 0.9999 |
+| T0 W-alg, reference compiler | 0.00 | -0.87 | +1.00 | 1.0000 |
+| T0 W-alg, agent (n = 3) | 0.00 (0.00 to 0.00) | -0.81 (-0.89 to -0.67) | 1.00 (1.00 to 1.00) | 1.0000 |
+| T0 W-role, reference compiler | 0.87 | -0.98 | -0.18 | 0.0278 |
+| T0 W-role, agent (n = 3) | 0.27 (0.15 to 0.45) | -0.61 (-0.85 to -0.42) | 1.00 (1.00 to 1.00) | 0.9998 |
+| T0 W-scramble, reference compiler | 0.61 | -0.97 | +0.82 | 1.0000 |
+| T0 W-scramble, agent (n = 3) | 0.57 (0.50 to 0.66) | -0.38 (-0.77 to 0.04) | 0.95 (0.86 to 1.00) | 0.9977 |
+
+*Zhong et al. (2023), Defs. 4.1–4.2: distance irrelevance q compares the spread of the correct-answer logit within one difference a − b with its spread over all inputs (§4.1.2: 0–0.4 typical of Pizza, 0.4–1 of Clock; the decisive diagnostic, §4.1.3); gradient symmetricity is the mean cosine of the logit's gradients with respect to the input embeddings of a and b (Pizza > 0.98). The variant holds the attention pattern fixed: the hand-built replacements compute near-constant attention from their embeddings, and the full gradient then points off the data manifold. A build that answers almost nothing correctly (compiler W-role) has no meaningful q. Post hoc (audit 3); `src/vmi/analysis/clock_pizza.py`, `results/controls/clock_pizza.json`.*
+<!-- END clock-pizza-T0 -->
+
+A complete grader needs a second, neuron-level or causal metric; the matched-neuron
 correlation is a candidate for the per-neuron blind spot only (it separates W-scramble from E4 but not W-alg from E3;
 descriptive, post hoc). The secondary stitching test (map M̂'s residual state after attention linearly into M's,
 fitted on training folds, then run M's MLP and unembedding and take the KL to M on held-out inputs; `stitching_kl` in
@@ -596,9 +668,12 @@ consistent with the explanation rather than the agent limiting the score at this
 literal construction, not a ceiling: the agent exceeds it on the seed targets (Section 4.5), and it repairs
 explanations. The W-role explanation is self-inconsistent — the compiler's literal build answers almost nothing
 correctly (accuracy <!-- v:wrole-comp-acc -->0.007<!-- /v -->) — yet every agent build from it is a working adder (accuracy <!-- v:wrole-agent-acc -->1.000<!-- /v -->), and agents
-tune constants against their task self-test (Section 3.3, Appendix D). A score therefore measures the explanation
-together with what the agent does with it; removing the self-test left E3's HS unchanged (Section 4.5), so for true
-explanations the self-test does not drive the score. With the local Qwen models (4B and 9B parameters, 4-bit weights,
+tune constants against task accuracy (Section 3.3, Appendix D). A score therefore measures the explanation
+together with what the agent does with it. The self-test ablation cannot separate the two, because the agents
+measured accuracy with their own code when the script was gone (Section 4.5), and no variant of this task can hide the
+labels. The agent-free compiler is the reference without feedback: on T0 the agent's HS stays within the compiler's
+level for E2–E4, so there the repair did not move HS beyond the bootstrap CI, while on T2's E3 it lifted HS by
+<!-- v:h5-max -->+0.179 (T2 E3)<!-- /v -->. With the local Qwen models (4B and 9B parameters, 4-bit weights,
 our bash-only harness, 60 steps) the method did not work at all: they never built a working replacement, even from
 the per-neuron table. Model size, quantisation and harness are confounded here, and the capability threshold between
 them and Haiku is not located.
@@ -613,19 +688,27 @@ them and Haiku is not located.
 - **One simulator family in the main arm, and it knows the paper.** Claude Haiku 5.5 often builds most of the paper's
   frequencies into replacements when an explanation leaves them open (<!-- v:e1-mem -->five of six<!-- /v --> E1 and <!-- v:e0-mem -->one of three<!-- /v --> E0 build scripts;
   Section 4.6), so T-paper scores of underspecified explanations are not evidence about the explanation. T0–T2 and
-  T-new are not analysed in any paper; T0–T2's key frequencies are public on Hugging Face, but only since after the
+  T-new are not analysed in any paper; T0–T2's key frequencies are on Hugging Face, uploaded only after the
   simulator's training-data cutoff, and the sandbox has no internet access. E0/E1 measure what the simulator brings by
   itself.
-- **The agent repairs and tunes.** Agents adjust constants against the task self-test, and they turn a
+- **The agent repairs and tunes.** Agents adjust constants against task accuracy, and they turn a
   self-inconsistent explanation (W-role) into a working adder (Section 5); the static audit sees only the final build
-  script. No target information is involved, but scores reflect the explanation plus the agent's repair.
+  script. No target information is involved, but scores reflect the explanation plus the agent's repair. Every run
+  checks accuracy (<!-- v:any-label -->all 96<!-- /v --> reported runs, through `selftest.py` or their own code), so
+  the self-test ablation did not remove this feedback (Section 4.5); only the agent-free compiler measures an
+  explanation without it.
 - **Multiplicity.** As preregistered, there is no correction across the eight hypotheses (Holm only within H2 and H4).
-  Under a post-hoc Bonferroni correction over the eight (threshold 0.05/8): <!-- v:bonferroni -->H1's HS trend p = 1.00e-04 survives; H4 (E3, Holm-adjusted) p = 0.009 would not survive; H4 (E4, Holm-adjusted) p = 0.009 would not survive; H7 p = 0.016 would not survive<!-- /v -->. H7's p is
+  Under a post-hoc Bonferroni correction over the eight (threshold 0.05/8): <!-- v:bonferroni -->H1's HS trend p = 9.47e-05 survives; H4 (E3, Holm-adjusted) p = 0.009 would not survive; H4 (E4, Holm-adjusted) p = 0.009 would not survive; H7 p = 0.016 would not survive<!-- /v -->. H7's p is
   the smallest attainable with six replacements. H8 is descriptive (§5 of the preregistration).
 - **Scripted explanations.** The explanations are rendered by our script, so they share its style and its errors; the
   compiler's non-monotonicity on T2 and T-paper (Appendix) shows that E3 as rendered can mislead a literal build.
 - **HS blind spots and scale.** Per-neuron assignment and Clock-versus-Pizza (Section 5); HS is not anchored at 0 for
   unrelated networks, and its soundness direction depends on the replacement's basis (whitened check in Appendix B).
+  At `mlp_post` its linear alignment is wider than the MLP's symmetry group (permutation and positive scaling), against
+  the preregistration's "no wider" rationale (deviation 10).
+- **The true explanations are not complete about Clock versus Pizza.** By Zhong et al.'s distance irrelevance (post
+  hoc) the replacements built from E1–E3 are Pizza-like while T0 is a Clock (Section 5): our "true" explanations, as
+  rendered, omit what makes T0 a Clock, so "true" means true at the level of frequencies and component roles.
 - **Preregistered analyses not run** (deviation 8): redrawn W-freq and W-scramble explanations (3 seeds) and the
   T-paper retrain baselines; W-alg is not length-matched.
 - **No capability axis.** The planned local-simulator ablation was stopped after <!-- v:n-local -->five<!-- /v --> runs at chance (deviation 5), so
@@ -805,7 +888,7 @@ Explainer thresholds varied (E2–E4 re-rendered and re-compiled, no agent):
 | 0.25 | 0.9 | 2, 3, 23, 37, 39 | 0.895 | 0.898 | 0.952 |
 <!-- END explainer-sensitivity-T0 -->
 
-**Reading.** The ordering of explanations by the agent runs' HS is unchanged by the number of folds, the fold seed and a hundredfold stronger or weaker ridge (Kendall τ = 1); the conclusions do not hinge on these settings. Single sites reorder some neighbours: the MLP site alone gives E1 and W-freq a small floor and drops W-role to last, and the residual sites alone swap the order within the top group. Orthogonal alignment lowers every value while keeping the pattern: the wrong-frequency, no-explanation and wrong-role replacements stay at the bottom, and the Pizza and scrambled-neuron replacements stay among the true ones, so neither blind spot is an artefact of allowing general linear maps. *Whitened soundness (post hoc, audit 2026-11-22).* Making soundness invariant to any invertible map of the replacement's basis keeps the coarse pattern: W-freq, E0, E1 and W-role stay at the bottom and E2–E4 high, W-freq stays below every E2–E4 mean (H3), every E3/E4 run stays above every retrain (H4), every E3/E4 replacement keeps a positive margin over every wrong target (H7, line under the table), and H1's trend test still passes. It does reorder the high group (τ below 1): E2 and E3 tie, and the Pizza explanation moves above E3. So the coarse conclusions do not depend on how soundness weights the replacement's directions, while distinctions among explanations that name the right frequencies do; random networks stay above the retrains under every variant. The compiler's builds are more sensitive to the ridge strength. In the explainer, the stricter key-frequency threshold (τ = 0.35) drops frequency 2 — a frequency with no neurons in T0 — and the compiler's HS rises for E2–E4: the preregistered threshold admits a weak frequency that a literal construction then builds in. *Post hoc observation; the preregistered threshold stays the analysis default.*
+**Reading.** The ordering of explanations by the agent runs' HS is unchanged by the number of folds, the fold seed and a hundredfold stronger or weaker ridge (Kendall τ = 1); the conclusions do not hinge on these settings. Single sites reorder some neighbours: the MLP site alone gives E1 and W-freq a small floor and drops W-role to last, and the residual sites alone swap the order within the top group. Orthogonal alignment lowers every value while keeping the pattern: the wrong-frequency, no-explanation and wrong-role replacements stay at the bottom, and the Pizza and scrambled-neuron replacements stay among the true ones, so neither blind spot is an artefact of allowing general rather than orthogonal linear maps (orthogonal maps still mix neurons; the permutation-only comparison is the matched-neuron correlation, which does separate W-scramble). *Whitened soundness (post hoc, audit 2026-11-22).* Making soundness invariant to any invertible map of the replacement's basis keeps the coarse pattern: W-freq, E0, E1 and W-role stay at the bottom and E2–E4 high, W-freq stays below every E2–E4 mean (H3), every E3/E4 run stays above every retrain (H4), every E3/E4 replacement keeps a positive margin over every wrong target (H7, line under the table), and H1's trend test still passes. It does reorder the high group (τ below 1): E2 and E3 tie, and the Pizza explanation moves above E3. So the coarse conclusions do not depend on how soundness weights the replacement's directions, while distinctions among explanations that name the right frequencies do; random networks stay above the retrains under every variant. The compiler's builds are more sensitive to the ridge strength. In the explainer, the stricter key-frequency threshold (τ = 0.35) drops frequency 2 — a frequency with no neurons in T0 — and the compiler's HS rises for E2–E4: the preregistered threshold admits a weak frequency that a literal construction then builds in. *Post hoc observation; the preregistered threshold stays the analysis default.*
 
 ## Appendix C — Claude API cost
 
@@ -825,21 +908,21 @@ Self-test runs and announced parameter sweeps per run of the main simulator, cou
 agent runs are recorded in `results/environment.json`.
 
 <!-- BEGIN agent-behaviour -->
-| Explanation | runs | self-test runs per run (median, range) | runs whose narration states a sweep or tuning | runs with ≥ 2 self-test runs |
-|---|---|---|---|---|
-| E0 | 3 | 3 (2–3) | 1 | 3 |
-| E1 | 6 | 3 (2–5) | 6 | 6 |
-| E2 | 9 | 3 (2–6) | 3 | 9 |
-| E3 | 30 | 3 (0–8) | 13 | 22 |
-| E4 | 15 | 4 (1–8) | 6 | 13 |
-| W-freq | 21 | 3 (1–9) | 12 | 18 |
-| W-alg | 3 | 1 (1–2) | 0 | 1 |
-| W-role | 3 | 2 (1–3) | 0 | 2 |
-| W-scramble | 3 | 3 (2–5) | 0 | 3 |
-| E-paper | 3 | 3 (2–5) | 0 | 3 |
-| **all** | 96 | 3 (0–9) | 41 | 80 |
+| Explanation | runs | self-test runs per run (median, range) | runs whose narration states a sweep or tuning | runs with ≥ 2 self-test runs | runs with own label checks (no selftest.py) |
+|---|---|---|---|---|---|
+| E0 | 3 | 3 (2–3) | 1 | 3 | 2 |
+| E1 | 6 | 3 (2–5) | 6 | 6 | 1 |
+| E2 | 9 | 3 (2–6) | 3 | 9 | 0 |
+| E3 | 30 | 3 (0–8) | 13 | 22 | 12 |
+| E4 | 15 | 4 (1–8) | 6 | 13 | 5 |
+| W-freq | 21 | 3 (1–9) | 12 | 18 | 5 |
+| W-alg | 3 | 1 (1–2) | 0 | 1 | 1 |
+| W-role | 3 | 2 (1–3) | 0 | 2 | 0 |
+| W-scramble | 3 | 3 (2–5) | 0 | 3 | 1 |
+| E-paper | 3 | 3 (2–5) | 0 | 3 | 0 |
+| **all** | 96 | 3 (0–9) | 41 | 80 | 27 |
 
-*Self-test runs: commands that run selftest.py with python. Announced sweep or tuning: the agent's narration before its closing message mentions sweeping, tuning, a grid search, scanning over, or trying several values of a constant (pattern SWEEP in src/vmi/analysis/agent_behaviour.py); this is stated intent, and Claude's thinking is not returned by the API. Post hoc, audit 2026-11-22.*
+*Self-test runs: commands that run selftest.py with python. Own label checks: commands that score the network against the task labels without selftest.py (they call forward.py's labels() or compare an argmax with (a + b) % 113). Announced sweep or tuning: the agent's narration before its closing message mentions sweeping, tuning, a grid search, scanning over, or trying several values of a constant (pattern SWEEP in src/vmi/analysis/agent_behaviour.py); this is stated intent, and Claude's thinking is not returned by the API. Post hoc, audits 2026-11-22.*
 <!-- END agent-behaviour -->
 
 ## AI statement

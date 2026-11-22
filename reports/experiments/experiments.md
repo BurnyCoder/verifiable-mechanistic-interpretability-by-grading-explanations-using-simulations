@@ -9,7 +9,7 @@ no-agent arms.*
 |---|---|---|---|
 | 00 | Stage 0 — tooling and smoke tests on the dev target (never reported as results) | done | [00-stage0-dev/experiment.md](00-stage0-dev/experiment.md) |
 | 01 | Round 1 (N = 1) — main method → controls → baselines → ablations → hyperparameter → seed sensitivity | done | [01-round1/experiment.md](01-round1/experiment.md) |
-| 02 | Round 2 (N = 3) — the same stages, two more replicates per condition, Claude Haiku only | agent runs done; H8 trajectory re-run as preregistered (still supported); redrawn W-freq/W-scramble and T-paper's extra retrains not run (deviation 8); second audit: post-hoc H8 negative controls, pooled E0/E1 memorisation analysis, transcript counts of self-test tuning, exact trend test (deviation 9) | [02-round2/experiment.md](02-round2/experiment.md) |
+| 02 | Round 2 (N = 3) — the same stages, two more replicates per condition, Claude Haiku only | agent runs done; H8 trajectory re-run as preregistered (still supported); redrawn W-freq/W-scramble and T-paper's extra retrains not run (deviation 8); second audit: post-hoc H8 negative controls, pooled E0/E1 memorisation analysis, transcript counts of self-test tuning, exact trend test (deviation 9); third audit: verdicts recomputed independently, H1's E0 clause and the T-paper replication corrected, exact H1 trend test, own label checks counted, Clock/Pizza diagnostics (deviation 10) | [02-round2/experiment.md](02-round2/experiment.md) |
 | 03 | Round 3 (N = 10) | postponed to a later day (user decision, deviation 6) | – |
 
 Learnings across experiments: [learnings.md](learnings.md).

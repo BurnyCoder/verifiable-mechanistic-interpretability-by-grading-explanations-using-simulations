@@ -21,6 +21,7 @@
 | Round 2 | README: predicted vs. measured, highlighted examples, concrete outputs vs. ground truth, the agents' own words; output-examples and outputs-vs-internals figures; ablations table | your requests | README, `reports/agent-examples.md` |
 | After round 2 | **Independent audit**: statistics recomputed independently (all reproduce); HS invariance claim corrected (soundness is not GL-invariant) with a post-hoc whitened check; missing preregistered statistics added (H3 CIs, H4 student test, replication tests) and H8 run as preregistered; W-alg's length mismatch and two analyses never run disclosed; memorisation, diagnosis and citation wording corrected | your request for an independent audit | deviation 8 in `preregistration.md`, `reviews/independent-audit-2026-11-22.md` |
 | After round 2 | **Second independent audit**: target key frequencies are public on HF (since after the simulator's cutoff), so the contamination wording changed; E0/E1 runs pooled across targets (identical text) with build-script frequency lists and a threshold-free spectrum share; H5 reported on T0 (preregistered) apart from the seed targets and T-paper; agents' self-test tuning disclosed and counted; H8 negative controls; exact JT for 9 values; calibrated-KL evidence; cost split; citation fixes (Yip, Heap, Sutter, Haklay, Poché, missing references) | your request for an independent audit | deviation 9 in `preregistration.md`, `reviews/audit-2-2026-11-22.md` |
+| After round 2 | **Third independent audit**: every hypothesis verdict recomputed by an independent script (all test results reproduce); H1's untested "E0 below E1" clause gets its own verdict (not observed); T-paper replication over E1 < E3 < E4 (not supported); exact JT for H1; self-test ablation shown not to remove label feedback (own label checks counted); alignment class at `mlp_post` corrected; Zhong et al. Clock/Pizza diagnostics (targets Clock, true-explanation rebuilds Pizza-like); citation fixes (Sutter, Poché, Paulo, Huang, Yip, Haklay, Zhong, Cammarata, OpenCode, Qwen3.8 GGUFs) | your request for an independent audit | deviation 10 in `preregistration.md`, `reviews/audit-3-2026-11-22.md` |
 
 Round 2 (N = 3) runs the 32 Claude Haiku conditions; round 3 (N = 10) is postponed to a later day and starts only when
 you ask for it.
@@ -69,7 +70,7 @@ Your earlier project already published what this one needs, so targets and basel
 | Role | Run | Key frequencies | Rule |
 |---|---|---|---|
 | **T0** main | `wd1_s1` | 2, 3, 23, 37, 39 | first seed whose frequencies differ from the paper's |
-| **T1** seed sensitivity | `wd1_s4` | 11, 25, 49 | fewest key frequencies |
+| **T1** seed sensitivity | `wd1_s4` | 11, 25, 49 | fewest key frequencies (3, tied with `wd1_s9`; the lower seed was taken) |
 | **T2** seed sensitivity | `wd1_s8` | 37, 44, 45, 46, 47, 51 | most key frequencies |
 | **dev** (never reported) | `wd1_s10` | 19, 31, 45, 47 | last seed |
 | **T-paper** (contamination-flagged) | the paper's own checkpoint, epoch 40,000 | 14, 35, 41, 42, 52 | published model |

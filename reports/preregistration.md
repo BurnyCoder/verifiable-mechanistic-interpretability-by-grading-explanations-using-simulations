@@ -219,7 +219,7 @@ Eleven agent smoke runs on the dev target `wd1_s10` (details and transcripts: `r
 `reports/progress.md`. Prompts, `TASK.md`, sandbox templates, explanation templates, harnesses, simulator settings and
 analysis code are fixed from that commit on. T-new is trained after it.
 
-### Post-freeze deviations (logged as they happen; 1–4 and 6 change no hypothesis, metric, test or condition; 5 removes conditions; 7 corrects how H1/H2 verdicts were computed; 8 adds missing preregistered statistics, discloses analyses not run and corrects §4's rationale; 9 corrects factual statements, narrows two claims to their evidence and adds post-hoc checks)
+### Post-freeze deviations (logged as they happen; 1–4 and 6 change no hypothesis, metric, test or condition; 5 removes conditions; 7 corrects how H1/H2 verdicts were computed; 8 adds missing preregistered statistics, discloses analyses not run and corrects §4's rationale; 9 corrects factual statements, narrows two claims to their evidence and adds post-hoc checks; 10 corrects how H1's verdict and the T-paper replication are reported, makes H1's trend test exact, corrects §4's rationale for `mlp_post` and adds post-hoc checks)
 
 1. **2026-11-21, round 1, after the controls stage — analysis code brought in line with amendment 2.** The frozen
    `analysis/hypotheses.py` still selected the main condition as Qwen3.6-35B-A3B at temperature 0.6 (pre-amendment)
@@ -342,3 +342,37 @@ analysis code are fixed from that commit on. T-new is trained after it.
    Monte-Carlo. It now enumerates assignments exactly. This changes only the replication table's T1 and T2 p-values,
    in the third decimal place; no verdict changes.
    None of (a)–(e) changes a primary metric, a preregistered verdict rule or a reported verdict.
+10. **2026-11-22, after round 2 — third independent audit: hypothesis evaluation, an erratum and post-hoc checks.**
+   Made without reading the earlier reviews, after every round-2 number had been seen
+   (`reports/reviews/audit-3-2026-11-22.md`). Every verdict was first recomputed by an independent script written from
+   §5 (exact permutation tests, scipy exact rank tests); all stored test results reproduced.
+   (a) *H1's E0 clause.* §5's H1 states "E0 … lies below E1"; §5 preregisters no test for that clause, and the verdict
+   had reported only the E1–E4 trend ("HS: supported"). Since "supported requires the stated direction", the clause now
+   has its own direction-only verdict: E0's mean HS is above E1's, so it reads "not observed". H1 is reported as "HS
+   trend E1→E4: supported; E0 below E1: not observed; KL_out: not supported". No test result changed.
+   (b) *T-paper replication.* §5 re-tests H1 on the seed targets "with the same tests", i.e. over the ladder levels each
+   target ran. T-paper ran E1, E3 and E4, but the replication used E3 < E4 only ("cannot tell at this N"); it now uses
+   E1 < E3 < E4, which is "not supported" (exact JT p 0.061; E1's memorised published frequencies raise its HS there).
+   T1, T2 and T-new are unchanged (they ran no E1).
+   (c) *Exact trend test for H1.* `stats.jonckheere` enumerated exactly only up to 50,000 assignments, so H1's
+   4 levels × 3 runs (369,600) used a Monte-Carlo estimate (p = 1.0e-4). It now enumerates all assignments (exact
+   p = 9.5e-5); the verdict is unchanged.
+   (d) *Erratum to §4's rationale.* "The alignment class is linear (invariant to exactly that group) and no wider"
+   holds for the residual sites. At `mlp_post` the MLP's symmetry group is permutation and positive per-neuron scaling,
+   and a linear regression is wider than that group; the secondary matched-neuron correlation is the group-matched
+   comparison. The frozen `TASK.md` told agents the comparison allows "any reordering/positive rescaling of neurons",
+   which understates what the metric allows. The primary metric is unchanged.
+   (e) *Scope of the self-test ablation (§8).* It removed `selftest.py` and the instruction to raise accuracy, not label
+   feedback: all three runs without it computed task accuracy with their own code (`forward.labels()` or (a + b) mod
+   113), as did 27 of the 96 reported runs. Statements that this ablation shows the self-test does not drive the score
+   are withdrawn; transcript counts of own label checks are added (`results/agent_behaviour.json`).
+   (f) *Post-hoc additions (no verdict uses them).* Zhong et al.'s (2023) Clock/Pizza diagnostics (distance
+   irrelevance, gradient symmetricity) for every target and every T0 build (`results/controls/clock_pizza.json`,
+   reading rule fixed before computing): all targets are Clock-like and the literal Pizza build Pizza-like, so W-alg is
+   wrong for T0 as designed, but the replacements built from the true E1–E3 explanations are Pizza-like too.
+   (g) *Corrections of wording and citations*: T1 ties with `wd1_s9` for the fewest key frequencies (3; the rule took
+   the lower seed); the target repository's files were uploaded on 2026-10-21 (when it became public is not
+   recorded); Sutter et al.'s assumptions, Poché et al.'s setting, Paulo et al.'s scorers, Huang et al.'s sample and
+   Yip et al.'s models stated as in the sources.
+   None of (a)–(g) changes a primary metric or a preregistered test; (a) changes how H1's verdict is reported, (b) turns
+   the T-paper replication of H1 from "cannot tell" into "not supported".

@@ -10,7 +10,7 @@ Hypotheses and tests: [preregistration.md](preregistration.md).*
 | Architecture (target and replacement) | 1-layer transformer, p = 113, d_model 128, 4 heads × 32, d_mlp 512, ReLU, no LayerNorm (paper layout, `grokviz` `d52a898`) |
 | Main simulator (amendment 2) | Claude Code 2.1.330 + **Claude Haiku 5.5** (`claude-haiku-5-5`, default sampling, effort medium), API credits through a key-injecting, budget-capped proxy ($2/run, $20 total) |
 | Capability ablation simulators | Qwen3.6-35B-A3B UD-IQ4_XS, Qwen3.5-9B, Qwen3.5-4B (Q4_K_M) on llama.cpp b12600, custom bash-only harness (mini-SWE-agent design), 80k context, 16k thinking budget, Qwen coding preset (temperature 0.6, presence penalty 0) |
-| Sandbox | WSL2 + bubblewrap, no network, only the run folder writable, numpy only, no access to any target file |
+| Sandbox | WSL2 + bubblewrap, no network except the model endpoint (unix socket to an outside proxy or relay), only the run folder writable, numpy only, no access to any target file |
 | Agent inputs | `TASK.md`, `EXPLANATION.md` (+ CSV for E4), `ARCHITECTURE.md`, `forward.py`, `selftest.py`, starter `build_weights.py` |
 | Agent output | `build_weights.py` + `weights.npz` (11 named arrays in the paper layout) |
 | Limits | 60 min wall clock (amendment 2), 60 steps for the local harness (Claude Code: time and budget only), build script ≤ 60 s |
