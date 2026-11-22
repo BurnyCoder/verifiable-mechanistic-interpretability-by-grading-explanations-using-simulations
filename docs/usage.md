@@ -35,6 +35,7 @@ All commands run from the repository root on Windows; agent runs call into WSL a
 | `baselines TARGET` | retrains, distilled students, Fourier-restricted M, weights dump | `results/baselines/` |
 | `train RUN_IDS...` | train fresh runs with the paper recipe (e.g. `new_s11` = T-new) | `VMI_DATA_DIR/trained/` |
 | `regrade` | recompute secondary metrics of graded runs from saved weights (primary metrics must reproduce) | `results/runs/` |
+| `diagnose` | re-run agents' build scripts with single edits (interventions) to find what made a run fail; read by the README examples | `results/diagnoses/` |
 | `analyse ROUND` | evaluate all hypotheses at the round's N, draw all figures, refill every marked table in README, reports and paper | `results/hypotheses_round*.json`, `reports/figures/`, marked blocks |
 | `paper` | build the paper PDF with pandoc + XeLaTeX | `reports/paper.pdf` |
 
