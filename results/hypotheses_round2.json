@@ -6,19 +6,20 @@
       "N": 3,
       "label": "at N=3 \u2014 not yet N=10",
       "verdicts": {
-        "HS": "supported",
+        "HS trend E1\u2192E4": "supported",
+        "E0 below E1": "not observed (E0 above E1; direction only, no test preregistered)",
         "KL_out": "not supported"
       },
       "jt_hs": {
         "J": 51.0,
-        "p": 9.99950002499875e-05,
-        "method": "monte-carlo 20000",
+        "p": 9.46969696969697e-05,
+        "method": "exact",
         "orderings": 369600
       },
       "jt_neg_kl": {
         "J": 17.0,
-        "p": 0.9326033698315084,
-        "method": "monte-carlo 20000",
+        "p": 0.9309442640692641,
+        "method": "exact",
         "orderings": 369600
       },
       "spearman_hs": {
