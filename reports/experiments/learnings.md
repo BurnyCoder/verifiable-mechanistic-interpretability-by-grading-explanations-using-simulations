@@ -393,7 +393,28 @@ deviation 9).
   fitted to the labels "gradient symmetricity > 98 %" and "distance irrelevance < 0.6"; two earlier passes had
   described lines at those values. *Learning:* quote the caption when citing a figure's boundaries.
 - **Check what a source says about your own design choice.** The README called restricting HS to linear maps "our
-  inference, not theirs", but Sutter et al. suggest it themselves; Nanda et al. read their main model's key frequencies
-  off the embedding, not off W_L, which on T0 is exactly where frequency 2 appears or not. *Learning:* when a design
+  inference, not theirs", but Sutter et al. suggest it themselves; Nanda et al. take their main model's key
+  frequencies from the embedding (six frequencies, of which the five used downstream; corrected in audit 7), not from
+  W_L, which on T0 is exactly where frequency 2 appears or not. *Learning:* when a design
   choice is motivated by a paper, look for that paper's own recommendation before claiming or disclaiming it.
+
+## Seventh independent audit (2026-11-22, deviation 14)
+
+- **An audit that matches patterns certifies only those patterns.** The static audit of `build_weights.py` looks for
+  gradient-descent and optimiser vocabulary, and the paper read "build scripts are audited" as compliance with "no loop
+  that updates weights to reduce a loss". Reading every final script found 7 of 96 with a derivative-free search over
+  one constant (3–231 values, or 20,000 random frequency sets, or an 8-step calibration), kept by a fit, task accuracy
+  or a formula (`results/audit7/build_script_searches.json`). None is in a hypothesis test, and dropping them changes no
+  seed-target reading except one sign-only count. *Learning:* state what an automated check detects, and validate it
+  by reading the inputs once; for round 3, flag any variable that keeps "the best" candidate.
+- **A figure is a source too.** "The published explanation leaves the logit scale unspecified" was wrong: Nanda et al.
+  plot the fitted α_k over training (App. C.1.5, Fig. 14) without giving numbers in the text. *Learning:* check the
+  appendix figures before saying a paper does not give a quantity.
+- **Paraphrases drift toward the claim they support.** Gross et al. measure proof length, not explanation length;
+  Gromov's weights are approximate; Huang et al. report causal effects "similar to the random baseline", not "little
+  to no causal efficacy"; Poché et al.'s shortcut hypothesis is about task priors. Each paraphrase was close but
+  stronger or broader than the source. *Learning:* paraphrase from the source's own sentence and keep its qualifiers.
+- **Exact enumeration is cheap at N = 3.** Every preregistered test at this N has a small null distribution
+  (369,600 assignments at most), and the bootstrap interval of a three-run mean is exactly the range of the runs, so
+  the verdicts can be re-derived with no statistics library and no Monte-Carlo error (`scripts/audit7/verdicts.py`).
 

@@ -77,8 +77,9 @@ test) and `scipy.linalg.orthogonal_procrustes`; netrep was not used in the end (
   for trained and random transformers in many settings ([Heap et al.](https://arxiv.org/abs/2501.17727), v2 2026). Relatedly, when
   LLM simulators predict a text classifier's outputs from concept explanations (not per-feature activations; an extension
   covers attributions and rationales), the gains over matched no-explanation baselines are statistically significant but
-  small relative to their variability, which the authors explain by a "shortcut hypothesis": the simulator solves the
-  task directly when class names are meaningful ([Poché et al. 2026](https://arxiv.org/abs/2609.08585)).
+  small relative to their variability, which the authors explain by a "shortcut hypothesis": the simulator's
+  predictions rest mainly on task priors (with meaningful class names it can solve the task directly), and explanations
+  change them only slightly ([Poché et al. 2026](https://arxiv.org/abs/2609.08585)).
 - **Substitution-based scores** (Bills' ablation score; [Paulo & Belrose 2025](https://arxiv.org/abs/2501.18838);
   Gao's downstream-KL proposal) replace activations by explanation-driven predictions and measure output damage.
 - **Whole-model rebuilds** exist for agent-written models (iWSP, [arXiv:2611.18114](https://arxiv.org/abs/2611.18114))

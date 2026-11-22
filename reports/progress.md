@@ -5,6 +5,25 @@ corrected — e.g. "HS tracks circuit formation" (now: shared frequency structur
 and to scrambled tables" (now: did not separate the agents' builds at N = 3, deviation 12), "41 of 96 runs announce a
 sweep" (now 44 of 96 by reading, deviation 13) — are listed in the preregistration's deviations.*
 
+## 2026-11-22 20:00 — seventh independent audit (deviation 14)
+
+**Done** (no new agent runs, no API spend; N = 3 — not yet N = 10)
+- Audit made without reading the earlier reviews or audit scripts (`reviews/audit-7-2026-11-22.md`). Every round-2
+  verdict re-derived with numpy and the standard library only, every null distribution enumerated in full
+  (`results/audit7/verdicts.json`, all checks agree); the T0 runs and compiler builds the tests use re-graded with a
+  numpy forward pass written from `ARCHITECTURE.md` (`results/audit7/regrade.json`); Zhong et al.'s distance
+  irrelevance recomputed for 41 networks (`results/audit7/clock_pizza_check.json`); three parallel source checks read
+  the cited papers in full.
+- Found and disclosed: the static audit catches gradient-descent and optimiser patterns, not small searches over a
+  constant; reading every final build script found such searches in some runs, none in a hypothesis test, and a
+  sensitivity check without them changes no verdict (`results/audit7/build_script_searches.json`). Corrected: Nanda et
+  al.'s logit scale (given as a figure) and key-frequency reading (six embedding frequencies, five used), Gromov,
+  Gross et al., Huang et al., Poché et al.'s shortcut hypothesis, iWSP's agents.
+
+**Effect:** no primary metric, preregistered test or verdict changed.
+
+**Next:** round 3 (N = 10) only when you ask; before it, extend the static audit to flag selection loops.
+
 ## 2026-11-22 18:00 — sixth independent audit (deviation 13)
 
 **Done** (no new agent runs, no API spend; N = 3 — not yet N = 10)

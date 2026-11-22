@@ -125,7 +125,7 @@ The study uses one simulator harness, fully offline.
 
 **Sandbox (WSL Ubuntu):** `bwrap --unshare-net --clearenv`, only the run folder writable, no `/mnt`, `/home` or `/run`; the model endpoint is reached through a unix socket.
 - **Contents:** `TASK.md`, `EXPLANATION.md` (+ appendix), `ARCHITECTURE.md`, `forward.py` (numpy forward pass), `selftest.py` (shape checks + accuracy against the task labels (a+b) mod p — never against M). Required output: `build_weights.py` + `weights.npz`.
-- **Rules:** numpy only; no training loops or iterative optimisation (static audit + manual review of flagged scripts); build script ≤ 60 s; wall-clock and step caps per run.
+- **Rules:** numpy only; no training loops or iterative optimisation (static audit + manual review of flagged scripts); build script ≤ 60 s; wall-clock and step caps per run. *(Audit 7: the static audit's patterns catch gradient descent and optimisers, not small searches over a constant, which some reported final scripts contain (found by reading every script; deviation 14).)*
 - **Isolation self-check** logged before every batch: external HTTP/DNS/TCP fail, only `lo` exists, `/mnt/c` and M's path are absent, Windows interop is unreachable, AF_VSOCK is blocked by a seccomp filter. Threat model: prevent accidental access to weights or internet, not a malicious model.
 - **Logging:** event stream, session transcript, raw wire log (auth headers never logged) and a readable timestamped transcript per run, echoed to the terminal.
 

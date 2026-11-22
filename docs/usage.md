@@ -57,5 +57,5 @@ Levels: `E0`–`E4`, `W-freq`, `W-alg`, `W-role`, `W-scramble`, `E-paper` (T-pap
    the bash-only harness (`simulator/harness.py`) or OpenCode. The agent's events stream to the terminal and
    `logs/runner.log`.
 3. Afterwards `work_out/`, `logs/events.ndjson`, `logs/transcript.md`, the gzipped wire log and OpenCode's own data are
-   in the run folder; `simulator/audit.py` checks `build_weights.py` for training loops (it does not see what the agent tries in scratch copies; `analysis/agent_behaviour.py` counts self-test runs and announced sweeps from the transcript); `grader/score.py` grades
+   in the run folder; `simulator/audit.py` checks `build_weights.py` for gradient-descent and optimiser patterns (it misses small searches over a constant, which audit 7 found by reading every script, and it does not see what the agent tries in scratch copies; `analysis/agent_behaviour.py` counts self-test runs and announced sweeps from the transcript); `grader/score.py` grades
    `weights.npz` against the target (failures are graded as the all-zero model).
