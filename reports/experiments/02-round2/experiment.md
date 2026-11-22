@@ -133,7 +133,8 @@ W-alg (Pizza) and W-scramble tie with the true explanations. H4b's KL half fails
 <!-- END ablations-T0 -->
 
 **Reading.** Format (maths, code), removing the self-test and effort level move HS by a few hundredths at most. The
-round-1 low-effort collapse was one run in three.
+round-1 low-effort collapse was one run in three, and its cause is a layout bug in that run's own script (one
+head's output written onto the readout dimensions; fixing that one number restores full accuracy, `vmi diagnose`).
 
 ## Memorisation check (post hoc)
 

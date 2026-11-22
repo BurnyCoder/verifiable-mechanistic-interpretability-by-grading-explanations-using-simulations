@@ -1,7 +1,8 @@
 {
   "run_id": "hyper__T0__E3-effort-low__claudehaiku55-claudecode__tdef__s0",
   "cause": "a layout bug, not the explanation: its constants line `SEP, BIAS, P0, P1, P2, P3, RO = 10, 11, 12, 22, 42, 52, 52` gives head 3's output (P3) and the readout (RO) the same residual dimensions 52\u201361, although its own docstring puts heads 2/3 at 42\u201351, so head 3's attention output is added onto the answer the unembedding reads",
-  "short": "a layout bug: head 3 wrote into the answer dimensions (P3 = RO = 52)",
+  "short": "a layout bug in Haiku's own script: head 3 wrote into the answer dimensions (P3 = RO = 52)",
+  "owner": "The slip is Haiku's own: nothing the agent was given suggests a layout (the starter script defines only the array shapes, and TASK.md and ARCHITECTURE.md name no dimensions); four 10-dimension head slots starting at 12 belong at 12, 22, 32 and 42, and it skipped 32",
   "variants": [
     {
       "name": "as submitted",

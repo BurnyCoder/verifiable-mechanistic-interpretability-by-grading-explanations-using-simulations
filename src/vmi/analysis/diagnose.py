@@ -28,7 +28,10 @@ DIAGNOSES = {
         "cause": ("a layout bug, not the explanation: its constants line `" + LAYOUT + "` gives head 3's output (P3) "
                   "and the readout (RO) the same residual dimensions 52–61, although its own docstring puts heads 2/3 "
                   "at 42–51, so head 3's attention output is added onto the answer the unembedding reads"),
-        "short": "a layout bug: head 3 wrote into the answer dimensions (P3 = RO = 52)",
+        "short": "a layout bug in Haiku's own script: head 3 wrote into the answer dimensions (P3 = RO = 52)",
+        "owner": ("The slip is Haiku's own: nothing the agent was given suggests a layout (the starter script defines "
+                  "only the array shapes, and TASK.md and ARCHITECTURE.md name no dimensions); four 10-dimension head "
+                  "slots starting at 12 belong at 12, 22, 32 and 42, and it skipped 32"),
         "variants": [
             ("as submitted", []),
             ("head 3 moved to free dimensions (P3 = 62), nothing else changed",
@@ -66,7 +69,7 @@ def diagnose(run_id: str) -> dict:
     rec = json.loads((REPO_ROOT / "results" / "runs" / f"{run_id}.json").read_text())
     target = targets.load_model(load(), rec["target"])
     src = load().runs_dir / run_id / "work_out"
-    out = {"run_id": run_id, "cause": spec["cause"], "short": spec["short"],
+    out = {"run_id": run_id, "cause": spec["cause"], "short": spec["short"], "owner": spec.get("owner", ""),
            "variants": [{"name": n, **_run_variant(src, e, target)} for n, e in spec["variants"]],
            "blamed": spec["blamed"], "kept": spec["kept"]}
     OUT.mkdir(parents=True, exist_ok=True)
