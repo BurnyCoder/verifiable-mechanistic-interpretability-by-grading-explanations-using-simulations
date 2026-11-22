@@ -1,5 +1,24 @@
 # Progress
 
+## 2026-11-22 07:00 — second independent audit (deviation 9)
+
+**Done** (no new agent runs, no API spend; N = 3 — not yet N = 10)
+- Audit made without reading the earlier reviews: code against its definitions, every hand-written number against
+  `results/`, every citation against its source (two web passes), the agents' build scripts and transcripts, the
+  Hugging Face target repository. Report: `reviews/audit-2-2026-11-22.md`.
+- Corrected: the targets' key frequencies *are* public (but only since after the simulator's cutoff, and the sandbox
+  has no internet); H5 described on T0 (preregistered) apart from the seed targets and T-paper; memorisation reported
+  on all interchangeable E0/E1 runs; agents' self-test tuning and explanation repair disclosed; "no step cap"
+  erratum; overclaims narrowed; citations reworded (Yip, Heap, Sutter, Haklay, Poché, Stander, FADE, Flash-Next,
+  Claude Code sandbox) and two missing references added.
+- Added (post hoc, no verdict uses them): H8 negative controls, threshold-free spectrum share and declared frequency
+  lists, transcript counts of self-test use, calibrated-KL table, T0 E2–E4 replication row, cost split, recorded
+  software environment, exact trend test.
+
+**Effect:** no preregistered verdict changed (see the audit report, §4).
+
+**Next:** round 3 (N = 10) only when you ask.
+
 ## 2026-11-22 04:00 — independent audit of results, methods and claims
 
 **Done** (no new agent runs; N = 3 — not yet N = 10)
