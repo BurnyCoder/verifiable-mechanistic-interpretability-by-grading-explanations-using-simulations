@@ -70,4 +70,5 @@ flowchart TB
   sandbox gets a placeholder key and a loopback URL, so the agent can call the model but cannot read or exfiltrate
   the key, and the budget is enforced per request before anything is forwarded.
 - **Socket paths**: the endpoint socket lives at a 16-character hash of the run ID because Linux limits unix socket
-  paths to 107 bytes ([man 7 unix](https://man7.org/linux/man-pages/man7/unix.7.html)).
+  paths to 108 bytes including the terminating null, and Python refuses a path of 108 or more bytes with "AF_UNIX path too
+  long" ([man 7 unix](https://man7.org/linux/man-pages/man7/unix.7.html): sun_path is 108 bytes on Linux).
