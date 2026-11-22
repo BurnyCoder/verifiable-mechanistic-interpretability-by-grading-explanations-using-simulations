@@ -136,7 +136,7 @@ The study uses one simulator harness, fully offline.
 ### 4. Grader
 - **Output fidelity — primary:** mean KL(P_M ‖ P_M̂) over all 113² inputs, 113 number classes, nats, float64. Secondary: argmax agreement, task accuracy, centred-logit FVU, temperature-calibrated KL.
 - **Hidden-state similarity — primary:** at three final-position sites (residual after attention, MLP post-activations, final residual), 5-fold held-out linear-regression variance explained in both directions (M̂→M "completeness", M→M̂ "soundness"), combined by harmonic mean and averaged over sites. A linear map is the alignment class because, without LayerNorm, the residual stream is symmetric under any invertible linear map; N=12,769 inputs ≫ 128 dims keeps it non-degenerate.
-- **Secondary:** Hungarian-matched neuron correlation, head-matched attention-pattern distance, linear CKA, orthogonal Procrustes, embedding Fourier-spectrum overlap, and **stitching KL** (map M̂'s hidden state linearly into M, run the rest of M, KL on held-out inputs — a causal test).
+- **Secondary:** optimally matched (linear-assignment) neuron correlation, head-matched attention-pattern distance, linear CKA, orthogonal Procrustes, embedding Fourier-spectrum overlap, and **stitching KL** (map M̂'s hidden state linearly into M, run the rest of M, KL on held-out inputs — a causal test).
 - A run with no valid weights is a failure: reported as a failure rate and scored as the all-zero-weights model; analyses are given with and without failures.
 
 ### 5. After the main method — five separate stages, in this order

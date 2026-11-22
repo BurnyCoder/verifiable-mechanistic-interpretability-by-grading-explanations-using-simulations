@@ -200,10 +200,43 @@ def main() -> None:
     out["summary"] = summ
     out["planted_max_abs_diff"] = {"hs": max(abs(p["audit"]["hs"] - p["stored"]["hs"]) for p in out["planted"]),
                                    "kl_out": max(abs(p["audit"]["kl_out"] - p["stored"]["kl_out"]) for p in out["planted"])}
+    extra(st, out)
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(out, indent=1), encoding="utf-8", newline="\n")
-    log(json.dumps({"summary": summ, "planted": out["planted_max_abs_diff"]}, indent=1))
+    log(json.dumps({"summary": summ, "planted": out["planted_max_abs_diff"], "extra": out["extra_summary"]}, indent=1))
+
+
+def extra(st, out: dict, every: int = 40) -> None:
+    """Stored controls without a weight file of their own: the Fourier-restricted baseline (rebuilt from T0 by
+    `vmi.nonagent.fourier_restricted`) and a systematic sample of the H8 trajectory gradings (every `every`-th of T0's
+    401 checkpoints, all E3/E4 replacements and negative controls; regrading all 6,015 would take hours on CPU)."""
+    from grokviz.runstore import RunStore  # checkpoint iterator of the target repository
+    from vmi import nonagent  # Fourier restriction (the construction under test is only the projection)
+    res = ROOT / "results"
+    base = json.loads((res / "baselines" / "T0.json").read_text(encoding="utf-8"))["fourier_restricted"]
+    g = grade(forward(weights.from_model(targets.load_model(st, "T0"))), nonagent.fourier_restricted(targets.load_model(st, "T0")))
+    out["fourier_restricted"] = {"stored": {"hs": base["hs"], "kl_out": base["kl_out"]}, "audit": g}
+    tr = json.loads((res / "controls" / "trajectory_T0.json").read_text(encoding="utf-8"))
+    nets = {r["run_id"]: r["hs"] for r in tr["replacements"] + tr.get("negative_controls", [])}
+    w = {rid: weights.load_npz(st.runs_dir / rid / "work_out" / "weights.npz") for rid in nets}
+    rows = []
+    for t, step, model in RunStore(targets.run_dir(st, targets.resolve("T0").run_id)).iter_models("cpu", every=every):
+        acts = forward(weights.from_model(model))
+        for rid, stored in nets.items():
+            h = grade(acts, w[rid])["hs"]
+            rows.append({"step": step, "run_id": rid, "stored": stored[t], "audit": h, "abs_diff": abs(h - stored[t])})
+        log(f"trajectory step {step}: max |ΔHS| so far {max(r['abs_diff'] for r in rows):.2e}")
+    out["trajectory_sample"] = rows
+    out["extra_summary"] = {"fourier_restricted_abs_diff_hs": abs(g["hs"] - base["hs"]),
+                            "fourier_restricted_abs_diff_kl": abs(g["kl_out"] - base["kl_out"]),
+                            "trajectory_n": len(rows), "trajectory_max_abs_diff_hs": max(r["abs_diff"] for r in rows)}
 
 
 if __name__ == "__main__":
-    main()
+    if "--extra-only" in sys.argv and OUT.exists():  # add the extra checks to an existing regrade.json
+        prev = json.loads(OUT.read_text(encoding="utf-8"))
+        extra(load(), prev)
+        OUT.write_text(json.dumps(prev, indent=1), encoding="utf-8", newline="\n")
+        log(json.dumps(prev["extra_summary"], indent=1))
+    else:
+        main()

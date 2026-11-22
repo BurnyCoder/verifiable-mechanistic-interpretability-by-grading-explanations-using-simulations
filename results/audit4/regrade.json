@@ -10707,5 +10707,1203 @@
  "planted_max_abs_diff": {
   "hs": 1.6497914145929826e-12,
   "kl_out": 6.2727600891321345e-15
+ },
+ "fourier_restricted": {
+  "stored": {
+   "hs": 0.9916869912427292,
+   "kl_out": 0.0018368173736378619
+  },
+  "audit": {
+   "kl_out": 0.0018368173736378608,
+   "accuracy": 1.0,
+   "hs": 0.991686991242717,
+   "hs_testmean": 0.9916831049965361,
+   "sites": {
+    "resid_mid": {
+     "completeness_raw": 0.9889557649193698,
+     "soundness_raw": 0.993410115526374,
+     "harmonic": 0.9911779357886437,
+     "harmonic_testmean": 0.9911735867888964,
+     "degenerate": false
+    },
+    "mlp_post": {
+     "completeness_raw": 0.9929980909939703,
+     "soundness_raw": 0.995070638930543,
+     "harmonic": 0.9940332846537931,
+     "harmonic_testmean": 0.9940303874369895,
+     "degenerate": false
+    },
+    "resid_post": {
+     "completeness_raw": 0.9883700375791439,
+     "soundness_raw": 0.991333906280854,
+     "harmonic": 0.9898497532857143,
+     "harmonic_testmean": 0.9898453407637224,
+     "degenerate": false
+    }
+   }
+  }
+ },
+ "trajectory_sample": [
+  {
+   "step": 0,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.1601485709966769,
+   "audit": 0.16014857101616178,
+   "abs_diff": 1.9484885926956963e-11
+  },
+  {
+   "step": 0,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.15614582590988857,
+   "audit": 0.15614582591510098,
+   "abs_diff": 5.212413833888263e-12
+  },
+  {
+   "step": 0,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.2201613470177869,
+   "audit": 0.220161347012523,
+   "abs_diff": 5.263900426655255e-12
+  },
+  {
+   "step": 0,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.17000640663403077,
+   "audit": 0.17000640664211375,
+   "abs_diff": 8.082978730783452e-12
+  },
+  {
+   "step": 0,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.1601576325265425,
+   "audit": 0.16015763252667017,
+   "abs_diff": 1.27675647831893e-13
+  },
+  {
+   "step": 0,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.15207509510050055,
+   "audit": 0.15207509509803782,
+   "abs_diff": 2.462724468799138e-12
+  },
+  {
+   "step": 0,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.16208702797028304,
+   "audit": 0.16208702797035532,
+   "abs_diff": 7.227551890309769e-14
+  },
+  {
+   "step": 0,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.3923080071678708,
+   "audit": 0.39230800716786796,
+   "abs_diff": 2.831068712794149e-15
+  },
+  {
+   "step": 0,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.23116117783293252,
+   "audit": 0.23116117783293558,
+   "abs_diff": 3.0531133177191805e-15
+  },
+  {
+   "step": 0,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.19123821836144192,
+   "audit": 0.19123821836052232,
+   "abs_diff": 9.195977312970172e-13
+  },
+  {
+   "step": 0,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.12604127453588923,
+   "audit": 0.12604127453022684,
+   "abs_diff": 5.662387225768839e-12
+  },
+  {
+   "step": 0,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.22429963657389593,
+   "audit": 0.2242996365733755,
+   "abs_diff": 5.204170427930421e-13
+  },
+  {
+   "step": 0,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.14556543726777993,
+   "audit": 0.14556543726611829,
+   "abs_diff": 1.6616430453808562e-12
+  },
+  {
+   "step": 0,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.1444012617399454,
+   "audit": 0.144401261746452,
+   "abs_diff": 6.5065730581181924e-12
+  },
+  {
+   "step": 0,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.14866964576906241,
+   "audit": 0.1486696457680116,
+   "abs_diff": 1.0508260928077107e-12
+  },
+  {
+   "step": 4000,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.2601834143435805,
+   "audit": 0.26018341434503783,
+   "abs_diff": 1.4573342532742117e-12
+  },
+  {
+   "step": 4000,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.2573252596296502,
+   "audit": 0.2573252596334071,
+   "abs_diff": 3.756883693029067e-12
+  },
+  {
+   "step": 4000,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.2807176248493641,
+   "audit": 0.2807176248415177,
+   "abs_diff": 7.846390204235831e-12
+  },
+  {
+   "step": 4000,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.26661468634416324,
+   "audit": 0.2666146863488765,
+   "abs_diff": 4.713229806441177e-12
+  },
+  {
+   "step": 4000,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.264761180113104,
+   "audit": 0.2647611801075058,
+   "abs_diff": 5.598188579369889e-12
+  },
+  {
+   "step": 4000,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.27356875459349295,
+   "audit": 0.2735687546003202,
+   "abs_diff": 6.827260978781169e-12
+  },
+  {
+   "step": 4000,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.1299740874569221,
+   "audit": 0.12997408745654535,
+   "abs_diff": 3.7675418340654687e-13
+  },
+  {
+   "step": 4000,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.2651080903686874,
+   "audit": 0.26510809036873323,
+   "abs_diff": 4.5852210917018965e-14
+  },
+  {
+   "step": 4000,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.19555924648026488,
+   "audit": 0.19555924648013812,
+   "abs_diff": 1.2675971383657725e-13
+  },
+  {
+   "step": 4000,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.10458215278808249,
+   "audit": 0.10458215278920303,
+   "abs_diff": 1.1205480987541705e-12
+  },
+  {
+   "step": 4000,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.07106227450960612,
+   "audit": 0.07106227450419571,
+   "abs_diff": 5.410408232542352e-12
+  },
+  {
+   "step": 4000,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.12642057277659555,
+   "audit": 0.12642057277480492,
+   "abs_diff": 1.7906232052666837e-12
+  },
+  {
+   "step": 4000,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.10834651640877473,
+   "audit": 0.10834651640446408,
+   "abs_diff": 4.3106490599242875e-12
+  },
+  {
+   "step": 4000,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.12075750067061997,
+   "audit": 0.1207575006768186,
+   "abs_diff": 6.1986388244505974e-12
+  },
+  {
+   "step": 4000,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.12400830982211286,
+   "audit": 0.12400830982219291,
+   "abs_diff": 8.004708007547379e-14
+  },
+  {
+   "step": 8000,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.4682779598993827,
+   "audit": 0.46827795989982474,
+   "abs_diff": 4.420352972545061e-13
+  },
+  {
+   "step": 8000,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.4620265262963687,
+   "audit": 0.4620265262975081,
+   "abs_diff": 1.1394218901727982e-12
+  },
+  {
+   "step": 8000,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.4681228345342678,
+   "audit": 0.46812283452738496,
+   "abs_diff": 6.882827641163658e-12
+  },
+  {
+   "step": 8000,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.47388125683696675,
+   "audit": 0.4738812568384074,
+   "abs_diff": 1.4406809079048344e-12
+  },
+  {
+   "step": 8000,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.48478995403960967,
+   "audit": 0.48478995403658215,
+   "abs_diff": 3.0275226770015706e-12
+  },
+  {
+   "step": 8000,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.473877493677444,
+   "audit": 0.4738774936808204,
+   "abs_diff": 3.376410262490026e-12
+  },
+  {
+   "step": 8000,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.0941119722363517,
+   "audit": 0.09411197223570643,
+   "abs_diff": 6.452754996999488e-13
+  },
+  {
+   "step": 8000,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.22042826951344788,
+   "audit": 0.22042826951307606,
+   "abs_diff": 3.7181369094696493e-13
+  },
+  {
+   "step": 8000,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.16519779791537093,
+   "audit": 0.16519779791507352,
+   "abs_diff": 2.974009927214638e-13
+  },
+  {
+   "step": 8000,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.07526716194593731,
+   "audit": 0.07526716194865213,
+   "abs_diff": 2.7148144843280875e-12
+  },
+  {
+   "step": 8000,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.06132091979348509,
+   "audit": 0.061320919788170954,
+   "abs_diff": 5.314138018519543e-12
+  },
+  {
+   "step": 8000,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.10719384297004521,
+   "audit": 0.10719384297529848,
+   "abs_diff": 5.253270041194469e-12
+  },
+  {
+   "step": 8000,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.09084211663040455,
+   "audit": 0.09084211662903476,
+   "abs_diff": 1.3697931677825181e-12
+  },
+  {
+   "step": 8000,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.10473048736069916,
+   "audit": 0.10473048736655184,
+   "abs_diff": 5.852679452189591e-12
+  },
+  {
+   "step": 8000,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.10636566492913241,
+   "audit": 0.10636566492721639,
+   "abs_diff": 1.916022895898095e-12
+  },
+  {
+   "step": 12000,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.9144293142322569,
+   "audit": 0.9144293142327454,
+   "abs_diff": 4.884981308350689e-13
+  },
+  {
+   "step": 12000,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.9310098725343061,
+   "audit": 0.9310098725352868,
+   "abs_diff": 9.806599976514008e-13
+  },
+  {
+   "step": 12000,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.9011281157868406,
+   "audit": 0.9011281157845111,
+   "abs_diff": 2.3294699502685035e-12
+  },
+  {
+   "step": 12000,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.9100933682992448,
+   "audit": 0.9100933683001345,
+   "abs_diff": 8.897327319346005e-13
+  },
+  {
+   "step": 12000,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.9455122248143238,
+   "audit": 0.9455122248143106,
+   "abs_diff": 1.3211653993039363e-14
+  },
+  {
+   "step": 12000,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.9356104540050488,
+   "audit": 0.9356104540056979,
+   "abs_diff": 6.490363801958665e-13
+  },
+  {
+   "step": 12000,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.005328053345997599,
+   "audit": 0.0053280533459975216,
+   "abs_diff": 7.719519468096792e-17
+  },
+  {
+   "step": 12000,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.22286653222683117,
+   "audit": 0.22286653222722075,
+   "abs_diff": 3.8957725934096743e-13
+  },
+  {
+   "step": 12000,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.1976722782305583,
+   "audit": 0.19767227823045222,
+   "abs_diff": 1.0608181000293371e-13
+  },
+  {
+   "step": 12000,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.06115737169070171,
+   "audit": 0.06115737169438427,
+   "abs_diff": 3.682554261530413e-12
+  },
+  {
+   "step": 12000,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.06528281263237427,
+   "audit": 0.06528281262937817,
+   "abs_diff": 2.9961033654046787e-12
+  },
+  {
+   "step": 12000,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.11681568752287447,
+   "audit": 0.11681568752824668,
+   "abs_diff": 5.3722165604952465e-12
+  },
+  {
+   "step": 12000,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.03849900549274271,
+   "audit": 0.038499005496481,
+   "abs_diff": 3.738287457366596e-12
+  },
+  {
+   "step": 12000,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.034406357850144835,
+   "audit": 0.03440635786041635,
+   "abs_diff": 1.0271512806969696e-11
+  },
+  {
+   "step": 12000,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.035866618293305924,
+   "audit": 0.035866618286465694,
+   "abs_diff": 6.8402297714875715e-12
+  },
+  {
+   "step": 16000,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.9475515939821259,
+   "audit": 0.9475515939824058,
+   "abs_diff": 2.799982468104645e-13
+  },
+  {
+   "step": 16000,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.9528244876121845,
+   "audit": 0.9528244876127537,
+   "abs_diff": 5.692113447253178e-13
+  },
+  {
+   "step": 16000,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.9407795595296015,
+   "audit": 0.9407795595279409,
+   "abs_diff": 1.6605605779318466e-12
+  },
+  {
+   "step": 16000,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.932271611053919,
+   "audit": 0.932271611052428,
+   "abs_diff": 1.4910295220715852e-12
+  },
+  {
+   "step": 16000,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.9616244730784991,
+   "audit": 0.9616244730787248,
+   "abs_diff": 2.2570834090629432e-13
+  },
+  {
+   "step": 16000,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.9705101726080355,
+   "audit": 0.9705101726080688,
+   "abs_diff": 3.3306690738754696e-14
+  },
+  {
+   "step": 16000,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.0030025278410900687,
+   "audit": 0.0030025278410905185,
+   "abs_diff": 4.497270611469872e-16
+  },
+  {
+   "step": 16000,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.2032478474715005,
+   "audit": 0.20324784747132643,
+   "abs_diff": 1.7405521468560892e-13
+  },
+  {
+   "step": 16000,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.19889882982720083,
+   "audit": 0.19889882982698084,
+   "abs_diff": 2.1999069232947477e-13
+  },
+  {
+   "step": 16000,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.0626817726373349,
+   "audit": 0.06268177263835882,
+   "abs_diff": 1.0239170622483584e-12
+  },
+  {
+   "step": 16000,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.06725786777184113,
+   "audit": 0.06725786777091079,
+   "abs_diff": 9.303391390602656e-13
+  },
+  {
+   "step": 16000,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.106442008853331,
+   "audit": 0.10644200885780962,
+   "abs_diff": 4.478625803550074e-12
+  },
+  {
+   "step": 16000,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.04471929449587939,
+   "audit": 0.04471929449819729,
+   "abs_diff": 2.317895875236786e-12
+  },
+  {
+   "step": 16000,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.04095308826603262,
+   "audit": 0.04095308827312546,
+   "abs_diff": 7.092840204059314e-12
+  },
+  {
+   "step": 16000,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.042320773830631486,
+   "audit": 0.04232077382565586,
+   "abs_diff": 4.975624079417429e-12
+  },
+  {
+   "step": 20000,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.9450046977458809,
+   "audit": 0.9450046977458966,
+   "abs_diff": 1.5654144647214707e-14
+  },
+  {
+   "step": 20000,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.9420411170689876,
+   "audit": 0.9420411170694085,
+   "abs_diff": 4.2088554863539684e-13
+  },
+  {
+   "step": 20000,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.9328030463690354,
+   "audit": 0.9328030463713958,
+   "abs_diff": 2.360334150353083e-12
+  },
+  {
+   "step": 20000,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.9238580179738536,
+   "audit": 0.9238580179769733,
+   "abs_diff": 3.11972669919669e-12
+  },
+  {
+   "step": 20000,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.9573480987773878,
+   "audit": 0.9573480987776023,
+   "abs_diff": 2.1449508835758024e-13
+  },
+  {
+   "step": 20000,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.9689828277031758,
+   "audit": 0.9689828277031013,
+   "abs_diff": 7.4495964952348e-14
+  },
+  {
+   "step": 20000,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.0034437407383687457,
+   "audit": 0.0034437407383680584,
+   "abs_diff": 6.873841773558098e-16
+  },
+  {
+   "step": 20000,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.19896556037233837,
+   "audit": 0.19896556037282762,
+   "abs_diff": 4.892475313766909e-13
+  },
+  {
+   "step": 20000,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.19737295443875147,
+   "audit": 0.19737295443809302,
+   "abs_diff": 6.584455203295647e-13
+  },
+  {
+   "step": 20000,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.057863980921721646,
+   "audit": 0.05786398091689298,
+   "abs_diff": 4.828665245426578e-12
+  },
+  {
+   "step": 20000,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.062470673447732626,
+   "audit": 0.062470673444722465,
+   "abs_diff": 3.0101615644539947e-12
+  },
+  {
+   "step": 20000,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.10145497058588754,
+   "audit": 0.10145497058508694,
+   "abs_diff": 8.005957008450082e-13
+  },
+  {
+   "step": 20000,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.04742282736371086,
+   "audit": 0.047422827365928705,
+   "abs_diff": 2.217843964036348e-12
+  },
+  {
+   "step": 20000,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.043822061177538514,
+   "audit": 0.04382206118519777,
+   "abs_diff": 7.659255174541357e-12
+  },
+  {
+   "step": 20000,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.04521504903410803,
+   "audit": 0.04521504902931589,
+   "abs_diff": 4.79213890791641e-12
+  },
+  {
+   "step": 24000,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.9425207700723384,
+   "audit": 0.9425207700727068,
+   "abs_diff": 3.6848302187308946e-13
+  },
+  {
+   "step": 24000,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.9372820114857184,
+   "audit": 0.9372820114864071,
+   "abs_diff": 6.886713421749846e-13
+  },
+  {
+   "step": 24000,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.9270025034789677,
+   "audit": 0.9270025034781882,
+   "abs_diff": 7.794875855893224e-13
+  },
+  {
+   "step": 24000,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.9190206477415496,
+   "audit": 0.9190206477405914,
+   "abs_diff": 9.5812247025151e-13
+  },
+  {
+   "step": 24000,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.9552714497866036,
+   "audit": 0.9552714497869199,
+   "abs_diff": 3.163025397157071e-13
+  },
+  {
+   "step": 24000,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.9670872033399478,
+   "audit": 0.9670872033399752,
+   "abs_diff": 2.7422508708241367e-14
+  },
+  {
+   "step": 24000,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.0035608439545456016,
+   "audit": 0.0035608439545455864,
+   "abs_diff": 1.5178830414797062e-17
+  },
+  {
+   "step": 24000,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.19644254045399445,
+   "audit": 0.1964425404521696,
+   "abs_diff": 1.824845830000754e-12
+  },
+  {
+   "step": 24000,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.19582422774574013,
+   "audit": 0.19582422774528963,
+   "abs_diff": 4.505007478172729e-13
+  },
+  {
+   "step": 24000,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.05664963493442737,
+   "audit": 0.056649634923109954,
+   "abs_diff": 1.1317419223999536e-11
+  },
+  {
+   "step": 24000,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.062197027954592726,
+   "audit": 0.06219702794573029,
+   "abs_diff": 8.862438560797159e-12
+  },
+  {
+   "step": 24000,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.09963199300281737,
+   "audit": 0.09963199299264529,
+   "abs_diff": 1.017208539622061e-11
+  },
+  {
+   "step": 24000,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.04825359221394227,
+   "audit": 0.04825359221569267,
+   "abs_diff": 1.7503984373057335e-12
+  },
+  {
+   "step": 24000,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.04468162265754778,
+   "audit": 0.04468162266491837,
+   "abs_diff": 7.370590249244913e-12
+  },
+  {
+   "step": 24000,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.046085717102104407,
+   "audit": 0.04608571709682854,
+   "abs_diff": 5.275863079745591e-12
+  },
+  {
+   "step": 28000,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.941379918930291,
+   "audit": 0.9413799189299822,
+   "abs_diff": 3.0886404545071855e-13
+  },
+  {
+   "step": 28000,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.9352922169214732,
+   "audit": 0.9352922169202184,
+   "abs_diff": 1.2548850847338144e-12
+  },
+  {
+   "step": 28000,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.9234031949638227,
+   "audit": 0.9234031949633167,
+   "abs_diff": 5.060396546241464e-13
+  },
+  {
+   "step": 28000,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.9166655291803257,
+   "audit": 0.9166655291809104,
+   "abs_diff": 5.846434447676074e-13
+  },
+  {
+   "step": 28000,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.9543456507836815,
+   "audit": 0.9543456507837584,
+   "abs_diff": 7.693845560652335e-14
+  },
+  {
+   "step": 28000,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.9662287895895414,
+   "audit": 0.96622878958923,
+   "abs_diff": 3.114175584073564e-13
+  },
+  {
+   "step": 28000,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.0036217568610808215,
+   "audit": 0.0036217568610799676,
+   "abs_diff": 8.539176310495833e-16
+  },
+  {
+   "step": 28000,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.1949056816717729,
+   "audit": 0.1949056816717262,
+   "abs_diff": 4.671263376110346e-14
+  },
+  {
+   "step": 28000,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.19477240747626715,
+   "audit": 0.19477240747604418,
+   "abs_diff": 2.2296053892034706e-13
+  },
+  {
+   "step": 28000,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.05746415573408096,
+   "audit": 0.05746415571661234,
+   "abs_diff": 1.746861683082912e-11
+  },
+  {
+   "step": 28000,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.06263673064040269,
+   "audit": 0.06263673062813291,
+   "abs_diff": 1.2269782412310803e-11
+  },
+  {
+   "step": 28000,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.09978710786336496,
+   "audit": 0.09978710784811151,
+   "abs_diff": 1.525345127983968e-11
+  },
+  {
+   "step": 28000,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.04844649242354148,
+   "audit": 0.048446492425929556,
+   "abs_diff": 2.388075848180904e-12
+  },
+  {
+   "step": 28000,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.04493585858694766,
+   "audit": 0.04493585859491359,
+   "abs_diff": 7.965933468412345e-12
+  },
+  {
+   "step": 28000,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.046344466977406684,
+   "audit": 0.046344466972727115,
+   "abs_diff": 4.679569232113323e-12
+  },
+  {
+   "step": 32000,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.9407252188877521,
+   "audit": 0.9407252188875778,
+   "abs_diff": 1.7430501486614958e-13
+  },
+  {
+   "step": 32000,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.9340791671619062,
+   "audit": 0.9340791671635794,
+   "abs_diff": 1.6732171204125734e-12
+  },
+  {
+   "step": 32000,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.9203340022239926,
+   "audit": 0.920334002224819,
+   "abs_diff": 8.26338997228504e-13
+  },
+  {
+   "step": 32000,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.9147560127157598,
+   "audit": 0.9147560127164701,
+   "abs_diff": 7.103206911551752e-13
+  },
+  {
+   "step": 32000,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.9537544397739413,
+   "audit": 0.9537544397743023,
+   "abs_diff": 3.610445276081009e-13
+  },
+  {
+   "step": 32000,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.965930521993512,
+   "audit": 0.9659305219935468,
+   "abs_diff": 3.47499806707674e-14
+  },
+  {
+   "step": 32000,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.0036614014860072187,
+   "audit": 0.003661401486006815,
+   "abs_diff": 4.0375688903360185e-16
+  },
+  {
+   "step": 32000,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.19350542437973048,
+   "audit": 0.19350542438051277,
+   "abs_diff": 7.822908987265009e-13
+  },
+  {
+   "step": 32000,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.19416235949457075,
+   "audit": 0.19416235949673943,
+   "abs_diff": 2.168681900727165e-12
+  },
+  {
+   "step": 32000,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.056886423096038995,
+   "audit": 0.05688642310582142,
+   "abs_diff": 9.782424870152795e-12
+  },
+  {
+   "step": 32000,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.06246091625110528,
+   "audit": 0.06246091625639344,
+   "abs_diff": 5.288158799743314e-12
+  },
+  {
+   "step": 32000,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.09835395242914768,
+   "audit": 0.09835395244323487,
+   "abs_diff": 1.4087189748046569e-11
+  },
+  {
+   "step": 32000,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.0484006799012468,
+   "audit": 0.0484006799038357,
+   "abs_diff": 2.588901315547787e-12
+  },
+  {
+   "step": 32000,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.04487902952184488,
+   "audit": 0.044879029529820647,
+   "abs_diff": 7.975765881074182e-12
+  },
+  {
+   "step": 32000,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.0462783244122365,
+   "audit": 0.04627832440765142,
+   "abs_diff": 4.5850753749299145e-12
+  },
+  {
+   "step": 36000,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.9401450308206366,
+   "audit": 0.9401450308211715,
+   "abs_diff": 5.349054532644004e-13
+  },
+  {
+   "step": 36000,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.9331944697694263,
+   "audit": 0.933194469770766,
+   "abs_diff": 1.3397061238151764e-12
+  },
+  {
+   "step": 36000,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.917717242501667,
+   "audit": 0.9177172425012823,
+   "abs_diff": 3.8469227803261674e-13
+  },
+  {
+   "step": 36000,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.9130925810177345,
+   "audit": 0.9130925810169614,
+   "abs_diff": 7.730482920464965e-13
+  },
+  {
+   "step": 36000,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.9533206451455863,
+   "audit": 0.9533206451460602,
+   "abs_diff": 4.738431869100168e-13
+  },
+  {
+   "step": 36000,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.9657419447431087,
+   "audit": 0.9657419447434495,
+   "abs_diff": 3.4083846855992306e-13
+  },
+  {
+   "step": 36000,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.003681304842770138,
+   "audit": 0.0036813048427718742,
+   "abs_diff": 1.736458199452784e-15
+  },
+  {
+   "step": 36000,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.19246026876140263,
+   "audit": 0.19246026876144615,
+   "abs_diff": 4.3520742565306136e-14
+  },
+  {
+   "step": 36000,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.19383481574690054,
+   "audit": 0.19383481574377195,
+   "abs_diff": 3.1285807278180755e-12
+  },
+  {
+   "step": 36000,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.056252318228990315,
+   "audit": 0.05625231822855265,
+   "abs_diff": 4.376637940950445e-13
+  },
+  {
+   "step": 36000,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.06191213120891744,
+   "audit": 0.061912131199604196,
+   "abs_diff": 9.313244619946204e-12
+  },
+  {
+   "step": 36000,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.09661174037081433,
+   "audit": 0.09661174037203367,
+   "abs_diff": 1.2193440701580016e-12
+  },
+  {
+   "step": 36000,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.04841484989378647,
+   "audit": 0.04841484989580098,
+   "abs_diff": 2.0145066170762504e-12
+  },
+  {
+   "step": 36000,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.044891946095837215,
+   "audit": 0.04489194610370867,
+   "abs_diff": 7.871453489016744e-12
+  },
+  {
+   "step": 36000,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.0462903703593692,
+   "audit": 0.04629037035468286,
+   "abs_diff": 4.6863415925635366e-12
+  },
+  {
+   "step": 40000,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.9394805798904734,
+   "audit": 0.9394805798907896,
+   "abs_diff": 3.161915174132446e-13
+  },
+  {
+   "step": 40000,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.9324099362097188,
+   "audit": 0.93240993620996,
+   "abs_diff": 2.412514632510465e-13
+  },
+  {
+   "step": 40000,
+   "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.9153374040731904,
+   "audit": 0.9153374040708547,
+   "abs_diff": 2.3356871992064043e-12
+  },
+  {
+   "step": 40000,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.9115119999542861,
+   "audit": 0.9115119999522046,
+   "abs_diff": 2.081557148869706e-12
+  },
+  {
+   "step": 40000,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.9529163502723046,
+   "audit": 0.9529163502724293,
+   "abs_diff": 1.2467804566540508e-13
+  },
+  {
+   "step": 40000,
+   "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.9654774109100147,
+   "audit": 0.9654774109099667,
+   "abs_diff": 4.796163466380676e-14
+  },
+  {
+   "step": 40000,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.0036951600291003314,
+   "audit": 0.0036951600291064966,
+   "abs_diff": 6.1652072336215724e-15
+  },
+  {
+   "step": 40000,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.19128190087590102,
+   "audit": 0.19128190087633382,
+   "abs_diff": 4.3279269057450165e-13
+  },
+  {
+   "step": 40000,
+   "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.19358232407689338,
+   "audit": 0.19358232407835282,
+   "abs_diff": 1.4594436770209995e-12
+  },
+  {
+   "step": 40000,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.05537189466979208,
+   "audit": 0.055371894670179035,
+   "abs_diff": 3.869543574452905e-13
+  },
+  {
+   "step": 40000,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.06125435253934653,
+   "audit": 0.06125435253996001,
+   "abs_diff": 6.134814878322459e-13
+  },
+  {
+   "step": 40000,
+   "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.09449502631510821,
+   "audit": 0.0944950263178803,
+   "abs_diff": 2.7720881146109377e-12
+  },
+  {
+   "step": 40000,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s0",
+   "stored": 0.048345923249513034,
+   "audit": 0.04834592325161922,
+   "abs_diff": 2.1061832833346728e-12
+  },
+  {
+   "step": 40000,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s1",
+   "stored": 0.04482621260495612,
+   "audit": 0.044826212612769305,
+   "abs_diff": 7.813187596905635e-12
+  },
+  {
+   "step": 40000,
+   "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s2",
+   "stored": 0.046219606805840086,
+   "audit": 0.0462196068011475,
+   "abs_diff": 4.692586597077053e-12
+  }
+ ],
+ "extra_summary": {
+  "fourier_restricted_abs_diff_hs": 1.2212453270876722e-14,
+  "fourier_restricted_abs_diff_kl": 1.0842021724855044e-18,
+  "trajectory_n": 165,
+  "trajectory_max_abs_diff_hs": 1.9484885926956963e-11
  }
 }

@@ -381,7 +381,8 @@ analysis code are fixed from that commit on. T-new is trained after it.
    seen (`reports/reviews/audit-4-2026-11-22.md`). First, every stored score that comes from a weight file was re-graded
    by an independent numpy/scikit-learn implementation of §2 and §4 (261 stored scores from weight files, largest
    difference 1.3e-10 in HS and 1.9e-11 in KL; `scripts/audit4/regrade.py`,
-   `results/audit4/regrade.json`), and every hypothesis test and verdict was recomputed with independent exact tests
+   `results/audit4/regrade.json`; the Fourier-restricted baseline and a systematic sample of 165 H8 trajectory
+   gradings reproduce to 1.9e-11), and every hypothesis test and verdict was recomputed with independent exact tests
    (all 44 stored statistics and verdicts reproduce; `scripts/audit4/hypotheses.py`, `results/audit4/hypotheses.json`).
    (a) *H4b's reading.* H4b stays "not supported" by its rule. But the planted model's function does not drift
    monotonically under further training (snapshot task accuracy 1.000 → 0.977 → 0.996 → 1.000,
@@ -414,6 +415,9 @@ analysis code are fixed from that commit on. T-new is trained after it.
    https://platform.claude.com/docs/en/build-with-claude/thinking. The frozen W-alg text has two imprecisions that do
    not change the algorithm it describes (step 2 gives the "=" position 2cos(w_k(a−b)/2) where attention weights 0.5
    give cos(w_k(a−b)/2); step 3 calls a single ReLU's positive part an absolute value); it is left unchanged.
+   Deviation 8(e)'s "HS = 1 (reached exactly when each model's states are an affine function of the other's)" holds
+   up to the ridge term and fold-to-fold estimation, not exactly. Sutter et al.'s Assumption 4 also requires at least
+   one unused neuron per layer.
    (f) *Citations and facts.* Narrowed or corrected: iWSP does compare features (linear CKA for one model); Huang et
    al.'s score ≥ 0.8 sample concerns error rates; Gao's critique of correlation scores; Haklay et al.'s scope; Poché et
    al.'s condition (meaningful class names) and that the explanation is the authors' hypothesis; regression R²'s

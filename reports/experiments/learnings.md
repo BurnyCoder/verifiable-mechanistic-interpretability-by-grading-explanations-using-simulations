@@ -15,7 +15,7 @@ Newest entries at the bottom. Per-experiment learnings live in each experiment's
   both directions as the primary hidden-state score. Its invariance is partial: R² is invariant to invertible linear
   maps of the predictor only ([Kornblith et al. 2019, Table 1](https://arxiv.org/abs/1905.00414)), so completeness
   R²(M̂→M) is invariant to the replacement's basis, soundness R²(M→M̂) only to orthogonal maps and uniform scaling; under
-  any exact invertible linear equivalence both are 1, so HS = 1. Tests: `test_invariant_to_residual_basis_change` (HS = 1,
+  any exact invertible linear equivalence both are 1 up to the ridge term, so HS = 1 up to it. Tests: `test_invariant_to_residual_basis_change` (HS = 1,
   CKA < 1 under a random invertible change of basis) and
   `test_soundness_depends_on_the_replacement_basis_and_whitened_soundness_does_not`.
 - **Agents can recall published circuits** ([Haklay et al. 2026](https://arxiv.org/abs/2603.20101)); the paper's
@@ -27,7 +27,7 @@ Newest entries at the bottom. Per-experiment learnings live in each experiment's
 
 ## Engineering (2026-11-21)
 
-- **Ollama vs llama-server.** Ollama's OpenAI endpoint ignores client context settings ([docs](https://docs.ollama.com/api/openai-compatibility)) and defaults to 4k context ([docs](https://docs.ollama.com/context-length)) on
+- **Ollama vs llama-server.** Ollama's OpenAI endpoint cannot set the context size ([docs](https://docs.ollama.com/api/openai-compatibility)) and defaults to 4k context ([docs](https://docs.ollama.com/context-length)) on
   < 24 GiB GPUs, which breaks agent tool calls; it also exposes `/api/pull`. llama-server with a fixed GGUF and
   `--n-cpu-moe` was chosen instead.
 - **numpy was invisible inside the sandbox** because it lives in `~/.local` and `/home` is hidden; there is no sudo
@@ -238,8 +238,8 @@ can be requested; these runs did not), so only the visible messages can be quote
 
 - **Invariance overclaimed.** HS was described as invariant to any invertible linear map. R² is invariant to invertible
   maps of the predictor only ([Kornblith et al. 2019, Table 1](https://arxiv.org/abs/1905.00414)): completeness is
-  invariant to the replacement's basis, soundness only to orthogonal maps and uniform scaling; HS = 1 under any exact
-  invertible linear equivalence. Wording fixed; new grader test (see the literature entry above).
+  invariant to the replacement's basis, soundness only to orthogonal maps and uniform scaling; HS = 1 (up to the ridge
+  term) under any exact invertible linear equivalence. Wording fixed; new grader test (see the literature entry above).
 - **"Built the paper's frequencies" was too strong.** The key-frequency rule finds four of the five (14, 35, 41, 52) in
   each T0 E1 replacement, and two runs hard-coded `[14, 35, 41, 52, 73]` (`results/frequencies_round2.json`).
 - **Diagnosis layout.** The low-effort E3 diagnosis moved head 3 to unused dimensions (P3 = 62); the script's own

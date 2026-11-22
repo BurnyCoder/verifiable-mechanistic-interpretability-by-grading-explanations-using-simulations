@@ -391,9 +391,13 @@ def inline_values(max_round: int) -> dict[str, str]:
         v["h8-plat-rep"] = rng([x for k, x in ph["rho_plateau"].items() if k.startswith("main__")])
     rg = RES / "audit4" / "regrade.json"  # audit 4: independent re-grading of every stored score from its weight file
     if rg.exists():
-        s = json.loads(rg.read_text(encoding="utf-8"))["summary"]
+        rgd = json.loads(rg.read_text(encoding="utf-8"))
+        s, ex = rgd["summary"], rgd.get("extra_summary")
         v["audit4-regrade"] = (f"{sum(x['n'] for x in s.values())} stored scores, largest HS difference "
-                               f"{max(x['max_abs_diff_hs'] for x in s.values()):.1e}")
+                               f"{max(x['max_abs_diff_hs'] for x in s.values()):.1e}"
+                               + (f"; the Fourier-restricted baseline and a systematic sample of {ex['trajectory_n']} H8 "
+                                  f"trajectory gradings, largest HS difference "
+                                  f"{max(ex['trajectory_max_abs_diff_hs'], ex['fourier_restricted_abs_diff_hs']):.1e}" if ex else ""))
     hj = RES / f"hypotheses_round{max_round}.json"  # what a Bonferroni correction over the 8 hypotheses would do (post hoc)
     if hj.exists():
         H = json.loads(hj.read_text())["hypotheses"]
