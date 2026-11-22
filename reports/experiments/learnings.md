@@ -360,9 +360,15 @@ deviation 9).
   agents' rebuilds, but the agent-free compiler's literal rebuild of the same table lost 0.09 HS on T0. *Learning:*
   before attributing a non-separation to the metric, check it on a build that follows the wrong explanation literally.
 - **Exact methods make a re-derivation seed-free.** With three runs per group, every bootstrap resample can be listed
-  (27 per group), and every rank-test permutation too, so an independent check of all 45 stored statistics needs no
-  random numbers and no tolerance for Monte-Carlo error (`scripts/audit5/hypotheses_check.py`). *Learning:* at small N,
+  (27 per group), and every rank-test permutation too, so an independent check of every stored statistic needs no
+  random numbers and no tolerance for Monte-Carlo error (`scripts/audit5/hypotheses_check.py`; 88 of 88 items). *Learning:* at small N,
   prefer enumeration to sampling in both the analysis and its audit.
 - **Counting "after results" honestly.** A summary said seven deviations followed results; the first deviation itself
   said per-run scores had been seen. *Learning:* derive such counts from the deviation texts, not from memory of which
   ones felt results-driven.
+- **Check the inputs of the tests, not only the tests.** Re-deriving verdicts from stored scores verifies the
+  statistics; re-grading the scores with a second implementation written from the agents' own specification
+  (`ARCHITECTURE.md`) and the preregistration verifies the grader as well (306 gradings, `scripts/audit5/regrade_independent.py`).
+  It also surfaced a choice the preregistration leaves open — the R² denominator about the training-fold or the
+  held-out mean — whose effect (≤ 7.6e-4 in HS) is now measured instead of assumed. *Learning:* when writing a
+  preregistered metric, state the fold procedure and the R² denominator, not just the seed.

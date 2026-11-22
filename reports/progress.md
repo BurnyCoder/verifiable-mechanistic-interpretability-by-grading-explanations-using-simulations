@@ -4,8 +4,10 @@
 
 **Done** (no new agent runs, no API spend; N = 3 — not yet N = 10)
 - Audit made without reading the earlier reviews or audit scripts (`reviews/audit-5-2026-11-22.md`). Every hypothesis
-  verdict re-derived from the raw run records with exact methods and no project analysis code: all 45 stored
-  statistics and verdicts and every replication row reproduce (`results/audit5/hypotheses_check.json`). Metric,
+  verdict re-derived from the raw run records with exact methods and no project analysis code: all 88 stored
+  statistics, verdicts and published values reproduce, rounds 1 and 2 (`results/audit5/hypotheses_check.json`); every
+  score those tests use re-graded with an independent forward pass and ridge, 306 gradings, all reproduce
+  (`results/audit5/regrade_independent.json`). Metric,
   statistics and method code read against their sources; three parallel source checks opened every citation.
 - Found and corrected (no verdict changed): T0's "true" E2–E4 call frequency 2 a full key frequency although T0 has it
   only in its neuron-to-logit map (likely a harmonic of 37), and embeddings carry harmonic frequencies the explanations
