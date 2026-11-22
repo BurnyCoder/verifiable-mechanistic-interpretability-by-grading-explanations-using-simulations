@@ -1,0 +1,853 @@
+{
+  "definition": "Audit 6 (post hoc): read-through labels for \"the agent announces trying several values of a constant\".\n\nLocal explanation: `vmi.analysis.agent_behaviour` counts a run as \"announcing a sweep or tuning\" when a regular\nexpression (SWEEP) matches its narration before the closing message. Reading every matched sentence, and every\nsentence of the unmatched runs that a broader pattern (BROAD below) picks up, gave three kinds of error: the pattern\nmatches sentences that set weights from the explanation or only mention tuning, and it misses sweeps phrased as\n\"try smaller bias scales\", \"grid the bias\" or \"the bias scan plateaued\". This script records the audit's manual label\nfor each of the 96 reported Claude runs, with the sentences that support it, so the corrected count is generated from a\nresults file rather than typed by hand.\nLabels: \"sweep\" = the narration announces trying several values of a constant (a bias, gain, scale, the logit scale,\nthe frequency set) or reports the result of such a search; \"tuning-mention\" = it mentions tuning but describes no\nsearch; \"false-match\" = SWEEP matched a sentence that is not about trying values; \"none\" = neither.",
+  "summary": {
+    "runs": 96,
+    "read_sweep": 44,
+    "regex_flagged": 41,
+    "regex_false_match": 2,
+    "regex_tuning_mention": 3,
+    "regex_missed": 8,
+    "by_level": {
+      "E3": 18,
+      "E0": 2,
+      "W-alg": 0,
+      "W-freq": 13,
+      "W-role": 1,
+      "W-scramble": 0,
+      "E1": 5,
+      "E2": 2,
+      "E4": 3,
+      "E-paper": 0
+    }
+  },
+  "rows": [
+    {
+      "run_id": "ablations__T0__E3-fmt-code__claudehaiku55-claudecode__tdef__s0",
+      "level": "E3",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "ablations__T0__E3-fmt-code__claudehaiku55-claudecode__tdef__s1",
+      "level": "E3",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "ablations__T0__E3-fmt-code__claudehaiku55-claudecode__tdef__s2",
+      "level": "E3",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "ablations__T0__E3-fmt-math__claudehaiku55-claudecode__tdef__s0",
+      "level": "E3",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "ablations__T0__E3-fmt-math__claudehaiku55-claudecode__tdef__s1",
+      "level": "E3",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "ablations__T0__E3-fmt-math__claudehaiku55-claudecode__tdef__s2",
+      "level": "E3",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "ablations__T0__E3-noselftest__claudehaiku55-claudecode__tdef__s0",
+      "level": "E3",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "ablations__T0__E3-noselftest__claudehaiku55-claudecode__tdef__s1",
+      "level": "E3",
+      "regex_flagged": false,
+      "label": "sweep",
+      "evidence": [
+        "Next I'll check the full model's accuracy and cross-entropy, and try smaller bias scales."
+      ]
+    },
+    {
+      "run_id": "ablations__T0__E3-noselftest__claudehaiku55-claudecode__tdef__s2",
+      "level": "E3",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "Next I'll sweep the neuron bias and amplitude to see whether the fit improves."
+      ]
+    },
+    {
+      "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s0",
+      "level": "E0",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s1",
+      "level": "E0",
+      "regex_flagged": false,
+      "label": "sweep",
+      "evidence": [
+        "I'll try a structured neuron dictionary, with phase-shifted cosines of a and b on a grid over frequencies, and compare fit quality."
+      ]
+    },
+    {
+      "run_id": "controls__T0__E0__claudehaiku55-claudecode__tdef__s2",
+      "level": "E0",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "Mean probability of the correct answer is only 0.665, which is a calibration issue.",
+        "I'll sweep the logit scale and a couple of K/breakpoint settings to pick the best."
+      ]
+    },
+    {
+      "run_id": "controls__T0__W-alg__claudehaiku55-claudecode__tdef__s0",
+      "level": "W-alg",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": [
+        "I'll bake that calibration into the build script and rerun everything."
+      ]
+    },
+    {
+      "run_id": "controls__T0__W-alg__claudehaiku55-claudecode__tdef__s1",
+      "level": "W-alg",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "controls__T0__W-alg__claudehaiku55-claudecode__tdef__s2",
+      "level": "W-alg",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s0",
+      "level": "W-freq",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "The mean correct-answer probability is 0.995, below the original's near-1 confidence, so I'll try a small sweep over the neuron bias range and attention offset."
+      ]
+    },
+    {
+      "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s1",
+      "level": "W-freq",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s2",
+      "level": "W-freq",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "controls__T0__W-role__claudehaiku55-claudecode__tdef__s0",
+      "level": "W-role",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "controls__T0__W-role__claudehaiku55-claudecode__tdef__s1",
+      "level": "W-role",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "controls__T0__W-role__claudehaiku55-claudecode__tdef__s2",
+      "level": "W-role",
+      "regex_flagged": false,
+      "label": "sweep",
+      "evidence": [
+        "I'll try a few bias ranges quickly to see if the fit improves."
+      ]
+    },
+    {
+      "run_id": "controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s0",
+      "level": "W-scramble",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s1",
+      "level": "W-scramble",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s2",
+      "level": "W-scramble",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "hyper__T0__E3-effort-high__claudehaiku55-claudecode__tdef__s0",
+      "level": "E3",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "I'll sweep the bias ratio and check the least-squares fit error for each value."
+      ]
+    },
+    {
+      "run_id": "hyper__T0__E3-effort-high__claudehaiku55-claudecode__tdef__s1",
+      "level": "E3",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "I'll print the error per frequency and scan the bias ratio."
+      ]
+    },
+    {
+      "run_id": "hyper__T0__E3-effort-high__claudehaiku55-claudecode__tdef__s2",
+      "level": "E3",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "The read-out fit has a max error of 1.35, so I'll sweep the neuron bias to see whether a better regime exists.",
+        "The sweep runs also overwrote `weights.npz` in /work, so I'll rebuild at the end."
+      ]
+    },
+    {
+      "run_id": "hyper__T0__E3-effort-low__claudehaiku55-claudecode__tdef__s0",
+      "level": "E3",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "I'll sweep the neuron bias to see whether it helps.",
+        "The bias sweep only tried positive biases, and per-frequency neuron subsets fit worse than the full set.",
+        "I'll try negative biases too.",
+        "Then I'll sweep κ."
+      ]
+    },
+    {
+      "run_id": "hyper__T0__E3-effort-low__claudehaiku55-claudecode__tdef__s1",
+      "level": "E3",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "I'll sweep the MLP bias to see whether the ReLU nonlinearity is the limit."
+      ]
+    },
+    {
+      "run_id": "hyper__T0__E3-effort-low__claudehaiku55-claudecode__tdef__s2",
+      "level": "E3",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": [
+        "I'll try one bias setting to see if it helps."
+      ]
+    },
+    {
+      "run_id": "hyper__T0__W-freq-effort-high__claudehaiku55-claudecode__tdef__s0",
+      "level": "W-freq",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "Next I'll look at how well the readout targets are fit, and sweep the neuron bias, to see where the error is."
+      ]
+    },
+    {
+      "run_id": "hyper__T0__W-freq-effort-high__claudehaiku55-claudecode__tdef__s1",
+      "level": "W-freq",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "hyper__T0__W-freq-effort-high__claudehaiku55-claudecode__tdef__s2",
+      "level": "W-freq",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "I'll try a quick sweep of the neuron bias range to see whether the fit improves.",
+        "The sweep is noisy, but bias range (-0.5, 0.5) gives 100% accuracy and the highest mean probability (0.9993)."
+      ]
+    },
+    {
+      "run_id": "hyper__T0__W-freq-effort-low__claudehaiku55-claudecode__tdef__s0",
+      "level": "W-freq",
+      "regex_flagged": false,
+      "label": "sweep",
+      "evidence": [
+        "Since the threshold only matters relative to the gain G, I'll scan larger gains with biases scaled to match.",
+        "The bias scan plateaued at about 77%.",
+        "I'll make `build_weights.py` reproduce the best setting so the script and `weights.npz` agree, then run it and the self-test."
+      ]
+    },
+    {
+      "run_id": "hyper__T0__W-freq-effort-low__claudehaiku55-claudecode__tdef__s1",
+      "level": "W-freq",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "I'll sweep the bias.",
+        "The sweep failed because the test script was in /tmp, so it couldn't import `forward`.",
+        "I'll rerun the sweep correctly and keep only the best bias."
+      ]
+    },
+    {
+      "run_id": "hyper__T0__W-freq-effort-low__claudehaiku55-claudecode__tdef__s2",
+      "level": "W-freq",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s0",
+      "level": "E1",
+      "regex_flagged": true,
+      "label": "tuning-mention",
+      "evidence": [
+        "I'll start by writing the full construction with a bias parameter I can tune."
+      ]
+    },
+    {
+      "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s1",
+      "level": "E1",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "I'll sweep the neuron count, bias, and gain to improve the fit."
+      ]
+    },
+    {
+      "run_id": "main__T0__E1__claudehaiku55-claudecode__tdef__s2",
+      "level": "E1",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "I'll scan the MLP bias to see whether the ReLU features fit the targets better.",
+        "That scan script was broken (my text substitution left an unclosed parenthesis).",
+        "BETA = 0 is the best bias.",
+        "The explanation leaves the per-frequency amplitudes α_k unspecified, so I'll add one shared scale for them and pick it by sweeping."
+      ]
+    },
+    {
+      "run_id": "main__T0__E2__claudehaiku55-claudecode__tdef__s0",
+      "level": "E2",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "main__T0__E2__claudehaiku55-claudecode__tdef__s1",
+      "level": "E2",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "main__T0__E2__claudehaiku55-claudecode__tdef__s2",
+      "level": "E2",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "I'll drop the grid search to the one setting that scored best (B=0, S=30)."
+      ]
+    },
+    {
+      "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s0",
+      "level": "E3",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "Before tuning, I'll check whether the errors come from the missing k=2 neurons or from the attention and ReLU approximations, by trying a few bias and amplitude settings in scratch copies.",
+        "The best setting is bias 0.5 with amplitude 2 (ratio 0.25), giving 99.95% accuracy."
+      ]
+    },
+    {
+      "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s1",
+      "level": "E3",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "main__T0__E3__claudehaiku55-claudecode__tdef__s2",
+      "level": "E3",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s0",
+      "level": "E4",
+      "regex_flagged": true,
+      "label": "tuning-mention",
+      "evidence": [
+        "Before tuning, I'll check whether the attention and the summed residual match the design."
+      ]
+    },
+    {
+      "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s1",
+      "level": "E4",
+      "regex_flagged": true,
+      "label": "tuning-mention",
+      "evidence": [
+        "Before tuning, I'll check where the error comes from: attention to \"=\", the MLP fit, and the logits against the table's formula."
+      ]
+    },
+    {
+      "run_id": "main__T0__E4__claudehaiku55-claudecode__tdef__s2",
+      "level": "E4",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "seed__T-new__E3__claudehaiku55-claudecode__tdef__s0",
+      "level": "E3",
+      "regex_flagged": false,
+      "label": "sweep",
+      "evidence": [
+        "I'll grid the bias B on the ideal features to see whether a nonzero bias fits better."
+      ]
+    },
+    {
+      "run_id": "seed__T-new__E3__claudehaiku55-claudecode__tdef__s1",
+      "level": "E3",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "I'll write the full construction in one pass, then tune and check it.",
+        "The bias and gain are the knobs for the ReLU nonlinearity, so I'll scan them.",
+        "I'll revert to the best configuration so far (all heads carry all frequencies, gain 0.5, reaching 84.9%) and refine the bias on a finer grid.",
+        "The best bias is 0.5, which gives 84.9%."
+      ]
+    },
+    {
+      "run_id": "seed__T-new__E3__claudehaiku55-claudecode__tdef__s2",
+      "level": "E3",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "The calibration loop then pushed attention onto \"=\", which is why everything collapsed.",
+        "Before I change anything I want the MLP pre-activation scale to matter, so I'll scan the neuron amplitude as well as the bias.",
+        "The amplitude scan changed nothing, which makes sense: ReLU is positively homogeneous, so scaling the pre-activation just rescales the features that least squares then absorbs.",
+        "It will compute the \"=\" residual once and then scan bias scales cheaply, using a fixed random seed for the per-neuron biases."
+      ]
+    },
+    {
+      "run_id": "seed__T-new__E4__claudehaiku55-claudecode__tdef__s0",
+      "level": "E4",
+      "regex_flagged": true,
+      "label": "false-match",
+      "evidence": [
+        "The task has a clear mechanism to implement: Fourier embeddings, attention weights tuned by the explanation's α/β, neurons from the CSV table, and a linear readout."
+      ]
+    },
+    {
+      "run_id": "seed__T-new__E4__claudehaiku55-claudecode__tdef__s1",
+      "level": "E4",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "seed__T-new__E4__claudehaiku55-claudecode__tdef__s2",
+      "level": "E4",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "seed__T-new__W-freq__claudehaiku55-claudecode__tdef__s0",
+      "level": "W-freq",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "Next I'll scan the MLP bias and gain, which the explanation leaves open, and keep the best fit.",
+        "The bias scan shows the sum-only neuron input gives at most R² ≈ 0.69 at bias 0, and it breaks for more negative biases."
+      ]
+    },
+    {
+      "run_id": "seed__T-new__W-freq__claudehaiku55-claudecode__tdef__s1",
+      "level": "W-freq",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "The fit quality depends on the MLP's amplitude and bias, so I'll sweep those two constants.",
+        "I'll try a few more bias grids, then apply the best one to the real construction.",
+        "The five-bias grid {-1,-0.5,0,0.5,1}·A reaches 0.953 on ideal features.",
+        "I'll switch the construction to that grid and re-run."
+      ]
+    },
+    {
+      "run_id": "seed__T-new__W-freq__claudehaiku55-claudecode__tdef__s2",
+      "level": "W-freq",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "The frequency-10 and frequency-25 outputs fit poorly (R² ≈ 0.7), so I'll scan the neuron scale and bias to improve the fit.",
+        "I'll try a separate bias per neuron group, since each frequency's R² responds differently to the bias."
+      ]
+    },
+    {
+      "run_id": "seed__T-paper__E-paper__claudehaiku55-claudecode__tdef__s0",
+      "level": "E-paper",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "seed__T-paper__E-paper__claudehaiku55-claudecode__tdef__s1",
+      "level": "E-paper",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "seed__T-paper__E-paper__claudehaiku55-claudecode__tdef__s2",
+      "level": "E-paper",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "seed__T-paper__E1__claudehaiku55-claudecode__tdef__s0",
+      "level": "E1",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "The mean correct-answer probability is low (0.21), so I'll try a quick sweep of the MLP bias to see whether accuracy improves."
+      ]
+    },
+    {
+      "run_id": "seed__T-paper__E1__claudehaiku55-claudecode__tdef__s1",
+      "level": "E1",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "The lstsq fit residual of 0.23 is still sizeable, so I'll sweep the neuron bias to see whether the fit improves.",
+        "The bias sweep is symmetric, and B = 0 gives the best probability (0.70), which is what the file already uses.",
+        "The sweep ran in `/tmp`, so I'll confirm the `/work` weights are the B = 0 build."
+      ]
+    },
+    {
+      "run_id": "seed__T-paper__E1__claudehaiku55-claudecode__tdef__s2",
+      "level": "E1",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "I'll remove a leftover placeholder line and sweep the logit scale and neuron bias."
+      ]
+    },
+    {
+      "run_id": "seed__T-paper__E3__claudehaiku55-claudecode__tdef__s0",
+      "level": "E3",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "I'll sweep it.",
+        "Next I'll scan smaller threshold spreads in both the ideal and the real setting.",
+        "I'll try thresholds placed at quantiles of the pre-activation distribution, which is a fixed closed-form choice, not an optimisation.",
+        "I'll try a small sweep over the attention gain and threshold scale, selecting by actual task accuracy, to see if there is easy headroom."
+      ]
+    },
+    {
+      "run_id": "seed__T-paper__E3__claudehaiku55-claudecode__tdef__s1",
+      "level": "E3",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "I'll sweep the neuron bias, which is a closed-form choice, to see how much the ReLU nonlinearity can help."
+      ]
+    },
+    {
+      "run_id": "seed__T-paper__E3__claudehaiku55-claudecode__tdef__s2",
+      "level": "E3",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "Next I'll sweep the neuron bias and gain, since the ReLU nonlinearity is what produces the products.",
+        "I'll sweep a wider range of bias and gain, including positive biases, and use the least-squares fit quality to choose.",
+        "I'll try mixing several biases across neurons, using a phase × bias grid per frequency.",
+        "I'll fix that and rerun the sweep."
+      ]
+    },
+    {
+      "run_id": "seed__T-paper__E4__claudehaiku55-claudecode__tdef__s0",
+      "level": "E4",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "Before tuning, I'll check the attention pattern and how well the output fit matches the target.",
+        "I'll sweep two cheap knobs, the attention score gain and the neuron bias scale, and keep whichever gives the best accuracy.",
+        "My sed edit applied the score scale twice, so that sweep was invalid.",
+        "I'll sweep further downward and also vary the bias scale."
+      ]
+    },
+    {
+      "run_id": "seed__T-paper__E4__claudehaiku55-claudecode__tdef__s1",
+      "level": "E4",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "seed__T-paper__E4__claudehaiku55-claudecode__tdef__s2",
+      "level": "E4",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "seed__T-paper__W-freq__claudehaiku55-claudecode__tdef__s0",
+      "level": "W-freq",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "I'll sweep the neuron bias, since the least-squares read-out is free to adapt to it.",
+        "I'll sweep the attention score scale to test that.",
+        "The ideal-feature ceiling with my grid is only 0.78, well below the 0.95 from random features.",
+        "I'll isolate whether the grid of phases or the three-value bias cycle causes this."
+      ]
+    },
+    {
+      "run_id": "seed__T-paper__W-freq__claudehaiku55-claudecode__tdef__s1",
+      "level": "W-freq",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "Next I'll sweep the bias range in the ideal oracle to see how sensitive the fit is to it."
+      ]
+    },
+    {
+      "run_id": "seed__T-paper__W-freq__claudehaiku55-claudecode__tdef__s2",
+      "level": "W-freq",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "seed__T1__E2__claudehaiku55-claudecode__tdef__s0",
+      "level": "E2",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "seed__T1__E2__claudehaiku55-claudecode__tdef__s1",
+      "level": "E2",
+      "regex_flagged": true,
+      "label": "false-match",
+      "evidence": [
+        "I'll check how well the MLP fit reproduces the targets before deciding whether to tune anything.",
+        "I'll scan how the neurons per frequency should be split between biases and phases.",
+        "I'll scan a few values against the self-test metrics.",
+        "The scan script ran from `/tmp`, so it couldn't import `forward`."
+      ]
+    },
+    {
+      "run_id": "seed__T1__E2__claudehaiku55-claudecode__tdef__s2",
+      "level": "E2",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "seed__T1__E3__claudehaiku55-claudecode__tdef__s0",
+      "level": "E3",
+      "regex_flagged": false,
+      "label": "sweep",
+      "evidence": [
+        "The accuracy is non-monotonic in bias scale, so I'll try a couple of evenly spaced bias grids before settling on one."
+      ]
+    },
+    {
+      "run_id": "seed__T1__E3__claudehaiku55-claudecode__tdef__s1",
+      "level": "E3",
+      "regex_flagged": false,
+      "label": "sweep",
+      "evidence": [
+        "Positive biases make it worse, so I'll try negative biases, which make the ReLU more nonlinear."
+      ]
+    },
+    {
+      "run_id": "seed__T1__E3__claudehaiku55-claudecode__tdef__s2",
+      "level": "E3",
+      "regex_flagged": false,
+      "label": "sweep",
+      "evidence": [
+        "I'll try positive biases."
+      ]
+    },
+    {
+      "run_id": "seed__T1__E4__claudehaiku55-claudecode__tdef__s0",
+      "level": "E4",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": [
+        "The neuron fit was not yet included in that diagnostic, so I'll check the effect of calibrating the attention slope to 1 before changing anything else.",
+        "I'll apply that calibration and re-run the full build and self-test."
+      ]
+    },
+    {
+      "run_id": "seed__T1__E4__claudehaiku55-claudecode__tdef__s1",
+      "level": "E4",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "The sweep gives only small differences, so I'll keep the best setting (threshold −0.5, low weight 0.02), rebuild, and run the self-test."
+      ]
+    },
+    {
+      "run_id": "seed__T1__E4__claudehaiku55-claudecode__tdef__s2",
+      "level": "E4",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "I'll scan a few threshold profiles to see whether a different spread of biases lifts it.",
+        "I'll add an environment-variable gain to the build script and sweep it."
+      ]
+    },
+    {
+      "run_id": "seed__T1__W-freq__claudehaiku55-claudecode__tdef__s0",
+      "level": "W-freq",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "The neuron bias and amplitude are probably off, so I'll grid-search those per frequency using the same closed-form fit.",
+        "The grid was too slow because it re-ran the full forward pass for every setting.",
+        "I'll scan splits within the 170-neuron budget per frequency.",
+        "I'll stop tuning here, check the build time against the 60-second limit, and run the final self-test."
+      ]
+    },
+    {
+      "run_id": "seed__T1__W-freq__claudehaiku55-claudecode__tdef__s1",
+      "level": "W-freq",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "I'll sweep the bias range and the number of phase-spread neurons per group to find a better configuration.",
+        "I'll run a diagnostic sweep over feature-pair choices and biases."
+      ]
+    },
+    {
+      "run_id": "seed__T1__W-freq__claudehaiku55-claudecode__tdef__s2",
+      "level": "W-freq",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "seed__T2__E2__claudehaiku55-claudecode__tdef__s0",
+      "level": "E2",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "I'll scan the MLP bias to see whether a better value improves the fit."
+      ]
+    },
+    {
+      "run_id": "seed__T2__E2__claudehaiku55-claudecode__tdef__s1",
+      "level": "E2",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "seed__T2__E2__claudehaiku55-claudecode__tdef__s2",
+      "level": "E2",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "seed__T2__E3__claudehaiku55-claudecode__tdef__s0",
+      "level": "E3",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "seed__T2__E3__claudehaiku55-claudecode__tdef__s1",
+      "level": "E3",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "I'll test the MLP feature fit by itself, sweeping the bias, before changing the layout."
+      ]
+    },
+    {
+      "run_id": "seed__T2__E3__claudehaiku55-claudecode__tdef__s2",
+      "level": "E3",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "seed__T2__E4__claudehaiku55-claudecode__tdef__s0",
+      "level": "E4",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": [
+        "Next I'll calibrate the output scale per frequency, using a closed-form least-squares fit against the explanation's α_k targets.",
+        "It will import `forward.py` to get the MLP activations and then apply the scalar calibration before saving."
+      ]
+    },
+    {
+      "run_id": "seed__T2__E4__claudehaiku55-claudecode__tdef__s1",
+      "level": "E4",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "seed__T2__E4__claudehaiku55-claudecode__tdef__s2",
+      "level": "E4",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "seed__T2__W-freq__claudehaiku55-claudecode__tdef__s0",
+      "level": "W-freq",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "seed__T2__W-freq__claudehaiku55-claudecode__tdef__s1",
+      "level": "W-freq",
+      "regex_flagged": false,
+      "label": "none",
+      "evidence": []
+    },
+    {
+      "run_id": "seed__T2__W-freq__claudehaiku55-claudecode__tdef__s2",
+      "level": "W-freq",
+      "regex_flagged": true,
+      "label": "sweep",
+      "evidence": [
+        "With zero bias the ReLU features are dominated by |cos d|, so I'll sweep the neuron bias and gain to see which gives the best fit.",
+        "I'll try a small sweep of the MLP bias to see whether the remaining error can be reduced further."
+      ]
+    }
+  ]
+}
