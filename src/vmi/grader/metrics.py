@@ -5,7 +5,7 @@ Local explanation:
   task accuracy, centred-logit FVU and temperature-calibrated KL (secondary).
 - Hidden states: `cv_r2` = 5-fold cross-validated ridge-regression variance explained; `site_score` = harmonic mean of
   both directions; HS = mean over the three sites (primary 2). Secondary: linear CKA, orthogonal Procrustes distance,
-  Hungarian-matched neuron correlation, head-matched attention distance, stitching KL.
+  optimally matched (linear-assignment) neuron correlation, head-matched attention distance, stitching KL.
 Global context: the residual stream of a LayerNorm-free transformer is only defined up to an invertible linear map,
 so the primary alignment class is linear regression. Its invariances (corrected by the 2026-11-22 audits): HS = 1
 (up to the ridge term and fold-to-fold estimation) when each model's states are an affine function of the other's, whatever the basis; completeness R²(M̂→M) is

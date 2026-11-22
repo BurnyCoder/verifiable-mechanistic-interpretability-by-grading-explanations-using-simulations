@@ -112,7 +112,7 @@ alone and measures closeness to the trained model** (searched 2026-11-20; absenc
   (Chan et al. 2022, [appendix](https://www.lesswrong.com/posts/kcZZAsEjwrbczxN2i/causal-scrubbing-appendix)):
   faithfulness via interchange interventions / resampling ablations. **Sutter et al. 2025**
   ([arXiv:2507.08802](https://arxiv.org/abs/2507.08802)): under their assumptions (countable inputs, input-injective
-  and strictly output-surjective hidden layers, matchable partial orderings, a network that solves the task), with
+  and strictly output-surjective hidden layers, matchable partial orderings with at least one unused neuron per layer, a network that solves the task), with
   unrestricted alignment maps any network can be mapped to any algorithm — the alignment class must be decided case
   by case. This is why our hidden-state metric uses linear maps only (justified by the residual stream's symmetry; at
   the MLP site linear maps are wider than the neurons' permutation-and-scaling symmetry, paper §3.4).

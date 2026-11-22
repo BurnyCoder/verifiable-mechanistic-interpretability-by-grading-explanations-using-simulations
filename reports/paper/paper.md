@@ -111,7 +111,7 @@ programs to weights; causal abstraction ([Geiger et al. 2025, v1 2023](https://a
 ([Chan et al. 2022](https://www.alignmentforum.org/posts/JvZhhzycHu2Yd57RN/causal-scrubbing-a-method-for-rigorously-testing-interpretability-hypotheses))
 test faithfulness by interventions, and [Sutter et al. (2025)](https://arxiv.org/abs/2507.08802) show that, under their
 assumptions (countable inputs, input-injective and strictly output-surjective hidden layers, matchable partial
-orderings of algorithm and network, and a network that solves the task; they call injectivity and surjectivity
+orderings of algorithm and network with at least one unused neuron per layer, and a network that solves the task; they call injectivity and surjectivity
 strong), unrestricted alignment maps make any algorithm an input-restricted distributed abstraction of any network,
 so the alignment class must be justified case by case.
 [Cammarata et al. (2021)](https://distill.pub/2020/circuits/curve-circuits/) hand-built one curve-detector circuit and
@@ -221,7 +221,7 @@ invariant only in its predictor; [Kornblith et al. 2019](https://arxiv.org/abs/1
 (up to the ridge term) when each model's states are an affine function of the other's. A whitened soundness, invariant in both
 directions, is reported as a post-hoc check (Appendix B). HS's scale is not anchored at 0 for unrelated networks. Secondary metrics include matched-neuron correlation (optimal one-to-one assignment on correlations, [Li et al. 2016](https://arxiv.org/abs/1511.07543)), linear CKA ([Kornblith et al. 2019](https://arxiv.org/abs/1905.00414)), orthogonal Procrustes distance ([Ding et al. 2021](https://arxiv.org/abs/2108.01661)), stitching KL (model stitching, [Bansal et al. 2021](https://arxiv.org/abs/2106.07682), here with an affine stitch fitted by least squares; invariances as surveyed by [Klabunde et al. 2025](https://arxiv.org/abs/2305.06329)), centred-logit FVU and temperature-calibrated KL. A run without valid weights is scored as a failure. An independent numpy/scikit-learn re-implementation of the forward pass and of both primary
 metrics, written from the preregistration, reproduces every stored score from the raw weight files
-(<!-- v:audit4-regrade -->261 stored scores, largest HS difference 1.3e-10<!-- /v -->; audit 4, `scripts/audit4/regrade.py`).
+(<!-- v:audit4-regrade -->261 stored scores, largest HS difference 1.3e-10; the Fourier-restricted baseline and a systematic sample of 165 H8 trajectory gradings, largest HS difference 1.9e-11<!-- /v -->; audit 4, `scripts/audit4/regrade.py`).
 
 ### 3.5 Controls, baselines and statistics
 

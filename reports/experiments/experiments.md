@@ -32,8 +32,8 @@ correct answers?
 | **M**, target | A trained one-layer transformer for (a + b) mod 113 ([Nanda et al. 2023](https://arxiv.org/abs/2301.05217) architecture: d_model 128, 4 heads, d_mlp 512, no LayerNorm). |
 | **M̂**, replacement | The network whose weights the agent wrote (same architecture, `weights.npz`). |
 | **KL_out** | Mean KL(P_M ‖ P_M̂) over all 113² = 12,769 inputs, in nats (float64). Lower = more similar behaviour. |
-| **HS** | Hidden-state similarity: 5-fold cross-validated ridge-regression R² (λ = 10⁻⁶·tr(XᵀX)/d) in both directions (M̂ → M and M → M̂) at three sites (residual stream after attention, MLP activations, final residual stream), harmonic mean per site, averaged over sites. Completeness (M̂ → M) is invariant to invertible linear maps of the replacement's basis, soundness (M → M̂) only to orthogonal maps and uniform scaling; HS = 1 under any exact invertible linear equivalence. Higher = more similar internals. |
-| **Matched-neuron corr** | Secondary metric: mean correlation of MLP neurons after Hungarian matching; sensitive to per-neuron assignments, which HS is not. |
+| **HS** | Hidden-state similarity: 5-fold cross-validated ridge-regression R² (λ = 10⁻⁶·tr(XᵀX)/d) in both directions (M̂ → M and M → M̂) at three sites (residual stream after attention, MLP activations, final residual stream), harmonic mean per site, averaged over sites. Completeness (M̂ → M) is invariant to invertible linear maps of the replacement's basis, soundness (M → M̂) only to orthogonal maps and uniform scaling; HS = 1 (up to the ridge term) under any exact invertible linear equivalence. Higher = more similar internals. |
+| **Matched-neuron corr** | Secondary metric: mean correlation of MLP neurons after optimal one-to-one matching (linear assignment, scipy `linear_sum_assignment`); sensitive to per-neuron assignments, which HS is not. |
 | **Key frequencies** | The few Fourier frequencies w_k = 2πk/113 the model uses ([Nanda et al. 2023](https://arxiv.org/abs/2301.05217), Sec. 4). |
 | **E0–E4** | Explanation ladder of increasing true detail: E0 task only; E1 algorithm, including the precise neuron function, without model-specific numbers; E2 key frequencies and component roles; E3 + per-frequency amplitudes, attention fits, neurons per frequency and the logit scale; E4 + per-neuron table. |
 | **W-freq / W-alg / W-role / W-scramble** | Controls: E3 with wrong key frequencies; a different algorithm (the "Pizza" algorithm of [Zhong et al. 2023](https://arxiv.org/abs/2306.17844)); E3 with component roles misattributed; E4 with each neuron's frequency reassigned at random. |
@@ -64,7 +64,7 @@ except T-new (trained here after the protocol freeze with the same recipe) and T
 | Simulator | Harness | Sampling | Limits | Role |
 |---|---|---|---|---|
 | Claude Haiku 5.5 (`claude-haiku-5-5`) | Claude Code 2.1.330, `--bare`, offline sandbox, API via a key-injecting proxy outside the sandbox | model default (Claude 5.5 rejects non-default sampling); effort `medium` | 60 min, $2 per run, $20 total | main simulator (preregistration amendment 2) |
-| Qwen3.6-35B-A3B (UD-IQ4_XS) | custom bash-only harness (mini-SWE-agent design), llama-server | Qwen3.6 coding preset: T 0.6, top-p 0.95, top-k 20 | 60 min, 80k context, 16k thinking tokens per turn | capability ablation; round 1 not run (stopped, deviation 5) |
+| Qwen3.6-35B-A3B (UD-IQ4_XS) | custom bash-only harness (mini-SWE-agent design), llama-server | Qwen3.6 thinking-mode coding preset: T 0.6, top-p 0.95, top-k 20, min-p 0, presence penalty 0 | 60 min, 80k context, 16k thinking tokens per turn | capability ablation; round 1 not run (stopped, deviation 5) |
 | Qwen3.5-9B (Q4_K_M) | same | same | same | capability ablation; 1 run (E2), at chance, then stopped |
 | Qwen3.5-4B (Q4_K_M) | same | same | same | capability ablation; 4 runs, all at chance |
 

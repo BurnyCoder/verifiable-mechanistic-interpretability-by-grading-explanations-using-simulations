@@ -45,7 +45,7 @@ score is cross-validated linear-regression variance explained in both directions
 Regression R² is invariant to invertible linear maps of its *predictor* only
 ([Kornblith et al. 2019, Table 1](https://arxiv.org/abs/1905.00414)). So completeness R²(M̂→M) is invariant to any
 invertible map of M̂'s basis, while soundness R²(M→M̂), pooled over M̂'s dimensions, is invariant only to orthogonal
-maps and uniform scaling of M̂'s basis; HS = 1 exactly when each model's states are an affine function of the other's.
+maps and uniform scaling of M̂'s basis; HS = 1 (up to the ridge term) when each model's states are an affine function of the other's.
 The small ridge term also breaks exact invariance slightly. A post-hoc check with whitened soundness (fully invariant;
 a held-out analogue of the mean squared canonical correlation) is reported in the paper's grader-sensitivity appendix
 (audit 2026-11-22). Restricting the alignment to linear maps is this project's assumption, motivated by
