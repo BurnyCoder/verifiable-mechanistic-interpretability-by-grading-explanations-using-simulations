@@ -210,12 +210,11 @@ of that floor, for example Haiku, Sonnet and Opus, rather than models that all s
 **What happened.** Extracting the agents' visible messages and self-test results (`analysis/agent_examples.py`)
 showed three things the scores alone did not. (1) The memorisation is explicit: in the algorithm-only run the agent
 writes that the frequencies are unspecified and that it will "pick five standard ones (14, 35, 41, 42, 52)", the
-published paper's set. (2) A run can end on a worse build than its best one: the low-effort E3 run's self-test
-accuracy went up to 0.785 and the run stopped on a build at 0.562, because each rewrite replaced `build_weights.py`.
-(3) The small local model had the right frequencies in its script but never got a working network before its time
+published paper's set. (2) The low-effort E3 run (accuracy 0.562 with the right frequencies) failed because of a layout bug in its own script: its constants put head 3's output and the readout in the same residual dimensions (P3 = RO = 52), so head 3's attention output was added onto the answer. Re-running its script with only that number changed gives accuracy 1.0000 at the same HS (`vmi diagnose`, results/diagnoses/). The agent never found the bug: it blamed bias-free ReLU neurons, tuned four constants around it, and finally rejected its most accurate setting (0.785) as less faithful to the explanation. An earlier version of this entry guessed that the run stopped on a worse build because each rewrite replaced the last; the transcript shows a deliberate choice, and the intervention shows the real cause. (3) The small local model had the right frequencies in its script but never got a working network before its time
 ran out, with replies cut off at the output limit.
 
-**Learning.** Transcripts are evidence, not decoration: they show *why* a score is what it is. For a future protocol,
-keeping the best self-test build instead of the last one would separate "the agent cannot build it" from "the agent
-broke a working build", and the model's hidden thinking is not returned by the API, so only its visible messages can
-be quoted.
+**Learning.** Transcripts are evidence, not decoration, but an agent's own diagnosis can be wrong: the cause has to be
+tested by intervening on its code, not read off its messages (nor guessed by the analyst, as this entry first did).
+A low task accuracy with the right frequencies can be an implementation bug unrelated to the explanation, which is one
+more reason the grader reports HS separately from behaviour. The model's hidden thinking is not returned by the API,
+so only its visible messages can be quoted.

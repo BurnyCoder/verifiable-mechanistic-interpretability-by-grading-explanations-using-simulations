@@ -186,11 +186,28 @@ def why(x: dict, target: str, level: str) -> tuple[str, str]:
                 f"Built the wrong frequencies it was told, {fs(built)}, not {target}'s: right answers, wrong internals, "
                 f"so HS catches the wrong explanation")
     if acc < 0.95:
-        best = max(accs) if accs else acc
+        from vmi.analysis.diagnose import load_diagnosis  # interventions on the agent's script, if this run was diagnosed
+        best, said = (max(accs) if accs else acc), " ".join(x["said"])
+        d = load_diagnosis(x["run_id"])
+        if d:
+            v = {e["name"]: e for e in d["variants"]}
+            fix = next(e for n, e in v.items() if n.startswith("head 3 moved") or n.startswith("fix"))
+            others = "; ".join(f"{n}: accuracy {e['accuracy']:.4f}" for n, e in v.items() if e is not fix and n != "as submitted")
+            return (f"Wrong answers, right mechanism: it built the target's frequencies {fs(built or tgt)}, so the internals "
+                    f"match (HS {hs:.2f}), but the answers are wrong (accuracy {acc:.4f}). The wrong detail is {d['cause']}. "
+                    f"Re-running its own script with that one fix gives accuracy {fix['accuracy']:.4f} at HS {fix['hs']:.2f} "
+                    f"(other changes tested: {others}). The agent never found it: it blamed the neurons "
+                    f"(“{sentence_with(said, d['blamed'], 150)}”), tuned four constants around the bug (self-test peak "
+                    f"{best:.4f}) and then kept the setting it judged more faithful to the explanation "
+                    f"(“{sentence_with(said, d['kept'], 170)}”).",
+                    f"Right frequencies, wrong answers: {d['short']}; fixing it gives accuracy {fix['accuracy']:.4f}. "
+                    f"The agent blamed the neurons and never found it")
+        reason = sentence_with(said, ["faithful", "keep", "trade-off"], 170) if any(k in said for k in ("faithful", "keep")) else ""
         return (f"Wrong answers, right mechanism: it built the target's frequencies {fs(built or tgt)}, so the internals "
-                f"match (HS {hs:.2f}), but the details were off (accuracy {acc:.4f}). It noticed (“{sentence_with(x['reaction'] or x['final'], ['ccuracy', '%'], 150)}”), "
-                f"its self-test peaked at {best:.4f} and it stopped on a build at {acc:.4f}, because each rewrite replaced the last.",
-                f"Right frequencies, so the internals match, but wrong details: self-test peaked at {best:.4f}, it stopped at {acc:.4f}")
+                f"match (HS {hs:.2f}), but the answers are wrong (accuracy {acc:.4f}). It noticed (“{sentence_with(x['reaction'] or x['final'], ['ccuracy', '%'], 150)}”); "
+                f"its self-test peaked at {best:.4f} and it stopped at {acc:.4f}"
+                + (f" (“{reason}”)" if reason else "") + ". Not diagnosed further.",
+                f"Right frequencies, wrong answers: self-test peaked at {best:.4f}, it stopped at {acc:.4f} (not diagnosed)")
     c = x["compiler_hs"]
     if c is not None and hs > c + 0.05:
         return (f"Right, and better than the AI-free compiler: it built {target}'s frequencies {fs(built or tgt)} and "
