@@ -12,7 +12,9 @@
     "resid_mid only",
     "mlp_post only",
     "resid_post only",
-    "orthogonal alignment (with scale)"
+    "orthogonal alignment (with scale)",
+    "whitened soundness, eig > 1e-6\u00b7max (post hoc)",
+    "whitened soundness, eig > 1e-3\u00b7max (post hoc)"
   ],
   "rows": [
     {
@@ -31,7 +33,9 @@
         "resid_mid only": 0.011085480087300995,
         "mlp_post only": 0.0,
         "resid_post only": 0.0,
-        "orthogonal alignment (with scale)": 0.0
+        "orthogonal alignment (with scale)": 0.0,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.0036955806630413132,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.0036955806630413132
       }
     },
     {
@@ -50,7 +54,9 @@
         "resid_mid only": 0.12594161911249319,
         "mlp_post only": 0.3031603757257412,
         "resid_post only": 0.14474370778946866,
-        "orthogonal alignment (with scale)": 0.0069890936528078824
+        "orthogonal alignment (with scale)": 0.0069890936528078824,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.14438522025134112,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.16411836231883034
       }
     },
     {
@@ -69,7 +75,9 @@
         "resid_mid only": 0.17741672546041112,
         "mlp_post only": 0.2074955909554818,
         "resid_post only": 0.1958346558147873,
-        "orthogonal alignment (with scale)": 0.010924093146021411
+        "orthogonal alignment (with scale)": 0.010924093146021411,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.1528729950256908,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.18594115206696168
       }
     },
     {
@@ -88,7 +96,9 @@
         "resid_mid only": 0.0,
         "mlp_post only": 0.15401093094892163,
         "resid_post only": 0.0,
-        "orthogonal alignment (with scale)": 0.0
+        "orthogonal alignment (with scale)": 0.0,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.06483950286320155,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.06330523742274397
       }
     },
     {
@@ -107,7 +117,9 @@
         "resid_mid only": 0.013776756101318538,
         "mlp_post only": 0.13126101364722056,
         "resid_post only": 0.0,
-        "orthogonal alignment (with scale)": 0.0
+        "orthogonal alignment (with scale)": 0.0,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.04146275308562997,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.04541181531403989
       }
     },
     {
@@ -126,7 +138,9 @@
         "resid_mid only": 0.013885888006781505,
         "mlp_post only": 0.12059274980808686,
         "resid_post only": 0.0,
-        "orthogonal alignment (with scale)": 0.0
+        "orthogonal alignment (with scale)": 0.0,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.038586716674747626,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.0424547746555727
       }
     },
     {
@@ -145,7 +159,9 @@
         "resid_mid only": 0.01388588800678147,
         "mlp_post only": 0.1247729324107388,
         "resid_post only": 0.0,
-        "orthogonal alignment (with scale)": 0.0
+        "orthogonal alignment (with scale)": 0.0,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.039312206940987623,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.04368636002987219
       }
     },
     {
@@ -164,7 +180,9 @@
         "resid_mid only": 0.0,
         "mlp_post only": 0.15401093094892163,
         "resid_post only": 0.0,
-        "orthogonal alignment (with scale)": 0.0
+        "orthogonal alignment (with scale)": 0.0,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.06483950286320155,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.06330523742274397
       }
     },
     {
@@ -183,7 +201,9 @@
         "resid_mid only": 0.8836281779361822,
         "mlp_post only": 0.9448204676414078,
         "resid_post only": 0.8698879723330024,
-        "orthogonal alignment (with scale)": 0.6153230787953409
+        "orthogonal alignment (with scale)": 0.6153230787953409,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.7679888405419456,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.8889128713916533
       }
     },
     {
@@ -202,7 +222,9 @@
         "resid_mid only": 0.8836281779361812,
         "mlp_post only": 0.9449195861571578,
         "resid_post only": 0.8551096212245708,
-        "orthogonal alignment (with scale)": 0.6906927622629455
+        "orthogonal alignment (with scale)": 0.6906927622629455,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.7671237496505757,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.8853386962635516
       }
     },
     {
@@ -221,7 +243,9 @@
         "resid_mid only": 0.8836281779361819,
         "mlp_post only": 0.9448204676408463,
         "resid_post only": 0.8374200020274545,
-        "orthogonal alignment (with scale)": 0.5990105699867896
+        "orthogonal alignment (with scale)": 0.5990105699867896,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.7576918049994698,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.878615835853541
       }
     },
     {
@@ -240,7 +264,9 @@
         "resid_mid only": 0.8836281779361802,
         "mlp_post only": 0.9449195861579215,
         "resid_post only": 0.855975916426122,
-        "orthogonal alignment (with scale)": 0.7050460169109538
+        "orthogonal alignment (with scale)": 0.7050460169109538,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.7671288974851302,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.8891424991054458
       }
     },
     {
@@ -259,7 +285,9 @@
         "resid_mid only": 0.9125529466724511,
         "mlp_post only": 0.975112325407373,
         "resid_post only": 0.9307764675915957,
-        "orthogonal alignment (with scale)": 0.7939455726580656
+        "orthogonal alignment (with scale)": 0.7939455726580656,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.7407787715305391,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.8760263891547472
       }
     },
     {
@@ -278,7 +306,9 @@
         "resid_mid only": 0.9421136338305318,
         "mlp_post only": 0.9639543165807025,
         "resid_post only": 0.8911618582179219,
-        "orthogonal alignment (with scale)": 0.7951820601148105
+        "orthogonal alignment (with scale)": 0.7951820601148105,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.7849113241738753,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.8907927315202061
       }
     },
     {
@@ -297,7 +327,9 @@
         "resid_mid only": 0.9125080712582316,
         "mlp_post only": 0.966905949833235,
         "resid_post only": 0.8665981911281043,
-        "orthogonal alignment (with scale)": 0.644342414446004
+        "orthogonal alignment (with scale)": 0.644342414446004,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.749637577014072,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.8597193450939516
       }
     },
     {
@@ -316,7 +348,9 @@
         "resid_mid only": 0.9125573387351124,
         "mlp_post only": 0.9726059195767695,
         "resid_post only": 0.8947055519373595,
-        "orthogonal alignment (with scale)": 0.5230489206322929
+        "orthogonal alignment (with scale)": 0.5230489206322929,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.7864270181031197,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.9040845144229005
       }
     },
     {
@@ -335,7 +369,9 @@
         "resid_mid only": 0.883684927020725,
         "mlp_post only": 0.985675738164603,
         "resid_post only": 0.8651753346775306,
-        "orthogonal alignment (with scale)": 0.6817039882413582
+        "orthogonal alignment (with scale)": 0.6817039882413582,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.8048286590323919,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.8942951465456334
       }
     },
     {
@@ -354,7 +390,9 @@
         "resid_mid only": 0.9424808065837343,
         "mlp_post only": 0.9856675586363823,
         "resid_post only": 0.9306006855967969,
-        "orthogonal alignment (with scale)": 0.8841948148145496
+        "orthogonal alignment (with scale)": 0.8841948148145496,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.8047990769354353,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.8937367935186473
       }
     },
     {
@@ -373,7 +411,9 @@
         "resid_mid only": 0.9292665358636815,
         "mlp_post only": 0.992286715881435,
         "resid_post only": 0.9748789809849276,
-        "orthogonal alignment (with scale)": 0.8620440757876162
+        "orthogonal alignment (with scale)": 0.8620440757876162,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.8260958956185132,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.9154104000806799
       }
     },
     {
@@ -392,7 +432,9 @@
         "resid_mid only": 0.9125573387351124,
         "mlp_post only": 0.9921306926464413,
         "resid_post only": 0.950742155689135,
-        "orthogonal alignment (with scale)": 0.5677945533768618
+        "orthogonal alignment (with scale)": 0.5677945533768618,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.8260836384405822,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.932203978702337
       }
     },
     {
@@ -411,7 +453,9 @@
         "resid_mid only": 0.0,
         "mlp_post only": 0.16611568400937624,
         "resid_post only": 0.0,
-        "orthogonal alignment (with scale)": 0.0
+        "orthogonal alignment (with scale)": 0.0,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.03080803035590521,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.045836407004326334
       }
     },
     {
@@ -430,7 +474,9 @@
         "resid_mid only": 0.0,
         "mlp_post only": 0.1837630576180396,
         "resid_post only": 0.0,
-        "orthogonal alignment (with scale)": 0.0
+        "orthogonal alignment (with scale)": 0.0,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.07586092236376335,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.06872889562273483
       }
     },
     {
@@ -449,7 +495,9 @@
         "resid_mid only": 0.07513293736213053,
         "mlp_post only": 0.19869132442836152,
         "resid_post only": 0.0096608171548326,
-        "orthogonal alignment (with scale)": 0.0
+        "orthogonal alignment (with scale)": 0.0,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.10859993558381735,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.10757101780672289
       }
     },
     {
@@ -468,7 +516,9 @@
         "resid_mid only": 0.07434063495125275,
         "mlp_post only": 0.20000102589175134,
         "resid_post only": 0.009323378798095944,
-        "orthogonal alignment (with scale)": 0.0
+        "orthogonal alignment (with scale)": 0.0,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.11151052464920669,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.10839968569675257
       }
     },
     {
@@ -487,7 +537,9 @@
         "resid_mid only": 0.8836281779361819,
         "mlp_post only": 0.9448204676408463,
         "resid_post only": 0.8380649104551372,
-        "orthogonal alignment (with scale)": 0.578223782016603
+        "orthogonal alignment (with scale)": 0.578223782016603,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.7576918050113357,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.8786158358654067
       }
     },
     {
@@ -506,7 +558,9 @@
         "resid_mid only": 0.8836281779361816,
         "mlp_post only": 0.9725706994250011,
         "resid_post only": 0.8403722023516078,
-        "orthogonal alignment (with scale)": 0.5732245901416838
+        "orthogonal alignment (with scale)": 0.5732245901416838,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.8147820217179552,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.903701440379773
       }
     },
     {
@@ -525,7 +579,9 @@
         "resid_mid only": 0.9420930254905602,
         "mlp_post only": 0.9725018402959333,
         "resid_post only": 0.9040037202162586,
-        "orthogonal alignment (with scale)": 0.8397195247338889
+        "orthogonal alignment (with scale)": 0.8397195247338889,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.8128605639943732,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.915481859311313
       }
     },
     {
@@ -544,7 +600,9 @@
         "resid_mid only": 0.8836281779361802,
         "mlp_post only": 0.9726110671022937,
         "resid_post only": 0.9055181277906886,
-        "orthogonal alignment (with scale)": 0.7723345170527492
+        "orthogonal alignment (with scale)": 0.7723345170527492,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.80634359086741,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.9080835050474523
       }
     },
     {
@@ -563,7 +621,9 @@
         "resid_mid only": 0.31906390307321597,
         "mlp_post only": 0.09919373483718472,
         "resid_post only": 0.0859653120597562,
-        "orthogonal alignment (with scale)": 0.05542623767849098
+        "orthogonal alignment (with scale)": 0.05542623767849098,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.25023830626638227,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.2487137626318023
       }
     },
     {
@@ -582,7 +642,9 @@
         "resid_mid only": 0.3190732683233459,
         "mlp_post only": 0.10139996178854939,
         "resid_post only": 0.09138710093066484,
-        "orthogonal alignment (with scale)": 0.055914257242416325
+        "orthogonal alignment (with scale)": 0.055914257242416325,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.26985927548295774,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.259642092398702
       }
     },
     {
@@ -601,7 +663,9 @@
         "resid_mid only": 0.5883732016835456,
         "mlp_post only": 0.1346582655963973,
         "resid_post only": 0.09687602791054704,
-        "orthogonal alignment (with scale)": 0.11909697100189626
+        "orthogonal alignment (with scale)": 0.11909697100189626,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.245830346883098,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.2516315671500769
       }
     },
     {
@@ -620,7 +684,9 @@
         "resid_mid only": 0.9125573387351124,
         "mlp_post only": 0.0,
         "resid_post only": 0.5869406165340021,
-        "orthogonal alignment (with scale)": 0.25731970938954946
+        "orthogonal alignment (with scale)": 0.25731970938954946,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.45629897046495804,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.46776645385629534
       }
     },
     {
@@ -639,7 +705,9 @@
         "resid_mid only": 0.9424808065837336,
         "mlp_post only": 0.9688633251435942,
         "resid_post only": 0.8413685774832087,
-        "orthogonal alignment (with scale)": 0.7595774489625388
+        "orthogonal alignment (with scale)": 0.7595774489625388,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.7597892366385427,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.8772816131892354
       }
     },
     {
@@ -658,7 +726,9 @@
         "resid_mid only": 0.9125635635906802,
         "mlp_post only": 0.9723172143985837,
         "resid_post only": 0.9777063340894153,
-        "orthogonal alignment (with scale)": 0.7878654555853299
+        "orthogonal alignment (with scale)": 0.7878654555853299,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.7136462322122848,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.8806072059321005
       }
     },
     {
@@ -677,7 +747,9 @@
         "resid_mid only": 0.8836465262035761,
         "mlp_post only": 0.970999302359111,
         "resid_post only": 0.9584629213287114,
-        "orthogonal alignment (with scale)": 0.7919393225170507
+        "orthogonal alignment (with scale)": 0.7919393225170507,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.7688895915781688,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.8879778304420293
       }
     },
     {
@@ -696,7 +768,289 @@
         "resid_mid only": 0.9125573387351124,
         "mlp_post only": 0.9724953243863195,
         "resid_post only": 0.6913139000076778,
-        "orthogonal alignment (with scale)": 0.49198946089060097
+        "orthogonal alignment (with scale)": 0.49198946089060097,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.7388016199783366,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.8841171171572167
+      }
+    },
+    {
+      "kind": "baseline",
+      "level": "retrain",
+      "id": "wd1_s0",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.05557037444355958,
+        "ridge \u03bb \u00d7 100": 0.03772595696316616,
+        "ridge \u03bb / 100": 0.0646340791993759,
+        "3 folds": 0.05214294514298875,
+        "10 folds": 0.057534266661023244,
+        "fold seed 1": 0.056064717173566196,
+        "fold seed 2": 0.0553345751807906,
+        "resid_mid only": 0.06379826211647814,
+        "mlp_post only": 0.1029128612142006,
+        "resid_post only": 0.0,
+        "orthogonal alignment (with scale)": 0.0,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.0382409420071233,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.050464525147309675
+      }
+    },
+    {
+      "kind": "baseline",
+      "level": "retrain",
+      "id": "wd1_s2",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.17833255189271072,
+        "ridge \u03bb \u00d7 100": 0.131772180658205,
+        "ridge \u03bb / 100": 0.1983040224311834,
+        "3 folds": 0.17632988147157014,
+        "10 folds": 0.17959634302417846,
+        "fold seed 1": 0.17834560569334815,
+        "fold seed 2": 0.17809269088312177,
+        "resid_mid only": 0.20143215645909887,
+        "mlp_post only": 0.2552225459890922,
+        "resid_post only": 0.0783429532299411,
+        "orthogonal alignment (with scale)": 0.0006602766907019667,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.12683367183566086,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.1803596531948248
+      }
+    },
+    {
+      "kind": "baseline",
+      "level": "retrain",
+      "id": "wd1_s3",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.13133445676921954,
+        "ridge \u03bb \u00d7 100": 0.07894842408221155,
+        "ridge \u03bb / 100": 0.15315359559871747,
+        "3 folds": 0.12915188539845487,
+        "10 folds": 0.13219579176929178,
+        "fold seed 1": 0.13158412744719108,
+        "fold seed 2": 0.13134786275190038,
+        "resid_mid only": 0.05612315107887793,
+        "mlp_post only": 0.23156616774755703,
+        "resid_post only": 0.10631405148122372,
+        "orthogonal alignment (with scale)": 0.0001671904008664454,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.10349727463698277,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.13834505161350982
+      }
+    },
+    {
+      "kind": "baseline",
+      "level": "retrain",
+      "id": "wd1_s4",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.0,
+        "ridge \u03bb \u00d7 100": 0.0,
+        "ridge \u03bb / 100": 0.0047431349934106285,
+        "3 folds": 0.0,
+        "10 folds": 0.0010608232418489055,
+        "fold seed 1": 0.0,
+        "fold seed 2": 0.0,
+        "resid_mid only": 0.0,
+        "mlp_post only": 0.0,
+        "resid_post only": 0.0,
+        "orthogonal alignment (with scale)": 0.0,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.03401895314628963,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.02690214640263193
+      }
+    },
+    {
+      "kind": "baseline",
+      "level": "retrain",
+      "id": "wd1_s5",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.14518726049226624,
+        "ridge \u03bb \u00d7 100": 0.09203521144994738,
+        "ridge \u03bb / 100": 0.2169672360410656,
+        "3 folds": 0.1431879733755494,
+        "10 folds": 0.1465421888774839,
+        "fold seed 1": 0.14546693528395835,
+        "fold seed 2": 0.1449337731341324,
+        "resid_mid only": 0.029116105017408366,
+        "mlp_post only": 0.308263834002058,
+        "resid_post only": 0.09818184245733234,
+        "orthogonal alignment (with scale)": 0.0,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.11930355083596755,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.15095506022482066
+      }
+    },
+    {
+      "kind": "baseline",
+      "level": "retrain",
+      "id": "wd1_s6",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.04348332119854442,
+        "ridge \u03bb \u00d7 100": 0.034115052088864825,
+        "ridge \u03bb / 100": 0.033031989748804814,
+        "3 folds": 0.04064159832013514,
+        "10 folds": 0.045565157464438934,
+        "fold seed 1": 0.04396027416663086,
+        "fold seed 2": 0.04384384349979221,
+        "resid_mid only": 0.0677805341966239,
+        "mlp_post only": 0.06266942939900935,
+        "resid_post only": 0.0,
+        "orthogonal alignment (with scale)": 2.530784268089496e-05,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.04367499721276517,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.04472530468763839
+      }
+    },
+    {
+      "kind": "baseline",
+      "level": "retrain",
+      "id": "wd1_s7",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.11035179522221394,
+        "ridge \u03bb \u00d7 100": 0.09646957121722997,
+        "ridge \u03bb / 100": 0.13399647268289105,
+        "3 folds": 0.10838790496878759,
+        "10 folds": 0.11143396958881895,
+        "fold seed 1": 0.11047936220865139,
+        "fold seed 2": 0.11031843254334224,
+        "resid_mid only": 0.06676512325596681,
+        "mlp_post only": 0.26429026241067505,
+        "resid_post only": 0.0,
+        "orthogonal alignment (with scale)": 0.0,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.09356894907656188,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.1244587760656532
+      }
+    },
+    {
+      "kind": "baseline",
+      "level": "retrain",
+      "id": "wd1_s8",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.3292271441513095,
+        "ridge \u03bb \u00d7 100": 0.2560399810665507,
+        "ridge \u03bb / 100": 0.3700520459577909,
+        "3 folds": 0.3272498545890351,
+        "10 folds": 0.3301956652391337,
+        "fold seed 1": 0.3292767881197793,
+        "fold seed 2": 0.32909891613751435,
+        "resid_mid only": 0.3405730252047653,
+        "mlp_post only": 0.437581544018939,
+        "resid_post only": 0.2095268632302242,
+        "orthogonal alignment (with scale)": 0.02427864613916895,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.2805170211173366,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.3896742652082465
+      }
+    },
+    {
+      "kind": "baseline",
+      "level": "retrain",
+      "id": "wd1_s9",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.0736749431281918,
+        "ridge \u03bb \u00d7 100": 0.0562555862775976,
+        "ridge \u03bb / 100": 0.12876002082561958,
+        "3 folds": 0.0705451874694095,
+        "10 folds": 0.07551665535186429,
+        "fold seed 1": 0.07363882365449768,
+        "fold seed 2": 0.07392299453746674,
+        "resid_mid only": 0.011160545485723247,
+        "mlp_post only": 0.20412428376831587,
+        "resid_post only": 0.005740000130536237,
+        "orthogonal alignment (with scale)": 0.0,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.03770924131982086,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.05993744661739375
+      }
+    },
+    {
+      "kind": "baseline",
+      "level": "random init",
+      "id": "seed 1000",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.2327398943264027,
+        "ridge \u03bb \u00d7 100": 0.2063196576212101,
+        "ridge \u03bb / 100": 0.25542618837544023,
+        "3 folds": 0.22924736357914544,
+        "10 folds": 0.23410089125510547,
+        "fold seed 1": 0.2326197603800594,
+        "fold seed 2": 0.23236150967507554,
+        "resid_mid only": 0.252404355756531,
+        "mlp_post only": 0.3872662590699074,
+        "resid_post only": 0.058549068152769765,
+        "orthogonal alignment (with scale)": 0.04284407316045174,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.13811688490261295,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.17400473596159086
+      }
+    },
+    {
+      "kind": "baseline",
+      "level": "random init",
+      "id": "seed 1001",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.23447547761689821,
+        "ridge \u03bb \u00d7 100": 0.20896412369824424,
+        "ridge \u03bb / 100": 0.2565757386767936,
+        "3 folds": 0.23154045962686143,
+        "10 folds": 0.23605564913711471,
+        "fold seed 1": 0.23422879994997647,
+        "fold seed 2": 0.2339574955488519,
+        "resid_mid only": 0.2584559768980425,
+        "mlp_post only": 0.3865013375436859,
+        "resid_post only": 0.05846911840896622,
+        "orthogonal alignment (with scale)": 0.0450403248633477,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.13892304018037674,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.1691404998233144
+      }
+    },
+    {
+      "kind": "baseline",
+      "level": "random init",
+      "id": "seed 1002",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.24617205506336085,
+        "ridge \u03bb \u00d7 100": 0.2190508526775942,
+        "ridge \u03bb / 100": 0.2684104003631264,
+        "3 folds": 0.24314079510136413,
+        "10 folds": 0.2477899516613138,
+        "fold seed 1": 0.2461364401021029,
+        "fold seed 2": 0.2455116213365233,
+        "resid_mid only": 0.26800236068055067,
+        "mlp_post only": 0.406362375705784,
+        "resid_post only": 0.06415142880374794,
+        "orthogonal alignment (with scale)": 0.04768184154272199,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.1432871809887212,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.18181335812795543
+      }
+    },
+    {
+      "kind": "baseline",
+      "level": "random init",
+      "id": "seed 1003",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.23401336142886986,
+        "ridge \u03bb \u00d7 100": 0.2088921562573227,
+        "ridge \u03bb / 100": 0.25679906284995824,
+        "3 folds": 0.23167032851185484,
+        "10 folds": 0.23559186297891324,
+        "fold seed 1": 0.23405407750737897,
+        "fold seed 2": 0.23372688519432072,
+        "resid_mid only": 0.25429304925515356,
+        "mlp_post only": 0.39188132738288733,
+        "resid_post only": 0.05586570764856867,
+        "orthogonal alignment (with scale)": 0.04088735999083812,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.1361567892065074,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.17550899768644276
+      }
+    },
+    {
+      "kind": "baseline",
+      "level": "random init",
+      "id": "seed 1004",
+      "hs": {
+        "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": 0.2338277989685623,
+        "ridge \u03bb \u00d7 100": 0.20790528968694877,
+        "ridge \u03bb / 100": 0.2554814595815742,
+        "3 folds": 0.23108215998911064,
+        "10 folds": 0.23507142938902925,
+        "fold seed 1": 0.23335367514554564,
+        "fold seed 2": 0.2333790980423904,
+        "resid_mid only": 0.2518148511656779,
+        "mlp_post only": 0.3888681466045727,
+        "resid_post only": 0.060800399135436174,
+        "orthogonal alignment (with scale)": 0.04470789532190255,
+        "whitened soundness, eig > 1e-6\u00b7max (post hoc)": 0.1438328709109483,
+        "whitened soundness, eig > 1e-3\u00b7max (post hoc)": 0.18632368416676318
       }
     }
   ],
@@ -855,6 +1209,34 @@
           "W-scramble": 0.7797940756883065
         },
         "kendall_tau_vs_preregistered": 0.9860132971832692
+      },
+      "whitened soundness, eig > 1e-6\u00b7max (post hoc)": {
+        "means": {
+          "E0": 0.10031793198002441,
+          "E1": 0.03978722556712174,
+          "E2": 0.7642681317306637,
+          "E3": 0.7584425575728287,
+          "E4": 0.8119078771954468,
+          "W-freq": 0.07175629610116196,
+          "W-alg": 0.7951114635745546,
+          "W-role": 0.25530930954414605,
+          "W-scramble": 0.7474416868096654
+        },
+        "kendall_tau_vs_preregistered": 0.7222222222222222
+      },
+      "whitened soundness, eig > 1e-3\u00b7max (post hoc)": {
+        "means": {
+          "E0": 0.11791836501627778,
+          "E1": 0.04385098333316159,
+          "E2": 0.8842891345029154,
+          "E3": 0.8755128219229683,
+          "E4": 0.9011474467149868,
+          "W-freq": 0.07404544014459469,
+          "W-alg": 0.8992663785188308,
+          "W-role": 0.25332914072686036,
+          "W-scramble": 0.881955549854455
+        },
+        "kendall_tau_vs_preregistered": 0.7777777777777778
       }
     },
     "compiler": {
@@ -1011,7 +1393,168 @@
           "W-scramble": 0.49198946089060097
         },
         "kendall_tau_vs_preregistered": 0.7356123579206246
+      },
+      "whitened soundness, eig > 1e-6\u00b7max (post hoc)": {
+        "means": {
+          "E0": 0.06483950286320155,
+          "E1": 0.06483950286320155,
+          "E2": 0.7671288974851302,
+          "E3": 0.7864270181031197,
+          "E4": 0.8260836384405822,
+          "W-freq": 0.11151052464920669,
+          "W-alg": 0.80634359086741,
+          "W-role": 0.45629897046495804,
+          "W-scramble": 0.7388016199783366
+        },
+        "kendall_tau_vs_preregistered": 0.9428571428571428
+      },
+      "whitened soundness, eig > 1e-3\u00b7max (post hoc)": {
+        "means": {
+          "E0": 0.06330523742274397,
+          "E1": 0.06330523742274397,
+          "E2": 0.8891424991054458,
+          "E3": 0.9040845144229005,
+          "E4": 0.932203978702337,
+          "W-freq": 0.10839968569675257,
+          "W-alg": 0.9080835050474523,
+          "W-role": 0.46776645385629534,
+          "W-scramble": 0.8841171171572167
+        },
+        "kendall_tau_vs_preregistered": 0.9428571428571428
+      }
+    },
+    "baseline": {
+      "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": {
+        "means": {
+          "retrain": 0.11857353858866843,
+          "random init": 0.2362457174808188
+        },
+        "kendall_tau_vs_preregistered": null
+      },
+      "ridge \u03bb \u00d7 100": {
+        "means": {
+          "retrain": 0.08704021820041924,
+          "random init": 0.210226415988264
+        },
+        "kendall_tau_vs_preregistered": null
+      },
+      "ridge \u03bb / 100": {
+        "means": {
+          "retrain": 0.14484917749765105,
+          "random init": 0.2585385699693785
+        },
+        "kendall_tau_vs_preregistered": null
+      },
+      "3 folds": {
+        "means": {
+          "retrain": 0.11640413674843672,
+          "random init": 0.2333362213616673
+        },
+        "kendall_tau_vs_preregistered": null
+      },
+      "10 folds": {
+        "means": {
+          "retrain": 0.11996009569089801,
+          "random init": 0.2377219568842953
+        },
+        "kendall_tau_vs_preregistered": null
+      },
+      "fold seed 1": {
+        "means": {
+          "retrain": 0.1187574037497359,
+          "random init": 0.23607855061701266
+        },
+        "kendall_tau_vs_preregistered": null
+      },
+      "fold seed 2": {
+        "means": {
+          "retrain": 0.1185436765186734,
+          "random init": 0.23578732195943236
+        },
+        "kendall_tau_vs_preregistered": null
+      },
+      "resid_mid only": {
+        "means": {
+          "retrain": 0.0929721003127714,
+          "random init": 0.25699411875119116
+        },
+        "kendall_tau_vs_preregistered": null
+      },
+      "mlp_post only": {
+        "means": {
+          "retrain": 0.20740343650553858,
+          "random init": 0.3921758892613675
+        },
+        "kendall_tau_vs_preregistered": null
+      },
+      "resid_post only": {
+        "means": {
+          "retrain": 0.05534507894769528,
+          "random init": 0.05956714442989776
+        },
+        "kendall_tau_vs_preregistered": null
+      },
+      "orthogonal alignment (with scale)": {
+        "means": {
+          "retrain": 0.0027923801192686953,
+          "random init": 0.044232298975852416
+        },
+        "kendall_tau_vs_preregistered": null
+      },
+      "whitened soundness, eig > 1e-6\u00b7max (post hoc)": {
+        "means": {
+          "retrain": 0.09748495568761208,
+          "random init": 0.1400633532378333
+        },
+        "kendall_tau_vs_preregistered": null
+      },
+      "whitened soundness, eig > 1e-3\u00b7max (post hoc)": {
+        "means": {
+          "retrain": 0.12953580324022543,
+          "random init": 0.17735825515321332
+        },
+        "kendall_tau_vs_preregistered": null
       }
     }
-  }
+  },
+  "h7_d": {
+    "preregistered (\u03bb 1e-6, 5 folds, seed 0, 3 sites, general linear)": {
+      "main__T0__E3__claudehaiku55-claudecode__tdef__s0": 0.6652475673992395,
+      "main__T0__E3__claudehaiku55-claudecode__tdef__s1": 0.6929018479893604,
+      "main__T0__E3__claudehaiku55-claudecode__tdef__s2": 0.6257749938661727,
+      "main__T0__E4__claudehaiku55-claudecode__tdef__s0": 0.6853957048190834,
+      "main__T0__E4__claudehaiku55-claudecode__tdef__s1": 0.7263465741818758,
+      "main__T0__E4__claudehaiku55-claudecode__tdef__s2": 0.7078022548646208
+    },
+    "whitened soundness, eig > 1e-6\u00b7max (post hoc)": {
+      "main__T0__E3__claudehaiku55-claudecode__tdef__s0": 0.5302190790102852,
+      "main__T0__E3__claudehaiku55-claudecode__tdef__s1": 0.583214586284674,
+      "main__T0__E3__claudehaiku55-claudecode__tdef__s2": 0.5245334695490563,
+      "main__T0__E4__claudehaiku55-claudecode__tdef__s0": 0.6209992844714344,
+      "main__T0__E4__claudehaiku55-claudecode__tdef__s1": 0.6209892031784864,
+      "main__T0__E4__claudehaiku55-claudecode__tdef__s2": 0.6324333595628359
+    },
+    "whitened soundness, eig > 1e-3\u00b7max (post hoc)": {
+      "main__T0__E3__claudehaiku55-claudecode__tdef__s0": 0.63419446197388,
+      "main__T0__E3__claudehaiku55-claudecode__tdef__s1": 0.6600398879590482,
+      "main__T0__E3__claudehaiku55-claudecode__tdef__s2": 0.6047861960156912,
+      "main__T0__E4__claudehaiku55-claudecode__tdef__s0": 0.6764678889409217,
+      "main__T0__E4__claudehaiku55-claudecode__tdef__s1": 0.6759589414342076,
+      "main__T0__E4__claudehaiku55-claudecode__tdef__s2": 0.6730008148760812
+    }
+  },
+  "wrong_targets": [
+    "T1",
+    "T2",
+    "dev",
+    "T-paper",
+    "wd0_s0",
+    "wd0_s1",
+    "wd0_s2",
+    "wd0_s3",
+    "wd0_s4",
+    "rand_s0",
+    "rand_s1",
+    "rand_s2"
+  ]
 }

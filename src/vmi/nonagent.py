@@ -4,7 +4,7 @@ Local explanation:
 - `random_init`        5 randomly initialised models graded against T0 (the floor).
 - `wrong_targets`      every graded T0 agent replacement (E3/E4) also graded against T1, T2, dev, T-paper and the
                        no-mechanism models wd0_s*, rand_s*; H7 statistic d = HS(T0) − max HS(wrong) per run.
-- `trajectory`         T0 replacements graded against T0's checkpoints (every 10th of 401), next to restricted loss (H8).
+- `trajectory`         every T0 E3/E4 replacement graded against all 401 of T0's checkpoints, next to restricted loss (H8).
 - `planted`            reference-compiled E3 model for T0 trained further; the step-0 model graded against each snapshot (H4b).
 - `baselines`          independent retrains (9 other wd1 seeds), logit-distilled students (trained), Fourier-restricted M,
                        weights dump; written to results/baselines/<target>.json.
@@ -72,8 +72,12 @@ def wrong_targets(settings: Settings, max_round: int) -> dict:
     return out
 
 
-def trajectory(settings: Settings, max_round: int, every: int = 10) -> dict:
-    """H8: grade E3/E4 replacements against T0's checkpoints; Spearman of HS(t) with −log restricted loss(t)."""
+def trajectory(settings: Settings, max_round: int, every: int = 1) -> dict:
+    """H8 (preregistration §5): grade every T0 E3/E4 replacement against each of T0's 401 checkpoints; per replacement,
+    Spearman ρ of HS(t) with −log restricted loss(t); supported only if every ρ > 0.
+
+    Deviation 8 (audit 2026-11-22): rounds 1–2 had used only the highest-HS replacement and every 10th checkpoint (41),
+    labelled "all checkpoints"; this follows §5 as written. Descriptive: checkpoints of one run are not independent."""
     from grokviz import metrics as gm
     from grokviz.runstore import RunStore
     runs = _agent_runs(max_round=max_round)
@@ -82,19 +86,21 @@ def trajectory(settings: Settings, max_round: int, every: int = 10) -> dict:
     store = RunStore(targets.run_dir(settings, targets.resolve("T0").run_id))
     grid = targets.grid("T0", "cuda" if torch.cuda.is_available() else "cpu")
     key = targets.published_key_freqs(settings, "T0")
-    best = max(runs, key=lambda r: r["hs"])  # one replacement per level is enough for the curve; use the best E3/E4 run
-    npz = settings.runs_dir / best["run_id"] / "work_out" / "weights.npz"
-    rows = []
+    npz = {r["run_id"]: settings.runs_dir / r["run_id"] / "work_out" / "weights.npz" for r in runs}
+    steps, rl, hs = [], [], {rid: [] for rid in npz}
     for t, step, model in store.iter_models("cpu", every=every):
         acts = gm.evaluate(model.to(grid.F.device), grid)
-        rl = gm.restricted_loss(acts.logits, grid, key)
-        g = grade_npz(model, npz, secondary=False)
-        rows.append({"step": step, "hs": g["hs"], "kl_out": g["kl_out"], "restricted_loss": rl})
-    hs = np.array([x["hs"] for x in rows])
-    neg_log_rl = -np.log(np.array([x["restricted_loss"] for x in rows]))
-    rho = float(st.stats.spearmanr(hs, neg_log_rl).statistic)
-    out = {"N": "one replacement, all checkpoints", "replacement": best["run_id"], "spearman_hs_vs_neglog_restricted_loss": rho,
-           "verdict": "supported" if rho > 0 else "not supported", "rows": rows}
+        steps.append(step)
+        rl.append(gm.restricted_loss(acts.logits, grid, key))
+        for rid, p in npz.items():
+            hs[rid].append(grade_npz(model, p, secondary=False)["hs"])
+    neg_log_rl = -np.log(np.array(rl))
+    reps = [{"run_id": rid, "rho": float(st.stats.spearmanr(v, neg_log_rl).statistic), "hs": v} for rid, v in hs.items()]
+    rhos = [r["rho"] for r in reps]
+    rows = [{"step": s, "hs": float(np.mean([v[i] for v in hs.values()])), "restricted_loss": rl[i]} for i, s in enumerate(steps)]
+    out = {"N": f"{len(reps)} E3/E4 replacements × {len(steps)} checkpoints", "steps": steps, "restricted_loss": rl,
+           "replacements": reps, "spearman_min": min(rhos), "spearman_hs_vs_neglog_restricted_loss": float(np.median(rhos)),
+           "verdict": "supported" if min(rhos) > 0 else "not supported", "rows": rows}
     _dump(RES / "controls" / "trajectory_T0.json", out)
     return out
 

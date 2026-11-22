@@ -2,7 +2,7 @@
   "run_id": "hyper__T0__E3-effort-low__claudehaiku55-claudecode__tdef__s0",
   "cause": "a layout bug, not the explanation: its constants line `SEP, BIAS, P0, P1, P2, P3, RO = 10, 11, 12, 22, 42, 52, 52` gives head 3's output (P3) and the readout (RO) the same residual dimensions 52\u201361, although its own docstring puts heads 2/3 at 42\u201351, so head 3's attention output is added onto the answer the unembedding reads",
   "short": "a layout bug in Haiku's own script: head 3 wrote into the answer dimensions (P3 = RO = 52)",
-  "owner": "The slip is Haiku's own: nothing the agent was given suggests a layout (the starter script defines only the array shapes, and TASK.md and ARCHITECTURE.md name no dimensions); four 10-dimension head slots starting at 12 belong at 12, 22, 32 and 42, and it skipped 32",
+  "owner": "The slip is Haiku's own: nothing the agent was given suggests a layout (the starter script defines only the array shapes, and TASK.md and ARCHITECTURE.md name no dimensions). Its own docstring puts heads 2 and 3 together at dimensions 42\u201351 and the readout at 52\u201361, so the constants line should read P3 = 42; it reads 52, the readout's first dimension",
   "variants": [
     {
       "name": "as submitted",
@@ -11,13 +11,19 @@
       "kl_out": 1.9739540284452188
     },
     {
-      "name": "head 3 moved to free dimensions (P3 = 62), nothing else changed",
+      "name": "head 3 where its own docstring puts it (P3 = 42), nothing else changed",
+      "accuracy": 1.0,
+      "hs": 0.9147445375584707,
+      "kl_out": 0.0015836671983687411
+    },
+    {
+      "name": "head 3 moved to unused dimensions (P3 = 62), nothing else changed",
       "accuracy": 1.0,
       "hs": 0.9220537949913578,
       "kl_out": 0.0015836671983687411
     },
     {
-      "name": "neuron counts as the explanation states (k=2: 0 neurons)",
+      "name": "neurons split in the explanation's proportions, scaled to all 512 (k=2: 0 neurons)",
       "accuracy": 0.5718537081995457,
       "hs": 0.9254097636514421,
       "kl_out": 1.9592573412967285

@@ -30,13 +30,16 @@ DIAGNOSES = {
                   "at 42–51, so head 3's attention output is added onto the answer the unembedding reads"),
         "short": "a layout bug in Haiku's own script: head 3 wrote into the answer dimensions (P3 = RO = 52)",
         "owner": ("The slip is Haiku's own: nothing the agent was given suggests a layout (the starter script defines "
-                  "only the array shapes, and TASK.md and ARCHITECTURE.md name no dimensions); four 10-dimension head "
-                  "slots starting at 12 belong at 12, 22, 32 and 42, and it skipped 32"),
+                  "only the array shapes, and TASK.md and ARCHITECTURE.md name no dimensions). Its own docstring puts "
+                  "heads 2 and 3 together at dimensions 42–51 and the readout at 52–61, so the constants line should "
+                  "read P3 = 42; it reads 52, the readout's first dimension"),
         "variants": [
             ("as submitted", []),
-            ("head 3 moved to free dimensions (P3 = 62), nothing else changed",
+            ("head 3 where its own docstring puts it (P3 = 42), nothing else changed",
+             [(LAYOUT, LAYOUT.replace("42, 52, 52", "42, 42, 52"))]),
+            ("head 3 moved to unused dimensions (P3 = 62), nothing else changed",
              [(LAYOUT, LAYOUT.replace("42, 52, 52", "42, 62, 52"))]),
-            ("neuron counts as the explanation states (k=2: 0 neurons)",
+            ("neurons split in the explanation's proportions, scaled to all 512 (k=2: 0 neurons)",
              [("NEURONS = {2: 32, 3: 128, 23: 112, 37: 96, 39: 144}", "NEURONS = {2: 0, 3: 261, 23: 65, 37: 56, 39: 130}")]),
             ("its own accuracy-best '=' penalty (1 instead of 10)",
              [("M = 10.0 * np.sqrt(D_HEAD)", "M = 1.0 * np.sqrt(D_HEAD)")]),

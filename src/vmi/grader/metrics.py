@@ -7,13 +7,18 @@ Local explanation:
   both directions; HS = mean over the three sites (primary 2). Secondary: linear CKA, orthogonal Procrustes distance,
   Hungarian-matched neuron correlation, head-matched attention distance, stitching KL.
 Global context: the residual stream of a LayerNorm-free transformer is only defined up to an invertible linear map,
-so the primary alignment class is linear regression (invariant to exactly that group); CKA/Procrustes are invariant
-only to orthogonal maps and are reported for comparability.
+so the primary alignment class is linear regression. Its invariances (corrected by the 2026-11-22 audit): HS = 1
+exactly when each model's states are an affine function of the other's, whatever the basis; completeness R²(M̂→M) is
+invariant to any invertible linear map of M̂'s basis (the regression absorbs it, up to the tiny ridge); soundness
+R²(M→M̂) pools over M̂'s dimensions, so it weights M̂'s directions by their variance and is invariant only to orthogonal
+maps and uniform scaling of M̂'s basis. `sensitivity.cv_r2_whitened` is the fully invariant post-hoc check.
+CKA/Procrustes are invariant only to orthogonal maps and are reported for comparability.
 Sources: KL convention KL(original ‖ modified) — Conmy et al. 2023 (https://arxiv.org/abs/2304.14997); linear CKA —
 Kornblith et al. 2019 eq. (https://arxiv.org/abs/1905.00414); Procrustes distance 2 − 2‖XᵀY‖_* after centring and
 Frobenius normalisation — Ding et al. 2021 (https://arxiv.org/abs/2108.01661); invariances — Klabunde et al.
-(https://arxiv.org/abs/2305.06329); Hungarian matching — Li et al. 2015 (https://arxiv.org/abs/1511.07543), scipy
-linear_sum_assignment (https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.linear_sum_assignment.html);
+(https://arxiv.org/abs/2305.06329) and Kornblith et al. 2019 Table 1 (regression R² is invariant to invertible linear
+maps of the predictor only); optimal one-to-one neuron matching — Li et al. 2015 (https://arxiv.org/abs/1511.07543),
+computed with scipy linear_sum_assignment (modified Jonker–Volgenant) (https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.linear_sum_assignment.html);
 model stitching — Bansal et al. 2021 (https://arxiv.org/abs/2106.07682).
 """
 
@@ -86,6 +91,15 @@ def folds(n: int, k: int = N_FOLDS, seed: int = FOLD_SEED) -> list[np.ndarray]:
     return np.array_split(perm, k)
 
 
+def ridge_map(Xc: torch.Tensor, Yc: torch.Tensor, ridge_rel: float = RIDGE_REL) -> torch.Tensor:
+    """Ridge solution W of (XcᵀXc + λI)W = XcᵀYc on centred training rows, λ = ridge_rel·tr(XcᵀXc)/d (+1e-12 floor)."""
+    G = Xc.T @ Xc  # Gram matrix [dx, dx]
+    lam = ridge_rel * float(torch.trace(G)) / max(G.shape[0], 1) + 1e-12  # tiny floor keeps a zero X solvable
+    # torch.linalg.solve, not lstsq: lstsq's only CUDA driver ('gels') assumes full rank and returns NaN for the
+    # rank-deficient residual streams agents often build (https://pytorch.org/docs/stable/generated/torch.linalg.lstsq.html).
+    return torch.linalg.solve(G + lam * torch.eye(G.shape[0], dtype=G.dtype, device=G.device), Xc.T @ Yc)
+
+
 def cv_r2(X: torch.Tensor, Y: torch.Tensor, k: int = N_FOLDS, ridge_rel: float = RIDGE_REL, seed: int = FOLD_SEED) -> float:
     """Held-out variance of Y explained by a ridge-regularised affine map from X, pooled over folds and dims, clipped to [0, 1].
 
@@ -101,10 +115,7 @@ def cv_r2(X: torch.Tensor, Y: torch.Tensor, k: int = N_FOLDS, ridge_rel: float =
         train_mask[test] = False
         Xtr, Ytr = X[train_mask], Y[train_mask]
         mx, my = Xtr.mean(0), Ytr.mean(0)  # training-fold means (affine map)
-        Xc, Yc = Xtr - mx, Ytr - my
-        G = Xc.T @ Xc  # Gram matrix [dx, dx]
-        lam = ridge_rel * float(torch.trace(G)) / max(G.shape[0], 1) + 1e-12  # tiny floor keeps a zero X solvable
-        W = torch.linalg.solve(G + lam * torch.eye(G.shape[0], dtype=G.dtype, device=G.device), Xc.T @ Yc)
+        W = ridge_map(Xtr - mx, Ytr - my, ridge_rel)
         pred = (X[test] - mx) @ W + my
         sse += float(((Y[test] - pred) ** 2).sum())
         sst += float(((Y[test] - my) ** 2).sum())
@@ -184,15 +195,10 @@ def stitching_kl(target_model, resid_r: torch.Tensor, resid_m: torch.Tensor, log
         test = torch.as_tensor(test_idx, device=resid_r.device)
         mask = torch.ones(resid_r.shape[0], dtype=torch.bool, device=resid_r.device)
         mask[test] = False
-        # Affine stitching map by the same ridge solve as cv_r2 (centred, λ = RIDGE_REL·tr(G)/d): torch.linalg.lstsq's
-        # only CUDA driver ('gels') assumes full rank and returned NaN for rank-deficient replacement residuals
-        # (https://pytorch.org/docs/stable/generated/torch.linalg.lstsq.html).
+        # Affine stitching map by the same ridge solve as cv_r2 (centred, λ = RIDGE_REL·tr(G)/d).
         Xtr, Ytr = resid_r[mask].double(), resid_m[mask].double()
         mx, my = Xtr.mean(0), Ytr.mean(0)
-        Xc = Xtr - mx
-        G = Xc.T @ Xc
-        lam = RIDGE_REL * float(torch.trace(G)) / max(G.shape[0], 1) + 1e-12
-        A = torch.linalg.solve(G + lam * torch.eye(G.shape[0], dtype=G.dtype, device=G.device), Xc.T @ (Ytr - my))
+        A = ridge_map(Xtr - mx, Ytr - my)
         r = (resid_r[test].double() - mx) @ A + my  # stitched residual in M's basis
         post = torch.relu(r @ W_in.T + b_in)
         out[test] = (r + post @ W_out.T + b_out) @ W_U

@@ -156,3 +156,20 @@ def test_orthogonal_cv_r2_is_one_for_rotations_and_lower_for_general_maps():
     assert cv_r2_orth(X, 3.0 * X @ Q + 1.0) > 0.999
     A = torch.randn(16, 16, generator=g, dtype=torch.float64) + 3 * torch.diag(torch.linspace(0.1, 5, 16, dtype=torch.float64))
     assert mt.cv_r2(X, X @ A) > 0.999 and cv_r2_orth(X, X @ A) < 0.99
+
+
+def test_soundness_depends_on_the_replacement_basis_and_whitened_soundness_does_not():
+    """Audit 2026-11-22: pooled R² weights the *predicted* side's directions by their variance, so a non-orthogonal map
+    of a partly explained replacement changes soundness R²(M→M̂) although the function is unchanged; completeness
+    R²(M̂→M) only changes by the tiny ridge. Whitening the replacement's states (post-hoc sensitivity) removes the
+    dependence: the score becomes the held-out mean squared canonical correlation (half the directions here)."""
+    from vmi.sensitivity import cv_r2_whitened
+    g = torch.Generator().manual_seed(0)
+    X = torch.randn(3000, 8, generator=g, dtype=torch.float64)  # target states
+    Y = torch.cat([X[:, :4] @ torch.randn(4, 4, generator=g, dtype=torch.float64),  # half linear in the target
+                   torch.randn(3000, 4, generator=g, dtype=torch.float64)], 1)  # half unrelated to it
+    B = torch.diag(torch.tensor([1.0, 1, 1, 1, 10, 10, 10, 10], dtype=torch.float64))  # inflate the unrelated half
+    assert abs(mt.cv_r2(X, Y) - mt.cv_r2(X, Y @ B)) > 0.2  # soundness is not invariant to invertible maps of M̂
+    assert abs(mt.cv_r2(Y, X) - mt.cv_r2(Y @ B, X)) < 1e-4  # completeness is (up to the 1e-6 relative ridge)
+    assert abs(cv_r2_whitened(X, Y) - cv_r2_whitened(X, Y @ B)) < 1e-9
+    assert abs(cv_r2_whitened(X, Y) - 0.5) < 0.05

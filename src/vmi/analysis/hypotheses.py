@@ -112,12 +112,16 @@ def evaluate(max_round: int) -> dict:
         kl_means = {lv: float(_vals(v, "kl_out").mean()) for lv, v in trues.items()}
         hs_means = {lv: float(_vals(v).mean()) for lv, v in trues.items()}
         wf_kl, wf_hs, wf_agree = float(_vals(wf, "kl_out").mean()), float(_vals(wf).mean()), float(_vals(wf, "argmax_agreement").mean())
-        kl_fooled = wf_kl <= max(kl_means.values())
+        kl_fooled = wf_kl <= max(kl_means.values())  # §5's falsifier: KL above the largest E2–E4 mean
         hs_catches = all(wf_hs < v for v in hs_means.values())
         H["H3"] = {"N": n3, "label": _n_label(n3),
                    "verdict": "supported" if (wf_agree >= 0.99 and kl_fooled and hs_catches) else "not supported",
                    "wfreq": {"kl": wf_kl, "hs": wf_hs, "argmax_agreement": wf_agree}, "true_kl_means": kl_means,
-                   "true_hs_means": hs_means, "kl_fooled": kl_fooled, "hs_catches": hs_catches}
+                   "true_hs_means": hs_means, "kl_fooled": kl_fooled, "hs_catches": hs_catches,
+                   # §5's hypothesis wording also asks for KL within [min, max] of the E2–E4 means (reported, not a falsifier)
+                   "kl_within_range": min(kl_means.values()) <= wf_kl <= max(kl_means.values()),
+                   # §5: "HS difference to each of E2–E4 with bootstrap CI" (deviation 8: was not computed before)
+                   "hs_diff": {lv: st.bootstrap_mean_diff(_vals(wf), _vals(v)) for lv, v in trues.items()}}
     # H4 — E3/E4 vs independent retrains (and two-sided vs distilled students)
     rb = RES / "baselines" / "T0.json"
     if rb.exists():
@@ -128,7 +132,15 @@ def evaluate(max_round: int) -> dict:
         adj = st.holm({k: v["p"] for k, v in tests.items()})
         n4 = min(len(_select(runs, level="E3")), len(_select(runs, level="E4")))
         verd = {lv: st.verdict(adj[lv], True, st.min_p_mann_whitney(len(_select(runs, level=lv)), len(retr))) for lv in tests}
-        H["H4"] = {"N": n4, "label": _n_label(n4), "verdicts": verd, "tests": tests, "holm_p": adj,
+        # §5 secondary, two-sided, no predicted direction: E3/E4 vs the logit-distilled students (deviation 8), Holm over both
+        two = {lv: st.mann_whitney_two_sided(_vals(_select(runs, level=lv)), stud) for lv in ("E3", "E4")} if len(stud) else {}
+        adj2 = st.holm({k: v["p"] for k, v in two.items()})
+        for lv, t in two.items():
+            t["holm_p"] = adj2[lv]
+            t["result"] = ("cannot tell at this N" if t["p"] is None or t["min_p"] >= ALPHA
+                           else ("differ: " + ("agent higher" if t["r_rb"] > 0 else "students higher")) if adj2[lv] < ALPHA
+                           else "no significant difference")
+        H["H4"] = {"N": n4, "label": _n_label(n4), "verdicts": verd, "tests": tests, "holm_p": adj, "students": two,
                    "retrain_hs_mean": float(retr.mean()) if len(retr) else None,
                    "student_hs_mean": float(stud.mean()) if len(stud) else None,
                    "agent_hs_means": {lv: float(_vals(_select(runs, level=lv)).mean()) for lv in ("E3", "E4") if _select(runs, level=lv)}}

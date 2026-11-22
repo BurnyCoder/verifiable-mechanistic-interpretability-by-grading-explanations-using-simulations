@@ -7,11 +7,15 @@ verdict is labelled "at N=3 — not yet N=10". Protocol and deviations: [preregi
 ## What changed from round 1
 
 - **Runs:** 64 more Claude Haiku 5.5 runs (2 per condition, 32 conditions), no failures; no local-model runs
-  (deviation 5). The no-agent controls that depend on agent replacements (wrong targets, trajectory) and the grader
-  sensitivity analysis were recomputed with all six T0 E3/E4 replacements.
+  (deviation 5). The wrong-target control used all six T0 E3/E4 replacements; the H8 trajectory used one
+  (`main__T0__E4…s2`, the highest-HS one) against every 10th checkpoint (41 of 401), not every replacement × all 401
+  checkpoints as preregistered. After the round it was re-run as preregistered (deviation 8): all six replacements × 401
+  checkpoints, every ρ > 0, so H8 stays supported; the H8 row below shows the re-run. The grader sensitivity analysis covers
+  all T0 main and control runs.
 - **Analysis corrections (deviation 7):** H1 now reports its KL part separately, as §5 preregisters; H2 applies the
   §6 power rule at N = 3. Neither correction turns a verdict into "supported".
-- **Not replicated from round 1:** the low-effort E3 run's accuracy collapse (one of three runs); the E0 run's use of
+- **Not replicated from round 1:** the low-effort E3 run's accuracy collapse (one of three runs); the low-effort
+  W-freq run's accuracy collapse (s0 0.770; s1, s2 1.000; `results/runs/hyper__T0__W-freq-effort-low__*`); the E0 run's use of
   the published frequencies (one of three runs); E4 < E3 on T0 (at N = 3 the means are ordered E1 < E2 < E3 < E4).
 
 ## Key results
@@ -19,11 +23,11 @@ verdict is labelled "at N=3 — not yet N=10". Protocol and deviations: [preregi
 <!-- BEGIN key-results -->
 *Round 2, N = 3 run(s) per condition — not yet N=10*
 
-- **Model-specific detail raises hidden-state similarity:** HS on T0 is 0.05 (E1, algorithm only), 0.89 (E2), 0.93 (E3) and 0.94 (E4); with no explanation (E0) it is 0.13. Monotone along the ladder.
+- **Model-specific detail raises hidden-state similarity:** HS on T0 is 0.05 (E1, algorithm only), 0.89 (E2), 0.93 (E3) and 0.94 (E4); with no explanation (E0) it is 0.13. Monotone from E1 to E4; E0 lies above E1, against the preregistered prediction.
 - **Correct behaviour, wrong mechanism is caught by HS, not by output KL:** the wrong-frequency replacement reaches KL 0.003 nats (true E3: 0.010) but HS 0.07.
-- **Copying behaviour does not copy the mechanism:** independent retrains (HS 0.12) and logit-distilled students (HS 0.23, KL 2.38e-06) stay at the random-initialisation floor (HS 0.24).
+- **Copying behaviour does not copy the mechanism:** independent retrains (HS 0.12) and logit-distilled students (HS 0.23, KL 2.38e-06) score no higher than randomly initialised networks (HS 0.24). HS's scale is therefore not anchored at 0 for unrelated networks: it measures overlap of internal features, and working networks built on other frequencies score below random ones.
 - **Negative result:** the primary HS does not separate the Pizza explanation (W-alg, HS 0.91) or the scrambled neuron table (W-scramble, HS 0.94) from the true explanations; the secondary matched-neuron correlation separates W-scramble (0.65) from E4 (0.91).
-- **Memorisation (post hoc):** when the explanation gives no frequencies, the simulator often builds the published paper's frequencies {14, 35, 41, 42, 52} into its replacement. E1: 3 of 3 replacement(s) built mostly the paper's frequencies (Jaccard ≥ 0.5); mean HS 0.05 against T0 but 0.82 against the published checkpoint (target swap: same weights, other target); E0: 1 of 3 replacement(s) built mostly the paper's frequencies (Jaccard ≥ 0.5); mean HS 0.13 against T0 but 0.28 against the published checkpoint (target swap: same weights, other target). A separate algorithm-only run on the published checkpoint scores HS 0.59: scores on published models measure memory, not the explanation.
+- **Memorisation (post hoc):** when the explanation gives no frequencies, the simulator often builds most of the published paper's frequencies {14, 35, 41, 42, 52} into its replacement. E1: 3 of 3 replacement(s) used at least four of the paper's five frequencies, and 3 of 3 used none of T0's; mean HS 0.05 against T0 but 0.82 against the published checkpoint (target swap: same weights, other target); E0: 1 of 3 replacement(s) used at least four of the paper's five frequencies, and 2 of 3 used none of T0's; mean HS 0.13 against T0 but 0.28 against the published checkpoint (target swap: same weights, other target). The 3 algorithm-only run(s) on the published checkpoint itself score HS 0.59 on average (range 0.24–0.92): on a published model, a high score can come from the simulator's memory rather than the explanation (one published model and one simulator tested).
 - **Cost:** all Claude Haiku 5.5 runs so far cost $2.33 in total.
 <!-- END key-results -->
 
@@ -34,34 +38,36 @@ verdict is labelled "at N=3 — not yet N=10". Protocol and deviations: [preregi
 |---|-------|---------|-----|------|
 | H1 | HS rises and output KL falls from E1 to E4 on T0; E0 lies below E1 | HS E0 0.130, E1 0.046, E2 0.894, E3 0.929, E4 0.943; KL E1 0.097, E2 2.12e-04, E3 0.010, E4 0.060 | partly (KL does not fall E1→E4; E0 not below E1) | HS: supported; KL_out: not supported · at N=3 — not yet N=10 |
 | H2 | true explanations beat length-matched false ones on HS: E3 > W-freq, W-alg, W-role; E4 > W-scramble | HS difference E3>W-freq +0.859 [+0.835, +0.880]; E3>W-alg +0.020 [-0.008, +0.045]; E3>W-role +0.725 [+0.661, +0.768]; E4>W-scramble +0.007 [-0.025, +0.037] | partly (E3>W-alg tie (CI includes 0); E4>W-scramble tie (CI includes 0)) | E3>W-freq: cannot tell at this N; E3>W-alg: cannot tell at this N; E3>W-role: cannot tell at this N; E4>W-scramble: cannot tell at this N · at N=3 — not yet N=10 |
-| H3 | W-freq: argmax agreement ≥ 0.99, KL not above the true E2–E4 range, HS below each of E2–E4 | W-freq: agreement 1.000, KL 0.003 (true 2.12e-04–0.060), HS 0.070 (true 0.894–0.943) | yes | supported · at N=3 — not yet N=10 |
-| H4 | E3 and E4 beat independent retrains on HS (vs. distilled students: open question, no direction) | E3 0.929, E4 0.943; 9 retrains mean 0.119 (max 0.329); 3 students mean 0.233 (max 0.282) | yes | E3: supported; E4: supported · at N=3 — not yet N=10 |
+| H3 | W-freq: argmax agreement ≥ 0.99, KL not above the true E2–E4 range, HS below each of E2–E4 | W-freq: agreement 1.000, KL 0.003 (true 2.12e-04–0.060), HS 0.070 (true 0.894–0.943); HS − E2 -0.824 [-0.840, -0.801], E3 -0.859 [-0.880, -0.835], E4 -0.873 [-0.904, -0.841] | yes | supported · at N=3 — not yet N=10 |
+| H4 | E3 and E4 beat independent retrains on HS (vs. distilled students: open question, no direction) | E3 0.929, E4 0.943; 9 retrains mean 0.119 (max 0.329); 3 students mean 0.233 (max 0.282); vs students, two-sided: E3 cannot tell at this N, E4 cannot tell at this N | yes | E3: supported; E4: supported · at N=3 — not yet N=10 |
 | H4b | planted model: HS = 1 and KL = 0 at step 0, then HS strictly falls and KL strictly rises | HS 1.000 → 0.998 → 0.957 → 0.888; KL 0.000 → 0.371 → 0.040 → 4.25e-04 | partly (KL not strictly rising) | not supported · deterministic |
-| H5 | agent ≤ reference compiler on every explanation; the gap shrinks with simulator capability | agent − compiler on T0: E2 -0.001, E3 +0.002, E4 -0.009, W-freq -0.024; agent above compiler in 7 of 15 target–explanation pairs (largest +0.179, T2 E3); 5 local runs, 0 above chance | no (agent above compiler somewhere; capability trend not testable) | not evaluable (local simulators stopped at chance, deviation 5) · 5 local runs, qwen3.5-4b: 0/4 above chance, qwen3.5-9b: 0/1 above chance |
+| H5 | agent ≤ reference compiler on every explanation; the gap shrinks with simulator capability | agent − compiler on T0: E2 -0.001, E3 +0.002, E4 -0.009, W-freq -0.024; agent above compiler in 7 of 15 target–explanation pairs by sign, 4 beyond the bootstrap CI (T1 E2, T2 E3, T2 E4, T-new E4; largest +0.179, T2 E3); 5 local runs, 0 above chance | no (agent above compiler beyond its CI; capability trend not testable) | not evaluable (local simulators stopped at chance, deviation 5) · 5 local runs, qwen3.5-4b: 0/4 above chance, qwen3.5-9b: 0/1 above chance |
 | H6 | the local simulators rank E2, E3, E4, W-freq the same way | 5 local runs, 0 above chance: nothing to rank | not testable | not evaluable (local simulators stopped at chance, deviation 5) · 5 local runs, qwen3.5-4b: 0/4 above chance, qwen3.5-9b: 0/1 above chance |
 | H7 | a T0 replacement fits T0 better than any other trained or no-mechanism model (HS) | E3: HS 0.939 vs best other 0.274 (T2); E3: HS 0.932 vs best other 0.240 (T2); E3: HS 0.915 vs best other 0.290 (T2); E4: HS 0.912 vs best other 0.226 (T2); E4: HS 0.953 vs best other 0.227 (T2); E4: HS 0.965 vs best other 0.258 (T2) | yes | supported · 6 E3/E4 replacements (at N=3 — not yet N=10) |
-| H8 | HS against T0's checkpoints rises as restricted loss falls (circuit formation) | Spearman ρ(HS, −log restricted loss) = 0.856 | yes | supported · one replacement, all checkpoints |
+| H8 | HS against T0's checkpoints rises as restricted loss falls (circuit formation) | Spearman ρ(HS, −log restricted loss) per replacement: median 0.774, min 0.751 (6 E3/E4 replacements × 401 checkpoints) | yes | supported · 6 E3/E4 replacements × 401 checkpoints |
 <!-- END predictions -->
 
 Replications on the seed-sensitivity targets:
 
 <!-- BEGIN replications -->
-| Target | HS per true explanation | H1: HS rises E2→E4? | H2: HS(E3) − HS(W-freq) | H3 observed (W-freq) | H3 holds? |
+| Target | HS per true explanation | H1: HS rises with detail? (trend test) | H2: HS(E3) − HS(W-freq); Mann–Whitney | H3 observed (W-freq) | H3 holds? |
 |-----|------|---|---|-------|-----|
-| T1 | E2 0.957, E3 0.936, E4 0.960 | no | +0.885 | agreement 0.854, KL 0.537 (true max 0.498), HS 0.051 | partly (agreement < 0.99; KL above the true range) |
-| T2 | E2 0.900, E3 0.962, E4 0.951 | no | +0.864 | agreement 0.999, KL 0.006 (true max 0.049), HS 0.098 | yes |
-| T-new | E3 0.910, E4 0.984 | yes | +0.816 | agreement 0.907, KL 0.432 (true max 0.328), HS 0.094 | partly (agreement < 0.99; KL above the true range) |
-| T-paper (flagged: memorisation) | E1 0.590, E3 0.940, E4 0.937 | no | +0.823 | agreement 0.998, KL 0.007 (true max 0.413), HS 0.117 | yes |
+| T1 | E2 0.957, E3 0.936, E4 0.960 | means do not rise E2→E3→E4; not supported (JT p 0.502, ρ 0.05) | +0.885; cannot tell at this N (p 0.050) | agreement 0.854, KL 0.537 (true max 0.498), HS 0.051 | partly (agreement < 0.99; KL above the true range) |
+| T2 | E2 0.900, E3 0.962, E4 0.951 | means do not rise E2→E3→E4; not supported (JT p 0.500, ρ 0.05) | +0.864; cannot tell at this N (p 0.050) | agreement 0.999, KL 0.006 (true max 0.049), HS 0.098 | yes |
+| T-new | E3 0.910, E4 0.984 | means rise E3→E4; cannot tell at this N (JT p 0.050, ρ 0.88) | +0.816; cannot tell at this N (p 0.050) | agreement 0.907, KL 0.432 (true max 0.328), HS 0.094 | partly (agreement < 0.99; KL above the true range) |
+| T-paper (flagged: memorisation) | E1 0.590, E3 0.940, E4 0.937 | means do not rise E3→E4; cannot tell at this N (JT p 0.650, ρ -0.10) | +0.823; cannot tell at this N (p 0.050) | agreement 0.998, KL 0.007 (true max 0.413), HS 0.117 | yes |
 <!-- END replications -->
 
 **Reading.** With three runs per condition the preregistered tests decide five hypotheses. HS rises with true detail
-(H1, HS part: supported); the large step is E1 → E2, E2 → E3 adds a few hundredths in every run and E3 → E4 is
-mixed. Output KL does not fall with detail (H1, KL part: not supported) — it is lowest at E2 and rises at E3 and E4.
+(H1, HS part: supported); the large step is E1 → E2, E2 → E3 adds a few hundredths in every run (preregistered HS; E2 and E3 tie under the post-hoc whitened check of the
+audit) and E3 → E4 is mixed. Output KL does not fall with detail (H1, KL part: not supported) — it is lowest at E2 and rises at E3 and E4.
 The wrong-frequency explanation keeps correct behaviour while HS falls below every true explanation (H3: supported).
 E3 and E4 beat independent retrains (H4: supported) and fit T0 better than any other model (H7: supported); HS tracks
-circuit formation (H8: supported). H2 cannot be decided with 3 vs 3 runs (smallest attainable p = 0.05), but its
-bootstrap intervals already separate two arms from two others: E3 beats W-freq and W-role by wide margins, while
-W-alg (Pizza) and W-scramble tie with the true explanations. H4b's KL half fails deterministically, as in round 1.
+circuit formation (H8: supported, in its preregistered form over all six
+E3/E4 replacements and 401 checkpoints after deviation 8). H2 cannot be decided with 3 vs 3 runs (smallest attainable
+p = 0.05), but its bootstrap intervals already separate two arms from two others: E3 beats W-freq and W-role by wide
+margins, while W-alg (Pizza) and W-scramble tie with the true explanations. W-alg is not length-matched (about 60 % of
+E3's characters on every target, `results/explanations/*/W-alg/length.json`), unlike the H2 row's wording. H4b's KL half fails deterministically, as in round 1.
 
 ## Main method and agent controls on T0
 
@@ -218,28 +224,33 @@ head's output written onto the readout dimensions; fixing that one number restor
 | T-paper | E-paper | 14, 35, 41, 42, 52 | 14, 35, 41, 42, 52 | 1.00 | 1.00 | 0.961 | – |
 <!-- END frequencies -->
 
-**Reading.** The algorithm-only explanation E1 makes the simulator build the published checkpoint's frequencies in
-all three T0 runs, and the same weights score far higher against the published checkpoint than against T0 (target
-swap). With no explanation at all (E0) this happened in one run of three; the other two built blocks of consecutive
+**Reading.** The algorithm-only explanation E1 makes the simulator build four of the published checkpoint's five
+frequencies (14, 35, 41, 52 by the key-frequency rule) in all three T0 runs (s1 and s2 hard-coded
+`[14, 35, 41, 52, 73]`, 73 ≡ −40 mod 113), and the same weights score far higher against the published checkpoint than
+against T0 (target swap). With no explanation at all (E0) this happened in one run of three; the other two built blocks of consecutive
 frequencies and score near the random-initialisation floor. On the published checkpoint itself the algorithm-only
 runs vary widely, so scores there are unreliable as well as confounded.
 
 ## Grader sensitivity (no new runs)
 
 <!-- BEGIN grader-sensitivity-T0 -->
-| Grader setting | E0 | E1 | E2 | E3 | E4 | W-freq | W-alg | W-role | W-scramble | Kendall τ vs. preregistered |
-|---|---|---|---|---|---|---|---|---|---|---|
-| preregistered (λ 1e-6, 5 folds, seed 0, 3 sites, general linear) | 0.13 | 0.05 | 0.89 | 0.93 | 0.94 | 0.07 | 0.91 | 0.20 | 0.94 | 1.00 |
-| ridge λ × 100 | 0.11 | 0.03 | 0.87 | 0.90 | 0.93 | 0.06 | 0.89 | 0.19 | 0.92 | 1.00 |
-| ridge λ / 100 | 0.14 | 0.05 | 0.91 | 0.94 | 0.95 | 0.08 | 0.92 | 0.22 | 0.94 | 1.00 |
-| 3 folds | 0.13 | 0.04 | 0.89 | 0.93 | 0.94 | 0.07 | 0.91 | 0.20 | 0.94 | 1.00 |
-| 10 folds | 0.13 | 0.05 | 0.89 | 0.93 | 0.94 | 0.07 | 0.91 | 0.21 | 0.94 | 1.00 |
-| fold seed 1 | 0.13 | 0.05 | 0.89 | 0.93 | 0.94 | 0.07 | 0.91 | 0.20 | 0.94 | 1.00 |
-| fold seed 2 | 0.13 | 0.05 | 0.89 | 0.93 | 0.94 | 0.07 | 0.91 | 0.20 | 0.94 | 1.00 |
-| resid_mid only | 0.10 | 0.01 | 0.88 | 0.92 | 0.92 | 0.03 | 0.90 | 0.41 | 0.91 | 0.89 |
-| mlp_post only | 0.17 | 0.13 | 0.94 | 0.97 | 0.99 | 0.18 | 0.96 | 0.11 | 0.97 | 0.78 |
-| resid_post only | 0.11 | 0.00 | 0.85 | 0.90 | 0.92 | 0.00 | 0.86 | 0.09 | 0.93 | 0.89 |
-| orthogonal alignment (with scale) | 0.01 | 0.00 | 0.64 | 0.74 | 0.81 | 0.00 | 0.66 | 0.08 | 0.78 | 0.99 |
+| Grader setting | E0 | E1 | E2 | E3 | E4 | W-freq | W-alg | W-role | W-scramble | retrain | random init | Kendall τ vs. preregistered |
+|--------------------------|-------|-------|-------|-------|-------|-------|-------|-------|-----------|-------|-----------|-----------|
+| preregistered (λ 1e-6, 5 folds, seed 0, 3 sites, general linear) | 0.13 | 0.05 | 0.89 | 0.93 | 0.94 | 0.07 | 0.91 | 0.20 | 0.94 | 0.12 | 0.24 | 1.00 |
+| ridge λ × 100 | 0.11 | 0.03 | 0.87 | 0.90 | 0.93 | 0.06 | 0.89 | 0.19 | 0.92 | 0.09 | 0.21 | 1.00 |
+| ridge λ / 100 | 0.14 | 0.05 | 0.91 | 0.94 | 0.95 | 0.08 | 0.92 | 0.22 | 0.94 | 0.14 | 0.26 | 1.00 |
+| 3 folds | 0.13 | 0.04 | 0.89 | 0.93 | 0.94 | 0.07 | 0.91 | 0.20 | 0.94 | 0.12 | 0.23 | 1.00 |
+| 10 folds | 0.13 | 0.05 | 0.89 | 0.93 | 0.94 | 0.07 | 0.91 | 0.21 | 0.94 | 0.12 | 0.24 | 1.00 |
+| fold seed 1 | 0.13 | 0.05 | 0.89 | 0.93 | 0.94 | 0.07 | 0.91 | 0.20 | 0.94 | 0.12 | 0.24 | 1.00 |
+| fold seed 2 | 0.13 | 0.05 | 0.89 | 0.93 | 0.94 | 0.07 | 0.91 | 0.20 | 0.94 | 0.12 | 0.24 | 1.00 |
+| resid_mid only | 0.10 | 0.01 | 0.88 | 0.92 | 0.92 | 0.03 | 0.90 | 0.41 | 0.91 | 0.09 | 0.26 | 0.89 |
+| mlp_post only | 0.17 | 0.13 | 0.94 | 0.97 | 0.99 | 0.18 | 0.96 | 0.11 | 0.97 | 0.21 | 0.39 | 0.78 |
+| resid_post only | 0.11 | 0.00 | 0.85 | 0.90 | 0.92 | 0.00 | 0.86 | 0.09 | 0.93 | 0.06 | 0.06 | 0.89 |
+| orthogonal alignment (with scale) | 0.01 | 0.00 | 0.64 | 0.74 | 0.81 | 0.00 | 0.66 | 0.08 | 0.78 | 0.00 | 0.04 | 0.99 |
+| whitened soundness, eig > 1e-6·max (post hoc) | 0.10 | 0.04 | 0.76 | 0.76 | 0.81 | 0.07 | 0.80 | 0.26 | 0.75 | 0.10 | 0.14 | 0.72 |
+| whitened soundness, eig > 1e-3·max (post hoc) | 0.12 | 0.04 | 0.88 | 0.88 | 0.90 | 0.07 | 0.90 | 0.25 | 0.88 | 0.13 | 0.18 | 0.78 |
+
+*H7 margin d = HS(T0) − max HS over the 12 wrong targets, per E3/E4 replacement (smallest / median):* preregistered (λ 1e-6, 5 folds, seed 0, 3 sites, general linear): 0.63 / 0.69; whitened soundness, eig > 1e-6·max (post hoc): 0.52 / 0.60; whitened soundness, eig > 1e-3·max (post hoc): 0.60 / 0.67
 <!-- END grader-sensitivity-T0 -->
 
 **Reading.** The ranking of explanations is unchanged by ridge strength, number of folds and fold seed, nearly

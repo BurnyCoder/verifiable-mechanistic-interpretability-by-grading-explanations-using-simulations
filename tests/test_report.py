@@ -107,8 +107,8 @@ def test_verdict_rules_follow_preregistration_sections_5_and_6():
 
 def test_glossary_explains_labels_once_per_unit_and_leaves_code_and_links_alone():
     from vmi.analysis.glossary import gloss
-    assert gloss("HS on T0 is 0.9; HS again") == ("HS (hidden-state similarity, 1 = same internals) on T0 (main target "
-                                                   "network) is 0.9; HS again")
+    assert gloss("HS on T0 is 0.9; HS again") == ("HS (hidden-state similarity, 1 = internals match up to a linear map) on "
+                                                   "T0 (main target network) is 0.9; HS again")
     assert gloss("0.05 (E1, algorithm only)") == "0.05 (E1, algorithm only)"  # meaning already given
     assert gloss("hidden-state similarity (HS)") == "hidden-state similarity (HS)"  # meaning given just before
     assert gloss("E3>W-freq and E3/E4") == "E3 (+ per-frequency details) > W-freq (wrong frequencies) and E3 and E4 (+ per-neuron table)"
@@ -131,6 +131,9 @@ def test_agent_example_explanations_name_the_cause():
     memo, memo_short = ae.why({**base, "freq_lines": ["KEY_FREQS = [14, 35, 41, 42, 52]"]}, "T0", "E1")
     assert "from memory" in memo_short and "wrong internals" in memo_short
     assert memo.startswith("Wrong mechanism, right answers") and "published paper's" in memo and "I'll pick" in memo
+    assert "hard-codes {14, 35, 41, 42, 52}" in memo
+    four, four_short = ae.why({**base, "freq_lines": ["FREQS = [14, 35, 41, 52, 73]"]}, "T0", "E1")
+    assert "4 of the published paper's five frequencies" in four and "4 of the paper's five" in four_short
     ok, _ = ae.why({**base, "hs": 0.94, "compiler_hs": 0.93, "freq_lines": ["KF = [2, 3, 23, 37, 39]"]}, "T0", "E3")
     assert ok.startswith("Right:") and "T0's own" in ok
     dead, _ = ae.why({**base, "accuracy": 0.0088, "accs": [0.0088], "harness_errors": ["output-limit", "exit status: TimeExceeded"],
@@ -151,7 +154,8 @@ def test_diagnosed_failure_explains_the_bug_with_stored_numbers(tmp_path, monkey
                             "identical_runs": 3, "failures": 1, "failure_rate_ci95": [0.0084, 0.9057],
                             "served": ["claude-haiku-5-5"], "claude_code": "2.1.330"},
         "variants": [{"name": "as submitted", "accuracy": 0.56, "hs": 0.92, "kl_out": 2.0},
-                     {"name": "head 3 moved to free dimensions", "accuracy": 1.0, "hs": 0.92, "kl_out": 0.0}]}))
+                     {"name": "head 3 where its own docstring puts it (P3 = 42)", "accuracy": 1.0, "hs": 0.92, "kl_out": 0.0},
+                     {"name": "head 3 moved to unused dimensions (P3 = 62)", "accuracy": 1.0, "hs": 0.92, "kl_out": 0.0}]}))
     monkeypatch.setattr(diagnose, "OUT", tmp_path)
     x = {"run_id": rid, "tool_calls": 22, "minutes": 6.4, "accuracy": 0.56, "hs": 0.92, "accs": [0.68, 0.78, 0.56], "harness_errors": [], "final": "",
          "reaction": "accuracy is only 0.68.", "plan": "", "compiler_hs": 0.93, "freq_lines": ["F = [2, 3, 23, 37, 39]"],
@@ -162,6 +166,53 @@ def test_diagnosed_failure_explains_the_bug_with_stored_numbers(tmp_path, monkey
     assert "1 of 3 identical runs" in long and "1%–91%" in long and "0.9994 and 0.9986" in long
     assert short.endswith("(bug in 1 of 3 identical runs)")
     assert "fixing it gives accuracy 1.0000" in short
+
+
+def test_preregistered_secondary_statistics_are_computed():
+    """Deviation 8 (audit 2026-11-22): §5 asks for H3's HS difference to each of E2–E4 with a bootstrap CI and for a
+    two-sided test of E3/E4 against the distilled students; a 3-vs-3 two-sided exact test cannot go below p = 0.1."""
+    from vmi.analysis import hypotheses
+    from vmi.analysis import stats as st
+    assert st.min_p_mann_whitney(3, 3, two_sided=True) == 0.1 and st.min_p_mann_whitney(3, 3) == 0.05
+    t = st.mann_whitney_two_sided([3.0, 4.0, 5.0], [0.0, 1.0, 2.0])
+    assert abs(t["p"] - 0.1) < 1e-12 and t["r_rb"] == 1.0
+    H = hypotheses.evaluate(2)["hypotheses"]
+    if "H3" in H:
+        assert set(H["H3"]["hs_diff"]) == {"E2", "E3", "E4"} and all("ci" in v for v in H["H3"]["hs_diff"].values())
+    if "H4" in H and H["H4"].get("students"):
+        s = H["H4"]["students"]
+        assert set(s) == {"E3", "E4"}
+        if H["H4"]["N"] == 3:
+            assert {v["result"] for v in s.values()} == {"cannot tell at this N"}
+
+
+def test_trajectory_uses_every_e3_e4_replacement():
+    """Deviation 8: H8 is preregistered over E3/E4 replacements (plural) and T0's 401 checkpoints; the verdict needs
+    every replacement's ρ > 0."""
+    p = tables.RES / "controls" / "trajectory_T0.json"
+    d = json.loads(p.read_text()) if p.exists() else {}
+    if "replacements" in d:
+        rhos = [r["rho"] for r in d["replacements"]]
+        assert len(rhos) >= 2 and d["verdict"] == ("supported" if min(rhos) > 0 else "not supported")
+        assert len(d["steps"]) == 401
+
+
+def test_diagnosis_follows_the_agents_own_docstring():
+    """Audit: the failed run's docstring puts heads 2 and 3 together at 42–51, so the intended value is P3 = 42."""
+    from vmi.analysis.diagnose import DIAGNOSES
+    d = DIAGNOSES["hyper__T0__E3-effort-low__claudehaiku55-claudecode__tdef__s0"]
+    assert "42–51" in d["owner"] and "skipped" not in d["owner"]
+    assert any("P3 = 42" in name for name, _ in d["variants"])
+
+
+def test_floor_and_memorisation_wording_match_the_numbers():
+    text = tables.key_results(2)
+    b, ri = tables.RES / "baselines" / "T0.json", tables.RES / "controls" / "random_init_T0.json"
+    assert "stay at the random-initialisation floor" not in text
+    if b.exists() and ri.exists():
+        assert "no higher than randomly initialised networks" in text or "above randomly initialised networks" in text
+    if (tables.RES / "frequencies_round2.json").exists():
+        assert "of the paper's five frequencies" in text
 
 
 def test_key_results_report_the_target_swap_when_present():

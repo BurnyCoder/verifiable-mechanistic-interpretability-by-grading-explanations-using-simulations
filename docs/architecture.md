@@ -45,20 +45,24 @@ flowchart TB
 | `simulator/` | sandbox folder, WSL runner, unix-socket relay, Anthropic proxy (key injection, model allowlist, budget ledger), bash-only agent harness, llama-server manager, static audit |
 | `training.py` | grokviz trainer for fresh runs; small loop for distillation and continued training |
 | `nonagent.py` | random init, wrong targets, trajectory, planted calibration, baselines |
-| `manifests.py` | the 44 agent conditions (amendment 2) and per-round manifests |
-| `analysis/` | statistical tests, hypothesis verdicts labelled with N, tables, figures, and `report.py` (one command refills every marked block and builds the paper) |
+| `manifests.py` | the agent conditions (amendment 2: 44 in round 1; 32 Claude Haiku conditions in rounds 2–3 after deviation 5) and per-round manifests |
+| `analysis/` | statistical tests, hypothesis verdicts labelled with N, tables, figures, and `report.py` (one command refills every marked block, including the paper's text; `vmi paper` builds the PDF) |
 | `pipeline.py` | CLI wrapper (`uv run vmi ...`) |
 
 ## Why these design choices
 
-- **Linear alignment for hidden states**: the LayerNorm-free residual stream is only defined up to GL(128); linear
-  regression is invariant to exactly that group (see `reports/state-of-the-art-review.md`).
+- **Linear alignment for hidden states**: the LayerNorm-free residual stream is only defined up to GL(128). Regression
+  R² is invariant to invertible linear maps of its predictor (Kornblith et al. 2019, Table 1), so completeness
+  R²(M̂→M) is invariant to any change of the replacement's basis; soundness R²(M→M̂), pooled over the replacement's
+  dimensions, only to orthogonal maps and uniform scaling; HS = 1 exactly under an affine equivalence. A post-hoc
+  whitened soundness, invariant in both directions, is in the grader sensitivity analysis (audit 2026-11-22; see
+  `reports/state-of-the-art-review.md`).
 - **float64 grading**: matches the agent's numpy self-test, so numerical cancellations cannot make a model pass the
   self-test and fail grading.
 - **Spec as single source**: the explanation text and the compiler input come from the same dict, so the compiler
   measures exactly what the explanation determines.
 - **bubblewrap + unix-socket relay**: no Docker, no sudo, no firewall change; the only path out of the sandbox is the
-  LLM endpoint, and every byte through it is logged.
+  LLM endpoint, and every request and response body through it is logged (headers excluded).
 - **Credentials outside the sandbox**: the API key is read by the pipeline and handed only to the proxy in WSL; the
   sandbox gets a placeholder key and a loopback URL, so the agent can call the model but cannot read or exfiltrate
   the key, and the budget is enforced per request before anything is forwarded.

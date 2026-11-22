@@ -7,5 +7,5 @@
   "tool_calls": 0,
   "errors": 0,
   "wsl_returncode": 0,
-  "proxy_log": "proxy listening on unix:/home/burny/vmi-sim/sandboxes/claude_check/sock/llm.sock; spent so far $0.0000 of $20.0\n09:09:39 \"POST /v1/messages?beta=true HTTP/1.1\" 200 -\n"
+  "proxy_log": "proxy listening on unix:/home/user/vmi-sim/sandboxes/claude_check/sock/llm.sock; spent so far $0.0000 of $20.0\n09:09:39 \"POST /v1/messages?beta=true HTTP/1.1\" 200 -\n"
 }
