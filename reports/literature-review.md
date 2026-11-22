@@ -22,8 +22,8 @@ code: [progress-measures-paper](https://github.com/mechanistic-interpretability-
 **Model.** p = 113, input `a b =`, one layer, d_model 128, 4 heads × d_head 32, d_mlp 512, ReLU, no LayerNorm,
 learned positional embeddings, untied embed/unembed, biases only in the MLP (official code `transformers.py`).
 Full-batch AdamW, lr 1e-3, weight decay 1, 30 % of the 12,769 pairs for training. The released code adds what the
-paper does not state: betas (0.9, 0.98), a 10-step linear warm-up, 114 output classes during training ("=" included),
-and 50,000 epochs with the analysed checkpoint at epoch 40,000.
+paper does not state: betas (0.9, 0.98), a 10-step linear warm-up and 114 output classes during training ("="
+included); its default is 50,000 epochs, while the paper (§3) trains and analyses 40,000 (the analysed checkpoint).
 
 **Algorithm ("Fourier multiplication", §3.1).** Embed a and b as cos/sin(w_k a), cos/sin(w_k b) for a few key
 frequencies w_k = 2πk/p; form cos/sin(w_k(a+b)) with the angle-addition identities in attention and the MLP;
@@ -160,8 +160,9 @@ alone and measures closeness to the trained model** (searched 2026-11-20; absenc
   in an appendix) are similar for trained and randomised transformers in many settings, with a larger gap for small
   Pythia models ([arXiv:2501.17727](https://arxiv.org/abs/2501.17727)); **Poché et al. 2026 — LLM simulators can bypass
   explanations** ([arXiv:2609.08585](https://arxiv.org/abs/2609.08585)): when LLM simulators predict a text
-  classifier's outputs from concept explanations (a ConSim replication with meaningful class names), explanations added little over no-explanation
-  baselines, which the authors attribute to simulators solving the task from the meaningful class names (their
+  classifier's outputs from concept explanations (a ConSim replication with meaningful class names; an extension covers
+  attributions and rationales), explanation gains over no-explanation baselines were statistically significant but small
+  relative to their variability, which the authors explain by simulators solving the task from the meaningful class names (their
   "shortcut hypothesis"; simulators of at most 15B parameters without reasoning); they
   recommend label-leakage baselines, multiple simulators, enough seeds and novel tasks;
   Lermen et al. 2025 — explainer and simulator can collude via steganography

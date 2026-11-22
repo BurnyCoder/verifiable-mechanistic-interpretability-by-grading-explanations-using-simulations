@@ -219,7 +219,7 @@ Eleven agent smoke runs on the dev target `wd1_s10` (details and transcripts: `r
 `reports/progress.md`. Prompts, `TASK.md`, sandbox templates, explanation templates, harnesses, simulator settings and
 analysis code are fixed from that commit on. T-new is trained after it.
 
-### Post-freeze deviations (logged as they happen; 1–4 and 6 change no hypothesis, metric, test or condition; 5 removes conditions; 7 corrects how H1/H2 verdicts were computed; 8 adds missing preregistered statistics, discloses analyses not run and corrects §4's rationale; 9 corrects factual statements, narrows two claims to their evidence and adds post-hoc checks; 10 corrects how H1's verdict and the T-paper replication are reported, makes H1's trend test exact, corrects §4's rationale for `mlp_post` and adds post-hoc checks; 11 corrects how H4b and H8 are interpreted, states the coverage of three-run bootstrap intervals, corrects errata and citations and adds post-hoc checks; 12 re-derives every verdict independently, narrows the scope of the "true" explanations and of one blind spot, corrects how the deviations made after results are counted and corrects errata and citations)
+### Post-freeze deviations (logged as they happen; 1–4 and 6 change no hypothesis, metric, test or condition; 5 removes conditions; 7 corrects how H1/H2 verdicts were computed; 8 adds missing preregistered statistics, discloses analyses not run and corrects §4's rationale; 9 corrects factual statements, narrows two claims to their evidence and adds post-hoc checks; 10 corrects how H1's verdict and the T-paper replication are reported, makes H1's trend test exact, corrects §4's rationale for `mlp_post` and adds post-hoc checks; 11 corrects how H4b and H8 are interpreted, states the coverage of three-run bootstrap intervals, corrects errata and citations and adds post-hoc checks; 12 re-derives every verdict independently, narrows the scope of the "true" explanations and of one blind spot, corrects how the deviations made after results are counted and corrects errata and citations; 13 re-derives every verdict and re-grades the scores with new code, reports H2's literal §5 reading beside "cannot tell", replaces a pattern count of the agents' parameter searches by a read count and corrects citations)
 
 1. **2026-11-21, round 1, after the controls stage — analysis code brought in line with amendment 2.** The frozen
    `analysis/hypotheses.py` still selected the main condition as Qwen3.6-35B-A3B at temperature 0.6 (pre-amendment)
@@ -484,3 +484,46 @@ analysis code are fixed from that commit on. T-new is trained after it.
    the paper's exact recipe (no sandbox file names a frequency or the paper).
    None of (a)–(f) changes a primary metric, a preregistered test or a verdict; (b) and (c) narrow how two results are
    described.
+13. **2026-11-22, after round 2 — sixth independent audit: verdicts and scores re-derived with new code, H2's literal
+   reading, the count of the agents' parameter searches, and citation corrections.** Made without reading the earlier
+   reviews or audit scripts, after every round-2 number had been seen (`reports/reviews/audit-6-2026-11-22.md`).
+   (a) *Re-derivation.* Every round-2 verdict was recomputed from the raw run records by code written for this audit
+   (exact Jonckheere–Terpstra by enumerating the distinct assignments, scipy's exact Mann–Whitney and Wilcoxon, exact
+   bootstrap distributions; `scripts/audit6/verdicts.py`, `results/audit6/verdicts.json`): all 29 checks agree; the
+   stored H2 interval bounds, from 10,000 Monte-Carlo resamples, differ from the exact bootstrap bounds by Monte-Carlo
+   error only (≤ 0.003, same reading). The scores those tests use were re-graded by a third, numpy-only implementation
+   (`scripts/audit6/regrade_numpy.py`, `results/audit6/regrade.json`; figures in the audit report). H1's HS trend also
+   passes under both post-hoc whitened-soundness variants (exact JT p = 9.3e-4).
+   (b) *H2 read literally.* §5 falsifies a comparison that is "not significant after Holm" and allows "cannot tell at
+   this N" only "when the test is undefined"; a 3-vs-3 Mann–Whitney is defined but cannot reach p < 0.05. Read
+   literally, §5 makes all four H2 comparisons "not supported" at N = 3. The reported "cannot tell at this N" follows
+   deviation 1's rule (added before any verdict, after some per-run scores had been seen), which deviation 7 applied at
+   N = 3 after the N = 3 verdicts were first read. Both readings are now reported; no other N = 3 verdict depends on
+   this rule (H4's and H7's tests can reach significance and do; H4's secondary comparison with the distilled students
+   has no predicted direction and no falsifier).
+   (c) *Agents' parameter searches* (deviation 9(c); paper §3.3). The count came from a pattern match over the
+   agents' narration. Reading every matched sentence and the candidate sentences of the other runs gives 44 of 96 runs
+   that announce trying several values of a constant or report such a search; the pattern's 41 included 2 false
+   matches and 3 mentions of tuning without a search, and it missed 8 (`scripts/audit6/sweep_labels.py`,
+   `results/audit6/sweep_labels.json`). Deviation 9(c)'s "keep the one with the best self-test accuracy or
+   least-squares fit" is what many narrations say they will do, not something counted.
+   (d) *Citations.* Zhong et al.'s Fig. 7 (deviation 12(f)): its phase-transition lines are drawn in attention-rate ×
+   width space and "calculated by logistic regression (classify the runs by whether gradient symmetricity > 98% and
+   whether distance irrelevance < 0.6)"; 0.98 and 0.6 are the labels of those fits, not lines on either metric. Sutter
+   et al. themselves suggest restricting alignment maps to linear ones when representations are linear (their §1 and
+   §8); the README had called the restriction "our inference from it, not theirs". Nanda et al. read their main model's
+   key frequencies off the embedding (§4.1) and use W_L's non-trivial coefficients for other runs (App. C.2); on T0 the
+   two readings give {3, 6, 23, 37, 39} and {2, 3, 23, 37, 39} (deviation 12(b)). Deviation 3: on Linux sun_path is
+   108 bytes including the terminating null, and the error came from Python's check, which refuses paths of 108 bytes
+   or more ("over Linux's 107-byte limit" was imprecise). Poché et al. find explanation gains over no-explanation
+   baselines "statistically significant" but "small relative to their variability", for concepts, attributions and
+   rationales, and explain them by a "shortcut hypothesis"; the paper and reviews had said the explanations "add little"
+   for concept explanations only. In the reviews of related work: grokviz's 5.5474e-8 on the paper model is the
+   restricted-logits loss (paper code `calculate_trig_loss`), not a per-neuron restriction; Nanda et al.'s code defaults
+   to 50,000 epochs while the paper states and analyses 40,000; the expert-pruned Qwen3.8-Flash-Next build cited is
+   ≈ 20 GB plus a 28.8 GB n-gram table, not "13–20 GB".
+   (e) *Wording.* Deviation 12(f)'s "a task description that gives the paper's exact recipe": `ARCHITECTURE.md` gives
+   the paper's exact architecture and E0 an outline of its training setup (30 % training split, cross-entropy, AdamW,
+   weight decay), not the learning rate, decay value or step count.
+   None of (a)–(e) changes a primary metric, a preregistered test or a reported verdict; (b) adds the literal reading
+   beside H2's verdict and (c) changes a post-hoc count from 41 to 44.

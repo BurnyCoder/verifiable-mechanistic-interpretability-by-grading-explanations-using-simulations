@@ -235,8 +235,8 @@ def key_results(max_round: int, target: str = "T0") -> str:
                    "target, and the sandbox does not reveal the target), so their runs on T0 and on the published "
                    "checkpoint are replicates of one condition. When the explanation gives no frequencies, the simulator "
                    "often builds most of the published paper's frequencies {14, 35, 41, 42, 52} into its replacement "
-                   "(recall cued by the task description, which gives the paper's exact recipe; no sandbox file names a "
-                   "frequency or the paper). "
+                   "(recall cued by the task description, which gives the paper's exact architecture and an outline of its "
+                   "training setup; no sandbox file names a frequency or the paper). "
                    + "; ".join(x for x in (per_level("E1"), per_level("E0")) if x)
                    + ". On a published model, a high score can therefore come from the simulator's memory rather than the "
                    "explanation (one published model and one simulator tested).")
@@ -437,6 +437,13 @@ def inline_values(max_round: int) -> dict[str, str]:
     if beh.exists():
         B = json.loads(beh.read_text())["summary"]
         v["tune-said"] = of(B["sweep_said"], B["runs"])
+        sl = RES / "audit6" / "sweep_labels.json"  # audit 6: every flagged and candidate sentence read (scripts/audit6/sweep_labels.py)
+        if sl.exists():
+            L = json.loads(sl.read_text(encoding="utf-8"))["summary"]
+            v["tune-said"] = of(L["read_sweep"], L["runs"])
+            v["tune-regex"] = (f"{_w(L['regex_flagged'])}, {_w(L['regex_false_match'])} of them false matches and "
+                               f"{_w(L['regex_tuning_mention'])} mentions of tuning without a search, and misses "
+                               f"{_w(L['regex_missed'])}")
         v["selftest-median"] = f"{B['selftest_median']:g}"
         if "own_check" in B:  # audit 3: accuracy computed without selftest.py; any label check at all
             v["own-check"] = of(B["own_check"], B["runs"])
@@ -463,6 +470,37 @@ def inline_values(max_round: int) -> dict[str, str]:
     if e01:
         v["e01-acc"] = f"{min(e01):.3f}" if f"{min(e01):.3f}" == f"{max(e01):.3f}" else f"{min(e01):.3f}–{max(e01):.3f}"
     v.update(_audit5_values())
+    v.update(_audit6_values(runs))
+    return v
+
+
+def _audit6_values(runs: list[dict]) -> dict[str, str]:
+    """Inline values of the sixth audit (`v:a6-*`), from results/audit6/ and the stored run records (post hoc; no verdict
+    uses them). `a6-spec-*`: the preregistered secondary embedding-spectrum cosine (per-frequency norms of W_E, no forward
+    pass) per T0 condition of the main simulator, next to HS, to show how much of HS's ordering a weights-only frequency
+    statistic already gives."""
+    from vmi.analysis.hypotheses import _select  # same condition selection as the hypothesis tests
+    v: dict[str, str] = {}
+    spec = {lv: [r["embedding_spectrum_cosine"] for r in _select(runs, level=lv) if "embedding_spectrum_cosine" in r]
+            for lv in ("E1", "E2", "E3", "E4", "W-freq", "W-alg", "W-role", "W-scramble")}
+    if all(spec.values()):
+        m = {lv: float(np.mean(x)) for lv, x in spec.items()}
+        hs = {lv: float(np.mean([r["hs"] for r in _select(runs, level=lv)])) for lv in spec}
+        rng2 = lambda ks: f"{min(m[k] for k in ks):.2f}–{max(m[k] for k in ks):.2f}"  # noqa: E731
+        v["a6-spec-true"] = rng2(("E2", "E3", "E4"))
+        v["a6-spec-near"] = rng2(("W-alg", "W-scramble"))
+        v["a6-spec-wfreq"] = f"{m['W-freq']:.2f}"
+        v["a6-spec-e1"] = f"{m['E1']:.2f}"
+        v["a6-spec-wrole"] = f"{m['W-role']:.2f}, HS {hs['W-role']:.2f}"
+    vd = RES / "audit6" / "verdicts.json"  # scripts/audit6/verdicts.py
+    if vd.exists():
+        d = json.loads(vd.read_text(encoding="utf-8"))
+        v["a6-verdicts"] = f"{d['n_match']} of {d['n_checks']}"
+    rg = RES / "audit6" / "regrade.json"  # scripts/audit6/regrade_numpy.py
+    if rg.exists():
+        s = json.loads(rg.read_text(encoding="utf-8"))["summary"]
+        v["a6-regrade"] = (f"{s['n_gradings']} gradings, largest differences {s['max_abs_diff_hs']:.1e} in HS and "
+                           f"{s['max_abs_diff_kl']:.1e} in KL")
     return v
 
 
@@ -674,15 +712,24 @@ def agent_behaviour_table() -> str:
     if not p.exists():
         return "_not computed yet_"
     d = json.loads(p.read_text())
-    rows = ["| Explanation | runs | self-test runs per run (median, range) | runs whose narration states a sweep or tuning | "
-            "runs with ≥ 2 self-test runs | runs with own label checks (no selftest.py) |", "|---|---|---|---|---|---|"]
+    sl = RES / "audit6" / "sweep_labels.json"  # audit 6: manual read-through labels (scripts/audit6/sweep_labels.py)
+    L = json.loads(sl.read_text(encoding="utf-8"))["summary"] if sl.exists() else None
+    read = (lambda lv: str(L["by_level"].get(lv, 0))) if L else (lambda lv: "–")  # noqa: E731 — read count per level
+    rows = ["| Explanation | runs | self-test runs per run (median, range) | runs whose narration matches the sweep pattern | "
+            "runs announcing a search over values (read, audit 6) | runs with ≥ 2 self-test runs | runs with own label "
+            "checks (no selftest.py) |", "|---|---|---|---|---|---|---|"]
     for lv, s in d["by_level"].items():
         rows.append(f"| {lv} | {s['runs']} | {s['selftest_median']:g} ({s['selftest_min']}–{s['selftest_max']}) | "
-                    f"{s['sweep_said']} | {s['multi_selftest']} | {s.get('own_check', '–')} |")
+                    f"{s['sweep_said']} | {read(lv)} | {s['multi_selftest']} | {s.get('own_check', '–')} |")
     S = d["summary"]
     rows.append(f"| **all** | {S['runs']} | {S['selftest_median']:g} ({S['selftest_min']}–{S['selftest_max']}) | "
-                f"{S['sweep_said']} | {S['multi_selftest']} | {S.get('own_check', '–')} |")
-    return "\n".join(rows) + "\n\n*" + d["definition"] + "*"
+                f"{S['sweep_said']} | {L['read_sweep'] if L else '–'} | {S['multi_selftest']} | {S.get('own_check', '–')} |")
+    extra = (f" Read (audit 6): every sentence the pattern matched, and every candidate sentence of the other runs found by "
+             f"a broader pattern, was read; {L['read_sweep']} of {L['runs']} runs announce trying several values of a "
+             f"constant or report such a search; the pattern's {L['regex_flagged']} include {L['regex_false_match']} false "
+             f"matches and {L['regex_tuning_mention']} mentions of tuning without a search, and it misses "
+             f"{L['regex_missed']} (labels and sentences: `results/audit6/sweep_labels.json`).") if L else ""
+    return "\n".join(rows) + "\n\n*" + d["definition"] + extra + "*"
 
 
 def agent_examples_table(max_round: int) -> str:
@@ -821,21 +868,24 @@ def clock_pizza_table() -> str:
             a = S["agent"][lv]
             out.append(f"| T0 {lv}, agent (n = {len(a)}) | {rng([x[q] for x in a])} | {rng([x[g] for x in a])} | "
                        f"{rng([x[gf] for x in a])} | {np.mean([x['accuracy'] for x in a]):.4f} |")
-    # Audit 5: Fig. 7's caption classifies runs by two separate lines (gradient symmetricity > 98 % and distance
-    # irrelevance < 0.6), and Def. 4.1 is gradient symmetricity, Def. 4.2 distance irrelevance; targets with q in
-    # [0.4, 0.6) are Clock-typical by §4.1.2 but under Fig. 7's q line, so they are named.
+    # Audit 6 (correcting audit 5): Fig. 7's "phase transition lines" are drawn in attention-rate × width space and
+    # "calculated by logistic regression (classify the runs by whether gradient symmetricity > 98% and whether distance
+    # irrelevance < 0.6)" (Zhong et al., Fig. 7 caption); 0.98 and 0.6 are the labels of that regression, not lines on
+    # either metric. Def. 4.1 is gradient symmetricity, Def. 4.2 distance irrelevance. Targets with q in [0.4, 0.6) are
+    # Clock-typical by §4.1.2 but would get the Pizza-side label used for Fig. 7, so they are named.
     near = [f"{t} ({r[q]:.2f}; gradient symmetricity {r[g]:+.2f})" for t, r in S["targets"].items() if 0.4 <= r[q] < 0.6]
     note = ("*Zhong et al. (2023): distance irrelevance q (Def. 4.2) compares the spread of the correct-answer logit "
             "within one difference a − b with its spread over all inputs (§4.1.2: 0–0.4 typical of Pizza, 0.4–1 of Clock; "
             "the decisive diagnostic, §4.1.3); gradient symmetricity (Def. 4.1) is the mean cosine of the logit's gradients with "
-            "respect to the input embeddings of a and b (their Pizza Model A: 0.994). Their Fig. 7 classifies runs by two "
-            "separate lines, gradient symmetricity > 0.98 and q < 0.6"
-            + (f"; {', '.join(near)} is Clock-typical by §4.1.2 but just under Fig. 7's q line, and far below its "
-               f"gradient-symmetricity line, so not Pizza-like by Fig. 7 either" if near else "")
+            "respect to the input embeddings of a and b (their Pizza Model A: 0.994). Their Fig. 7 draws phase-transition lines "
+            "in attention-rate × width space, fitted by logistic regression to two labels per run: gradient symmetricity "
+            "> 98 % and q < 0.6"
+            + (f"; {', '.join(near)} is Clock-typical by §4.1.2 but just under the q < 0.6 label, and far below the "
+               f"gradient-symmetricity label, so not Pizza-like by both of Fig. 7's labels either" if near else "")
             + ". The variant holds the attention pattern fixed: the "
             "hand-built replacements compute near-constant attention from their embeddings, and the full gradient then "
             "points off the data manifold. A build that answers almost nothing correctly (compiler W-role) has no "
-            "meaningful q. Post hoc (audit 3, caption corrected in audit 5); `src/vmi/analysis/clock_pizza.py`, "
+            "meaningful q. Post hoc (audit 3, caption corrected in audits 5 and 6); `src/vmi/analysis/clock_pizza.py`, "
             "`results/controls/clock_pizza.json`.*")
     return "\n".join(out) + "\n\n" + note
 

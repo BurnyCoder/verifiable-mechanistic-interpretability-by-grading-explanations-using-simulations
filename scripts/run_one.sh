@@ -25,7 +25,8 @@ REPO="$(dirname "$HERE")"
 BASE="$HOME/vmi-sim"
 ID="$(basename "$RUN")"
 B="$BASE/sandboxes/$ID"
-# Socket dir on a short hashed path: a unix socket path must fit in 107 bytes (sun_path, man 7 unix), and long
+# Socket dir on a short hashed path: sun_path is 108 bytes including the terminating null (man 7 unix), so Python
+# refuses paths of 108 bytes or more, and long
 # run IDs under $B overflowed it ("AF_UNIX path too long"). Inside the sandbox it is still /llm/llm.sock.
 K="$BASE/k/$(printf %s "$ID" | md5sum | cut -c1-16)"
 rm -rf "$B" "$K"

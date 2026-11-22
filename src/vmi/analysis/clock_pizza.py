@@ -7,7 +7,7 @@ Local explanation:
   one difference the logits barely vary (q near 0).
 - `gradient_symmetricity(model)`: Zhong et al. Def. 4.1 (§4.1.1). For random (a, b, c), the cosine similarity of the
   gradients of logit c with respect to the input embeddings of a and of b, averaged; Pizza's constant attention makes
-  the two gradients nearly equal (their Pizza Model A: 0.994; Fig. 7 draws a line at 0.98), while Clock's multiplication
+  the two gradients nearly equal (their Pizza Model A: 0.994; Fig. 7's phase lines are fitted to the label > 0.98), while Clock's multiplication
   makes them asymmetric (§2.2). Zhong et al.'s reference Pizza (Model A) has constant attention, but Pizza also arises at
   intermediate attention rates (Fig. 7) and once with full attention (App. H); our hand-built replacements compute their (near-constant) attention from the
   embeddings, so the gradient through the attention scores points off the data manifold and in opposite directions
@@ -20,8 +20,9 @@ that HS does not separate W-alg from E3 rests on that assumption, which no earli
 from the source (audit 5: this module and its first results were committed together in e9b0b0d/1586324, so git cannot
 confirm that the rule preceded the values; its safeguard is that it is Zhong et al.'s own range): Zhong et al. call
 distance irrelevance 0–0.4 typical of Pizza and 0.4–1 typical of
-Clock (§4.1.2), and their Fig. 7 phase lines are boundaries fitted separately to whether gradient symmetricity > 98 % and
-whether distance irrelevance < 0.6 (not a joint rule). The W-alg negative result stands if T0 is on the Clock side (q ≥ 0.4) and the literal
+Clock (§4.1.2), and their Fig. 7 phase-transition lines, drawn in attention-rate × width space, are logistic-regression
+fits to two labels per run, gradient symmetricity > 98 % and distance irrelevance < 0.6 (one fit per label, not a joint
+rule, and not lines on either metric; audit 6). The W-alg negative result stands if T0 is on the Clock side (q ≥ 0.4) and the literal
 Pizza build (reference compiler, W-alg) is on the Pizza side (q < 0.4); otherwise the paper must say that W-alg may
 not be a wrong explanation of T0. Zhong et al. used p = 59 and inputs [a, b]; here p = 113 with an "=" token and
 causal attention, so the compiler's literal builds of the true explanation (E3) and of the Pizza explanation (W-alg)

@@ -72,7 +72,17 @@ def _match(checks: dict[str, bool]) -> str:
 
 
 def _verdict(h: dict) -> str:
-    return h.get("verdict") or "; ".join(f"{a}: {b}" for a, b in h.get("verdicts", {}).items())
+    """Formal verdict text. Audit 6: where the "cannot tell at this N" rule (deviation 1, applied at N = 3 by deviation 7,
+    after the N = 3 verdicts were first read) replaces §5's falsification column, the literal reading is shown too:
+    §5 falsifies a comparison that is "not significant after Holm", and a 3-vs-3 exact test cannot be significant."""
+    text = h.get("verdict") or "; ".join(f"{a}: {b}" for a, b in h.get("verdicts", {}).items())
+    holm_p, verd = h.get("holm_p") or {}, h.get("verdicts") or {}
+    literal = [k for k, v in verd.items() if v == "cannot tell at this N" and holm_p.get(k) is not None and holm_p[k] >= 0.05]
+    if literal and isinstance(h.get("N"), int) and h["N"] > 1:
+        text += (" (by §5's falsification column read literally — not significant after Holm — "
+                 + ("all four read" if len(literal) == 4 else ", ".join(literal) + " read")
+                 + " \"not supported\"; the \"cannot tell\" rule is deviation 1's, applied at this N by deviation 7)")
+    return text
 
 
 def _mean_hs(runs, **kw):
@@ -303,7 +313,7 @@ def highlight_rows(max_round: int, target: str = "T0") -> list[dict]:
             paper = set(F["paper_freqs"])
             listed = sum(bool(r.get("declared_freqs")) and len(set(r["declared_freqs"]) & paper) >= 4 for r in e1)
             # audit 5: recall of the published mechanism, cued by the task description (E0/ARCHITECTURE.md give the
-            # paper's exact recipe), not necessarily of the paper's text
+            # paper's exact architecture and an outline of its training setup), not necessarily of the paper's text
             add(False, "The AI fills gaps from memory of the published mechanism",
                 ("algorithm-only rebuilds ({} runs on T0 and the published checkpoint; same input text): {} build scripts "
                  "list at least four of the paper's five frequencies; HS {} against T0 but {} against the published "

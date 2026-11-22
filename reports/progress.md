@@ -1,5 +1,32 @@
 # Progress
 
+*Entries are dated snapshots, newest first; older entries keep what was believed at the time. Statements later
+corrected — e.g. "HS tracks circuit formation" (now: shared frequency structure, deviation 11), "blind to Clock vs Pizza
+and to scrambled tables" (now: did not separate the agents' builds at N = 3, deviation 12), "41 of 96 runs announce a
+sweep" (now 44 of 96 by reading, deviation 13) — are listed in the preregistration's deviations.*
+
+## 2026-11-22 18:00 — sixth independent audit (deviation 13)
+
+**Done** (no new agent runs, no API spend; N = 3 — not yet N = 10)
+- Audit made without reading the earlier reviews or audit scripts (`reviews/audit-6-2026-11-22.md`). Every round-2
+  verdict re-derived with new code and exact methods (`results/audit6/verdicts.json`, all checks agree); the scores
+  re-graded by a third, numpy-only implementation read straight from the published checkpoints
+  (`results/audit6/regrade.json`); metric, statistics and Clock/Pizza code read against the sources; three parallel
+  source checks opened every citation, and each discrepancy was re-checked by hand.
+- Found and corrected (no verdict changed): H2's "cannot tell" is deviation 1's rule, applied at N = 3 after the
+  verdicts were read; §5 read literally gives "not supported", and both readings are now shown. The count of agents'
+  parameter searches was a pattern match with false matches and misses; read sentence by sentence it is 44 of 96
+  (`results/audit6/sweep_labels.json`). Zhong et al.'s Fig. 7 lines, Sutter et al.'s own suggestion of linear maps,
+  Nanda et al.'s key-frequency rule for the main model (embedding, not W_L), Poché et al.'s scope, "exact recipe",
+  grokviz's restricted-loss figure in the state-of-the-art review, the socket-path limit, a Klabunde docstring and an
+  overlapping figure label.
+- Added (post hoc): the embedding-spectrum cosine, a preregistered secondary metric with no forward pass, orders the
+  T0 builds almost as HS does; HS adds discrimination mainly for W-role (paper §5).
+
+**Effect:** no primary metric, preregistered test or verdict changed.
+
+**Next:** round 3 (N = 10) only when you ask.
+
 ## 2026-11-22 11:30 — fifth independent audit (deviation 12)
 
 **Done** (no new agent runs, no API spend; N = 3 — not yet N = 10)

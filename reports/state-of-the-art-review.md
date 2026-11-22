@@ -75,9 +75,10 @@ test) and `scipy.linalg.orthogonal_procrustes`; netrep was not used in the end (
   and the most criticised: simulation scores are weak on false positives
   ([Huang et al.](https://arxiv.org/abs/2309.10312)); fuzzing scores of SAE latents (detection in an appendix) are similar
   for trained and random transformers in many settings ([Heap et al.](https://arxiv.org/abs/2501.17727), v2 2026). Relatedly, when
-  LLM simulators predict a text classifier's outputs from concept explanations (not per-feature activations), the
-  explanations add little over matched no-explanation baselines, which the authors attribute to the simulator solving
-  the task directly when class names are meaningful ([Poché et al. 2026](https://arxiv.org/abs/2609.08585)).
+  LLM simulators predict a text classifier's outputs from concept explanations (not per-feature activations; an extension
+  covers attributions and rationales), the gains over matched no-explanation baselines are statistically significant but
+  small relative to their variability, which the authors explain by a "shortcut hypothesis": the simulator solves the
+  task directly when class names are meaningful ([Poché et al. 2026](https://arxiv.org/abs/2609.08585)).
 - **Substitution-based scores** (Bills' ablation score; [Paulo & Belrose 2025](https://arxiv.org/abs/2501.18838);
   Gao's downstream-KL proposal) replace activations by explanation-driven predictions and measure output damage.
 - **Whole-model rebuilds** exist for agent-written models (iWSP, [arXiv:2611.18114](https://arxiv.org/abs/2611.18114))
@@ -135,7 +136,7 @@ test) and `scipy.linalg.orthogonal_procrustes`; netrep was not used in the end (
   usable Qwen3.8 fits this machine ([27B](https://huggingface.co/Qwen/Qwen3.8-27B) is dense;
   [Flash-Next](https://huggingface.co/Qwen/Qwen3.8-Flash-Next)'s smallest unpruned GGUFs are ≈ 66 GB / 62 GiB, unsloth
   UD-IQ1_S, or 58.5 GB for a third-party TQ1_0 quant ([agentionai/Qwen3.8-Flash-Next-Gyro-GGUF](https://huggingface.co/agentionai/Qwen3.8-Flash-Next-Gyro-GGUF)), all above 8 GB VRAM + 31 GB RAM; smaller third-party builds are
-  expert-pruned (REAP, 13–20 GB, e.g. [anik-jha/Qwen3.8-Flash-Next-24GB-GGUF](https://huggingface.co/anik-jha/Qwen3.8-Flash-Next-24GB-GGUF)) or embedding-split, which we excluded as no longer the published model; a 4-bit
+  expert-pruned (REAP, e.g. a ≈ 20 GB GGUF that also needs a separate 28.8 GB n-gram table, [anik-jha/Qwen3.8-Flash-Next-24GB-GGUF](https://huggingface.co/anik-jha/Qwen3.8-Flash-Next-24GB-GGUF)) or embedding-split, which we excluded as no longer the published model; a 4-bit
   27B would fit but is dense and too slow with CPU offload (our judgement); checked on the Hub 2026-11-22).
 - **Ablation models:** Qwen3.5-9B and Qwen3.5-4B (already pulled in Ollama; served through the same llama-server for
   comparability).
@@ -147,8 +148,10 @@ test) and `scipy.linalg.orthogonal_procrustes`; netrep was not used in the end (
   exact parameter layout and hooks, `RunStore`, the Fourier basis, key frequencies, neuron clusters, restricted and
   excluded loss, attention fits (paper Table 2), the W_L read-off (Table 1) and deterministic vectorised training.
   Its definitions reproduce the paper's and ARENA's published numbers (433 neurons above 0.85 FVE; loss 5.5474e-8 on
-  the paper model when each MLP neuron is restricted to its key-frequency cos/sin(w_k(a+b)) terms, agreeing with Nanda
-  et al. §4.4's 5.54×10⁻⁸ to within 0.2 % — not to be confused with §4.4's logit-level ablation that keeps only the key-frequency
-  components of the logits, 7.24×10⁻⁸), per its module docstrings.
+  the paper model when the logits are projected onto the 10 key-frequency cos/sin(w_k(a+b)) directions and bias-corrected,
+  i.e. the restricted loss of the paper code's `calculate_trig_loss` and ARENA's `trig_loss`, agreeing with Nanda et al.
+  §4.4's 5.54×10⁻⁸ to within 0.2 %; restricting each MLP neuron to its key-frequency terms instead gives 1.12e-7 and does
+  not reproduce it, and §4.4's other logit-level ablation gives 7.24×10⁻⁸), per its module docstrings and its
+  reproduction table (`reports/tables/exp01_rchecks.md` in grokviz at `d52a898`, row R10b; corrected in audit 6).
 - Targets: `BurnyCoder/grokking-modular-addition-runs` (pinned revision `98c61de`), trained on this same GPU model
   with torch 2.14.1+cu130.

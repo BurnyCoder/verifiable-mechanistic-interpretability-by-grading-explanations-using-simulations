@@ -1,0 +1,315 @@
+{
+ "results": {
+  "H1": {
+   "jt_p_hs": 9.46969696969697e-05,
+   "jt_p_neg_kl": 0.9309442640692641,
+   "rho_hs": 0.9068503858838141,
+   "E0_mean": 0.1295197949939649,
+   "E1_mean": 0.04646391422010308
+  },
+  "H2": {
+   "E3>W-freq": {
+    "diff": 0.8587022155497118,
+    "ci": [
+     0.8345809470760193,
+     0.8797117723164982
+    ],
+    "p": 0.05,
+    "holm_p": 0.2,
+    "verdict_section5_literal": "not supported",
+    "verdict_deviation1_rule": "cannot tell at this N"
+   },
+   "E3>W-alg": {
+    "diff": 0.020000059863604314,
+    "ci": [
+     -0.009985512364406347,
+     0.04474955307413362
+    ],
+    "p": 0.35,
+    "holm_p": 0.7,
+    "verdict_section5_literal": "not supported",
+    "verdict_deviation1_rule": "cannot tell at this N"
+   },
+   "E3>W-role": {
+    "diff": 0.7250769982574378,
+    "ci": [
+     0.6583257725395504,
+     0.7682007841099024
+    ],
+    "p": 0.05,
+    "holm_p": 0.2,
+    "verdict_section5_literal": "not supported",
+    "verdict_deviation1_rule": "cannot tell at this N"
+   },
+   "E4>W-scramble": {
+    "diff": 0.006812079136578109,
+    "ci": [
+     -0.024977841288004288,
+     0.036746701323300074
+    ],
+    "p": 0.5,
+    "holm_p": 0.7,
+    "verdict_section5_literal": "not supported",
+    "verdict_deviation1_rule": "cannot tell at this N"
+   }
+  },
+  "H3": {
+   "agreement": 0.9999477902211084,
+   "kl": 0.002931726669060388,
+   "hs": 0.0703737578414156,
+   "true_kl_max": 0.06004481507139639,
+   "true_hs_min": 0.894206961203665,
+   "supported": true
+  },
+  "H4": {
+   "p": {
+    "E3": 0.004545454545454545,
+    "E4": 0.004545454545454545
+   },
+   "holm_p": {
+    "E3": 0.00909090909090909,
+    "E4": 0.00909090909090909
+   }
+  },
+  "H4b": {
+   "supported": false
+  },
+  "H7": {
+   "d": [
+    0.6652475673992395,
+    0.6929018479893604,
+    0.625774993866173,
+    0.6853957048190834,
+    0.7263465741818759,
+    0.7078022548646208
+   ],
+   "wilcoxon_p": 0.015625
+  },
+  "H8": {
+   "rhos": [
+    0.8204021662262255,
+    0.7508087988982768,
+    0.776555439758812,
+    0.7522559273458147,
+    0.7711582982841405,
+    0.8394353668068636
+   ],
+   "min": 0.7508087988982768,
+   "median": 0.7738568690214762
+  },
+  "H5_T0": {
+   "E2": {
+    "agent_minus_compiler": -0.0006342656364095589,
+    "beyond_ci": false
+   },
+   "E3": {
+    "agent_minus_compiler": 0.0024530366413803018,
+    "beyond_ci": false
+   },
+   "E4": {
+    "agent_minus_compiler": -0.008508141978027739,
+    "beyond_ci": false
+   },
+   "W-freq": {
+    "agent_minus_compiler": -0.02418125537228441,
+    "beyond_ci": false
+   }
+  },
+  "replications": {
+   "T1": {
+    "jt_p": 0.5,
+    "mw_e3_wfreq_p": 0.05
+   },
+   "T2": {
+    "jt_p": 0.5,
+    "mw_e3_wfreq_p": 0.05
+   },
+   "T-new": {
+    "jt_p": 0.05,
+    "mw_e3_wfreq_p": 0.05
+   },
+   "T-paper": {
+    "jt_p": 0.06130952380952381,
+    "mw_e3_wfreq_p": 0.05
+   }
+  }
+ },
+ "checks": [
+  {
+   "what": "H1 JT p (HS)",
+   "audit6": 9.46969696969697e-05,
+   "stored": 9.46969696969697e-05,
+   "match": true
+  },
+  {
+   "what": "H1 JT p (−KL)",
+   "audit6": 0.9309442640692641,
+   "stored": 0.9309442640692641,
+   "match": true
+  },
+  {
+   "what": "H1 Spearman ρ (HS)",
+   "audit6": 0.9068503858838141,
+   "stored": 0.9068503858838141,
+   "match": true
+  },
+  {
+   "what": "H2 E3>W-freq p",
+   "audit6": 0.05,
+   "stored": 0.05,
+   "match": true
+  },
+  {
+   "what": "H2 E3>W-freq diff",
+   "audit6": 0.8587022155497118,
+   "stored": 0.8587022155497118,
+   "match": true
+  },
+  {
+   "what": "H2 E3>W-freq CI low (Monte-Carlo vs exact bootstrap)",
+   "audit6": 0.8345809470760193,
+   "stored": 0.8345809470760193,
+   "match": true
+  },
+  {
+   "what": "H2 E3>W-freq CI includes 0 (same reading)",
+   "audit6": 0.0,
+   "stored": 0.0,
+   "match": true
+  },
+  {
+   "what": "H2 E3>W-alg p",
+   "audit6": 0.35,
+   "stored": 0.35,
+   "match": true
+  },
+  {
+   "what": "H2 E3>W-alg diff",
+   "audit6": 0.020000059863604314,
+   "stored": 0.020000059863604314,
+   "match": true
+  },
+  {
+   "what": "H2 E3>W-alg CI low (Monte-Carlo vs exact bootstrap)",
+   "audit6": -0.009985512364406347,
+   "stored": -0.008100007382871754,
+   "match": true
+  },
+  {
+   "what": "H2 E3>W-alg CI includes 0 (same reading)",
+   "audit6": 1.0,
+   "stored": 1.0,
+   "match": true
+  },
+  {
+   "what": "H2 E3>W-role p",
+   "audit6": 0.05,
+   "stored": 0.05,
+   "match": true
+  },
+  {
+   "what": "H2 E3>W-role diff",
+   "audit6": 0.7250769982574378,
+   "stored": 0.7250769982574378,
+   "match": true
+  },
+  {
+   "what": "H2 E3>W-role CI low (Monte-Carlo vs exact bootstrap)",
+   "audit6": 0.6583257725395504,
+   "stored": 0.661464319039807,
+   "match": true
+  },
+  {
+   "what": "H2 E3>W-role CI includes 0 (same reading)",
+   "audit6": 0.0,
+   "stored": 0.0,
+   "match": true
+  },
+  {
+   "what": "H2 E4>W-scramble p",
+   "audit6": 0.5,
+   "stored": 0.5,
+   "match": true
+  },
+  {
+   "what": "H2 E4>W-scramble diff",
+   "audit6": 0.006812079136578109,
+   "stored": 0.006812079136578109,
+   "match": true
+  },
+  {
+   "what": "H2 E4>W-scramble CI low (Monte-Carlo vs exact bootstrap)",
+   "audit6": -0.024977841288004288,
+   "stored": -0.024977841288004288,
+   "match": true
+  },
+  {
+   "what": "H2 E4>W-scramble CI includes 0 (same reading)",
+   "audit6": 1.0,
+   "stored": 1.0,
+   "match": true
+  },
+  {
+   "what": "H3 supported",
+   "audit6": 1.0,
+   "stored": 1.0,
+   "match": true
+  },
+  {
+   "what": "H4 E3 Holm p",
+   "audit6": 0.00909090909090909,
+   "stored": 0.00909090909090909,
+   "match": true
+  },
+  {
+   "what": "H4 E4 Holm p",
+   "audit6": 0.00909090909090909,
+   "stored": 0.00909090909090909,
+   "match": true
+  },
+  {
+   "what": "H4b supported",
+   "audit6": 0.0,
+   "stored": 0.0,
+   "match": true
+  },
+  {
+   "what": "H7 Wilcoxon p",
+   "audit6": 0.015625,
+   "stored": 0.015625,
+   "match": true
+  },
+  {
+   "what": "H8 min ρ",
+   "audit6": 0.7508087988982768,
+   "stored": 0.7508087988982768,
+   "match": true
+  },
+  {
+   "what": "H5 T0 E2 gap",
+   "audit6": -0.0006342656364095589,
+   "stored": -0.0006342656364095589,
+   "match": true
+  },
+  {
+   "what": "H5 T0 E3 gap",
+   "audit6": 0.0024530366413803018,
+   "stored": 0.0024530366413803018,
+   "match": true
+  },
+  {
+   "what": "H5 T0 E4 gap",
+   "audit6": -0.008508141978027739,
+   "stored": -0.008508141978027739,
+   "match": true
+  },
+  {
+   "what": "H5 T0 W-freq gap",
+   "audit6": -0.02418125537228441,
+   "stored": -0.02418125537228441,
+   "match": true
+  }
+ ],
+ "n_checks": 29,
+ "n_match": 29
+}
