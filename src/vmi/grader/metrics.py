@@ -24,7 +24,8 @@ Frobenius normalisation (the squared distance of Ding et al.'s eq. 7) — Ding e
 maps of the predictor only); optimal one-to-one neuron matching — Li et al. 2016 (ICLR; arXiv 2015, https://arxiv.org/abs/1511.07543),
 computed with scipy linear_sum_assignment (modified Jonker–Volgenant) (https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.linear_sum_assignment.html);
 model stitching — Bansal et al. 2021 (https://arxiv.org/abs/2106.07682), here with an affine stitch fitted by least
-squares to M's activations rather than trained on the task loss (the variant in Klabunde et al. §4.5).
+squares to M's activations rather than trained on the task loss (Klabunde et al. §4.5 describe linear stitching layers
+solved by least squares; ours adds a bias).
 """
 
 from __future__ import annotations  # postponed annotations

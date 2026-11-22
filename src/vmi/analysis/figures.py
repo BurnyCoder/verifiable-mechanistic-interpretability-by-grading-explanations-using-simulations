@@ -106,14 +106,21 @@ def fig_kl_vs_hs(max_round: int, target: str = "T0") -> Path | None:
     """Behaviour vs mechanism: output KL (x, log) against HS (y) for runs, compiler and no-agent references."""
     runs = [r for r in load_runs(max_round) if not r.get("failed")]
     fig, ax = plt.subplots(figsize=(6.4, 4.2))
+    med = {}
     for lv in LADDER:
         col = TRUE if lv in IS_TRUE else CTRL
         rs = _select(runs, target=target, level=lv)
         for r in rs:
             ax.scatter(max(r["kl_out"], 1e-9), r["hs"], s=40, color=col, edgecolor=SURFACE, linewidth=1.5, zorder=3)
         if rs:  # one direct label per condition, at its median point (no label on every point)
-            ax.annotate(lv, (np.median([max(r["kl_out"], 1e-9) for r in rs]), np.median([r["hs"] for r in rs])),
-                        xytext=(4, 3), textcoords="offset points", fontsize=7, color=INK2)
+            med[lv] = (float(np.median([max(r["kl_out"], 1e-9) for r in rs])), float(np.median([r["hs"] for r in rs])))
+    # Audit 6: the high-HS conditions crowd one band, so their labels alternate above/below in order of KL (left to
+    # right) instead of all sitting up-right of the point, where "E3" and "W-scramble" overlapped.
+    high = sorted((lv for lv, (_, y) in med.items() if y > 0.8), key=lambda lv: med[lv][0])
+    for lv, xy in med.items():
+        off = ((4, 6) if high.index(lv) % 2 == 0 else (4, -11)) if lv in high else (4, 3)
+        ax.annotate(lv, xy, xytext=off, textcoords="offset points", fontsize=7, color=INK2, zorder=4,
+                    bbox={"boxstyle": "round,pad=0.1", "fc": SURFACE, "ec": "none", "alpha": 0.8})
     ref_marker = {"random init": "v", "retrains": "s", "distilled students": "^"}  # shape tells reference types apart
     for name, rs in _references(target).items():
         ax.scatter([max(r["kl_out"], 1e-9) for r in rs], [r["hs"] for r in rs], s=36, marker=ref_marker[name], color=REF,
