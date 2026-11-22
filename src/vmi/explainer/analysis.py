@@ -8,7 +8,7 @@ adds the per-neuron and per-head fits the most detailed explanation level (E4) n
 - the neuron's output map (its column of W_L = W_U W_out) fitted as g·cos(w c − φ_out).
 Global context: `render.py` turns this dict into explanation text; `reference/compile.py` turns the same dict back
 into weights (agent-free reference point; not a ceiling, the agent exceeds it on some targets). No number in any explanation is typed by hand — all come from here.
-Sources: grokviz.metrics / grokviz.interventions (MIT) implementing paper Sec. 4 (key frequencies, Table 1, Table 2,
+Sources: grokviz.metrics / grokviz.interventions (MIT) implementing paper Sec. 4 and App. C.1.3 (key frequencies, Table 1, Table 2,
 neuron clusters; https://arxiv.org/abs/2301.05217); trig identities cos wa cos wb = ½[cos w(a−b) + cos w(a+b)] etc.
 """
 
@@ -72,7 +72,7 @@ def analyse(model: GrokTransformer, grid, tau: float = gm.KEY_FREQ_TAU, neuron_f
     model = model.to(dev).eval()
     acts = gm.evaluate(model, grid)  # logits [p², p], pre/post [p², 512], resid_mid, pattern
     F = grid.F
-    key = gm.key_frequencies(model, F, tau=tau)  # W_L Fourier norms ≥ τ·max (paper App. C.2)
+    key = gm.key_frequencies(model, F, tau=tau)  # paper App. C.2: frequencies with nontrivial W_L coefficients; the τ·max threshold is grokviz's
     coef, logit_fve, _ = gm.logit_cos_fit(acts.logits, grid, key)  # logits ≈ Σ α_k cos(w_k(a+b−c)) + β
     we = fourier.frequency_norms(gm.we_fourier_norms(model, F))  # embedding norm per frequency [(p-1)/2]
     emb_freqs = [k + 1 for k in torch.nonzero(we >= tau * we.max()).flatten().tolist()]

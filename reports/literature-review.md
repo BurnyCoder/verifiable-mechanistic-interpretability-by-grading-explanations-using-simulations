@@ -95,8 +95,9 @@ alone and measures closeness to the trained model** (searched 2026-11-20; absenc
   explanation scoring for vision neurons (CoSy) and for LLM features, both MLP neurons and SAE features (FADE).
 - **Leo Gao, *Neural networks are not already clean*** (LessWrong, 2026-10-17,
   [post](https://www.lesswrong.com/posts/Dkh7pXKjoNWkkxQDz/neural-networks-are-not-already-clean)): argues
-  correlation-based simulation scores are too weak and proposes scoring by **substituting simulated activations and
-  measuring downstream KL**, preferring KL to loss-delta because errors can cancel. It replaces activations, not
+  that the correlation-based simulation scores of Bills et al. (of which Gao is a co-author) are flawed — they penalise
+  activation differences that do not matter downstream and need careful binning — and proposes scoring by
+  **substituting simulated activations and measuring downstream KL**, preferring KL to loss-delta because errors can cancel. It replaces activations, not
   weights, and reports no experiments. A commenter notes "the model is the optimal explanation of itself" — the
   length problem again.
 
@@ -123,8 +124,9 @@ alone and measures closeness to the trained model** (searched 2026-11-20; absenc
   [arXiv:2501.16496](https://arxiv.org/abs/2501.16496)): descriptions should be validated by whether they predict
   counterfactual behaviour; discusses hand-crafting replacement networks, citing Cammarata et al. 2020,
   [*Curve Detectors*](https://distill.pub/2020/circuits/curve-detectors/) (Distill), which Sharkey et al. describe as
-  validating its account with handcrafted replacements; *Curve Detectors* itself only says the circuit was
-  "reimplemented by hand" in the next article. That article,
+  validating its account with handcrafted replacements; *Curve Detectors* itself only mentions the hand-made
+  reimplementation ("reimplemented it by hand"; a "hand-trained 'artificial artificial neural network'") without
+  presenting it. That article,
   [*Curve Circuits*](https://distill.pub/2020/circuits/curve-circuits/) (Cammarata et al., Distill 2021), builds a
   hand-crafted curve network from scratch and compares its neurons with InceptionV1's — our idea, done by hand for one
   circuit.
@@ -140,8 +142,11 @@ alone and measures closeness to the trained model** (searched 2026-11-20; absenc
   [code](https://github.com/csinva/weight-space-programming-autoresearch)): Claude Code writes the weights of small
   transformers directly; a *rebuild test* gives a fresh session a ≤ 200-word description and scores the rebuilt model
   by accuracy, parameter ratio and prediction correlation, against a no-description control. **Difference from this
-  project:** applied only to agent-written models (never SGD-trained ones), and with no output-KL or hidden-state
-  comparison.
+  project:** applied only to agent-written models (never SGD-trained ones); no output-KL comparison, and the only
+  representation comparison is linear CKA between original and rebuilt features for one model (the visual-cortex
+  model, App. A.2). iWSP builds on Takehi et al. (2026-11-02), *Sparks of weight-space programming* (blog,
+  [rikiyat.github.io](https://rikiyat.github.io/blog/weight-space-programming/)), where an LLM reads, edits and writes
+  network weights.
 - **Weight Oracles** (Kabra et al. 2026, [arXiv:2610.07334](https://arxiv.org/abs/2610.07334)): LMs read weights to
   simulate small transformers — reading, not writing.
 - **Code as Explanations** (Nguyen et al. 2026, [arXiv:2611.14704](https://arxiv.org/abs/2611.14704)): a program
@@ -156,7 +161,8 @@ alone and measures closeness to the trained model** (searched 2026-11-20; absenc
   Pythia models ([arXiv:2501.17727](https://arxiv.org/abs/2501.17727)); **Poché et al. 2026 — LLM simulators can bypass
   explanations** ([arXiv:2609.08585](https://arxiv.org/abs/2609.08585)): when LLM simulators predict a text
   classifier's outputs from concept explanations (a ConSim replication with meaningful class names), explanations added little over no-explanation
-  baselines because simulators can solve the task from the class names; they
+  baselines, which the authors attribute to simulators solving the task from the meaningful class names (their
+  "shortcut hypothesis"; simulators of at most 15B parameters without reasoning); they
   recommend label-leakage baselines, multiple simulators, enough seeds and novel tasks;
   Lermen et al. 2025 — explainer and simulator can collude via steganography
   ([arXiv:2504.07831](https://arxiv.org/abs/2504.07831)).
@@ -175,7 +181,7 @@ controls**. The contribution is that combination and a careful validation of it,
 | `grokviz` ([GitHub](https://github.com/BurnyCoder/visualizing-grokking-modular-addition-in-transformer)): paper-faithful model, training, Fourier analysis, paper-checkpoint conversion | MIT | Analysis and training code (pinned commit) |
 | Paper mainline checkpoint ([HF mirror](https://huggingface.co/callummcdougall/grokking_full_run_data), byte-identical to [ARENA's](https://huggingface.co/arena-education/grokking_full_run_data)) | none stated | Target T-paper; not redistributed |
 | ARENA 1.5.2 code ([ARENA_materials](https://github.com/ARENA-education/ARENA_materials)) | none | Not copied; its published numbers used as test oracles |
-| netrep ([GitHub](https://github.com/ahwillia/netrep)), Google CKA ([google-research](https://github.com/google-research/google-research/tree/master/representation_similarity)) | MIT / Apache-2.0 | Reference implementations for cross-checking our metrics |
+| netrep ([GitHub](https://github.com/ahwillia/netrep)), Google CKA ([google-research](https://github.com/google-research/google-research/tree/master/representation_similarity)) | MIT / Apache-2.0 | Reference implementations considered for cross-checking; the tests use Google's CKA (re-derived) and scipy's orthogonal Procrustes, not netrep |
 
 ## 7. Methodology guidance followed
 
@@ -186,6 +192,7 @@ ML pitfalls* ([arXiv:2108.02497](https://arxiv.org/abs/2108.02497)); Nanda's res
 discriminating controls, explanation-free baselines, contamination controls, and reporting of negative results.
 Contamination: no paper analyses targets T0–T2; their weights and an automated analysis that lists their key
 frequencies were uploaded to Hugging Face only on 2026-10-21 — after Claude Haiku 5.5's training-data cutoff
-(June 2026, [models overview](https://platform.claude.com/docs/en/about-claude/models/overview)) — so they cannot be
+(June 2026, [models overview](https://platform.claude.com/docs/en/models/overview)) and after its release on
+2026-10-07 ([model page](https://platform.claude.com/docs/en/models/haiku-5-5/overview)) — so they cannot be
 in its training data, and the sandbox has no internet access; a held-out target was trained after the protocol freeze. Run `wd1_s0` learned exactly the paper's
 frequencies {14, 35, 41, 42, 52}, so it is not a clean target; it serves as the paper's-twin baseline, not as a target.

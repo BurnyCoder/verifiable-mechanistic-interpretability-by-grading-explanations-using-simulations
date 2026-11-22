@@ -7,22 +7,24 @@ Local explanation:
   both directions; HS = mean over the three sites (primary 2). Secondary: linear CKA, orthogonal Procrustes distance,
   Hungarian-matched neuron correlation, head-matched attention distance, stitching KL.
 Global context: the residual stream of a LayerNorm-free transformer is only defined up to an invertible linear map,
-so the primary alignment class is linear regression. Its invariances (corrected by the 2026-11-22 audit): HS = 1
-exactly when each model's states are an affine function of the other's, whatever the basis; completeness R²(M̂→M) is
+so the primary alignment class is linear regression. Its invariances (corrected by the 2026-11-22 audits): HS = 1
+(up to the ridge term and fold-to-fold estimation) when each model's states are an affine function of the other's, whatever the basis; completeness R²(M̂→M) is
 invariant to any invertible linear map of M̂'s basis (the regression absorbs it, up to the tiny ridge); soundness
 R²(M→M̂) pools over M̂'s dimensions, so it weights M̂'s directions by their variance and is invariant only to orthogonal
 maps and uniform scaling of M̂'s basis. `sensitivity.cv_r2_whitened` is the fully invariant post-hoc check.
 The GL argument covers the residual sites; at `mlp_post` the neurons' symmetry is permutation and positive scaling, so
 regression there is wider than the symmetry group (audit 3, deviation 10); `matched_neuron_corr` is the group-matched
 secondary metric.
-CKA/Procrustes are invariant only to orthogonal maps and are reported for comparability.
+CKA/Procrustes (after normalisation) are invariant to orthogonal maps and isotropic scaling, not to general invertible
+linear maps, and are reported for comparability.
 Sources: KL convention KL(original ‖ modified) — Conmy et al. 2023 (https://arxiv.org/abs/2304.14997); linear CKA —
-Kornblith et al. 2019 eq. (https://arxiv.org/abs/1905.00414); Procrustes distance 2 − 2‖XᵀY‖_* after centring and
-Frobenius normalisation — Ding et al. 2021 (https://arxiv.org/abs/2108.01661); invariances — Klabunde et al.
+Kornblith et al. 2019, Table 1 (eqs. 2–4) (https://arxiv.org/abs/1905.00414); Procrustes distance 2 − 2‖XᵀY‖_* after centring and
+Frobenius normalisation (the squared distance of Ding et al.'s eq. 7) — Ding et al. 2021 (https://arxiv.org/abs/2108.01661); invariances — Klabunde et al.
 (https://arxiv.org/abs/2305.06329) and Kornblith et al. 2019 Table 1 (regression R² is invariant to invertible linear
-maps of the predictor only); optimal one-to-one neuron matching — Li et al. 2015 (https://arxiv.org/abs/1511.07543),
+maps of the predictor only); optimal one-to-one neuron matching — Li et al. 2016 (ICLR; arXiv 2015, https://arxiv.org/abs/1511.07543),
 computed with scipy linear_sum_assignment (modified Jonker–Volgenant) (https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.linear_sum_assignment.html);
-model stitching — Bansal et al. 2021 (https://arxiv.org/abs/2106.07682).
+model stitching — Bansal et al. 2021 (https://arxiv.org/abs/2106.07682), here with an affine stitch fitted by least
+squares to M's activations rather than trained on the task loss (the variant in Klabunde et al. §4.5).
 """
 
 from __future__ import annotations  # postponed annotations

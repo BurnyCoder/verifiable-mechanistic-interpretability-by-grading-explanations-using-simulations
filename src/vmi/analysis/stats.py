@@ -1,13 +1,17 @@
 """Statistical tests used by the preregistered hypotheses (preregistration §5).
 
-Local explanation: Jonckheere–Terpstra trend test (exact permutation when there are ≤ 50,000 distinct assignments of
+Local explanation: Jonckheere–Terpstra trend test (exact permutation when there are ≤ 400,000 distinct assignments of
 runs to levels, Monte-Carlo permutation otherwise), Spearman ρ with a bootstrap CI that resamples runs within groups, one-sided
 Mann–Whitney U, Holm correction, Kendall's W with a permutation p-value, Wilcoxon signed-rank, rank-biserial effect size.
 Global context: `hypotheses.py` applies these to per-run scores; every function returns plain floats for JSON.
 Sources: Jonckheere–Terpstra trend test — Terpstra 1952 (Indagationes Math. 14:327–333) statistic J = Σ_{i<j} #{(x, y):
 x ∈ G_i, y ∈ G_j, x < y} + ½ ties, equivalent to Jonckheere's 1954 (Biometrika 41:133–145) S = P − Q = 2J − Σ_{i<j} n_i n_j,
 so permutation p-values are identical;
-Holm 1979 (Scand. J. Stat. 6:65–70); Kendall's W (Kendall & Babington Smith 1939); scipy.stats mannwhitneyu,
+Holm 1979 (Scand. J. Stat. 6:65–70); Kendall's W (Kendall & Babington Smith 1939; no tie correction, negligible for
+continuous means); rank-biserial r = 2U/(n₁n₂) − 1 = (U₁ − U₂)/(n₁n₂) (Kerby 2014, Comprehensive Psychology 3,
+doi:10.2466/11.IT.3.1); percentile bootstrap — with 3 runs per group the 95 % interval of a mean is the range of the runs
+(true coverage ≈ 75 %; Hesterberg 2015, https://arxiv.org/abs/1411.5279); scipy.stats mannwhitneyu (method='exact'
+ignores ties: audit 4 found no tied values in any reported comparison),
 wilcoxon, spearmanr (https://docs.scipy.org/doc/scipy/reference/stats.html).
 """
 
@@ -105,8 +109,8 @@ def spearman_ci(levels: np.ndarray, values: np.ndarray, groups: list[np.ndarray]
 
 
 def mann_whitney_greater(x: np.ndarray, y: np.ndarray) -> dict:
-    """One-sided Mann–Whitney U (x > y) with rank-biserial effect size; undefined (None) if a group has < 2 runs... unless
-    both have ≥ 1 and the exact test is requested — with 1 vs 1 the minimum p is 0.5, reported as 'cannot tell'."""
+    """One-sided Mann–Whitney U (x > y) with rank-biserial effect size; None if x has < 2 runs or y has < 1 (the callers
+    report 'cannot tell' whenever the smallest attainable p is ≥ α). scipy's 'exact' method assumes no ties."""
     x, y = np.asarray(x, float), np.asarray(y, float)
     if len(x) < 2 or len(y) < 1:
         return {"p": None, "U": None, "r_rb": None}

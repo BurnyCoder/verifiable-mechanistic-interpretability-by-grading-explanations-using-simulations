@@ -61,6 +61,12 @@ _MLP_STEP = """3. **MLP.** A neuron of frequency k has pre-activation (before Re
 assert _MLP_STEP_PAPER in CLOCK_ALGO_PAPER
 CLOCK_ALGO = CLOCK_ALGO_PAPER.replace(_MLP_STEP_PAPER, _MLP_STEP)
 
+# Audit 4 note (text left unchanged: it is frozen protocol and every W-alg run received it). Two imprecisions against
+# Zhong et al. 2023 §3.1 and Yip et al. 2024 §4.2: (i) step 2 — with attention weights 0.5 the "=" position receives
+# ½[cos(w_k a) + cos(w_k b)], i.e. cos(w_k(a−b)/2) times the unit vector, not 2cos(…) (a constant factor); (ii) step 3 —
+# one ReLU gives the positive part of the projection, and neurons at φ and φ + π together give its absolute value; the
+# "evenly spaced phases" follow Yip et al. ("roughly uniform"), not Zhong et al. Neither changes which algorithm is
+# described; every agent and the compiler built a working Pizza-side network from it (results/controls/clock_pizza.json).
 PIZZA_ALGO = """## Algorithm ("Pizza")
 
 The network adds numbers using midpoints of points on circles:

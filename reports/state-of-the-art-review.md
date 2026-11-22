@@ -25,17 +25,17 @@ corrections 2026-11-22.*
 
 ## 2. Hidden-state similarity: metrics, invariances, pitfalls
 
-Formulas and invariance classes follow Klabunde et al., *Similarity of Neural Network Models*
+Formulas and invariance classes follow Kornblith et al. 2019 (Table 1), Klabunde et al., *Similarity of Neural Network Models*
 ([arXiv:2305.06329](https://arxiv.org/abs/2305.06329), ACM CSUR 2025) and Ding et al.
 ([arXiv:2108.01661](https://arxiv.org/abs/2108.01661)).
 
 | Metric | Invariant to | Notes |
 |---|---|---|
-| Linear regression R² (cross-validated) | invertible linear maps of the predictor | asymmetric → compute both directions |
+| Linear regression R² (cross-validated) | invertible linear maps of the predictor ([Kornblith et al. 2019](https://arxiv.org/abs/1905.00414), Table 1, "Y only"); orthogonal maps, isotropic scaling, translation (Klabunde et al. Table 1) | asymmetric → compute both directions |
 | Linear CKA ([Kornblith et al. 2019](https://arxiv.org/abs/1905.00414)) | orthogonal maps, isotropic scaling | dominated by top PCs ([Ding et al.](https://arxiv.org/abs/2108.01661) §5: insensitive to differences in smaller singular values); manipulable ([Davari et al.](https://arxiv.org/abs/2210.16156)) |
-| Orthogonal Procrustes (Ding et al.) | orthogonal maps (after normalisation) | consistently good baseline in Ding et al. |
-| Hard neuron matching ([Li et al. 2016](https://arxiv.org/abs/1511.07543)) | permutation, per-neuron scaling | optimal one-to-one assignment on correlations (scipy [`linear_sum_assignment`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.linear_sum_assignment.html), modified Jonker–Volgenant) |
-| Model stitching ([Bansal et al. 2021](https://arxiv.org/abs/2106.07682)) | whatever the stitch class allows | functional (causal) test |
+| Orthogonal Procrustes (Ding et al.; their eq. 7 is the squared distance) | orthogonal maps, and isotropic scaling and translation after centring and normalisation | consistently good baseline in Ding et al. |
+| Hard neuron matching ([Li et al. 2016, ICLR; arXiv 2015](https://arxiv.org/abs/1511.07543)) | permutation, positive per-neuron scaling | optimal one-to-one assignment on correlations (scipy [`linear_sum_assignment`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.linear_sum_assignment.html), modified Jonker–Volgenant) |
+| Model stitching ([Bansal et al. 2021](https://arxiv.org/abs/2106.07682)) | whatever the stitch class allows | functional (causal) test; Bansal et al. train the stitch on the task loss, this project fits an affine stitch by least squares to M's activations (the variant in Klabunde et al. §4.5) |
 | Shape metrics ([Williams et al. 2021](https://arxiv.org/abs/2110.14739)) | chosen group | true metrics |
 
 **Matching the metric to the model's symmetries.** The target has no LayerNorm, so the residual stream is defined
@@ -65,7 +65,8 @@ code ([Apache-2.0](https://github.com/google-research/google-research/tree/maste
 No maintained PyPI package covers regression R², CKA, Procrustes and neuron matching together (2026-11 check: the
 READMEs of ReSi, similarity-repository and netrep install from git; a `similarity-repository` 0.0.1 and `repsim` exist
 on PyPI), so the metrics are implemented in
-`src/vmi/grader/` in a few dozen lines each and tested against those references.
+`src/vmi/grader/` in a few dozen lines each and tested against Google's `feature_space_linear_cka` (re-derived in the
+test) and `scipy.linalg.orthogonal_procrustes`; netrep was not used in the end (audit 4).
 
 ## 3. Explanation-quality scoring: where the field is
 
@@ -75,8 +76,8 @@ on PyPI), so the metrics are implemented in
   ([Huang et al.](https://arxiv.org/abs/2309.10312)); fuzzing scores of SAE latents (detection in an appendix) are similar
   for trained and random transformers in many settings ([Heap et al.](https://arxiv.org/abs/2501.17727), v2 2026). Relatedly, when
   LLM simulators predict a text classifier's outputs from concept explanations (not per-feature activations), the
-  explanations add little over matched no-explanation baselines, because with meaningful class names the simulator
-  can solve the task directly ([Poché et al. 2026](https://arxiv.org/abs/2609.08585)).
+  explanations add little over matched no-explanation baselines, which the authors attribute to the simulator solving
+  the task directly when class names are meaningful ([Poché et al. 2026](https://arxiv.org/abs/2609.08585)).
 - **Substitution-based scores** (Bills' ablation score; [Paulo & Belrose 2025](https://arxiv.org/abs/2501.18838);
   Gao's downstream-KL proposal) replace activations by explanation-driven predictions and measure output damage.
 - **Whole-model rebuilds** exist for agent-written models (iWSP, [arXiv:2611.18114](https://arxiv.org/abs/2611.18114))
@@ -92,9 +93,9 @@ on PyPI), so the metrics are implemented in
 
 > **Update 2026-11-22.** Preregistration amendment 2 replaced OpenCode with a minimal bash-only harness (following
 > [mini-SWE-agent](https://github.com/SWE-agent/mini-swe-agent)) and made Claude Haiku 5.5 in Claude Code the main
-> simulator; deviation 5 stopped the local Qwen runs because every run was at chance. Claude Haiku 5.5 does not take
-> `temperature`, `top_p` or `top_k` (the [migration guide](https://platform.claude.com/docs/en/models/haiku-5-5/migration-guide)
-> says to remove them), so Claude runs use default sampling. §4–5 below are kept unchanged as the pre-run review,
+> simulator; deviation 5 stopped the local Qwen runs because every run was at chance. Claude Haiku 5.5 returns an error for
+> non-default `temperature`, `top_p` or `top_k` ([thinking docs](https://platform.claude.com/docs/en/build-with-claude/thinking); the
+> [migration guide](https://platform.claude.com/docs/en/models/haiku-5-5/migration-guide) says to remove them), so Claude runs use default sampling. §4–5 below are kept unchanged as the pre-run review,
 > apart from citation fixes.
 
 - **OpenCode v2** (repo `anomalyco/opencode`, docs [opencode.ai/docs](https://opencode.ai/docs)): headless
@@ -110,7 +111,7 @@ on PyPI), so the metrics are implemented in
 - **Isolation without Docker or sudo:** bubblewrap `--unshare-net` in WSL2 (tested on this machine: external HTTP
   fails, `/mnt/c` and `/home` are hidden). A similar pattern — bwrap with its own network namespace, plus a socat relay
   over Unix domain sockets to a host-side proxy — is what Claude Code's own sandbox uses on Linux/WSL2
-  ([docs](https://code.claude.com/docs/en/sandboxing); [sandbox-runtime README](https://github.com/anthropic-experimental/sandbox-runtime)). The LLM endpoint is bridged into the
+  ([docs](https://code.claude.com/docs/en/sandboxing); [sandbox-runtime README](https://github.com/anthropics/sandbox-runtime)). The LLM endpoint is bridged into the
   network namespace through a unix socket by a stdlib Python relay (socat is not installed and there is no sudo).
 
 ## 5. Local model and server
@@ -133,7 +134,7 @@ on PyPI), so the metrics are implemented in
   Laptop); it was measured here in stage 0 instead (amendment 1). No
   usable Qwen3.8 fits this machine ([27B](https://huggingface.co/Qwen/Qwen3.8-27B) is dense;
   [Flash-Next](https://huggingface.co/Qwen/Qwen3.8-Flash-Next)'s smallest unpruned GGUFs are ≈ 66 GB / 62 GiB, unsloth
-  UD-IQ1_S, or 58.5 GB for a third-party TQ1_0 quant, all above 8 GB VRAM + 31 GB RAM; smaller third-party builds are
+  UD-IQ1_S, or 58.5 GB for a third-party TQ1_0 quant ([agentionai/Qwen3.8-Flash-Next-Gyro-GGUF](https://huggingface.co/agentionai/Qwen3.8-Flash-Next-Gyro-GGUF)), all above 8 GB VRAM + 31 GB RAM; smaller third-party builds are
   expert-pruned (REAP, 13–20 GB, e.g. [anik-jha/Qwen3.8-Flash-Next-24GB-GGUF](https://huggingface.co/anik-jha/Qwen3.8-Flash-Next-24GB-GGUF)) or embedding-split, which we excluded as no longer the published model; a 4-bit
   27B would fit but is dense and too slow with CPU offload (our judgement); checked on the Hub 2026-11-22).
 - **Ablation models:** Qwen3.5-9B and Qwen3.5-4B (already pulled in Ollama; served through the same llama-server for

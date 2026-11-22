@@ -38,7 +38,7 @@ th { cursor:pointer; color:var(--text-secondary); font-weight:600; } td.num { fo
 <div class="muted">Libor "Burny" Burian, <a href="https://scholar.google.com/citations?user=BBGcEigAAAAJ&hl=en">Victor Levoso</a>.
 Developed in a mechanistic interpretability hackathon on automatically evaluating mechanistic interpretability explanations,
 co-organized by the authors in their community and its Discord server, <a href="https://mechinterp.com/">mechinterp.com</a>.</div>
-<p>An LLM agent that has never seen the network and has no internet access reads an explanation of a one-layer
+<p>An LLM agent that has never seen the network and has no network access except its model endpoint reads an explanation of a one-layer
 modular-addition transformer (<a href="https://arxiv.org/abs/2301.05217">Nanda et al. 2023</a>) and writes every weight of a
 replacement. The replacement is scored against the original by <b>output KL</b> (behaviour) and <b>hidden-state similarity (HS)</b>
 (cross-validated linear regression between the two networks' internal activations). Does the score track explanation quality?

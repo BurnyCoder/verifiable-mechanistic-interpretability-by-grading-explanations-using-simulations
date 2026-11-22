@@ -8,7 +8,8 @@ Local explanation:
   must reproduce a published run before use), distillation mode (KL to a target's logits on all inputs) and
   continued training of a compiled model (planted-mechanism calibration). Snapshots are saved as weight files.
 Global context: these models are baselines and controls (preregistration §7); the simulator never trains anything.
-Sources: grokviz train_runs (MIT; paper recipe: AdamW lr 1e-3, betas (0.9, 0.98), wd 1, 10-step warm-up, float64 CE,
+Sources: grokviz train_runs (MIT; paper recipe: AdamW lr 1e-3, betas (0.9, 0.98), wd 1, 10-step warm-up, float64 CE as in the paper's notebook and ARENA — the published helpers.py casts to float32 despite
+its float64 comment (audit 4),
 https://github.com/mechanistic-interpretability-grokking/progress-measures-paper/blob/23d2c64/transformers.py);
 knowledge distillation with a KL loss on logits — Hinton et al. 2015 (https://arxiv.org/abs/1503.02531);
 PyTorch determinism notes (https://pytorch.org/docs/stable/notes/randomness.html).
