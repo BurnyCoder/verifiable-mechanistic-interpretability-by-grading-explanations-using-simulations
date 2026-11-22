@@ -164,8 +164,9 @@ Newest entries at the bottom. Per-experiment learnings live in each experiment's
 **What happened.** The no-self-test ablation run ended in 3 minutes with no weights. The transcript showed Claude
 Code retrying the API ten times with `error_status: null` — no HTTP response at all — and the proxy log showed why:
 `OSError: AF_UNIX path too long`. The proxy listens on a unix socket inside the run's sandbox folder, whose name is the
-run ID; `ablations__T0__E3-noselftest__claudehaiku55-claudecode__tdef__s0` made the path 108 bytes, and Linux allows
-107 (`sun_path` is 108 bytes including the terminating NUL; [man 7 unix](https://man7.org/linux/man-pages/man7/unix.7.html)).
+run ID; `ablations__T0__E3-noselftest__claudehaiku55-claudecode__tdef__s0` made the path 108 bytes, and Python refuses
+paths of 108 bytes or more because `sun_path` is 108 bytes including the terminating NUL ([man 7 unix](https://man7.org/linux/man-pages/man7/unix.7.html);
+the kernel itself accepts 108 non-null bytes, per the page's BUGS section; wording corrected in audit 6).
 
 **Fix.** The socket now lives in `~/vmi-sim/k/<first 16 hex chars of md5(run ID)>/llm.sock` (≈ 47 bytes for any ID),
 bound to the same `/llm` inside the sandbox. The hyperparameter W-freq effort-low and effort-high run IDs (108- and
@@ -372,3 +373,27 @@ deviation 9).
   It also surfaced a choice the preregistration leaves open — the R² denominator about the training-fold or the
   held-out mean — whose effect (≤ 7.6e-4 in HS) is now measured instead of assumed. *Learning:* when writing a
   preregistered metric, state the fold procedure and the R² denominator, not just the seed.
+
+## Sixth independent audit (2026-11-22, deviation 13)
+
+- **A pattern count is a classifier; validate it before quoting it.** The paper's "41 of 96 runs announce a sweep"
+  came from a regular expression over the agents' narration. Reading every matched sentence found 2 false matches
+  ("attention weights tuned by the explanation's α/β", "before deciding whether to tune anything") and 3 mentions of
+  tuning with no search described; reading the candidate sentences of the other runs found 8 searches the pattern
+  missed ("try smaller bias scales", "grid the bias", "the bias scan plateaued"). The read count is 44
+  (`results/audit6/sweep_labels.json`). The errors happened to cancel, but the claim attached to the count ("keeping the
+  value with the best accuracy or fit") was never measured. *Learning:* when a count from a pattern supports a claim,
+  read its matches and a broad sample of its non-matches, and say only what the pattern detects.
+- **A verdict rule applied after the verdict is seen needs both readings on the page.** H2's "cannot tell at this N"
+  comes from a rule added in deviation 1 and applied at N = 3 by deviation 7 after the N = 3 verdicts were first read;
+  §5's falsification column, read literally, gives "not supported". Both are defensible (a 3-vs-3 exact test has no
+  power), and showing both costs one clause. *Learning:* when a protocol amendment relabels a negative verdict, keep
+  the literal reading visible next to it.
+- **Describe a figure by what is drawn.** Zhong et al.'s Fig. 7 has phase lines in attention-rate × width space,
+  fitted to the labels "gradient symmetricity > 98 %" and "distance irrelevance < 0.6"; two earlier passes had
+  described lines at those values. *Learning:* quote the caption when citing a figure's boundaries.
+- **Check what a source says about your own design choice.** The README called restricting HS to linear maps "our
+  inference, not theirs", but Sutter et al. suggest it themselves; Nanda et al. read their main model's key frequencies
+  off the embedding, not off W_L, which on T0 is exactly where frequency 2 appears or not. *Learning:* when a design
+  choice is motivated by a paper, look for that paper's own recommendation before claiming or disclaiming it.
+
