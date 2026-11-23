@@ -188,7 +188,9 @@ that scored like a full explanation, while E1 on T0 (analysed in no paper) score
 EXPLANATION.md" — the paper's published frequencies; the T-paper E1 script (s0) used `KEYS = [14, 35, 41, 42, 52, 71]`.
 By the key-frequency rule all three T0 E1 replacements contain four of the paper's five frequencies (14, 35, 41, 52;
 `results/frequencies_round2.json`); runs s1 and s2 hard-coded `[14, 35, 41, 52, 73]` (73 ≡ −40 mod 113). The same
-happened for E0 on T0 (one run of three) and for E1 on the dev target in stage 0.
+happened for E0 on T0 (one run of three) and for E1 on the dev target in stage 0 (its `build_weights.py` sets
+`FREQS = [14, 35, 41, 42, 52]`; `replacements/dev__dev__E1__claudehaiku55-claudecode__tdef__s12/` on the HF repo; checked
+in audit 8).
 
 **How it was checked.** Not only by reading scripts: the key-frequency rule used for the targets was applied to every
 replacement's weights (`analysis/frequencies.py`), giving the overlap of the frequencies actually built in with the
@@ -207,7 +209,9 @@ same risk applies to replication-based evaluations of LLM interpretability agent
 
 **What happened.** Qwen3.5-4B (E2, E3, E4, W-freq) and Qwen3.5-9B (E2) all ended with a network whose output is the
 same for every input (task accuracy exactly 1/113, HS 0). They used up the 60-step or 60-minute budget editing
-`build_weights.py` and re-running the self-test (Python exceptions in 4 of the 5 event logs), and the final weights
+`build_weights.py` and re-running the self-test (Python tracebacks in the logs of 4 of the 5 runs, counted in audit 8
+from each run's `transcript.md`/`events.ndjson`, published under `replacements/<run_id>/` on the HF repo; the committed
+`agent.errors` field counts harness errors, not Python exceptions), and the final weights
 never passed it. Extra explanation detail did
 not help: E4, with the full per-neuron table, failed like E2.
 
@@ -251,7 +255,7 @@ can be requested; these runs did not), so only the visible messages can be quote
   low HS values are not a calibrated distance.
 - **Preregistered statistics not computed.** H3's bootstrap CIs, H4's test against distilled students, the per-target
   replication tests (only directions were reported) and H8 over every E3/E4 replacement × all 401 checkpoints (rounds
-  1–2: one replacement × 41 checkpoints, labelled "all checkpoints"). Now computed or re-running (deviation 8). Also
+  1–2: one replacement × 41 checkpoints, labelled "all checkpoints"). Now computed, H8 re-run as preregistered (deviation 8). Also
   disclosed there (c): the redrawn W-freq/W-scramble explanations and T-paper's extra retrains never ran, and the
   compiler's 100 % accuracy check was relaxed to > 99 %.
 - **W-alg is not length-matched:** about 60 % of E3's characters on every target

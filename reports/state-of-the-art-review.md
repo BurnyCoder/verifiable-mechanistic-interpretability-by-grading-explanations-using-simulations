@@ -75,9 +75,9 @@ test) and `scipy.linalg.orthogonal_procrustes`; netrep was not used in the end (
   and the most criticised: simulation scores are weak on false positives
   ([Huang et al.](https://arxiv.org/abs/2309.10312)); fuzzing scores of SAE latents (detection in an appendix) are similar
   for trained and random transformers in many settings ([Heap et al.](https://arxiv.org/abs/2501.17727), v2 2026). Relatedly, when
-  LLM simulators predict a text classifier's outputs from concept explanations (not per-feature activations; an extension
-  covers attributions and rationales), the gains over matched no-explanation baselines are statistically significant but
-  small relative to their variability, which the authors explain by a "shortcut hypothesis": the simulator's
+  LLM simulators predict a text classifier's outputs from concept explanations (not per-feature activations), the gains
+  over matched no-explanation baselines are statistically significant but small relative to their variability (in an
+  extension, attributions improve significantly with one of three simulators and rationales with none), which the authors explain by a "shortcut hypothesis": the simulator's
   predictions rest mainly on task priors (with meaningful class names it can solve the task directly), and explanations
   change them only slightly ([Poché et al. 2026](https://arxiv.org/abs/2609.08585)).
 - **Substitution-based scores** (Bills' ablation score; [Paulo & Belrose 2025](https://arxiv.org/abs/2501.18838);
@@ -103,7 +103,7 @@ test) and `scipy.linalg.orthogonal_procrustes`; netrep was not used in the end (
 - **OpenCode v2** (repo `anomalyco/opencode`, docs [opencode.ai/docs](https://opencode.ai/docs)): headless
   `opencode run --format json` emits an NDJSON event stream (text, reasoning with `--thinking`, tool calls with
   inputs/outputs); `--auto` approves permissions not explicitly denied (these three flags are documented only in the
-  v2.3.2 source, `packages/cli/src/commands/commands.ts` and `run/noninteractive.ts`, not on the docs site);
+  v2.3.2 source, `packages/cli/src/commands/commands.ts` and `packages/cli/src/run/noninteractive.ts`, not on the docs site);
   `--standalone` uses a private server (docs).
   Permissions are ordered `{action, resource, effect}` rules (last match wins); `webfetch`, `websearch`, MCP, subagents
   and code mode can be denied; custom agents take a system prompt. Local observations on this machine (not in the

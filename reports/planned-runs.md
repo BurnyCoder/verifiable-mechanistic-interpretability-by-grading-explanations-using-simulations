@@ -1,6 +1,6 @@
 # Planned runs
 
-*Written 2026-11-21 before any run; updated after each round with what actually ran (last update 2026-11-22).
+*Written 2026-11-21 before any run; updated after each round with what actually ran (last update 2026-11-23).
 Hypotheses and tests: [preregistration.md](preregistration.md).*
 
 ## Fixed for every agent run

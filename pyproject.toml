@@ -9,7 +9,7 @@ version = "0.1.0"
 description = "Verifiable mechanistic interpretability: grade explanations of a modular-addition transformer by having a weights-blind LLM agent rebuild the model from the explanation, then comparing outputs (KL) and hidden states."
 readme = "README.md"
 authors = [
-    { name = "Libor Burian (BurnyCoder)" },
+    { name = "Libor \"Burny\" Burian" },
     { name = "Victor Levoso" },
 ]
 license = "MIT"

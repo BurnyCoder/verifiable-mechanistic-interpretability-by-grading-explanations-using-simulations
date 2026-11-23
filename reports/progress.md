@@ -208,7 +208,8 @@ to the agent-free compiler; wrong frequencies score at the floor on all five tar
 not (H3 supported); HS tracks circuit formation (H8 supported); per-neuron detail (E4) raises matched-neuron correlation.
 **Negative results:** HS and stitching are blind to Clock vs Pizza and to scrambled neuron tables; no HS gain beyond E2;
 E3/E4 detail lowers task accuracy; H1 and H4b not supported as preregistered; local Qwens never above chance;
-memorisation makes scores on the published checkpoint meaningless.
+memorisation makes scores of underspecified explanations on the published checkpoint uninformative (snapshot wording;
+corrected later: full explanations still scored as expected there).
 
 **Next:** merge, Hugging Face upload, then round 2 (N = 3): 64 Haiku runs, ≈ 8–9 h, ≈ $1.7.
 
