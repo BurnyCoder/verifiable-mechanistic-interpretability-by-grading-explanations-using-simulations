@@ -439,3 +439,26 @@ deviation 9).
   Python tracebacks in the local runs' logs) now point to the run folders on Hugging Face. An agent sweep had suggested
   removing one of them as wrong; reading the logs showed it was right.
 
+
+## Ninth independent audit (2026-11-23, deviation 16)
+
+- **Check what a baseline actually receives, not what it is called.** The "logit-distilled" students were trained with
+  KL at temperature 1 against a teacher that puts 0.9999998 of its mass on the answer. The wrong-class logits got
+  almost no gradient, so the students copied the answers and not the logits (centred-logit FVU against T0 about 1).
+  Hinton et al. (2015, §2) raise the temperature for exactly this reason. Lesson: for every baseline, measure the
+  property its name promises (here, logit agreement) before reading anything from it.
+- **"Outputs cannot see the mechanism" depends on which outputs.** Output KL failed, but a grokked model's centred
+  logits are Σ_k α_k cos(w_k(a + b − c)) and carry its key frequencies. A logit comparison with one fitted scale
+  separated the explanations about as well as HS. Lesson: when a primary output metric fails, try the strongest output
+  comparison before concluding that internal states are needed; report probability-level and logit-level results
+  separately.
+- **"No case exists" needs a search of the data you already have.** The paper said that no Clock-side build of an
+  explanation existed. The project's own Clock/Pizza table listed five builds with q ≥ 0.4, and their HS answered the
+  question the sentence said was unanswerable. Lesson: before writing "not measured", filter the existing results for
+  the case.
+- **Explain failed sub-predictions instead of only reporting them.** E0 above E1 was reported as a failed prediction
+  for eight audits. The frequency table already showed why: broad-spectrum builds sit at HS's floor, which is above
+  what sparse builds on other frequencies get. Lesson: a failed direction is a finding about the metric; look for its
+  cause in the data before moving on.
+- **Pre-specify post-hoc tests too.** The logit-matched students' design, training criterion and reading were
+  committed and pushed before training, so their result could not shape their interpretation.

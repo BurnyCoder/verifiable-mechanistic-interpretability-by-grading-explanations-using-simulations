@@ -349,7 +349,8 @@ the preregistered threshold stays the analysis default.*
 **Reading.** Presenting E3 as math or as code, or removing the self-test, changes the simulator's HS by at most a few
 hundredths in these single runs (math and code slightly lower, no self-test slightly higher than E3; N = 1 cannot separate these; audit 3: the run without the self-test still measured accuracy with its own code, and audit 8: the starter script still told it to re-run selftest.py, so this ablation does not remove label feedback). Low effort lowers task accuracy while E3's HS stays high: the replacement has the right frequency
 structure but wrong details (behaviour and mechanism dissociate in this direction too). On the seed-sensitivity targets
-T1, T2 and T-new, E2–E4 reach HS in the range of the reference compiler's builds and W-freq stays low, like the
+T1, T2 and T-new, E2–E4 mostly reach HS near the reference compiler's builds (T-new's E3 run below them, T2's E3 run
+above) and W-freq stays low, like the
 compiler's W-freq build (compiler tables above); random, retrain and student baselines exist only for T0, so there is
 no no-agent floor on these targets. By sign, the agent's HS is above the compiler's in 7 of 15 target–explanation
 pairs, largest on T2 (H5 row below; on T2 the compiler is misled by the rendered E3, the agent is not); whether a
