@@ -5,6 +5,17 @@ corrected — e.g. "HS tracks circuit formation" (now: shared frequency structur
 and to scrambled tables" (now: did not separate the agents' builds at N = 3, deviation 12), "41 of 96 runs announce a
 sweep" (now 44 of 96 by reading, deviation 13) — are listed in the preregistration's deviations.*
 
+## 2026-11-23 — README restructured (no new runs, no result changed)
+
+- README reordered to the project's README format. The order is now: summary, ✅/❌ highlights, a visual overview of
+  four figures, a new Methodology section (model, data, explanations, simulator, baselines, evaluation; with the
+  generated `targets` table), architecture with a code-module graph, results, setup and a new Reproduce section,
+  then the to-do list.
+- Every example and reason is kept. Refilling the README with the generator changes nothing but the new `targets`
+  table.
+- Stale bookkeeping fixed: the README said "twelve deviations" and listed six audits. The deviation disclosure now
+  points to the preregistration's full list, and the audit links point to `reports/reviews/`.
+
 ## 2026-11-22 20:00 — seventh independent audit (deviation 14)
 
 **Done** (no new agent runs, no API spend; N = 3 — not yet N = 10)
