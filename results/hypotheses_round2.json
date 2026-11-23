@@ -58,6 +58,12 @@
         "E3>W-role": "cannot tell at this N",
         "E4>W-scramble": "cannot tell at this N"
       },
+      "verdicts_prereg": {
+        "E3>W-freq": "not supported",
+        "E3>W-alg": "not supported",
+        "E3>W-role": "not supported",
+        "E4>W-scramble": "not supported"
+      },
       "tests": {
         "E3>W-freq": {
           "p": 0.05,

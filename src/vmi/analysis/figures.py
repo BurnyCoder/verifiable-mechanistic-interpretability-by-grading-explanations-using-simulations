@@ -185,8 +185,8 @@ def fig_trajectory(target: str = "T0") -> Path | None:
         axes[0].plot(steps, pc["hs"]["final T0 (weights dump)"], color="black", lw=1.2, ls="--")
     axes[0].set_ylim(0, 1)
     nc = len(d.get("negative_controls", []))
-    axes[0].set_title(f"HS vs checkpoint ↑: {len(d['replacements'])} E3/E4 replacements (blue)"
-                      + (f", {nc} W-freq/E1/E0 controls (orange, post hoc)" if nc else "")
+    axes[0].set_title(f"HS vs checkpoint ↑: {len(d['replacements'])} E3/E4 replacements (blue)"  # two lines (audit 8)
+                      + (f",\n{nc} W-freq/E1/E0 controls (orange, post hoc)" if nc else "")
                       + (", final T0 itself (black dashed, post hoc)" if pc else ""), loc="left", fontsize=8)
     axes[1].plot(steps, d["restricted_loss"], color=TRUE)
     axes[1].set_yscale("log")
@@ -197,7 +197,7 @@ def fig_trajectory(target: str = "T0") -> Path | None:
                  f"{d['spearman_min']:.2f}, median {d['spearman_hs_vs_neglog_restricted_loss']:.2f}"
                  + (f"; controls max {max(ctrl_rho):+.2f}" if ctrl_rho else "")
                  + (f"; final T0 itself {pc['rho_vs_neglog_restricted_loss']['final T0 (weights dump)']:.2f}" if pc else ""),
-                 x=0.01, ha="left", fontsize=9)
+                 x=0.01, y=1.04, ha="left", fontsize=9)
     return _save(fig, f"trajectory_{target}")
 
 

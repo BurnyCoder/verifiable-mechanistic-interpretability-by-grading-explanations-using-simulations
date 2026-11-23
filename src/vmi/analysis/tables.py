@@ -473,7 +473,21 @@ def inline_values(max_round: int) -> dict[str, str]:
     v.update(_audit5_values())
     v.update(_audit6_values(runs))
     v.update(_audit7_values())
+    v.update(_audit8_values())
     return v
+
+
+def _audit8_values() -> dict[str, str]:
+    """Inline values of the eighth (independent) audit (`v:a8-*`), from results/audit8/verify.json
+    (scripts/audit8/verify.py: numpy-only re-derivation of the round-2 statistics and of both verdict readings)."""
+    f = RES / "audit8" / "verify.json"
+    if not f.exists():
+        return {}
+    d = json.loads(f.read_text(encoding="utf-8"))
+    sh = d["shared_with_T0"]
+    return {"a8-stats": f"{sum(c['agree'] for c in d['checks'])} of {len(d['checks'])}",
+            "a8-shared": ", ".join(f"{t} {sh[t]}" for t in ("T1", "T2", "dev", "T-paper")),
+            "a8-retrain-shared": "; ".join(f"{k} {v[0]} shared, HS {v[1]:.3f}" for k, v in sh["retrains"].items())}
 
 
 def _audit7_values() -> dict[str, str]:
