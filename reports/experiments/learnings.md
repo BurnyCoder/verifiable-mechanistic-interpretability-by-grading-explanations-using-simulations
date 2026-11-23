@@ -422,3 +422,20 @@ deviation 9).
   (369,600 assignments at most), and the bootstrap interval of a three-run mean is exactly the range of the runs, so
   the verdicts can be re-derived with no statistics library and no Monte-Carlo error (`scripts/audit7/verdicts.py`).
 
+## Eighth independent audit (2026-11-23, deviation 15)
+
+- **Lead with the preregistered verdict.** A rule added after some scores were seen ("cannot tell" for a powerless
+  test) was used as the primary label for seven audits. Each audit noted the literal reading, but none put it first.
+  The preregistration had anticipated the N = 3 floor in §6 and still defined "cannot tell" only for undefined tests.
+  Lesson: when a post-hoc rule and the preregistered rule disagree, the preregistered verdict is primary, and the
+  post-hoc one is shown beside it with its deviation number.
+- **Ablations need a sandbox-wide check, not a file-wise one.** The self-test ablation asserted that `TASK.md` no
+  longer mentioned the self-test, but the starter script still did, and every agent read it. Lesson: for an ablation,
+  grep every file the agent can see, and test that check.
+- **A control is only as strong as its hardest case.** All of H7's wrong targets use other key frequencies, so H7
+  measures frequency identity, the same thing HS already separates. Lesson: include a negative control that shares
+  the property the metric is known to see (here, the key frequencies).
+- **Sources for "obvious" numbers.** Two learnings that were true but cited nothing (a stage-0 build's frequencies and
+  Python tracebacks in the local runs' logs) now point to the run folders on Hugging Face. An agent sweep had suggested
+  removing one of them as wrong; reading the logs showed it was right.
+
