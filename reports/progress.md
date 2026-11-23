@@ -8,7 +8,7 @@ sweep" (now 44 of 96 by reading, deviation 13) — are listed in the preregistra
 ## 2026-11-23 — README restructured (no new runs, no result changed)
 
 - README reordered to the project's README format. The order is now: summary, ✅/❌ highlights, a visual overview of
-  four figures, a new Methodology section (model, data, explanations, simulator, baselines, evaluation; with the
+  four figures, the agent's own words in the example runs, a new Methodology section (model, data, explanations, simulator, baselines, evaluation; with the
   generated `targets` table), architecture with a code-module graph, results, setup and a new Reproduce section,
   then the to-do list.
 - Every example and reason is kept. Refilling the README with the generator changes nothing but the new `targets`
