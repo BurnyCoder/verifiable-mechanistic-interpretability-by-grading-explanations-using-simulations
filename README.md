@@ -804,6 +804,8 @@ docs/               usage and architecture
 - [ ] Red-team the grader: wrong explanations that score high ([H](reports/next-steps.md#h-red-teaming))
 - [ ] Protocol fixes from audit 8: a self-test ablation with no leftover cue, and a same-frequency specificity control
       for H7 ([I](reports/next-steps.md#i-protocol-fixes-found-by-audit-8-for-a-next-protocol-version-the-current-one-stays-frozen))
+- [ ] From audit 9: logit-matched students that meet their training criterion, and a target whose logits do not
+      expose the mechanism, to test whether HS adds anything beyond a logit-level output comparison ([J](reports/next-steps.md#j-found-by-audit-9))
 
 ## License
 

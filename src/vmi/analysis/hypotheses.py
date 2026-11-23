@@ -141,7 +141,7 @@ def evaluate(max_round: int) -> dict:
         adj = st.holm({k: v["p"] for k, v in tests.items()})
         n4 = min(len(_select(runs, level="E3")), len(_select(runs, level="E4")))
         verd = {lv: st.verdict(adj[lv], True, st.min_p_mann_whitney(len(_select(runs, level=lv)), len(retr))) for lv in tests}
-        # §5 secondary, two-sided, no predicted direction: E3/E4 vs the logit-distilled students (deviation 8), Holm over both
+        # §5 secondary, two-sided, no predicted direction: E3/E4 vs the distilled students (deviation 8; they match output probabilities, audit 9), Holm over both
         two = {lv: st.mann_whitney_two_sided(_vals(_select(runs, level=lv)), stud) for lv in ("E3", "E4")} if len(stud) else {}
         adj2 = st.holm({k: v["p"] for k, v in two.items()})
         for lv, t in two.items():

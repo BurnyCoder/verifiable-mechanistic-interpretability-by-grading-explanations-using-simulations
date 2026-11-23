@@ -6,7 +6,7 @@ Local explanation:
                        no-mechanism models wd0_s*, rand_s*; H7 statistic d = HS(T0) − max HS(wrong) per run.
 - `trajectory`         every T0 E3/E4 replacement graded against all 401 of T0's checkpoints, next to restricted loss (H8).
 - `planted`            reference-compiled E3 model for T0 trained further; the step-0 model graded against each snapshot (H4b).
-- `baselines`          independent retrains (9 other wd1 seeds), logit-distilled students (trained), Fourier-restricted M,
+- `baselines`          independent retrains (9 other wd1 seeds), students distilled on output probabilities (trained), Fourier-restricted M,
                        weights dump; written to results/baselines/<target>.json.
 Global context: these runs need no LLM; they are deterministic given the fixed seeds and finish in minutes.
 Sources: preregistration §5, §7; restricted loss — grokviz.metrics.restricted_loss (paper Sec. 5.1).

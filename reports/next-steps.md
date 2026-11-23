@@ -274,6 +274,23 @@ items (A3, C, D2, E, G1, H), then the new targets (F, G2, G3).
   Fourier-restricted T0 with permuted or re-phased neurons, and a literal Pizza build at T0's frequencies (already in
   `results/compiler/T0/W-alg.json`).
 
+## J. Found by audit 9
+
+**J1. Logit-matched students that actually match.** *no agent (GPU, about 45 minutes per student)*
+- The pre-specified logit-matched students (deviation 16(a): squared error on centred logits, the KL students' recipe
+  with weight decay 1, 20,000 steps) did not meet their training criterion (centred-logit FVU < 0.05), so their HS is
+  not interpreted (`results/baselines/T0.json`, `students_logit`).
+- Next: pre-specify a recipe that reaches the criterion (more steps, or weight decay 0, or high-temperature KL, which
+  Hinton et al. 2015 §2.1 show tends to logit matching; https://arxiv.org/abs/1503.02531) and the same reading
+  (HS ≥ 0.85: HS adds little beyond logits; HS ≤ 0.35: hidden states carry information that matched logits do not).
+- Code to reuse: `vmi.training.train_from(mode="logit_mse")`, `vmi.nonagent.logit_students`, `vmi.analysis.logit_fit`.
+
+**J2. A target whose logits do not expose the mechanism.** *new targets, agent runs*
+- On modular addition the centred logits carry the key frequencies, so a logit-level output comparison separates the
+  explanations about as well as HS (paper §4.2). Whether HS adds information beyond the logits needs a target whose
+  read-out is not a direct function of the internal features (e.g. a two-layer model, or a task with a many-to-one
+  read-out); see G2 and G3 for candidate targets.
+
 ## Mapping from your list (2026-11-23)
 
 | Your item | Entry |

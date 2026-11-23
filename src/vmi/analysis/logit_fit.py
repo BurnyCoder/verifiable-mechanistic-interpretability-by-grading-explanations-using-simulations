@@ -118,17 +118,22 @@ def _rng(vals, nd=2) -> str:
 
 
 def student_reading(rows: list[dict]) -> str:
-    """The reading pre-specified in deviation 16(a), applied to the logit-matching students."""
-    hs = float(np.mean([r["hs"] for r in rows]))
-    if not all(r["converged"] for r in rows):
-        return (f"not all reached the pre-specified training criterion (centred-logit FVU < 0.05), so their HS "
-                f"(mean {hs:.2f}) is not interpreted")
+    """The reading pre-specified in deviation 16(a), applied per student: only students that meet the training criterion
+    (centred-logit FVU < 0.05) are interpreted."""
+    conv = [r for r in rows if r["converged"]]
+    fvu = _rng([r["centred_logit_fvu"] for r in rows], 3)
+    if not conv:
+        return (f"none of the {({2: 'two', 3: 'three'}).get(len(rows), len(rows))} reached the pre-specified training criterion (centred-logit FVU < 0.05; reached "
+                f"{fvu}), so by the pre-specified rule their HS (mean {np.mean([r['hs'] for r in rows]):.2f}) is not "
+                f"interpreted, and whether matched logits carry T0's hidden states stays open")
+    hs = float(np.mean([r["hs"] for r in conv]))
+    note = "" if len(conv) == len(rows) else f" ({len(conv)} of {len(rows)} met the training criterion; the others are not interpreted)"
     if hs >= 0.85:
-        return f"mean HS {hs:.2f} is in the E2–E4 range, so by the pre-specified reading HS adds little beyond the logits on this task"
+        return f"mean HS {hs:.2f} is in the E2–E4 range, so by the pre-specified reading HS adds little beyond the logits on this task{note}"
     if hs <= 0.35:
         return (f"mean HS {hs:.2f} stays in the range of retrains, probability-matched students and random networks, so by "
-                f"the pre-specified reading T0's hidden states carry mechanism information that matched logits do not")
-    return f"mean HS {hs:.2f} lies between those ranges, which the pre-specified reading calls partial"
+                f"the pre-specified reading T0's hidden states carry mechanism information that matched logits do not{note}")
+    return f"mean HS {hs:.2f} lies between those ranges, which the pre-specified reading calls partial{note}"
 
 
 def table(baselines: dict | None = None) -> str:

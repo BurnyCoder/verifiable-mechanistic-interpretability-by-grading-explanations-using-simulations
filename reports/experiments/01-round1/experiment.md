@@ -92,7 +92,7 @@ wrong. After round 2 it was re-run as preregistered with all six round-1–2 rep
 |---|---|---|---|---|---|
 | Random initialisation | nothing (floor) | 5 | 0.009 ± 0.001 | 4.766 ± 0.006 | 0.236 ± 0.006 |
 | Independent retrains | same recipe, other seeds | 9 | 1.000 ± 0.000 | 6.90e-06 ± 3.96e-06 | 0.119 ± 0.097 |
-| Logit-distilled students | M's full output logits, no explanation | 3 | 1.000 ± 0.000 | 2.38e-06 ± 8.25e-07 | 0.233 ± 0.058 |
+| Distilled students | M's output probabilities (KL at temperature 1), no explanation | 3 | 1.000 ± 0.000 | 2.38e-06 ± 8.25e-07 | 0.233 ± 0.058 |
 | Fourier-restricted M | M's weights, key frequencies only in W_E/W_U | 1 | 1.000 | 0.002 | 0.992 |
 | Weights dump | all 226,816 weights | 1 | 1.000 | 0.000 | 1.000 |
 <!-- END baselines-T0 -->

@@ -893,6 +893,7 @@ in the [mechinterp.com](https://mechinterp.com/) community, where this project s
 - Haklay et al. 2026. Pitfalls in evaluating interpretability agents. [arXiv:2603.20101](https://arxiv.org/abs/2603.20101)
 - Heap et al. 2025. Automated interpretability metrics do not distinguish trained and random transformers (title of v2, 2026; v1, 2025: Sparse autoencoders can interpret randomly initialized transformers). [arXiv:2501.17727](https://arxiv.org/abs/2501.17727)
 - Hesterberg 2015. What teachers should know about the bootstrap: resampling in the undergraduate statistics curriculum. The American Statistician 69:371–386. [arXiv:1411.5279](https://arxiv.org/abs/1411.5279)
+- Hinton, Vinyals and Dean 2015. Distilling the knowledge in a neural network. NIPS Deep Learning Workshop. [arXiv:1503.02531](https://arxiv.org/abs/1503.02531)
 - Holm 1979. A simple sequentially rejective multiple test procedure. Scandinavian Journal of Statistics 6:65–70.
 - Hu et al. 2026. Exploring weight-space programming: capabilities, generalization, and limitations. [arXiv:2611.09382](https://arxiv.org/abs/2611.09382)
 - Huang et al. 2023. Rigorously assessing natural language explanations of neurons. [arXiv:2309.10312](https://arxiv.org/abs/2309.10312)
