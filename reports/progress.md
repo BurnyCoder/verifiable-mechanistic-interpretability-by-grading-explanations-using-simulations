@@ -3,7 +3,34 @@
 *Entries are dated snapshots, newest first; older entries keep what was believed at the time. Statements later
 corrected — e.g. "HS tracks circuit formation" (now: shared frequency structure, deviation 11), "blind to Clock vs Pizza
 and to scrambled tables" (now: did not separate the agents' builds at N = 3, deviation 12), "41 of 96 runs announce a
-sweep" (now 44 of 96 by reading, deviation 13) — are listed in the preregistration's deviations.*
+sweep" (now 44 of 96 by reading, deviation 13), H2 "cannot tell at this N" (by §5 as written: "not supported" at N = 3,
+deviation 15) — are listed in the preregistration's deviations.*
+
+## 2026-11-23 — eighth independent audit (deviation 15; no new runs, no API spend, no score changed)
+
+**Done** (N = 3 — not yet N = 10)
+- Independent audit (`reviews/audit-8-2026-11-23.md`). Every round-2 statistic was re-derived with new numpy-only
+  code (`scripts/audit8/verify.py`): 19 of 19 stored values reproduce. The grader and statistics code were checked
+  against preregistration §4–§5. Preregistration timing was confirmed on GitHub. 19 of 20 paper sources and every
+  literature-review source were checked on the web.
+- **Hypothesis evaluation corrected.**
+  - By §5 as written, H2 (all four comparisons), every per-target H2 replication and T-new's H1 replication are "not
+    supported" at N = 3: the 3-vs-3 tests are defined but cannot reach α. The tables now show that first, and the
+    post-hoc "cannot tell at this N" second.
+  - H4b is stated as falsified (its HS half holds).
+  - H7 is scoped to networks with other key frequencies.
+- **New disclosure.** The self-test ablation left the starter script's "re-run … selftest.py" line in the sandbox, and
+  all three agents read it.
+- **Corrected.**
+  - the memorisation cue (only E0 outlines training);
+  - HS vs a weights-only spectrum check;
+  - the near-zero agent-over-compiler margins;
+  - Poché, Sutter and Zhong wording;
+  - the November 2026 related work;
+  - figures where runs hid each other;
+  - about 20 stale or inconsistent statements across the reports.
+
+**Next:** nothing scheduled; round 3 and the next-iteration items wait until you ask.
 
 ## 2026-11-23 — next-iteration to-do recorded (no new runs, no result changed)
 
@@ -208,7 +235,8 @@ to the agent-free compiler; wrong frequencies score at the floor on all five tar
 not (H3 supported); HS tracks circuit formation (H8 supported); per-neuron detail (E4) raises matched-neuron correlation.
 **Negative results:** HS and stitching are blind to Clock vs Pizza and to scrambled neuron tables; no HS gain beyond E2;
 E3/E4 detail lowers task accuracy; H1 and H4b not supported as preregistered; local Qwens never above chance;
-memorisation makes scores on the published checkpoint meaningless.
+memorisation makes scores of underspecified explanations on the published checkpoint uninformative (snapshot wording;
+corrected later: full explanations still scored as expected there).
 
 **Next:** merge, Hugging Face upload, then round 2 (N = 3): 64 Haiku runs, ≈ 8–9 h, ≈ $1.7.
 

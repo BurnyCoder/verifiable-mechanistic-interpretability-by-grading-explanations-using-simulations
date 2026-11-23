@@ -16,7 +16,18 @@ authors:
     given-names: Victor
 repository-code: "https://github.com/BurnyCoder/verifiable-mechanistic-interpretability-by-grading-explanations-using-simulations"
 license: MIT
-date-released: "2026-11-22"
+date-released: "2026-11-23"
+preferred-citation:
+  type: article
+  title: "Grading mechanistic explanations by weights-blind simulation: a preregistered test on the modular-addition transformer"
+  authors:
+    - family-names: Burian
+      given-names: Libor
+      alias: Burny
+    - family-names: Levoso
+      given-names: Victor
+  year: 2026
+  url: "https://github.com/BurnyCoder/verifiable-mechanistic-interpretability-by-grading-explanations-using-simulations/blob/main/reports/paper.pdf"
 keywords:
   - mechanistic interpretability
   - explanation evaluation

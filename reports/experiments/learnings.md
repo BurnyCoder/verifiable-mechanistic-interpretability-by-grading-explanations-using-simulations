@@ -188,7 +188,9 @@ that scored like a full explanation, while E1 on T0 (analysed in no paper) score
 EXPLANATION.md" — the paper's published frequencies; the T-paper E1 script (s0) used `KEYS = [14, 35, 41, 42, 52, 71]`.
 By the key-frequency rule all three T0 E1 replacements contain four of the paper's five frequencies (14, 35, 41, 52;
 `results/frequencies_round2.json`); runs s1 and s2 hard-coded `[14, 35, 41, 52, 73]` (73 ≡ −40 mod 113). The same
-happened for E0 on T0 (one run of three) and for E1 on the dev target in stage 0.
+happened for E0 on T0 (one run of three) and for E1 on the dev target in stage 0 (its `build_weights.py` sets
+`FREQS = [14, 35, 41, 42, 52]`; `replacements/dev__dev__E1__claudehaiku55-claudecode__tdef__s12/` on the HF repo; checked
+in audit 8).
 
 **How it was checked.** Not only by reading scripts: the key-frequency rule used for the targets was applied to every
 replacement's weights (`analysis/frequencies.py`), giving the overlap of the frequencies actually built in with the
@@ -207,7 +209,9 @@ same risk applies to replication-based evaluations of LLM interpretability agent
 
 **What happened.** Qwen3.5-4B (E2, E3, E4, W-freq) and Qwen3.5-9B (E2) all ended with a network whose output is the
 same for every input (task accuracy exactly 1/113, HS 0). They used up the 60-step or 60-minute budget editing
-`build_weights.py` and re-running the self-test (Python exceptions in 4 of the 5 event logs), and the final weights
+`build_weights.py` and re-running the self-test (Python tracebacks in the logs of 4 of the 5 runs, counted in audit 8
+from each run's `transcript.md`/`events.ndjson`, published under `replacements/<run_id>/` on the HF repo; the committed
+`agent.errors` field counts harness errors, not Python exceptions), and the final weights
 never passed it. Extra explanation detail did
 not help: E4, with the full per-neuron table, failed like E2.
 
@@ -251,7 +255,7 @@ can be requested; these runs did not), so only the visible messages can be quote
   low HS values are not a calibrated distance.
 - **Preregistered statistics not computed.** H3's bootstrap CIs, H4's test against distilled students, the per-target
   replication tests (only directions were reported) and H8 over every E3/E4 replacement × all 401 checkpoints (rounds
-  1–2: one replacement × 41 checkpoints, labelled "all checkpoints"). Now computed or re-running (deviation 8). Also
+  1–2: one replacement × 41 checkpoints, labelled "all checkpoints"). Now computed, H8 re-run as preregistered (deviation 8). Also
   disclosed there (c): the redrawn W-freq/W-scramble explanations and T-paper's extra retrains never ran, and the
   compiler's 100 % accuracy check was relaxed to > 99 %.
 - **W-alg is not length-matched:** about 60 % of E3's characters on every target
@@ -417,4 +421,21 @@ deviation 9).
 - **Exact enumeration is cheap at N = 3.** Every preregistered test at this N has a small null distribution
   (369,600 assignments at most), and the bootstrap interval of a three-run mean is exactly the range of the runs, so
   the verdicts can be re-derived with no statistics library and no Monte-Carlo error (`scripts/audit7/verdicts.py`).
+
+## Eighth independent audit (2026-11-23, deviation 15)
+
+- **Lead with the preregistered verdict.** A rule added after some scores were seen ("cannot tell" for a powerless
+  test) was used as the primary label for seven audits. Each audit noted the literal reading, but none put it first.
+  The preregistration had anticipated the N = 3 floor in §6 and still defined "cannot tell" only for undefined tests.
+  Lesson: when a post-hoc rule and the preregistered rule disagree, the preregistered verdict is primary, and the
+  post-hoc one is shown beside it with its deviation number.
+- **Ablations need a sandbox-wide check, not a file-wise one.** The self-test ablation asserted that `TASK.md` no
+  longer mentioned the self-test, but the starter script still did, and every agent read it. Lesson: for an ablation,
+  grep every file the agent can see, and test that check.
+- **A control is only as strong as its hardest case.** All of H7's wrong targets use other key frequencies, so H7
+  measures frequency identity, the same thing HS already separates. Lesson: include a negative control that shares
+  the property the metric is known to see (here, the key frequencies).
+- **Sources for "obvious" numbers.** Two learnings that were true but cited nothing (a stage-0 build's frequencies and
+  Python tracebacks in the local runs' logs) now point to the run folders on Hugging Face. An agent sweep had suggested
+  removing one of them as wrong; reading the logs showed it was right.
 

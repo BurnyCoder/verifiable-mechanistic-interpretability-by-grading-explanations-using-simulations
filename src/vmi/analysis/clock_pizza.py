@@ -20,7 +20,8 @@ that HS does not separate W-alg from E3 rests on that assumption, which no earli
 from the source (audit 5: this module and its first results were committed together in e9b0b0d/1586324, so git cannot
 confirm that the rule preceded the values; its safeguard is that it is Zhong et al.'s own range): Zhong et al. call
 distance irrelevance 0–0.4 typical of Pizza and 0.4–1 typical of
-Clock (§4.1.2), and their Fig. 7 phase-transition lines, drawn in attention-rate × width space, are logistic-regression
+Clock (§4.1.2), and their Fig. 7 phase-transition lines, drawn against attention rate (and, in the bottom panel only,
+width; the top panel fixes width 128; audit 8), are logistic-regression
 fits to two labels per run, gradient symmetricity > 98 % and distance irrelevance < 0.6 (one fit per label, not a joint
 rule, and not lines on either metric; audit 6). The W-alg negative result stands if T0 is on the Clock side (q ≥ 0.4) and the literal
 Pizza build (reference compiler, W-alg) is on the Pizza side (q < 0.4); otherwise the paper must say that W-alg may

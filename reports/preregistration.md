@@ -219,7 +219,7 @@ Eleven agent smoke runs on the dev target `wd1_s10` (details and transcripts: `r
 `reports/progress.md`. Prompts, `TASK.md`, sandbox templates, explanation templates, harnesses, simulator settings and
 analysis code are fixed from that commit on. T-new is trained after it.
 
-### Post-freeze deviations (logged as they happen; 1–4 and 6 change no hypothesis, metric, test or condition; 5 removes conditions; 7 corrects how H1/H2 verdicts were computed; 8 adds missing preregistered statistics, discloses analyses not run and corrects §4's rationale; 9 corrects factual statements, narrows two claims to their evidence and adds post-hoc checks; 10 corrects how H1's verdict and the T-paper replication are reported, makes H1's trend test exact, corrects §4's rationale for `mlp_post` and adds post-hoc checks; 11 corrects how H4b and H8 are interpreted, states the coverage of three-run bootstrap intervals, corrects errata and citations and adds post-hoc checks; 12 re-derives every verdict independently, narrows the scope of the "true" explanations and of one blind spot, corrects how the deviations made after results are counted and corrects errata and citations; 13 re-derives every verdict and re-grades the scores with new code, reports H2's literal §5 reading beside "cannot tell", replaces a pattern count of the agents' parameter searches by a read count and corrects citations; 14 re-derives every verdict and re-grades the T0 scores with code independent of the project and of scipy, discloses searches inside final build scripts that the static audit missed and corrects citations)
+### Post-freeze deviations (logged as they happen; 1–4 and 6 change no hypothesis, metric, test or condition; 5 removes conditions; 7 corrects how H1/H2 verdicts were computed; 8 adds missing preregistered statistics, discloses analyses not run and corrects §4's rationale; 9 corrects factual statements, narrows two claims to their evidence and adds post-hoc checks; 10 corrects how H1's verdict and the T-paper replication are reported, makes H1's trend test exact, corrects §4's rationale for `mlp_post` and adds post-hoc checks; 11 corrects how H4b and H8 are interpreted, states the coverage of three-run bootstrap intervals, corrects errata and citations and adds post-hoc checks; 12 re-derives every verdict independently, narrows the scope of the "true" explanations and of one blind spot, corrects how the deviations made after results are counted and corrects errata and citations; 13 re-derives every verdict and re-grades the scores with new code, reports H2's literal §5 reading beside "cannot tell", replaces a pattern count of the agents' parameter searches by a read count and corrects citations; 14 re-derives every verdict and re-grades the T0 scores with code independent of the project and of scipy, discloses searches inside final build scripts that the static audit missed and corrects citations; 15 shows the preregistered verdict reading first, narrows the readings of H4b and H7, discloses a leftover cue in the self-test ablation and corrects wording and citations)
 
 1. **2026-11-21, round 1, after the controls stage — analysis code brought in line with amendment 2.** The frozen
    `analysis/hypotheses.py` still selected the main condition as Qwen3.6-35B-A3B at temperature 0.6 (pre-amendment)
@@ -560,3 +560,34 @@ analysis code are fixed from that commit on. T-new is trained after it.
    benchmark tasks and other agents for its brain-encoding models.
    None of (a)–(c) changes a primary metric, a preregistered test or a reported verdict; (b) adds a disclosure and a
    post-hoc sensitivity check.
+15. **2026-11-23, after round 2 — eighth independent audit: the preregistered verdict shown first, scope of H4b and H7,
+   a leftover cue in the self-test ablation, wording and citations.**
+   (a) *Verdict reading.* §5 reserves "cannot tell at this N" for a test that is undefined at the current N and
+   falsifies a comparison that is "not significant after Holm"; §6 notes that a 3-vs-3 one-sided Mann–Whitney is
+   defined at N = 3 but cannot go below 1/20, and grants no exception. By §5 as written, the four H2 comparisons
+   (Holm-adjusted p 0.20, 0.70, 0.20, 0.70), every per-target H2 replication (p = 0.05 against the criterion p < 0.05)
+   and T-new's H1 replication (JT p = 0.05) are therefore "not supported". Since deviation 7, the tables had led with
+   deviation 1's post-hoc "cannot tell at this N" and shown the §5 reading only in a parenthesis on the H2 row. From
+   this deviation on, every table shows the §5 verdict first and deviation 1's reading after it
+   (`vmi.analysis.stats.verdict_prereg`, `predictions._verdict`). No p-value changes. A numpy-only re-derivation
+   (`scripts/audit8/verify.py`, `results/audit8/verify.json`) reproduces all 19 stored statistics it checks and computes
+   both readings.
+   (b) *Readings.* H4b is falsified by its criterion (any non-monotonicity): its HS half holds (strictly falling) and
+   its KL half fails. The post-hoc cause (the planted model's accuracy dips and recovers, and KL follows it) is now
+   stated after that. H7 is shown only against networks with other key frequencies: each trained wrong target shares at
+   most one key frequency with T0 (T2 shares 37), and the others have no clean mechanism. A weights-only
+   embedding-spectrum comparison orders the T0 builds almost as HS does, so on this task HS behaves largely as a
+   frequency-overlap score. These caveats are added to the paper's Limitations. Two of the four seed-target pairs in
+   which the agent exceeds the compiler beyond the range of its runs differ by less than 0.01.
+   (c) *Self-test ablation.* The no-self-test variant removes `selftest.py` and its mentions from `TASK.md` and the
+   prompt, but the starter `build_weights.py`, copied in every variant, still says "re-run this script and selftest.py
+   after each stage". All three reported no-self-test agents read that line, and none tried to run `selftest.py`. This
+   is disclosed. The starter stays unchanged because the protocol is frozen across rounds.
+   (d) *Wording and citations.* The memorisation cue: only E0's text outlines the training setup; the E1 runs saw the
+   exact architecture and the paper's own algorithm. Poché et al.: the significant-but-small gains are for concept
+   explanations; attributions are significant with one of three simulators, rationales with none. Sutter et al.: the
+   advice to restrict to linear maps is in §8. Zhong et al.: only Fig. 7's bottom panel varies width. Related work: the
+   November 2026 weight-space-programming preprints and FIND are added. Stale statements in the reports are corrected,
+   and the figures redrawn so that every run is visible.
+   None of (a)–(d) changes a primary metric, a preregistered test, a p-value or a stored score. (a) changes which
+   verdict reading is shown first; (b)–(d) add disclosures and narrow claims.

@@ -1,6 +1,6 @@
 # Experiment 01 — Round 1 (N = 1 per condition)
 
-*Status: done (round 2 continues in [02-round2](../02-round2/experiment.md)). Every table below is generated from `results/` by `vmi analyse 1` and shows round 1 only; the embedded figures are regenerated with the latest round. With N = 1 there is no
+*Status: done (round 2, also done, is in [02-round2](../02-round2/experiment.md)). Every table below is generated from `results/` by `vmi analyse 1` and shows round 1 only; the embedded figures are regenerated with the latest round. With N = 1 there is no
 within-condition spread: verdicts rest on directions, on the trend across conditions and on the deterministic
 no-agent arms, and every verdict is labelled "at N=1 — not yet N=3 or N=10". Protocol: preregistration with
 amendments 1–2, frozen at tag `protocol-freeze`; post-freeze deviations are logged at the end of
@@ -37,8 +37,9 @@ amendments 1–2, frozen at tag `protocol-freeze`; post-freeze deviations are lo
 adders whose internals share almost nothing with T0, i.e. the simulator's priors give the right behaviour but not
 this model's mechanism. Among the controls, wrong frequencies (W-freq) and wrong component roles (W-role) give
 correct behaviour with low HS. The Pizza explanation (W-alg) and the scrambled neuron table (W-scramble) are **not**
-separated from the true explanations on primary HS: both keep T0's key frequencies, and HS (linear regression over
-whole sites) sees frequency subspaces, not the per-neuron assignment or the Clock-vs-Pizza nonlinearity. The secondary
+separated from the true explanations on primary HS at N = 1: the agents' builds of both keep T0's key frequencies
+(later finding, audit 5: the compiler's literal build of the scrambled table does score lower on T0, so the
+non-separation belongs to the agents' builds, not to HS alone). The secondary
 matched-neuron correlation does separate W-scramble from E4. Output KL does not rank the ladder: E2 has the smallest KL
 and E4 the largest. For E3 most of the gap is the logit scale (fitting one logit temperature, the secondary
 "calibrated KL" in `results/runs/`, lowers it by an order of magnitude); for E4 it is not (its replacement answers some

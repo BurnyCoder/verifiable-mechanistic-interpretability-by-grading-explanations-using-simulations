@@ -36,7 +36,9 @@ c = (a+b) mod p. Mainline key frequencies: {14, 35, 41, 42, 52} (§4.1).
 - W_L is effectively rank 10; its residual outside the key directions is < 0.55 % of its norm (§4.2).
 - Attention: each head's pattern A ≈ 0.5 + α(cos wa − cos wb) + β(sin wa − sin wb) with FVE 97.9–99.1 % (Table 2).
 - Ablations (§4.4): replacing the 433 neurons with their polynomial fits raises loss 3 %; restricting each neuron to
-  its key-frequency cos/sin(w_k(a+b)) terms lowers loss 77 % (to 5.54×10⁻⁸); keeping only the key-frequency components
+  its key-frequency cos/sin(w_k(a+b)) terms lowers loss 77 % (to 5.54×10⁻⁸; the paper's attribution — grokviz's
+  reproduction gets 1.12×10⁻⁷ for this ablation and 5.55×10⁻⁸ for the restricted logits, see the state-of-the-art
+  review §6; audit 8); keeping only the key-frequency components
   of the logits lowers it 70 % (to 7.24×10⁻⁸); projecting MLP activations onto the nullspace of W_L's 10 key
   directions raises loss to 5.27, worse than uniform.
 - **What the explanation leaves unspecified** (and what therefore limits weight reconstruction): per-neuron
@@ -151,7 +153,20 @@ alone and measures closeness to the trained model** (searched 2026-11-20; absenc
 - **Weight Oracles** (Kabra et al. 2026, [arXiv:2610.07334](https://arxiv.org/abs/2610.07334)): LMs read weights to
   simulate small transformers — reading, not writing.
 - **Code as Explanations** (Nguyen et al. 2026, [arXiv:2611.14704](https://arxiv.org/abs/2611.14704)): a program
-  explains an LLM's behaviour, scored by output agreement — behavioural only.
+  explains an LLM's behaviour, scored by output agreement — behavioural only. An earlier benchmark in this direction is
+  **FIND** (Schwettmann et al., NeurIPS 2023, [arXiv:2309.03886](https://arxiv.org/abs/2309.03886)): functions that
+  resemble components of trained networks, paired with natural-language and code descriptions, against which
+  interpretability agents' descriptions are evaluated.
+- **The November 2026 weight-space-programming wave** (all fetched; claims from the abstracts, audit 8): agents edit the
+  weights of trained Qwen3.5 models ([Hu et al., arXiv:2611.09382](https://arxiv.org/abs/2611.09382)); Claude Opus 5.5
+  reads trained CNNs' weights and relies on dataset priors rather than tracing weight flow
+  ([Ahmed, arXiv:2611.08070](https://arxiv.org/abs/2611.08070)); LLMs write all weights of a network from game rules
+  given as simulator source ([Lehmann, arXiv:2611.16981](https://arxiv.org/abs/2611.16981)), of a small medical-imaging
+  CNN without training data ([Lindholz et al., arXiv:2611.12066](https://arxiv.org/abs/2611.12066)), of a policy checked
+  by probabilistic model checking ([Gross, arXiv:2611.11604](https://arxiv.org/abs/2611.11604)), or of a PDE solver
+  from governing equations ([Sato et al., arXiv:2611.12954](https://arxiv.org/abs/2611.12954)). None rebuilds an
+  SGD-trained network from an explanation of it or compares hidden states with an original, so the novelty statement
+  below stands.
 - **Interpretability agents and their evaluation:** MAIA ([arXiv:2404.14394](https://arxiv.org/abs/2404.14394));
   AgenticInterpBench ([arXiv:2606.24026](https://arxiv.org/abs/2606.24026)); **Haklay et al. 2026, *Pitfalls in
   Evaluating Interpretability Agents*** ([arXiv:2603.20101](https://arxiv.org/abs/2603.20101)) — asked directly, the
@@ -161,9 +176,9 @@ alone and measures closeness to the trained model** (searched 2026-11-20; absenc
   in an appendix) are similar for trained and randomised transformers in many settings, with a larger gap for small
   Pythia models ([arXiv:2501.17727](https://arxiv.org/abs/2501.17727)); **Poché et al. 2026 — LLM simulators can bypass
   explanations** ([arXiv:2609.08585](https://arxiv.org/abs/2609.08585)): when LLM simulators predict a text
-  classifier's outputs from concept explanations (a ConSim replication with meaningful class names; an extension covers
-  attributions and rationales), explanation gains over no-explanation baselines were statistically significant but small
-  relative to their variability, which the authors explain by a "shortcut hypothesis" (predictions rest mainly on task
+  classifier's outputs from concept explanations (a ConSim replication with meaningful class names), explanation gains
+  over no-explanation baselines were statistically significant but small relative to their variability (in an
+  extension, attributions improve significantly with one of three simulators and rationales with none, App. K), which the authors explain by a "shortcut hypothesis" (predictions rest mainly on task
   priors — with meaningful class names the simulator can solve the task directly — and explanations change them only
   slightly; simulators of at most 15B parameters without reasoning); they
   recommend label-leakage baselines, multiple simulators, enough seeds and novel tasks;

@@ -58,6 +58,12 @@
         "E3>W-role": "cannot tell at this N",
         "E4>W-scramble": "cannot tell at this N"
       },
+      "verdicts_prereg": {
+        "E3>W-freq": "not supported",
+        "E3>W-alg": "not supported",
+        "E3>W-role": "not supported",
+        "E4>W-scramble": "not supported"
+      },
       "tests": {
         "E3>W-freq": {
           "p": 0.05,
@@ -193,7 +199,7 @@
           "r_rb": 1.0,
           "min_p": 0.1,
           "holm_p": 0.2,
-          "result": "cannot tell at this N"
+          "result": "no significant difference (Holm p 0.20; post-hoc rule: cannot tell at this N)"
         },
         "E4": {
           "p": 0.1,
@@ -201,7 +207,7 @@
           "r_rb": 1.0,
           "min_p": 0.1,
           "holm_p": 0.2,
-          "result": "cannot tell at this N"
+          "result": "no significant difference (Holm p 0.20; post-hoc rule: cannot tell at this N)"
         }
       },
       "retrain_hs_mean": 0.11857353858866843,

@@ -105,11 +105,14 @@ def evaluate(max_round: int) -> dict:
         adj = st.holm({k: v["p"] for k, v in tests.items()})
         if nmin < 2:
             verdicts = {k: ("cannot tell at this N" if effects[k] is None or effects[k]["diff"] > 0 else "not supported") for k in pairs}
-        else:  # §6 / deviation 1: a test whose smallest attainable p is ≥ α cannot decide (3 vs 3: 1/20); deviation 7
+            prereg = dict(verdicts)  # one run per arm: the test is undefined, so both readings agree
+        else:  # deviation 1 (post hoc): a test whose smallest attainable p is ≥ α cannot decide (3 vs 3: 1/20); deviation 7
             verdicts = {k: st.verdict(adj[k], effects[k]["diff"] > 0,
                                       st.min_p_mann_whitney(len(_select(runs, level=a)), len(_select(runs, level=b))))
                         for k, (a, b) in pairs.items()}
-        H["H2"] = {"N": nmin, "label": _n_label(nmin), "verdicts": verdicts, "tests": tests, "holm_p": adj, "effects": effects}
+            prereg = {k: st.verdict_prereg(adj[k], effects[k]["diff"] > 0) for k in pairs}  # §5 as written (audit 8)
+        H["H2"] = {"N": nmin, "label": _n_label(nmin), "verdicts": verdicts, "verdicts_prereg": prereg, "tests": tests,
+                   "holm_p": adj, "effects": effects}
     # H3 — W-freq fools output KL but not HS
     wf = _select(runs, level="W-freq")
     trues = {lv: _select(runs, level=lv) for lv in ("E2", "E3", "E4")}
@@ -143,9 +146,12 @@ def evaluate(max_round: int) -> dict:
         adj2 = st.holm({k: v["p"] for k, v in two.items()})
         for lv, t in two.items():
             t["holm_p"] = adj2[lv]
-            t["result"] = ("cannot tell at this N" if t["p"] is None or t["min_p"] >= ALPHA
+            # Audit 8: a defined test that misses α reads "no significant difference" (§5); deviation 1's "cannot tell"
+            # for a test that cannot reach α (two-sided 3 vs 3: smallest p 0.10) is shown after it.
+            t["result"] = ("cannot tell at this N" if t["p"] is None
                            else ("differ: " + ("agent higher" if t["r_rb"] > 0 else "students higher")) if adj2[lv] < ALPHA
-                           else "no significant difference")
+                           else f"no significant difference (Holm p {adj2[lv]:.2f}"
+                           + ("; post-hoc rule: cannot tell at this N)" if t["min_p"] >= ALPHA else ")"))
         H["H4"] = {"N": n4, "label": _n_label(n4), "verdicts": verd, "tests": tests, "holm_p": adj, "students": two,
                    "retrain_hs_mean": float(retr.mean()) if len(retr) else None,
                    "student_hs_mean": float(stud.mean()) if len(stud) else None,
