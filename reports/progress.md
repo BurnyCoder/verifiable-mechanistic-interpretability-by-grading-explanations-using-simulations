@@ -5,6 +5,14 @@ corrected — e.g. "HS tracks circuit formation" (now: shared frequency structur
 and to scrambled tables" (now: did not separate the agents' builds at N = 3, deviation 12), "41 of 96 runs announce a
 sweep" (now 44 of 96 by reading, deviation 13) — are listed in the preregistration's deviations.*
 
+## 2026-11-23 — next-iteration to-do recorded (no new runs, no result changed)
+
+- Your 23 ideas are recorded in `reports/next-steps.md`. They are grouped A–H, and each item has a design, the
+  existing code to reuse, sources (every new link checked against its page) and a cost class. A mapping table shows
+  where each of your items went.
+- The README's to-do gets one line per group, and the plan, summary and planned runs point to the new file.
+- Nothing is scheduled. Like round 3, these items wait until you ask.
+
 ## 2026-11-23 — README restructured (no new runs, no result changed)
 
 - README reordered to the project's README format. The order is now: summary, ✅/❌ highlights, a visual overview of
