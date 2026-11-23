@@ -153,16 +153,21 @@ def fourier_restricted(model) -> dict[str, np.ndarray]:
     return arr
 
 
+def retrain_ids(target: str = "T0") -> list[str]:
+    """The independent retrains of a target: nine `wd1` seeds other than the target and the dev target (§7); for
+    T-paper also `wd1_s0` and the `split0_init*` runs (§7; not run, deviation 8)."""
+    own = targets.resolve(target).run_id
+    others = [f"wd1_s{s}" for s in range(11) if f"wd1_s{s}" != own and f"wd1_s{s}" != "wd1_s10"][:9]
+    return ["wd1_s0", "split0_init100", "split0_init101", "split0_init102"] + others if target == "T-paper" else others
+
+
 def baselines(settings: Settings, target: str = "T0") -> dict:
     """Independent retrains, distilled students, Fourier-restricted M and the weights dump, graded against the target."""
     from grokviz.model import GrokTransformer
     from vmi.grader.activations import collect
     from vmi.training import train_from
     m = targets.load_model(settings, target)
-    own = targets.resolve(target).run_id
-    others = [f"wd1_s{s}" for s in range(11) if f"wd1_s{s}" != own and f"wd1_s{s}" != "wd1_s10"][:9]
-    if target == "T-paper":
-        others = ["wd1_s0", "split0_init100", "split0_init101", "split0_init102"] + others
+    others = retrain_ids(target)
     retrains = [{"run": r, **grade_models(m, targets.load_model(settings, r), secondary=False)} for r in others]
     teacher = collect(m.double(), "cuda" if torch.cuda.is_available() else "cpu").logits
     students = []
@@ -177,3 +182,35 @@ def baselines(settings: Settings, target: str = "T0") -> dict:
            "weights_dump_length": {"numbers": int(sum(np.prod(s) for _, s in weights.SCHEMA.values()))}}
     _dump(RES / "baselines" / f"{target}.json", out)
     return out
+
+
+LOGIT_FVU_CRITERION = 0.05  # deviation 16(a): a logit student counts as trained only below this centred-logit FVU
+
+
+def logit_students(settings: Settings, target: str = "T0", seeds=(1000, 1001, 1002), steps: int = 20000) -> list[dict]:
+    """Post hoc (audit 9, deviation 16(a), pre-specified before training): students trained to match the target's
+    per-input-centred logits (squared error, all 113² inputs, same initialisations, recipe and step count as the
+    KL students), graded like them; added to results/baselines/<target>.json as `students_logit`.
+
+    The §7 students minimise KL at temperature 1 and so copy output probabilities, not logits; these test whether
+    copying the full (centred) logits, which carry the key frequencies, copies the hidden states too."""
+    from grokviz.model import GrokTransformer
+    from vmi.grader.activations import collect
+    from vmi.grader.metrics import centred_logit_fvu
+    from vmi.training import train_from
+    m = targets.load_model(settings, target)
+    dev = "cuda" if torch.cuda.is_available() else "cpu"
+    teacher = collect(m.double(), dev).logits
+    rows = []
+    for s in seeds:
+        snap = train_from(weights.from_model(GrokTransformer(seed=s)), mode="logit_mse", steps=steps, snapshots=[steps],
+                          teacher_logits=teacher, out_dir=settings.data_dir / "trained" / f"student_logit_{target}_s{s}")
+        student = weights.to_model(snap[steps])
+        fvu = centred_logit_fvu(teacher, collect(student.double(), dev).logits)
+        rows.append({"seed": s, **grade_models(m, student, secondary=False), "centred_logit_fvu": fvu,
+                     "converged": fvu < LOGIT_FVU_CRITERION})
+    path = RES / "baselines" / f"{target}.json"
+    out = json.loads(path.read_text(encoding="utf-8"))  # keep every other entry exactly as it is
+    out["students_logit"] = rows
+    _dump(path, out)
+    return rows

@@ -283,6 +283,8 @@ def main(argv: list[str] | None = None) -> None:
     c.add_argument("round", type=int)
     b = sub.add_parser("baselines")
     b.add_argument("target")
+    b.add_argument("--logit-students", action="store_true",
+                   help="only train and grade the post-hoc logit-matching students (deviation 16(a)); other baselines untouched")
     tr = sub.add_parser("train", help="train fresh runs with the paper recipe (e.g. new_s11 = T-new, after the freeze)")
     tr.add_argument("run_ids", nargs="+")
     an = sub.add_parser("analyse")
@@ -290,6 +292,7 @@ def main(argv: list[str] | None = None) -> None:
     sub.add_parser("regrade", help="recompute secondary metrics of graded runs from saved weights")
     sub.add_parser("diagnose", help="re-run agents' build scripts with single edits to find what made them fail")
     sub.add_parser("clockpizza", help="Zhong et al. Clock/Pizza diagnostics of the targets and T0 builds (post hoc, audit 3)")
+    sub.add_parser("logitfit", help="centred-logit FVU, raw and with one fitted scale, of every T0 network (post hoc, audit 9)")
     sub.add_parser("paper", help="build reports/paper.pdf from reports/paper/paper.md")
     sub.add_parser("sensitivity", help="grader and explainer sensitivity analyses (no agent)").add_argument("round", type=int)
     pub = sub.add_parser("publish", help="export artefacts (redacted, scanned) and upload them to the Hugging Face Hub")
@@ -346,7 +349,10 @@ def main(argv: list[str] | None = None) -> None:
         nonagent.trajectory(settings, a.round)
     elif a.cmd == "baselines":
         from vmi import nonagent
-        nonagent.baselines(settings, a.target)
+        if a.logit_students:  # post hoc (audit 9): students that match the target's centred logits
+            log.info("logit students: %s", json.dumps(nonagent.logit_students(settings, a.target), default=float))
+        else:
+            nonagent.baselines(settings, a.target)
     elif a.cmd == "publish":
         from vmi import publish
         folder = publish.export(settings)
@@ -371,6 +377,9 @@ def main(argv: list[str] | None = None) -> None:
     elif a.cmd == "clockpizza":  # post hoc (audit 3): is T0 a Clock model? → results/controls/clock_pizza.json
         from vmi.analysis.clock_pizza import analyse as clock_pizza
         log.info("clock/pizza diagnostics: %s", clock_pizza(settings))
+    elif a.cmd == "logitfit":  # post hoc (audit 9): does a logit-level output comparison separate explanations like HS?
+        from vmi.analysis.logit_fit import analyse as logit_fit
+        log.info("logit-level comparison: %s", logit_fit(settings))
     elif a.cmd == "analyse":  # hypotheses + figures + every table in README/reports/paper, from results/
         from vmi.analysis.report import regenerate
         log.info("report: %s", json.dumps(regenerate(a.round)))

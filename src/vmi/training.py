@@ -5,13 +5,17 @@ Local explanation:
   (vectorised over runs, deterministic, resumable every 2,000 steps) into `data/trained/<run_id>` — used for the
   reproduction check of T0 and for the held-out target T-new.
 - `train_from` is one small full-batch AdamW loop with a pluggable loss and initial weights: label mode (task labels,
-  must reproduce a published run before use), distillation mode (KL to a target's logits on all inputs) and
-  continued training of a compiled model (planted-mechanism calibration). Snapshots are saved as weight files.
+  must reproduce a published run before use), distillation mode (KL to a target's output probabilities at
+  temperature 1 on all inputs), logit-matching mode (squared error between per-input-centred logits; post hoc,
+  audit 9) and continued training of a compiled model (planted-mechanism calibration). Snapshots are saved as weight
+  files.
 Global context: these models are baselines and controls (preregistration §7); the simulator never trains anything.
 Sources: grokviz train_runs (MIT; paper recipe: AdamW lr 1e-3, betas (0.9, 0.98), wd 1, 10-step warm-up, float64 CE as in the paper's notebook and ARENA — the published helpers.py casts to float32 despite
 its float64 comment (audit 4),
 https://github.com/mechanistic-interpretability-grokking/progress-measures-paper/blob/23d2c64/transformers.py);
-knowledge distillation with a KL loss on logits — Hinton et al. 2015 (https://arxiv.org/abs/1503.02531);
+knowledge distillation with a KL loss on logits — Hinton et al. 2015 (https://arxiv.org/abs/1503.02531; at
+temperature 1 a near-one-hot teacher passes almost nothing about its wrong-class logits, which is why Hinton et al.
+raise the temperature and note that matching logits is the high-temperature limit, §2.1);
 PyTorch determinism notes (https://pytorch.org/docs/stable/notes/randomness.html).
 """
 
@@ -47,6 +51,16 @@ def grokviz_config(settings: Settings) -> Config:
                   hf_runs_repo=settings.hf_runs_repo, hf_site_data_repo="", hf_collection_title="", site_weight_snapshots=[])
 
 
+def centred(logits: torch.Tensor) -> torch.Tensor:
+    """Logits minus each input's mean logit: the part a softmax can see (adding a constant per input changes nothing)."""
+    return logits - logits.mean(-1, keepdim=True)
+
+
+def logit_mse(student_logits: torch.Tensor, teacher_centred: torch.Tensor) -> torch.Tensor:
+    """Mean squared error between the student's centred logits and the teacher's (already centred) logits."""
+    return ((centred(student_logits) - teacher_centred) ** 2).mean()
+
+
 def train_fresh(settings: Settings, run_ids: list[str], device: str = "cuda") -> None:
     """Train fresh runs ("wd1_sX" or "new_sX": init seed = split seed = X, weight decay 1) with grokviz's trainer."""
     cfg = grokviz_config(settings)
@@ -60,7 +74,9 @@ def train_from(init: dict[str, np.ndarray], *, mode: str, steps: int, snapshots:
     """Full-batch AdamW (paper recipe) from given weights; returns {step: weight arrays} at the snapshot steps.
 
     mode "labels": cross-entropy on the paper-style training split (seed `split_seed`), 114 output classes as in the
-    paper's code. mode "distill": KL(teacher ‖ student) on the 113 number logits at '=' for all 113² inputs.
+    paper's code. mode "distill": KL(teacher ‖ student) on the 113 number logits at '=' for all 113² inputs
+    (temperature 1, so it matches output probabilities). mode "logit_mse" (post hoc, audit 9, deviation 16): mean
+    squared error between the per-input-centred student and teacher logits over the 113 number classes, all inputs.
     """
     torch.manual_seed(0)
     torch.use_deterministic_algorithms(True)
@@ -74,9 +90,10 @@ def train_from(init: dict[str, np.ndarray], *, mode: str, steps: int, snapshots:
         split = paper_split(P, FRAC_TRAIN, split_seed)
         x, y = tokens[split.train_idx.to(device)], make_labels(P)[split.train_idx].to(device)
     else:
-        assert teacher_logits is not None
+        assert teacher_logits is not None and mode in ("distill", "logit_mse")
         x = tokens
         t_logp = torch.log_softmax(teacher_logits.to(device).double(), -1)
+        t_cen = centred(teacher_logits.to(device).double())  # softmax-invariant part of the teacher's logits
     out_dir.mkdir(parents=True, exist_ok=True)
     snaps: dict[int, dict] = {}
     for step in range(steps + 1):
@@ -89,6 +106,8 @@ def train_from(init: dict[str, np.ndarray], *, mode: str, steps: int, snapshots:
         logits = model(x, last_only=True)[:, -1]
         if mode == "labels":
             loss = cross_entropy_f64(logits, y)
+        elif mode == "logit_mse":
+            loss = logit_mse(logits[:, :P].double(), t_cen)
         else:
             s_logp = torch.log_softmax(logits[:, :P].double(), -1)
             loss = (t_logp.exp() * (t_logp - s_logp)).sum(-1).mean()
