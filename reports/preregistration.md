@@ -591,3 +591,20 @@ analysis code are fixed from that commit on. T-new is trained after it.
    and the figures redrawn so that every run is visible.
    None of (a)–(d) changes a primary metric, a preregistered test, a p-value or a stored score. (a) changes which
    verdict reading is shown first; (b)–(d) add disclosures and narrow claims.
+16. **2026-11-23, after round 2 — ninth independent audit: what the distilled students copy, a logit-level output
+   comparison, and a pre-specified post-hoc baseline.** Made without reading the earlier reviews or audit scripts,
+   after every round-2 number had been seen (`reports/reviews/audit-9-2026-11-23.md`).
+   (a) *Pre-specification, written and pushed before the run it describes.* The §7 students were trained to minimise
+   KL(T0 ‖ student) at temperature 1 (`training.train_from`, mode "distill"). T0's softmax puts at least 0.9999998 of
+   its mass on the answer, so the wrong-class logits get almost no gradient: the students match T0's output
+   probabilities (KL 1.5e-6 to 3.0e-6) but not its logits (centred-logit FVU against T0 0.94–1.37, where the E3
+   replacements reach 0.12–0.21). Because T0's centred logits carry its key frequencies (logit(c) ≈ Σ_k α_k
+   cos(w_k(a + b − c))), the existing students do not test whether copying T0's full logits copies its hidden states.
+   A post-hoc baseline tests that directly: three students from the same initialisations (`GrokTransformer(seed=1000+s)`,
+   s = 0–2), the same full-batch AdamW recipe and 20,000 steps, trained on all 113² inputs to minimise the mean squared
+   error between their per-input-centred logits and T0's over the 113 number classes (float64). *Training criterion:*
+   centred-logit FVU against T0 below 0.05; a student that misses it is reported as not converged and its HS is not
+   interpreted. *Reading, fixed before training:* mean HS ≥ 0.85 (the E2–E4 range) means that on this task HS adds
+   little beyond the logits; mean HS ≤ 0.35 (the range of retrains, KL students and random networks) with the
+   criterion met means the hidden states carry mechanism information that matched logits do not; a value in between is
+   reported as partial. The result is post hoc; no hypothesis or verdict depends on it.
