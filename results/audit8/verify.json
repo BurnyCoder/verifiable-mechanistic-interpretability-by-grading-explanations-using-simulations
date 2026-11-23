@@ -1,0 +1,374 @@
+{
+  "n_claude_runs": 96,
+  "flagged_or_failed": 0,
+  "t0_hs_means": {
+    "E1": 0.04646391422010308,
+    "E2": 0.894206961203665,
+    "E3": 0.9290759733911275,
+    "E4": 0.9433019203788685,
+    "E0": 0.1295197949939649,
+    "W-freq": 0.0703737578414156,
+    "W-alg": 0.9090759135275231,
+    "W-role": 0.20399897513368967,
+    "W-scramble": 0.9364898412422904
+  },
+  "H1": {
+    "jt_hs_p": 9.46969696969697e-05,
+    "jt_neg_kl_p": 0.9309442640692641,
+    "spearman_hs": 0.9068503858838141,
+    "spearman_ci": [
+      0.7869910029407435,
+      0.9872837696818764
+    ],
+    "verdict_hs": [
+      "supported",
+      "supported"
+    ]
+  },
+  "H2": {
+    "p": {
+      "E3>W-freq": 0.05,
+      "E3>W-alg": 0.35,
+      "E3>W-role": 0.05,
+      "E4>W-scramble": 0.5
+    },
+    "holm_p": {
+      "E3>W-freq": 0.2,
+      "E3>W-role": 0.2,
+      "E3>W-alg": 0.7,
+      "E4>W-scramble": 0.7
+    },
+    "diff": {
+      "E3>W-freq": 0.8587022155497118,
+      "E3>W-alg": 0.020000059863604314,
+      "E3>W-role": 0.7250769982574378,
+      "E4>W-scramble": 0.006812079136578109
+    },
+    "verdicts": {
+      "E3>W-freq": [
+        "not supported",
+        "cannot tell at this N"
+      ],
+      "E3>W-alg": [
+        "not supported",
+        "cannot tell at this N"
+      ],
+      "E3>W-role": [
+        "not supported",
+        "cannot tell at this N"
+      ],
+      "E4>W-scramble": [
+        "not supported",
+        "cannot tell at this N"
+      ]
+    }
+  },
+  "H3": {
+    "agreement": 0.9999477902211084,
+    "kl_in_range": true,
+    "hs_below_all": true,
+    "supported": true
+  },
+  "H4": {
+    "retrain_mean": 0.11857353858866843,
+    "retrain_max": 0.3292271441513095,
+    "holm_p": {
+      "E3": 0.00909090909090909,
+      "E4": 0.00909090909090909
+    }
+  },
+  "H7": {
+    "d": [
+      0.6652475673992395,
+      0.6929018479893604,
+      0.625774993866173,
+      0.6853957048190834,
+      0.7263465741818759,
+      0.7078022548646208
+    ],
+    "p": 0.015625,
+    "best_wrong": [
+      "T2"
+    ]
+  },
+  "H5_seed": {
+    "pairs": 11,
+    "above_by_sign": 6,
+    "all_runs_above": [
+      "T-new E4",
+      "T1 E2",
+      "T2 E3",
+      "T2 E4"
+    ],
+    "margins": {
+      "T1 E2": {
+        "margin": 0.00724219206454535,
+        "all_runs_above": true
+      },
+      "T1 E3": {
+        "margin": -0.047650735873691286,
+        "all_runs_above": false
+      },
+      "T1 E4": {
+        "margin": -0.03192866892555235,
+        "all_runs_above": false
+      },
+      "T1 W-freq": {
+        "margin": -0.018343373088074696,
+        "all_runs_above": false
+      },
+      "T2 E2": {
+        "margin": 0.06734606397913934,
+        "all_runs_above": false
+      },
+      "T2 E3": {
+        "margin": 0.17872393847921986,
+        "all_runs_above": true
+      },
+      "T2 E4": {
+        "margin": 0.04034339711392532,
+        "all_runs_above": true
+      },
+      "T2 W-freq": {
+        "margin": -0.059855534125654156,
+        "all_runs_above": false
+      },
+      "T-new E3": {
+        "margin": -0.05953536886656419,
+        "all_runs_above": false
+      },
+      "T-new E4": {
+        "margin": 0.0014248039778173016,
+        "all_runs_above": true
+      },
+      "T-new W-freq": {
+        "margin": 0.004964384422982943,
+        "all_runs_above": false
+      }
+    }
+  },
+  "replications": {
+    "T1 H2": {
+      "p": 0.05,
+      "verdicts": [
+        "not supported",
+        "cannot tell at this N"
+      ]
+    },
+    "T2 H2": {
+      "p": 0.05,
+      "verdicts": [
+        "not supported",
+        "cannot tell at this N"
+      ]
+    },
+    "T-new H2": {
+      "p": 0.05,
+      "verdicts": [
+        "not supported",
+        "cannot tell at this N"
+      ]
+    },
+    "T-paper H2": {
+      "p": 0.05,
+      "verdicts": [
+        "not supported",
+        "cannot tell at this N"
+      ]
+    },
+    "T-new H1": {
+      "p": 0.05,
+      "verdicts": [
+        "not supported",
+        "cannot tell at this N"
+      ]
+    }
+  },
+  "shared_with_T0": {
+    "T1": 0,
+    "T2": 1,
+    "dev": 0,
+    "T-paper": 0,
+    "retrains": {
+      "wd1_s0": [
+        0,
+        0.056
+      ],
+      "wd1_s2": [
+        0,
+        0.178
+      ],
+      "wd1_s3": [
+        0,
+        0.131
+      ],
+      "wd1_s4": [
+        0,
+        0.0
+      ],
+      "wd1_s5": [
+        0,
+        0.145
+      ],
+      "wd1_s6": [
+        0,
+        0.043
+      ],
+      "wd1_s7": [
+        0,
+        0.11
+      ],
+      "wd1_s8": [
+        1,
+        0.329
+      ],
+      "wd1_s9": [
+        0,
+        0.074
+      ]
+    }
+  },
+  "memorisation": {
+    "E0": {
+      "runs": 3,
+      "scripts_listing_4_of_5": 1,
+      "builds_with_4_of_5": 1,
+      "paper_share": 0.3580674477619152,
+      "hs_vs_T0": 0.1295197949939649,
+      "hs_vs_paper": 0.2804965746466486
+    },
+    "E1": {
+      "runs": 6,
+      "scripts_listing_4_of_5": 5,
+      "builds_with_4_of_5": 3,
+      "paper_share": 0.6842347588159035,
+      "hs_vs_T0": 0.07810832266141182,
+      "hs_vs_paper": 0.7042407435320567
+    }
+  },
+  "e0_e1_identical_across_targets": {
+    "E0": true,
+    "E1": true
+  },
+  "ledger": {
+    "requests": 953,
+    "usd": 2.3281
+  },
+  "checks": [
+    {
+      "name": "H1 JT HS p",
+      "derived": 9.46969696969697e-05,
+      "stored": 9.46969696969697e-05,
+      "agree": true
+    },
+    {
+      "name": "H1 JT \u2212KL p",
+      "derived": 0.9309442640692641,
+      "stored": 0.9309442640692641,
+      "agree": true
+    },
+    {
+      "name": "H1 Spearman \u03c1",
+      "derived": 0.9068503858838141,
+      "stored": 0.9068503858838141,
+      "agree": true
+    },
+    {
+      "name": "H4 retrain mean",
+      "derived": 0.11857353858866843,
+      "stored": 0.11857353858866843,
+      "agree": true
+    },
+    {
+      "name": "H7 Wilcoxon p",
+      "derived": 0.015625,
+      "stored": 0.015625,
+      "agree": true
+    },
+    {
+      "name": "H2 E3>W-freq p",
+      "derived": 0.05,
+      "stored": 0.05,
+      "agree": true
+    },
+    {
+      "name": "H2 E3>W-alg p",
+      "derived": 0.35,
+      "stored": 0.35,
+      "agree": true
+    },
+    {
+      "name": "H2 E3>W-role p",
+      "derived": 0.05,
+      "stored": 0.05,
+      "agree": true
+    },
+    {
+      "name": "H2 E4>W-scramble p",
+      "derived": 0.5,
+      "stored": 0.5,
+      "agree": true
+    },
+    {
+      "name": "H2 E3>W-freq Holm p",
+      "derived": 0.2,
+      "stored": 0.2,
+      "agree": true
+    },
+    {
+      "name": "H2 E3>W-alg Holm p",
+      "derived": 0.7,
+      "stored": 0.7,
+      "agree": true
+    },
+    {
+      "name": "H2 E3>W-role Holm p",
+      "derived": 0.2,
+      "stored": 0.2,
+      "agree": true
+    },
+    {
+      "name": "H2 E4>W-scramble Holm p",
+      "derived": 0.7,
+      "stored": 0.7,
+      "agree": true
+    },
+    {
+      "name": "H4 E3 Holm p",
+      "derived": 0.00909090909090909,
+      "stored": 0.00909090909090909,
+      "agree": true
+    },
+    {
+      "name": "H4 E4 Holm p",
+      "derived": 0.00909090909090909,
+      "stored": 0.00909090909090909,
+      "agree": true
+    },
+    {
+      "name": "H5 T0 E2",
+      "derived": -0.0006342656364095589,
+      "stored": -0.0006342656364095589,
+      "agree": true
+    },
+    {
+      "name": "H5 T0 E3",
+      "derived": 0.0024530366413803018,
+      "stored": 0.0024530366413803018,
+      "agree": true
+    },
+    {
+      "name": "H5 T0 E4",
+      "derived": -0.008508141978027739,
+      "stored": -0.008508141978027739,
+      "agree": true
+    },
+    {
+      "name": "H5 T0 W-freq",
+      "derived": -0.02418125537228441,
+      "stored": -0.02418125537228441,
+      "agree": true
+    }
+  ],
+  "mismatches": []
+}
