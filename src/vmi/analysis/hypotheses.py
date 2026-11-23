@@ -146,9 +146,12 @@ def evaluate(max_round: int) -> dict:
         adj2 = st.holm({k: v["p"] for k, v in two.items()})
         for lv, t in two.items():
             t["holm_p"] = adj2[lv]
-            t["result"] = ("cannot tell at this N" if t["p"] is None or t["min_p"] >= ALPHA
+            # Audit 8: a defined test that misses α reads "no significant difference" (§5); deviation 1's "cannot tell"
+            # for a test that cannot reach α (two-sided 3 vs 3: smallest p 0.10) is shown after it.
+            t["result"] = ("cannot tell at this N" if t["p"] is None
                            else ("differ: " + ("agent higher" if t["r_rb"] > 0 else "students higher")) if adj2[lv] < ALPHA
-                           else "no significant difference")
+                           else f"no significant difference (Holm p {adj2[lv]:.2f}"
+                           + ("; post-hoc rule: cannot tell at this N)" if t["min_p"] >= ALPHA else ")"))
         H["H4"] = {"N": n4, "label": _n_label(n4), "verdicts": verd, "tests": tests, "holm_p": adj, "students": two,
                    "retrain_hs_mean": float(retr.mean()) if len(retr) else None,
                    "student_hs_mean": float(stud.mean()) if len(stud) else None,

@@ -2607,7 +2607,7 @@
    "verdict": "E3: supported; E4: supported",
    "evidence": "at N=3 \u2014 not yet N=10",
    "predicted": "E3 and E4 beat independent retrains on HS (vs. distilled students: open question, no direction)",
-   "observed": "E3 0.929, E4 0.943; 9 retrains mean 0.119 (max 0.329); 3 students mean 0.233 (max 0.282); vs students, two-sided: E3 cannot tell at this N, E4 cannot tell at this N",
+   "observed": "E3 0.929, E4 0.943; 9 retrains mean 0.119 (max 0.329); 3 students mean 0.233 (max 0.282); vs students, two-sided: E3 no significant difference (Holm p 0.20; post-hoc rule: cannot tell at this N), E4 no significant difference (Holm p 0.20; post-hoc rule: cannot tell at this N)",
    "matches": "yes"
   },
   {
