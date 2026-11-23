@@ -16,6 +16,7 @@ from pathlib import Path  # paths
 
 import numpy as np  # aggregates
 
+from vmi.analysis import logit_fit  # post-hoc logit-level comparison (audit 9)
 from vmi.config import REPO_ROOT  # results folder
 
 RES = REPO_ROOT / "results"
@@ -139,8 +140,12 @@ def baselines_table(target: str = "T0") -> str:
         entries.append(("Random initialisation", "nothing (floor)", json.loads(ri.read_text())))
     if b.exists():
         d = json.loads(b.read_text())
+        # Audit 9: the §7 students minimise KL at temperature 1, so they copy M's output probabilities, not its logits
         entries += [("Independent retrains", "same recipe, other seeds", d["retrains"]),
-                    ("Logit-distilled students", "M's full output logits, no explanation", d["students"]),
+                    ("Distilled students", "M's output probabilities (KL at temperature 1), no explanation", d["students"])]
+        if d.get("students_logit"):  # post hoc, pre-specified in deviation 16(a)
+            entries.append(("Logit-matched students (post hoc)", "M's centred logits (squared error), no explanation", d["students_logit"]))
+        entries += [
                     ("Fourier-restricted M", "M's weights, key frequencies only in W_E/W_U", [d["fourier_restricted"]]),
                     ("Weights dump", f"all {d['weights_dump_length']['numbers']:,} weights", [d["weights_dump"]])]
     for name, has, rs in entries:
@@ -191,20 +196,30 @@ def key_results(max_round: int, target: str = "T0") -> str:
                    + ("" if e0 is None else "; E0 lies above E1, against the preregistered prediction." if e0 > m("E1")
                       else "; E0 lies below E1, as predicted."))
     if m("W-freq") is not None:
+        lv9 = logit_fit.inline_values()
         out.append(f"- **Correct behaviour from the wrong key frequencies is caught by HS, not by output KL:** the wrong-frequency "
                    f"replacement reaches KL {_f(m('W-freq', 'kl_out'))} nats (true E3: {_f(m('E3', 'kl_out'))}) but HS "
-                   f"{m('W-freq'):.2f}.")
+                   f"{m('W-freq'):.2f}."
+                   + (f" The output logits do show it (post hoc, audit 9): after one fitted scale, the centred-logit FVU is "
+                      f"{lv9['a9-cal-w-freq']} for W-freq against {lv9['a9-cal-e3']} for E3; KL misses it because a grokked "
+                      f"model's output probabilities are nearly one-hot." if "a9-cal-w-freq" in lv9 else ""))
     b = RES / "baselines" / f"{target}.json"
     ri = RES / "controls" / f"random_init_{target}.json"
     if b.exists() and ri.exists():
         d, r0 = json.loads(b.read_text()), json.loads(ri.read_text())
         hs = lambda rs: float(np.mean([x["hs"] for x in rs]))  # noqa: E731
         top = max(hs(d["retrains"]), hs(d["students"]))
-        out.append(f"- **Copying behaviour does not copy the mechanism:** independent retrains (HS {hs(d['retrains']):.2f}) and "
-                   f"logit-distilled students (HS {hs(d['students']):.2f}, KL {_f(float(np.mean([x['kl_out'] for x in d['students']])))}) "
+        lv9 = logit_fit.inline_values()  # audit 9: what the students copy, and the pre-specified logit students
+        out.append(f"- **Copying output probabilities does not copy the mechanism:** independent retrains (HS {hs(d['retrains']):.2f}) and "
+                   f"students trained to match T0's output probabilities (KL at temperature 1; HS {hs(d['students']):.2f}, KL "
+                   f"{_f(float(np.mean([x['kl_out'] for x in d['students']])))}) "
                    + ("score no higher than randomly initialised networks" if top <= hs(r0) + 0.005 else "score above randomly initialised networks")
                    + f" (HS {hs(r0):.2f}). HS's scale is therefore not anchored at 0 for unrelated networks: it measures overlap of "
-                   f"internal features, and working networks built on other frequencies score below random ones.")
+                   f"internal features, and working networks built on other frequencies score below random ones."
+                   + (f" Neither copies T0's logits (centred-logit FVU: students {lv9['a9-stu-raw']}, retrains {lv9['a9-ret-raw']}; "
+                      f"E3 replacements {lv9['a9-raw-e3']}; post hoc, audit 9)" if "a9-stu-raw" in lv9 else "")
+                   + (f"; students trained to match T0's centred logits (post hoc, pre-specified; FVU {lv9['a9-ls-fvu']}) reach HS "
+                      f"{lv9['a9-ls-hs']}: {lv9['a9-ls-reading']}." if "a9-ls-reading" in lv9 else ("." if "a9-stu-raw" in lv9 else "")))
     if m("W-alg") is not None and m("W-scramble") is not None:
         # Audit 4: state the measured differences and their bootstrap CIs (stats.bootstrap_mean_diff, as in H2), and that
         # non-separation at N = 3 is not a demonstrated equivalence (no equivalence test was preregistered).
@@ -414,6 +429,18 @@ def inline_values(max_round: int) -> dict[str, str]:
                 ([(f"H4 ({lv}, Holm-adjusted)", p) for lv, p in H["H4"]["holm_p"].items() if p is not None] if "H4" in H else []) + \
                 ([("H7", H["H7"]["wilcoxon"]["p"])] if "H7" in H and H["H7"].get("wilcoxon") else [])
         v["bonferroni"] = "; ".join(f"{k} p = {_f(float(p))} {'survives' if p < thr else 'would not survive'}" for k, p in tests)
+        # Audit 9: the reading depends on the method; Holm over every confirmatory p-value (each test's own p, not the
+        # within-hypothesis adjusted one) is the standard family-wise alternative (Holm 1979).
+        if all(k in H for k in ("H1", "H2", "H4", "H7")) and H["H7"].get("wilcoxon"):
+            from vmi.analysis import stats as st9
+            raw = {"H1's HS trend": H["H1"]["jt_hs"]["p"], "H1's KL trend": H["H1"]["jt_neg_kl"]["p"],
+                   **{f"H2 {k}": t["p"] for k, t in H["H2"]["tests"].items()},
+                   **{f"H4 {k}": t["p"] for k, t in H["H4"]["tests"].items()}, "H7": H["H7"]["wilcoxon"]["p"]}
+            adj = st9.holm(raw)
+            keep = [k for k in raw if adj[k] < 0.05]
+            v["holm-all"] = (f"Holm over all {len(raw)} confirmatory p-values (each test's own p) keeps "
+                             + ", ".join(f"{k} ({_f(adj[k])})" for k in keep)
+                             + f" and drops the others, H7 included ({_f(adj['H7'])})")
     wr, wc = _select(runs, level="W-role"), RES / "compiler" / "T0" / "W-role.json"  # literal build vs agent repair
     if wr and wc.exists():
         v["wrole-comp-acc"] = f"{json.loads(wc.read_text())['accuracy']:.3f}"
@@ -474,6 +501,8 @@ def inline_values(max_round: int) -> dict[str, str]:
     v.update(_audit6_values(runs))
     v.update(_audit7_values())
     v.update(_audit8_values())
+    v.update(logit_fit.inline_values())
+    v.update(clock_side_values())
     return v
 
 
@@ -936,6 +965,51 @@ def clock_pizza_table() -> str:
     return "\n".join(out) + "\n\n" + note
 
 
+def clock_side_split(hs_min: float = 0.85) -> dict | None:
+    """Audit 9 (post hoc): among the T0 agent builds that carry T0's frequencies (HS ≥ hs_min), those on the Clock side
+    of Zhong et al.'s rule (q ≥ 0.4) and those on the Pizza side, with their HS; None until `vmi clockpizza` has run.
+    Earlier text said no Clock-side build of an explanation exists; two E4 and all three W-scramble builds are one."""
+    S = clock_pizza_summary()
+    if not S:
+        return None
+    runs = {json.loads(p.read_text(encoding="utf-8"))["run_id"]: json.loads(p.read_text(encoding="utf-8"))["hs"]
+            for p in (RES / "runs").glob("*__T0__*.json")}
+    rows = [(lv, x["distance_irrelevance"], runs[x["run_id"]]) for lv, xs in S["agent"].items() for x in xs
+            if x.get("run_id") in runs and runs[x["run_id"]] >= hs_min]
+    clock = [r for r in rows if r[1] >= 0.4]
+    pizza = [r for r in rows if r[1] < 0.4]
+    return {"clock": clock, "pizza": pizza} if clock and pizza else None
+
+
+def _clock_side_text() -> str:
+    """'two of three E4 builds (q 0.46, 0.46) and all three W-scramble builds (q 0.51–0.66)'-style text."""
+    sp = clock_side_split()
+    if not sp:
+        return ""
+    words = {1: "one", 2: "two", 3: "three"}
+    S = clock_pizza_summary()
+    parts = []
+    for lv in LEVEL_ORDER:
+        c = [r for r in sp["clock"] if r[0] == lv]
+        if c:
+            n = len(S["agent"][lv])
+            qs = sorted(r[1] for r in c)
+            parts.append(f"{'all ' + words.get(n, str(n)) if len(c) == n else words.get(len(c), str(len(c))) + ' of ' + words.get(n, str(n))} "
+                         f"{lv} builds, q {qs[0]:.2f}" + (f"–{qs[-1]:.2f}" if f"{qs[0]:.2f}" != f"{qs[-1]:.2f}" else ""))
+    return ", and ".join(parts)
+
+
+def clock_side_values() -> dict[str, str]:
+    """`v:a9-cp-*` inline values (post hoc, audit 9)."""
+    sp = clock_side_split()
+    if not sp:
+        return {}
+    rng = lambda xs: f"{min(xs):.2f}–{max(xs):.2f}"  # noqa: E731
+    return {"a9-cp-clock-builds": _clock_side_text(), "a9-cp-clock-hs": rng([r[2] for r in sp["clock"]]),
+            "a9-cp-pizza-hs": rng([r[2] for r in sp["pizza"]]),
+            "a9-cp-pizza-levels": ", ".join(lv for lv in LEVEL_ORDER if any(r[0] == lv for r in sp["pizza"]))}
+
+
 def _clock_pizza_sentence(m) -> str:
     """Post-hoc Clock/Pizza diagnostic for the key results (audit 3); empty until `vmi clockpizza` has run."""
     S = clock_pizza_summary()
@@ -943,16 +1017,17 @@ def _clock_pizza_sentence(m) -> str:
         return ""
     aq = {lv: float(np.mean([x["distance_irrelevance"] for x in S["agent"][lv]])) for lv in ("E1", "E2", "E3", "E4")}
     e13 = [aq[lv] for lv in ("E1", "E2", "E3")]
-    # Audit 5: "HS does not see the Clock/Pizza distinction" claimed more than the data show — no Clock-side build of an
-    # explanation exists, so what is measured is that HS rates Pizza-like builds of the true and of the Pizza explanation
-    # alike, and high, against a Clock target.
+    cs = clock_side_values()
+    # Audit 9: Clock-side builds of explanations do exist (two E4, all three W-scramble), so HS's non-separation of
+    # Clock and Pizza is measured among builds that carry T0's frequencies, not inferred (audit 5 said none existed).
     return (f" Post hoc, by Zhong et al.'s distance irrelevance (≥ 0.4 Clock-like, < 0.4 Pizza-like) T0 is a Clock "
             f"({S['targets']['T0']['distance_irrelevance']:.2f}) and the literal Pizza build a Pizza "
-            f"({S['compiler']['W-alg']['distance_irrelevance']:.3f}), but the agents' replacements from the true E1–E3 are "
-            f"Pizza-like too (means {min(e13):.2f}–{max(e13):.2f}; E4 {aq['E4']:.2f}), and HS still rates the E2–E4 ones "
-            f"{m('E2'):.2f}–{max(m('E3'), m('E4')):.2f} against the Clock target, as high as the Pizza explanation's builds: "
-            f"at this N, HS did not separate Clock from Pizza mechanisms that share the key frequencies (no Clock-side build "
-            f"of an explanation exists to compare).")
+            f"({S['compiler']['W-alg']['distance_irrelevance']:.3f}); the agents' replacements from the true E1–E3 are "
+            f"Pizza-like too (means {min(e13):.2f}–{max(e13):.2f}), and E4's are split (mean {aq['E4']:.2f})"
+            + (f". Among the builds that carry T0's frequencies, the Clock-side ones ({cs['a9-cp-clock-builds']}) score HS "
+               f"{cs['a9-cp-clock-hs']} and the Pizza-side ones ({cs['a9-cp-pizza-levels']}) {cs['a9-cp-pizza-hs']}: at this N, "
+               f"HS did not separate Clock-side from Pizza-side builds that share the key frequencies (descriptive; side and "
+               f"explanation are confounded)." if cs else "."))
 
 
 def audit5() -> dict:
@@ -973,6 +1048,12 @@ def _compiler_scramble_sentence(target: str = "T0") -> str:
             if s else "")
     return (f" The agent-free compiler's literal build of the scrambled table does score {g[target]['E4_minus_Wscramble']:.2f} "
             f"below its E4 build on {target}{site}; elsewhere the gap is {_audit5_values().get('a5-scr-other', '–')}.")
+
+
+def logit_fvu_table(target: str = "T0") -> str:
+    """HS next to the logit-level output comparison (post hoc, audit 9; `vmi.analysis.logit_fit`)."""
+    b = RES / "baselines" / f"{target}.json"
+    return logit_fit.table(json.loads(b.read_text(encoding="utf-8")) if b.exists() else None)
 
 
 def kl_calibration_table(max_round: int, target: str = "T0") -> str:

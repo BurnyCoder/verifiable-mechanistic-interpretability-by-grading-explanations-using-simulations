@@ -2,8 +2,8 @@
 
 Local explanation: `export` assembles one folder with, per graded agent run, the replacement weights (`weights.npz`),
 the agent's `build_weights.py`, the readable transcript, the full event stream and wire log (gzipped) and the graded
-result; plus the models trained in this project (T-new with all checkpoints, the planted-mechanism snapshots and the
-logit-distilled students) and a model card. Text files are redacted (local user names and home paths) and the whole
+result; plus the models trained in this project (T-new with all checkpoints, the planted-mechanism snapshots, the
+probability-distilled students and the post-hoc logit-matched students) and a model card. Text files are redacted (local user names and home paths) and the whole
 folder is scanned for API-key/token patterns and private identifiers before anything is uploaded; a hit aborts.
 `upload` pushes the folder to one model repo and adds it, with the target runs repo, to the project's collection.
 Global context: called after each stage (CLAUDE.md: push to GitHub and Hugging Face after every stage). The repo
@@ -95,7 +95,8 @@ Target models: [{TARGET_RUNS_REPO}](https://huggingface.co/{TARGET_RUNS_REPO}).
 | `compiler/<target>/<explanation>.npz` | the agent-free reference compiler's build for every explanation of every target |
 | `trained/T-new/` | the held-out target trained after the protocol freeze (paper recipe, seed 11): all 401 checkpoints, curves, metadata |
 | `trained/planted_T0/` | the reference-compiled E3 model for T0 and its snapshots after 100, 1,000 and 10,000 further training steps |
-| `trained/students_T0/` | three students distilled on T0's full output logits (20,000 steps each) |
+| `trained/students_T0/` | three students distilled on T0's output probabilities (KL at temperature 1, 20,000 steps each) |
+| `trained/students_logit_T0/` | three students trained to match T0's centred logits (squared error, 20,000 steps each; post hoc, audit 9) |
 
 Run IDs read `stage__target__explanation[-variant]__simulator__temperature__seed`. Local user names and home paths in
 logs are replaced by `user`. Load a replacement with `numpy.load("weights.npz")`; the array names and shapes are in the
@@ -136,11 +137,12 @@ def export(settings: Settings) -> Path:
     for src, dst in ((tr / "new_s11", out / "trained" / "T-new"), (tr / "planted_T0", out / "trained" / "planted_T0")):
         if src.exists():
             shutil.copytree(src, dst, ignore=shutil.ignore_patterns("optim.safetensors"))  # optimiser state not needed
-    for s in (1000, 1001, 1002):
-        f = tr / f"student_T0_s{s}" / "step_020000.npz"
-        if f.exists():
-            (out / "trained" / "students_T0").mkdir(parents=True, exist_ok=True)
-            shutil.copy2(f, out / "trained" / "students_T0" / f"student_s{s}.npz")
+    for kind, folder in (("student", "students_T0"), ("student_logit", "students_logit_T0")):  # audit 9: both student kinds
+        for s in (1000, 1001, 1002):
+            f = tr / f"{kind}_T0_s{s}" / "step_020000.npz"
+            if f.exists():
+                (out / "trained" / folder).mkdir(parents=True, exist_ok=True)
+                shutil.copy2(f, out / "trained" / folder / f"student_s{s}.npz")
     for meta in (out / "trained").rglob("meta.json"):
         meta.write_text(_redact(meta.read_text(encoding="utf-8")), encoding="utf-8")
     (out / "README.md").write_text(_card(n, n_dev), encoding="utf-8", newline="\n")

@@ -200,8 +200,10 @@ def test_preregistered_secondary_statistics_are_computed():
         s = H["H4"]["students"]
         assert set(s) == {"E3", "E4"}
         if H["H4"]["N"] == 3:
-            # audit 8: §5's reading first ("no significant difference"), deviation 1's "cannot tell" after it
-            assert all(v["result"].startswith("no significant difference") and "cannot tell" in v["result"] for v in s.values())
+            # audit 9: "not significant" with the smallest attainable p and the observed separation (never "no significant
+            # difference", which reads as evidence of equality); deviation 1's "cannot tell" after it
+            assert all(v["result"].startswith("not significant") and "smallest attainable p" in v["result"]
+                       and "cannot tell" in v["result"] for v in s.values())
 
 
 def test_trajectory_uses_every_e3_e4_replacement():
