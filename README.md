@@ -87,13 +87,22 @@ runs of the main simulator on true explanations; orange: on wrong (control) expl
 without an agent; diamonds: the AI-free reference compiler. The ground truth is the target network itself and the true
 answer (a + b) mod 113. ✅ marks what a valid grader should show, ❌ where it fails.
 
-| **Behaviour is not mechanism** | **Score per explanation** |
+**Score per explanation**
+
+![Scores per explanation on T0](reports/figures/ladder_T0.png)
+
+HS (left) and output KL (right, log scale) per explanation; dots are single runs, diamonds the AI-free compiler, dashed lines the no-agent references. ✅ HS jumps once the explanation names the key frequencies (E1 → E2) and stays low for the wrong frequencies (W-freq). ❌ W-alg (Pizza) and W-scramble score as high as E3 and E4, and output KL does not fall with detail (lowest at E2).
+
+**Answers vs. insides, against the ground truth**
+
+![Outputs vs. internals](reports/figures/outputs_T0.png)
+
+Top: probability of the true answer on all 113 × 113 inputs (the target, left, is the ground truth). Bottom: each network's neuron that best matches one of the target's (correlation r printed). ✅ The E3 and E4 rebuilds match both the answers and a target neuron; E1, W-freq and an independent retrain answer just as well with unrelated neurons; random initialisation fails both. ❌ The Pizza build (W-alg) also matches the neuron.
+
+| **Behaviour is not mechanism** | **Which frequencies each network built** |
 |---|---|
-| ![Behaviour (output KL) against mechanism (HS)](reports/figures/kl_vs_hs_T0.png) | ![Scores per explanation on T0](reports/figures/ladder_T0.png) |
-| Output KL (x, log scale; left = the same answers) against HS (hidden-state similarity, 1 = internals match up to a linear map; y) for every T0 run and no-agent network. ✅ Retrains, distilled students and the wrong-frequency (W-freq) and wrong-role (W-role) builds give the right answers (low KL) with low HS; only builds that use T0's frequencies reach the top. ❌ The Pizza (W-alg) and shuffled-table (W-scramble) builds sit up there with the true ones. | HS (left) and output KL (right, log scale) per explanation; dots are single runs, diamonds the AI-free compiler, dashed lines the no-agent references. ✅ HS jumps once the explanation names the key frequencies (E1 → E2) and stays low for the wrong frequencies (W-freq). ❌ W-alg (Pizza) and W-scramble score as high as E3 and E4, and output KL does not fall with detail (lowest at E2). |
-| **Answers vs. insides, against the ground truth** | **Which frequencies each network built** |
-| ![Outputs vs. internals](reports/figures/outputs_T0.png) | ![Frequencies built by each network](reports/figures/examples_T0.png) |
-| Top: probability of the true answer on all 113 × 113 inputs (the target, left, is the ground truth). Bottom: each network's neuron that best matches one of the target's (correlation r printed). ✅ The E3 and E4 rebuilds match both the answers and a target neuron; E1, W-freq and an independent retrain answer just as well with unrelated neurons; random initialisation fails both. ❌ The Pizza build (W-alg) also matches the neuron. | Fourier spectrum of each network's neuron-to-logit map W_L; shaded bars are the target's key frequencies (the ground truth). ✅ E3 and E4 build T0's frequencies; W-freq builds the wrong ones it was told. ❌ The first E1 run, given no frequencies, builds the published paper's frequencies from memory; W-alg (Pizza) builds the same frequencies as the true explanations, which is why HS did not separate it. |
+| ![Behaviour (output KL) against mechanism (HS)](reports/figures/kl_vs_hs_T0.png) | ![Frequencies built by each network](reports/figures/examples_T0.png) |
+| Output KL (x, log scale; left = the same answers) against HS (hidden-state similarity, 1 = internals match up to a linear map; y) for every T0 run and no-agent network. ✅ Retrains, distilled students and the wrong-frequency (W-freq) and wrong-role (W-role) builds give the right answers (low KL) with low HS; only builds that use T0's frequencies reach the top. ❌ The Pizza (W-alg) and shuffled-table (W-scramble) builds sit up there with the true ones. | Fourier spectrum of each network's neuron-to-logit map W_L; shaded bars are the target's key frequencies (the ground truth). ✅ E3 and E4 build T0's frequencies; W-freq builds the wrong ones it was told. ❌ The first E1 run, given no frequencies, builds the published paper's frequencies from memory; W-alg (Pizza) builds the same frequencies as the true explanations, which is why HS did not separate it. |
 
 The same results, explorable run by run (hover for each run's numbers; switch target, metric and simulator):
 [interactive results explorer](https://burnycoder.github.io/verifiable-mechanistic-interpretability-by-grading-explanations-using-simulations/).
@@ -470,7 +479,7 @@ the answers alone cannot tell a faithful rebuild from an unfaithful one; the las
 *One network per condition: the first replicate (seed 0) of each agent condition, one retrain and one random initialisation; the tables above give means over replicates.*
 <!-- END outputs-T0 -->
 
-The same on all 12,769 inputs is the third figure of the [visual overview](#visual-overview), outputs on top and insides below. Top: probability of the true answer (dark = 1, the
+The same on all 12,769 inputs is the second figure of the [visual overview](#visual-overview), outputs on top and insides below. Top: probability of the true answer (dark = 1, the
 ground truth). Bottom: for each network, the neuron that best matches one of the target's neurons. The faithful
 rebuilds (E3 (+ per-frequency details), E4 (+ per-neuron table)) and the Pizza rebuild (W-alg (wrong algorithm: Pizza)) contain a neuron that closely tracks the target's (correlation
 printed in each panel); the wrong-frequency, algorithm-only and independently trained networks do not, although their
