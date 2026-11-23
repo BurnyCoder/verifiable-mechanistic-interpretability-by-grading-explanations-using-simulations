@@ -57,4 +57,6 @@ marked "not run" above did not, and the trajectory was re-run as preregistered a
 
 Claude Sonnet 5.5 and Claude Opus 5.5 as simulators in Claude Code (escalation not triggered: Haiku met the 5 % rule
 in its first dev run); other toy models (Clock/Pizza p = 59, the paper's
-2-layer and LayerNorm variants, ARENA monthly-problem models).
+2-layer and LayerNorm variants, ARENA monthly-problem models). Ideas for a next iteration (new metrics, simulation
+granularities, explanation units, simulators, targets, red teaming) are listed, not scheduled, in
+[next-steps.md](next-steps.md).
