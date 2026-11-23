@@ -42,7 +42,7 @@ items (A3, C, D2, E, G1, H), then the new targets (F, G2, G3).
   - true-explanation builds;
   - W-freq, W-alg and W-scramble;
   - independent retrains;
-  - logit-distilled students;
+  - students distilled on output probabilities, and the logit-matched students (audit 9);
   - the planted model's snapshots.
 
   Compare its verdicts with HS and KL. File names are anonymised, so the agent never sees a condition label.
@@ -218,7 +218,7 @@ items (A3, C, D2, E, G1, H), then the new targets (F, G2, G3).
 
 **G1. Claude Sonnet and Opus where Haiku failed.** *agent runs*
 - Claude Haiku 5.5 failed on three points the grader depends on (README highlights):
-  - the true E1–E3 explanations of the Clock target T0 were rebuilt Pizza-like (E4's rebuilds sit near the 0.4 line on the Clock side; paper §5);
+  - the true E1–E3 explanations of the Clock target T0 were rebuilt Pizza-like (two of E4's three rebuilds lie just above the 0.4 line, on the Clock side, and one below; the Clock-side rebuilds score no higher HS; paper §5);
   - the shuffled neuron table (W-scramble) was not followed literally;
   - explanations that name no frequencies (E0, E1) were filled in from memory of the published ones.
 - Re-run exactly those conditions with Claude Sonnet 5.5, then Claude Opus 5.5, cheapest first, within the agreed
@@ -269,7 +269,7 @@ items (A3, C, D2, E, G1, H), then the new targets (F, G2, G3).
   variant's sandbox names the self-test.
 
 **I2. A same-frequency specificity control.** *no agent*
-- H7's wrong targets all use other key frequencies than T0, so it cannot show whether HS tells apart networks with the
+- H7's wrong targets each share at most one key frequency with T0 (T2 shares 37) or have no clean mechanism, so it cannot show whether HS tells apart networks with the
   same frequencies. Add wrong targets that share T0's key frequencies: retrains selected for T0's frequency set, the
   Fourier-restricted T0 with permuted or re-phased neurons, and a literal Pizza build at T0's frequencies (already in
   `results/compiler/T0/W-alg.json`).

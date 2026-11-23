@@ -1,8 +1,10 @@
 # Plan
 
-*Approved plan, copied verbatim from the planning session on 2026-11-21. Progress against it: [progress.md](progress.md).*
+*Approved plan from the planning session on 2026-11-21. Progress against it: [progress.md](progress.md). Later audits
+added short in-place corrections to the plan text (marked as such, e.g. "corrected by the second audit"); everything
+else below is as approved.*
 
-## Changes since approval (kept up to date; the approved plan below is unchanged for the record)
+## Changes since approval (kept up to date)
 
 | When | Change | Why | Where recorded |
 |---|---|---|---|
@@ -28,6 +30,7 @@
 | After round 2 | **Seventh independent audit**: every verdict re-derived without the project's code or scipy and the T0 scores re-graded from `ARCHITECTURE.md` (all reproduce); searches inside 7 of 96 final build scripts disclosed (none in a hypothesis test); citations | your request for an independent audit | deviation 14 in `preregistration.md`, `reviews/audit-7-2026-11-22.md` |
 | After round 2 | **Eighth independent audit (2026-11-23)**: statistics re-derived again (all reproduce); the preregistered verdict now leads (H2 and the per-target replications are "not supported" at N = 3 by §5, "cannot tell" only under the post-hoc rule); H4b stated as falsified (HS half holds); H7's scope (only networks with other key frequencies); the self-test ablation's leftover cue disclosed; memorisation cue, HS-vs-spectrum baseline, Poché/Sutter/Zhong citations, figures and stale documents corrected | your request for an independent audit | deviation 15 in `preregistration.md`, `reviews/audit-8-2026-11-23.md` |
 | After round 2 | **Next-iteration to-do**: your 23 ideas (other targets and LLM scale, rotation-aware and weight-space metrics, noise ceiling, layer-wise and activation simulation, length and complexity scores, LLM-as-judge, evidence-ladder aggregation, training dynamics, SAE and other units, Sonnet/Opus, red teaming) recorded with designs and sources; not scheduled, nothing run | your request | `next-steps.md`, README to-do |
+| After round 2 | **Ninth independent audit (2026-11-23)**: statistics re-derived again (all reproduce); the distilled students copy T0's output probabilities, not its logits (KL at temperature 1), so their descriptions are corrected; a logit-level output comparison separates the explanations like HS (post hoc), so the behaviour–mechanism result is scoped to output probabilities; post-hoc logit-matched students, pre-specified before training; Clock-side builds do exist and score no higher HS; E0 > E1 explained by HS's floor; multiplicity, wording and citation fixes | Independent audit requested by the user | `reports/reviews/audit-9-2026-11-23.md`; deviation 16 |
 
 Round 2 (N = 3) ran the 32 Claude Haiku conditions; round 3 (N = 10) is postponed to a later day and starts only when
 you ask for it.
@@ -90,7 +93,7 @@ Your earlier project already published what this one needs, so targets and basel
 |---|---|---|
 | Reproduction check | T0's exact spec again with `grokviz.train_runs` (deterministic) | The published target is what its card says: same key frequencies, weights equal within tolerance |
 | **T-new**, held-out target | A never-published seed (init = split = 11; next seed if it does not reach 100% test accuracy), trained **after** the protocol freeze | The whole pipeline on a model nobody, including me during development, could have tuned to; strictest contamination control |
-| Distilled students | 3 fresh models per main target trained to match M's logits on all 113² inputs | The strongest explanation-free baseline: does copying behaviour (full logits) already reproduce the hidden states? |
+| Distilled students | 3 fresh models per main target trained to match M's output probabilities (KL at temperature 1) on all 113² inputs | An explanation-free baseline: does copying behaviour already reproduce the hidden states? (Audit 9: at temperature 1 the students copy M's probabilities, not its logits; post-hoc logit-matched students test the logits.) |
 | Planted-mechanism calibration | The reference-compiled E3 model for T0, trained further and snapshotted at 0, 100, 1,000 and 10,000 steps | A target whose mechanism is known by construction: the score must be perfect at step 0 and fall as the model drifts from the planted explanation |
 
 Fresh seeds use `grokviz.train_runs` unchanged (resumable, densely logged). Distillation and continued training need a pluggable loss and initial weights, so they use one small loop in `training.py` that must first reproduce a published run in plain label mode. Each job runs in the stage that uses it: the reproduction check in stage 0, and in round 1 the planted calibration in the controls stage, the distilled students in the baselines stage, and T-new just before the seed-sensitivity stage. Training runs while `llama-server` is unloaded, or on CPU, so it never competes with the agent queue.
@@ -180,7 +183,7 @@ Not part of this plan: nothing below is built, tested or run now, and nothing is
 - **H1 validity:** both primary scores improve monotonically E1→E4 (with E0, from the controls stage, below E1). Falsified if the trend test's CI includes zero.
 - **H2 discrimination:** true explanations beat length-matched false ones (E3 vs W-freq/W-alg/W-role, E4 vs W-scramble) on hidden-state similarity. Falsified if the difference CI includes zero.
 - **H3 behaviour ≠ mechanism:** the W-freq replacement matches M's behaviour (≥99% argmax agreement, KL within the range of the true E2+ explanations — a grokked model's outputs are near one-hot, so output KL ≈ the replacement's task loss) while its hidden-state similarity is below every true E2+ explanation. Falsified if output KL alone ranks W-freq below all of them.
-- **H4 added value:** E3/E4 replacements beat independent retrains on hidden-state similarity. Open question, tested two-sided with no predicted direction: do they also match a logit-distilled student, which has full behavioural access but no explanation?
+- **H4 added value:** E3/E4 replacements beat independent retrains on hidden-state similarity. Open question, tested two-sided with no predicted direction: do they also match a distilled student (trained on M's output probabilities with KL at temperature 1, which passes almost nothing of M's logits; audit 9), which has behavioural access but no explanation?
 - **H4b calibration:** on the planted-mechanism series the score is perfect at step 0 and decreases monotonically with further training. Falsified if it does not, which would mean the grader itself is unreliable.
 - **H5 simulator gap:** agent score ≤ reference-compiler score, and the gap shrinks with simulator capability (qwen3.5:4b → 9b → Qwen3.6-35B-A3B).
 - **H6 simulator invariance (secondary):** the three local models rank {E2, E3, E4, W-freq} the same way. With only four explanations this is a weak test; if the rankings disagree, the score describes the agent as much as the explanation. The stronger cross-family version is postponed with the Claude work.

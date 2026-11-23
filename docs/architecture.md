@@ -43,10 +43,12 @@ flowchart TB
 | `reference/compile.py` | deterministic spec → weights construction (agent-free reference point, not a ceiling) |
 | `grader/` | activations on all 113² inputs; KL_out; cross-validated ridge HS; CKA, Procrustes, neuron matching, stitching |
 | `simulator/` | sandbox folder, WSL runner, unix-socket relay, Anthropic proxy (key injection, model allowlist, budget ledger), bash-only agent harness, llama-server manager, static audit |
-| `training.py` | grokviz trainer for fresh runs; small loop for distillation and continued training |
-| `nonagent.py` | random init, wrong targets, trajectory, planted calibration, baselines |
+| `training.py` | grokviz trainer for fresh runs; small loop for probability distillation (KL at temperature 1), logit matching (post hoc, audit 9) and continued training |
+| `nonagent.py` | random init, wrong targets, trajectory, planted calibration, baselines, logit-matched students (post hoc) |
+| `sensitivity.py` | grader and explainer sensitivity without new agent runs (`vmi sensitivity`) |
+| `publish.py` | redacted, scanned export of artefacts and upload to the Hugging Face Hub (`vmi publish`) |
 | `manifests.py` | the agent conditions (amendment 2: 44 in round 1; 32 Claude Haiku conditions in rounds 2–3 after deviation 5) and per-round manifests |
-| `analysis/` | statistical tests, hypothesis verdicts labelled with N, tables, figures, post-hoc frequency/memorisation analysis (`frequencies.py`), agent process counts from transcripts incl. own label checks (`agent_behaviour.py`), Zhong et al. Clock/Pizza diagnostics (`clock_pizza.py`), the recorded software environment (`environment.py`), and `report.py` (one command refills every marked block, including the paper's text; `vmi paper` builds the PDF) |
+| `analysis/` | statistical tests, hypothesis verdicts labelled with N, tables, figures, post-hoc frequency/memorisation analysis (`frequencies.py`), agent process counts from transcripts incl. own label checks (`agent_behaviour.py`), Zhong et al. Clock/Pizza diagnostics (`clock_pizza.py`), the post-hoc logit-level comparison (`logit_fit.py`, `vmi logitfit`), interventions on agents' build scripts (`diagnose.py`, `vmi diagnose`), predicted-vs-measured and highlight rows (`predictions.py`), the site data (`site.py`, `docs/data.json`), agent transcript excerpts (`agent_examples.py`, `examples.py`), the glossary of terms (`glossary.py`), the recorded software environment (`environment.py`), and `report.py` (one command refills every marked block, including the paper's text; `vmi paper` builds the PDF) |
 | `pipeline.py` | CLI wrapper (`uv run vmi ...`) |
 
 ## Why these design choices

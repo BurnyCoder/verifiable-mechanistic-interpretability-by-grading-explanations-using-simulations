@@ -32,10 +32,11 @@ All commands run from the repository root on Windows; agent runs call into WSL a
 | `manifests ROUND` | write the round's JSONL manifests (one per stage) | `results/manifests/` |
 | `queue MANIFEST [--only-model M]` | run every condition of a manifest without a result (resumable); local-model conditions only while llama-server serves that model; `--only-model` lets a Claude queue and a local queue run side by side | `results/runs/` |
 | `controls ROUND` | planted calibration, random init, wrong targets, trajectory (with W-freq/E1/E0 negative controls, post hoc) | `results/controls/` |
-| `baselines TARGET` | retrains, distilled students, Fourier-restricted M, weights dump | `results/baselines/` |
+| `baselines TARGET [--logit-students]` | retrains, students distilled on M's output probabilities, Fourier-restricted M, weights dump; with `--logit-students` only the post-hoc logit-matched students (audit 9), added to the same file | `results/baselines/` |
 | `train RUN_IDS...` | train fresh runs with the paper recipe (e.g. `new_s11` = T-new) | `VMI_DATA_DIR/trained/` |
 | `regrade` | recompute secondary metrics of graded runs from saved weights (primary metrics must reproduce) | `results/runs/` |
 | `diagnose` | re-run agents' build scripts with single edits (interventions) to find what made a run fail; read by the README examples | `results/diagnoses/` |
+| `logitfit` | centred-logit FVU, raw and with one fitted scale, of every T0 agent run, compiler build, retrain, student and random network (post hoc, audit 9); read by `analyse` | `results/controls/logit_fvu_T0.json` |
 | `clockpizza` | Zhong et al. (2023) Clock/Pizza diagnostics (distance irrelevance, gradient symmetricity) of every target and every T0 build (post hoc, audit 3); read by `analyse` | `results/controls/clock_pizza.json` |
 | `analyse ROUND` | evaluate all hypotheses at the round's N, draw all figures, refill every marked table in README, reports and paper | `results/hypotheses_round*.json`, `results/report_round*.json`, `results/frequencies_round*.json`, `results/agent_behaviour.json`, `results/environment.json`, `reports/figures/`, `reports/agent-examples.md`, `docs/data.json`, marked blocks |
 | `sensitivity ROUND` | grader sensitivity (ridge, folds, fold seeds, sites, orthogonal and whitened alignment, retrains and random networks, H7 under whitening) and explainer-threshold sensitivity, no agent | `results/sensitivity/` |

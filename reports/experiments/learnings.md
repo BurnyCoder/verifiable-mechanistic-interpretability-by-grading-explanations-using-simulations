@@ -19,8 +19,8 @@ Newest entries at the bottom. Per-experiment learnings live in each experiment's
   CKA < 1 under a random invertible change of basis) and
   `test_soundness_depends_on_the_replacement_basis_and_whitened_soundness_does_not`.
 - **Agents can recall published circuits** ([Haklay et al. 2026](https://arxiv.org/abs/2603.20101)); the paper's
-  frequencies {14, 35, 41, 42, 52} are public. Hence targets analysed in no paper (weights and key frequencies public on
-  Hugging Face only on 2026-10-21, after Claude Haiku 5.5's June 2026 training-data cutoff; no internet in the
+  frequencies {14, 35, 41, 42, 52} are public. Hence targets analysed in no paper (weights and key frequencies uploaded to
+  Hugging Face on 2026-10-21, when it became public is not recorded; after Claude Haiku 5.5's June 2026 training-data cutoff; no internet in the
   sandbox) and a held-out target trained after the freeze.
 - **Simulators can ignore explanations** ([Poché et al. 2026](https://arxiv.org/abs/2609.08585)) → E0 (no explanation)
   and E1 (no model-specific numbers) controls.
@@ -183,7 +183,7 @@ least one model response?) and archive, never delete, the failed record.
 ## Round 1 — the simulator fills gaps from memory (2026-11-21)
 
 **What happened.** On the published checkpoint (T-paper), the algorithm-only explanation E1 produced a replacement
-that scored like a full explanation, while E1 on T0 (analysed in no paper) scored at the floor. The T0 E1 build script
+that scored like a full explanation, while E1 on T0 (analysed in no paper) scored far below even the random-initialisation level (HS about 0.05). The T0 E1 build script
 (`main__T0__E1…s0`) hard-coded `KEY_FREQS = [14, 35, 41, 42, 52]` with the comment "choice: not specified by
 EXPLANATION.md" — the paper's published frequencies; the T-paper E1 script (s0) used `KEYS = [14, 35, 41, 42, 52, 71]`.
 By the key-frequency rule all three T0 E1 replacements contain four of the paper's five frequencies (14, 35, 41, 52;
@@ -200,8 +200,8 @@ higher than against T0. Comparing two runs (E1 on T0 vs. E1 on T-paper) mixes ag
 re-grading one set of weights against two targets isolates the target.
 
 **Learning.** Weights-blind does not mean knowledge-blind. Any simulation score on a published model is confounded by
-memorisation; targets whose mechanism the simulator cannot have seen (no paper; weights and key frequencies public only
-since 2026-10-21, after the simulator's June 2026 training-data cutoff; no internet in the sandbox) and a held-out target
+memorisation; targets whose mechanism the simulator cannot have seen (no paper; weights and key frequencies uploaded
+only on 2026-10-21, after the simulator's June 2026 training-data cutoff; no internet in the sandbox) and a held-out target
 trained after the freeze are necessary, not optional. The
 same risk applies to replication-based evaluations of LLM interpretability agents on well-studied circuits ([Haklay et al. 2026](https://arxiv.org/abs/2603.20101)).
 
@@ -432,7 +432,7 @@ deviation 9).
 - **Ablations need a sandbox-wide check, not a file-wise one.** The self-test ablation asserted that `TASK.md` no
   longer mentioned the self-test, but the starter script still did, and every agent read it. Lesson: for an ablation,
   grep every file the agent can see, and test that check.
-- **A control is only as strong as its hardest case.** All of H7's wrong targets use other key frequencies, so H7
+- **A control is only as strong as its hardest case.** H7's wrong targets share at most one key frequency with T0, so H7
   measures frequency identity, the same thing HS already separates. Lesson: include a negative control that shares
   the property the metric is known to see (here, the key frequencies).
 - **Sources for "obvious" numbers.** Two learnings that were true but cited nothing (a stage-0 build's frequencies and

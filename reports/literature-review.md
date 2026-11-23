@@ -177,8 +177,7 @@ alone and measures closeness to the trained model** (searched 2026-11-20; absenc
   Pythia models ([arXiv:2501.17727](https://arxiv.org/abs/2501.17727)); **Poché et al. 2026 — LLM simulators can bypass
   explanations** ([arXiv:2609.08585](https://arxiv.org/abs/2609.08585)): when LLM simulators predict a text
   classifier's outputs from concept explanations (a ConSim replication with meaningful class names), explanation gains
-  over no-explanation baselines were statistically significant but small relative to their variability (in an
-  extension, attributions improve significantly with one of three simulators and rationales with none, App. K), which the authors explain by a "shortcut hypothesis" (predictions rest mainly on task
+  over no-explanation baselines were statistically significant but small relative to their variability (in an extension with four simulators, attributions improve significantly only with Qwen, and with Llama attributions and rationales fall significantly below the no-explanation baseline, App. J–K), which the authors explain by a "shortcut hypothesis" (predictions rest mainly on task
   priors — with meaningful class names the simulator can solve the task directly — and explanations change them only
   slightly; simulators of at most 15B parameters without reasoning); they
   recommend label-leakage baselines, multiple simulators, enough seeds and novel tasks;

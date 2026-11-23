@@ -12,8 +12,8 @@ verdict is labelled "at N=3 — not yet N=10". Protocol and deviations: [preregi
   checkpoints as preregistered. After the round it was re-run as preregistered (deviation 8): all six replacements × 401
   checkpoints, every ρ > 0, so H8 stays supported; the H8 row below shows the re-run. The grader sensitivity analysis covers
   all T0 main and control runs.
-- **Analysis corrections (deviation 7):** H1 now reports its KL part separately, as §5 preregisters; H2 applies the
-  §6 power rule at N = 3. Neither correction turns a verdict into "supported".
+- **Analysis corrections (deviation 7):** H1 now reports its KL part separately, as §5 preregisters; H2 applies deviation 1's post-hoc
+  "cannot tell" rule at N = 3 (shown after the §5 verdict since deviation 15). Neither correction turns a verdict into "supported".
 - **Not replicated from round 1:** the low-effort E3 run's accuracy collapse (one of three runs); the low-effort
   W-freq run's accuracy collapse (s0 0.770; s1, s2 1.000; `results/runs/hyper__T0__W-freq-effort-low__*`); the E0 run's use of
   the published frequencies (one of three runs); E4 < E3 on T0 (at N = 3 the means are ordered E1 < E2 < E3 < E4).
@@ -59,17 +59,17 @@ Replications on the seed-sensitivity targets:
 | T-paper (flagged: memorisation) | E1 0.590, E3 0.940, E4 0.937 | means do not rise E1→E3→E4; not supported (JT p 0.061, ρ 0.63) | +0.823; not supported (p 0.050; post-hoc rule: cannot tell at this N) | agreement 0.998, KL 0.007 (true max 0.413), HS 0.117 | yes |
 <!-- END replications -->
 
-**Reading.** With three runs per condition the preregistered tests decide five hypotheses. HS rises with true detail
+**Reading.** With three runs per condition the preregistered tests support H1's HS part, H3, H4, H7 and H8; H2 is not supported by §5's criterion (its 3-vs-3 tests cannot reach α; "cannot tell at this N" under deviation 1's post-hoc rule), H1's KL part and H4b are not supported, and H5 and H6 are not evaluable. HS rises with true detail
 (H1, HS part: supported); the large step is E1 → E2, E2 → E3 adds a few hundredths in every run (preregistered HS; E2 and E3 tie under the post-hoc whitened check of the
 audit) and E3 → E4 is mixed. Output KL does not fall with detail (H1, KL part: not supported) — it is lowest at E2 and rises at E3 and E4.
 The wrong-frequency explanation keeps correct behaviour while HS falls below every true explanation that names the frequencies (E2–E4; H3: supported).
-E3 and E4 beat independent retrains (H4: supported) and fit T0 better than any other model (H7: supported); HS against
+E3 and E4 beat independent retrains (H4: supported) and fit T0 better than each of the 12 wrong targets, all of which share at most one key frequency with T0 (H7: supported); HS against
 T0's checkpoints rises during circuit formation (H8: supported, descriptive, in its preregistered form over all six
 E3/E4 replacements and 401 checkpoints after deviation 8; replacements without T0's mechanism do not, post hoc,
 deviation 9; but final T0 itself and every other network with T0's frequencies rise in the same way, and the size of ρ
 is set by drift after grokking, so H8 shows shared frequency structure, not a separate tracking ability — post hoc,
-deviation 11). H2 cannot be decided with 3 vs 3 runs (smallest attainable
-p = 0.05), but its bootstrap intervals already separate two arms from two others: E3 beats W-freq and W-role by wide
+deviation 11). H2 is not supported by §5 at N = 3: 3-vs-3 tests cannot reach α (smallest attainable
+p = 0.05, Holm 0.20); under deviation 1's post-hoc rule it reads "cannot tell". Its bootstrap intervals already separate two arms from two others: E3 beats W-freq and W-role by wide
 margins, while W-alg (Pizza) and W-scramble tie with the true explanations. W-alg is not length-matched (about 60 % of
 E3's characters on every target, `results/explanations/*/W-alg/length.json`), unlike the H2 row's wording. H4b is not supported, as in round 1 (deterministic): output KL rises and falls again because the planted model's function does not drift monotonically (snapshot accuracy dips and recovers; audit 4), so this control did not test the grader as intended.
 
@@ -144,7 +144,7 @@ E3's characters on every target, `results/explanations/*/W-alg/length.json`), un
 
 **Reading.** Format (maths, code), removing the self-test and effort level move HS by a few hundredths at most.
 All three runs without the self-test measured task accuracy with their own code (audit 3), so that ablation removed
-the script and the instruction to raise accuracy, not the label feedback. The
+the script and the instruction to raise accuracy, not the label feedback; the starter script also still told the agent to re-run selftest.py, and all three agents read that line (audit 8). The
 round-1 low-effort collapse was one run in three, and its cause is a layout bug in that run's own script (one
 head's output written onto the readout dimensions; fixing that one number restores full accuracy, `vmi diagnose`).
 

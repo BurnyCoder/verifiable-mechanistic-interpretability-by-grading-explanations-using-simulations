@@ -51,8 +51,10 @@ it behaves like HS rather than like KL.
 
 ![KL vs HS on T0](../../figures/kl_vs_hs_T0.png)
 
-Models that match T0's behaviour almost perfectly — independent retrains, logit-distilled students, the W-freq
-replacement — sit at the bottom of the HS axis. Output KL alone cannot tell them from the true replacements; HS can.
+Models that match T0's output probabilities almost perfectly — independent retrains, students distilled on those
+probabilities, the W-freq replacement — sit at the bottom of the HS axis. Output KL alone cannot tell them from the
+true replacements; HS can. (Audit 9: their centred logits do differ from T0's, so a logit-level output comparison can
+tell them apart too; paper §4.2.)
 
 ## No-agent controls
 
@@ -77,7 +79,7 @@ replacement — sit at the bottom of the HS axis. Output KL alone cannot tell th
 **Reading.** On the planted mechanism (a model whose mechanism is known because it was compiled from E3), HS starts
 at 1 and decreases monotonically as the model is trained away from it; output KL is not monotone (training first
 disturbs, then re-sharpens the outputs), so H4b's KL half fails while its HS half holds. Replacements built from T0's
-explanation fit T0 far better than any other target or no-mechanism model (H7 direction), and HS against T0's
+explanation fit T0 far better than each of the 12 wrong targets, which share at most one key frequency with T0 (H7 direction), and HS against T0's
 checkpoints rises through circuit formation together with the fall of the restricted loss (H8). H8 here used one
 replacement (`main__T0__E3…s0`, the highest-HS E3/E4 run of round 1) against every 10th checkpoint (41 of 401), not
 every E3/E4 replacement × all 401 checkpoints as preregistered; the "all checkpoints" label in the H8 row below is
@@ -95,8 +97,9 @@ wrong. After round 2 it was re-run as preregistered with all six round-1–2 rep
 | Weights dump | all 226,816 weights | 1 | 1.000 | 0.000 | 1.000 |
 <!-- END baselines-T0 -->
 
-**Reading.** The training recipe alone (independent retrains) and full behavioural access (logit-distilled students)
-both reproduce T0's outputs, yet their HS stays at or below the random-initialisation floor. Explanations E2–E4 lift
+**Reading.** The training recipe alone (independent retrains) and access to T0's output probabilities (students
+distilled with KL at temperature 1, which passes almost nothing of T0's wrong-class logits; audit 9) both reproduce
+T0's output probabilities, yet their HS stays at or below the random-initialisation floor. Explanations E2–E4 lift
 HS far above both; keeping only T0's key-frequency Fourier components in the embedding and unembedding barely
 changes HS, so the key frequencies carry nearly all of what HS measures.
 
@@ -231,7 +234,7 @@ published checkpoint (T-paper) the algorithm-only E1 scores like a full explanat
 swap, the most direct test: the *same* T0 E0/E1 weights, graded against the published checkpoint instead of T0, score
 far higher there than against T0, so the simulator built the published mechanism, not the explained one. Scores on a published model
 therefore measure what the simulator remembers, not what the explanation says; the targets analysed in no
-paper (T0–T2, weights and key frequencies public on Hugging Face since 2026-10-21, after Claude Haiku 5.5's June 2026
+paper (T0–T2, weights and key frequencies uploaded to Hugging Face on 2026-10-21 (when the repository became public is not recorded), after Claude Haiku 5.5's June 2026
 training-data cutoff, with no internet in the sandbox; T-new, trained after the freeze), which the preregistration introduced for exactly this risk, are what make the
 score interpretable. This is
 an existence proof at N = 1, consistent with [Haklay et al. 2026](https://arxiv.org/abs/2603.20101) (the LLM behind an interpretability agent, Claude Opus 4.1, listed the published IOI circuit from memory when asked
@@ -343,9 +346,8 @@ the preregistered threshold stays the analysis default.*
 | seed | T2 | W-freq | claude-haiku-5-5 | default | – | 1 | 0 | 1.000 | 0.00478 | 0.089 |
 <!-- END runs -->
 
-**Reading.** Presenting E3 as math or as code, or removing the self-test, does not lower the simulator's HS in these
-single runs (audit 3: the run without the self-test still measured accuracy with its own code, so this ablation does
-not remove label feedback). Low effort lowers task accuracy while E3's HS stays high: the replacement has the right frequency
+**Reading.** Presenting E3 as math or as code, or removing the self-test, changes the simulator's HS by at most a few
+hundredths in these single runs (math and code slightly lower, no self-test slightly higher than E3; N = 1 cannot separate these; audit 3: the run without the self-test still measured accuracy with its own code, and audit 8: the starter script still told it to re-run selftest.py, so this ablation does not remove label feedback). Low effort lowers task accuracy while E3's HS stays high: the replacement has the right frequency
 structure but wrong details (behaviour and mechanism dissociate in this direction too). On the seed-sensitivity targets
 T1, T2 and T-new, E2–E4 reach HS in the range of the reference compiler's builds and W-freq stays low, like the
 compiler's W-freq build (compiler tables above); random, retrain and student baselines exist only for T0, so there is
