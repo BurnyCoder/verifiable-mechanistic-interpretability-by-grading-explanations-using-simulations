@@ -30,7 +30,7 @@ separate target, before any reported run). Results after two rounds (three runs 
 
 - **Model-specific detail raises hidden-state similarity:** HS on T0 is 0.05 (E1, algorithm only), 0.89 (E2), 0.93 (E3) and 0.94 (E4); with no explanation (E0) it is 0.13. Monotone from E1 to E4; E0 lies above E1, against the preregistered prediction.
 - **Correct behaviour from the wrong key frequencies is caught by HS, not by output KL:** the wrong-frequency replacement reaches KL 0.003 nats (true E3: 0.010) but HS 0.07. The output logits do show it (post hoc, audit 9): after one fitted scale, the centred-logit FVU is 1.00 for W-freq against 0.12–0.21 for E3; KL misses it because a grokked model's output probabilities are nearly one-hot.
-- **Copying output probabilities does not copy the mechanism:** independent retrains (HS 0.12) and students trained to match T0's output probabilities (KL at temperature 1; HS 0.23, KL 2.38e-06) score no higher than randomly initialised networks (HS 0.24). HS's scale is therefore not anchored at 0 for unrelated networks: it measures overlap of internal features, and working networks built on other frequencies score below random ones. Neither copies T0's logits (centred-logit FVU: students 0.94–1.37, retrains 1.38–5.39; E3 replacements 0.12–0.21; post hoc, audit 9).
+- **Copying output probabilities does not copy the mechanism:** independent retrains (HS 0.12) and students trained to match T0's output probabilities (KL at temperature 1; HS 0.23, KL 2.38e-06) score no higher than randomly initialised networks (HS 0.24). HS's scale is therefore not anchored at 0 for unrelated networks: it measures overlap of internal features, and working networks built on other frequencies score below random ones. Neither copies T0's logits (centred-logit FVU: students 0.94–1.37, retrains 1.38–5.39; E3 replacements 0.12–0.21; post hoc, audit 9); students trained to match T0's centred logits (post hoc, pre-specified; FVU 0.023–0.165) reach HS 0.778–0.849: mean HS 0.849 lies between those ranges (below 0.85, above 0.35), which the pre-specified reading calls partial (1 of 3 met the training criterion; the others are not interpreted).
 - **Negative result:** at N = 3 the primary HS does not separate the Pizza explanation (W-alg, HS 0.91; E3 − W-alg +0.020, bootstrap CI [-0.008, +0.045]) or the scrambled neuron table (W-scramble, HS 0.94; E4 − W-scramble +0.007, CI [-0.025, +0.037]) from the true explanations (a failure to separate, not a demonstrated equivalence); the secondary matched-neuron correlation separates W-scramble (0.65) from E4 (0.91). The agent-free compiler's literal build of the scrambled table does score 0.09 below its E4 build on T0, mostly at resid_post: 0.69 vs 0.95; elsewhere the gap is within ±0.007 on T1, T-new, T-paper; on T2 the scrambled build scores 0.05 higher. Post hoc, by Zhong et al.'s distance irrelevance (≥ 0.4 Clock-like, < 0.4 Pizza-like) T0 is a Clock (0.75) and the literal Pizza build a Pizza (0.003); the agents' replacements from the true E1–E3 are Pizza-like too (means 0.13–0.18), and E4's are split (mean 0.41). Among the builds that carry T0's frequencies, the Clock-side ones (two of three E4 builds, q 0.46, and all three W-scramble builds, q 0.50–0.66) score HS 0.91–0.95 and the Pizza-side ones (E2, E3, E4, W-alg) 0.89–0.97: at this N, HS did not separate Clock-side from Pizza-side builds that share the key frequencies (descriptive; side and explanation are confounded).
 - **Memorisation (post hoc):** E0 and E1 contain nothing target-specific (identical text on every target, and the sandbox does not reveal the target), so their runs on T0 and on the published checkpoint are replicates of one condition. When the explanation gives no frequencies, the simulator often builds most of the published paper's frequencies {14, 35, 41, 42, 52} into its replacement (recall cued by the sandbox's description of the paper's exact architecture and, for E1, by the paper's own algorithm; only E0's text also outlines the training setup; no sandbox file names a frequency or the paper; audit 8). E1 (6 runs on T0 and T-paper): 5 of 6 build scripts list at least four of the paper's five frequencies (3 of 6 replacements build at least four by the key-frequency rule, a lower bound); on average 68% of the replacements' W_L spectrum lies on those five frequencies (chance 9%); mean HS 0.08 against T0 but 0.70 against the published checkpoint (target swap: same weights, other target; range 0.24–0.95); E0 (3 runs on T0): 1 of 3 build scripts list at least four of the paper's five frequencies (1 of 3 replacements build at least four by the key-frequency rule, a lower bound); on average 36% of the replacements' W_L spectrum lies on those five frequencies (chance 9%); mean HS 0.13 against T0 but 0.28 against the published checkpoint (target swap: same weights, other target; range 0.03–0.63). On a published model, a high score can therefore come from the simulator's memory rather than the explanation (one published model and one simulator tested).
 - **Cost:** the 96 reported Claude Haiku 5.5 runs cost $2.20 ($2.33 including development runs and plumbing checks).
@@ -331,6 +331,7 @@ default build of the Clock algorithm text (Pizza-like by Zhong et al.'s diagnost
 | Random initialisation | nothing (floor) | 5 | 0.009 ± 0.001 | 4.766 ± 0.006 | 0.236 ± 0.006 |
 | Independent retrains | same recipe, other seeds | 9 | 1.000 ± 0.000 | 6.90e-06 ± 3.96e-06 | 0.119 ± 0.097 |
 | Distilled students | M's output probabilities (KL at temperature 1), no explanation | 3 | 1.000 ± 0.000 | 2.38e-06 ± 8.25e-07 | 0.233 ± 0.058 |
+| Logit-matched students (post hoc; 1 of 3 met the training criterion) | M's centred logits (squared error), no explanation | 3 | 0.970 ± 0.049 | 0.082 ± 0.130 | 0.803 ± 0.040 |
 | Fourier-restricted M | M's weights, key frequencies only in W_E/W_U | 1 | 1.000 | 0.002 | 0.992 |
 | Weights dump | all 226,816 weights | 1 | 1.000 | 0.000 | 1.000 |
 <!-- END baselines-T0 -->
@@ -354,8 +355,12 @@ logit pattern; W-alg (<!-- v:a9-cal-w-alg -->0.23<!-- /v -->) and W-scramble (<!
 are not separated either (table below). So the retrains and students copy T0's answers, not its logits, and an
 output-only comparison at the logit level detects the same frequency-level differences as HS on this task. Students
 trained to match T0's centred logits (post hoc; design, training criterion and reading fixed in deviation 16 before
-training) reach centred-logit FVU <!-- v:a9-ls-fvu -->–<!-- /v --> and HS <!-- v:a9-ls-hs -->–<!-- /v -->:
-<!-- v:a9-ls-reading -->–<!-- /v -->.
+training) reach centred-logit FVU <!-- v:a9-ls-fvu -->0.023–0.165<!-- /v --> and HS <!-- v:a9-ls-hs -->0.778–0.849<!-- /v -->:
+<!-- v:a9-ls-reading -->mean HS 0.849 lies between those ranges (below 0.85, above 0.35), which the pre-specified reading calls partial (1 of 3 met the training criterion; the others are not interpreted)<!-- /v -->. Descriptively, the student that met the criterion matches T0's
+logits more closely (FVU <!-- v:a9-ls-conv-fvu -->0.023<!-- /v -->) than any agent build (E3:
+<!-- v:a9-cal-e3 -->0.12–0.21<!-- /v --> with a fitted scale) yet scores lower HS (<!-- v:a9-ls-conv-hs -->0.849<!-- /v -->)
+than every E2–E4 build: a closer match of the logits does not imply a higher HS, which suggests that on this task the hidden states
+carry some mechanism information beyond the logits (one network; post hoc).
 
 <!-- BEGIN logit-fvu-T0 -->
 | Network | n | HS ↑ | centred-logit FVU ↓ (preregistered secondary) | centred-logit FVU, one fitted scale ↓ (post hoc; range) | compiler build, one fitted scale |
@@ -371,6 +376,7 @@ training) reach centred-logit FVU <!-- v:a9-ls-fvu -->–<!-- /v --> and HS <!--
 | W-scramble (agent) | 3 | 0.936 ± 0.018 | 0.09 ± 0.01 | 0.07–0.10 | 0.07 |
 | Independent retrains | 9 | 0.119 ± 0.097 | 2.29 ± 1.34 | 1.00 | – |
 | Students matched to M's output probabilities (KL, temperature 1) | 3 | 0.233 ± 0.058 | 1.21 ± 0.24 | 0.87–1.00 | – |
+| Students matched to M's centred logits (post hoc) | 3 | 0.803 ± 0.040 | 0.08 ± 0.07 | 0.02–0.16 | – |
 | Random initialisation | 5 | 0.236 ± 0.006 | 1.00 ± 0.00 | 1.00 | – |
 <!-- END logit-fvu-T0 --> Keeping only T0's key-frequency components in its embedding and unembedding leaves HS almost unchanged: T0's
 other Fourier components carry little of the variance that HS weights.
@@ -775,7 +781,7 @@ does — while a faithful replacement with a slightly wrong logit scale gets a l
 probabilities, not to comparing outputs: T0's centred logits carry its key frequencies, and a logit-level comparison with
 one fitted scale separates the explanations much as HS does (§4.2, post hoc). On this task, therefore, the evidence that
 a hidden-state metric is needed is the failure of output KL, not a failure of every output comparison; whether HS adds
-information beyond the logits needs targets whose logits do not expose the mechanism (deeper networks, or tasks whose
+information beyond the logits is answered only partly here (one logit-matched student, §4.2) and needs targets whose logits do not expose the mechanism (deeper networks, or tasks whose
 read-out is not a direct function of the internal features).
 
 <!-- BEGIN kl-calibration-T0 -->
@@ -869,7 +875,7 @@ them and Haiku is not located.
 Giving a weights-blind agent an explanation and grading the network it writes is feasible today at a cost of cents per
 run. On the modular-addition transformer, with one simulator and three runs per condition, output KL is not a valid
 score for explanations, while hidden-state similarity is valid for frequency-level content and, with the agent's builds, did not separate explanations below it; at that level a weights-only spectrum comparison and, post hoc, a comparison of centred output logits do about as well. Output KL fails because it compares near-one-hot probabilities. The method needs a comparison whose invariances match the
-explanation's level of detail — HS here, a neuron-level metric below it — and targets whose mechanism the simulator cannot recall; whether hidden states add information beyond the logits is open until targets whose logits do not expose the mechanism are tested.
+explanation's level of detail — HS here, a neuron-level metric below it — and targets whose mechanism the simulator cannot recall; whether hidden states add information beyond the logits is answered only partly (one logit-matched student scores below the true explanations' builds despite matching the logits more closely) until targets whose logits do not expose the mechanism are tested.
 
 ## Acknowledgements
 

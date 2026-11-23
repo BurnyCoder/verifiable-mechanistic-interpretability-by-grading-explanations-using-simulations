@@ -278,8 +278,9 @@ items (A3, C, D2, E, G1, H), then the new targets (F, G2, G3).
 
 **J1. Logit-matched students that actually match.** *no agent (GPU, about 45 minutes per student)*
 - The pre-specified logit-matched students (deviation 16(a): squared error on centred logits, the KL students' recipe
-  with weight decay 1, 20,000 steps) did not meet their training criterion (centred-logit FVU < 0.05), so their HS is
-  not interpreted (`results/baselines/T0.json`, `students_logit`).
+  with weight decay 1, 20,000 steps): only one of three met the training criterion (centred-logit FVU < 0.05), and its
+  HS fell just under the pre-specified 0.85 bound, a "partial" reading from one network (`results/baselines/T0.json`,
+  `students_logit`).
 - Next: pre-specify a recipe that reaches the criterion (more steps, or weight decay 0, or high-temperature KL, which
   Hinton et al. 2015 §2.1 show tends to logit matching; https://arxiv.org/abs/1503.02531) and the same reading
   (HS ≥ 0.85: HS adds little beyond logits; HS ≤ 0.35: hidden states carry information that matched logits do not).
