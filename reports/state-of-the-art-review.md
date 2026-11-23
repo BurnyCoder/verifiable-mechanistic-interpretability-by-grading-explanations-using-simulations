@@ -76,8 +76,7 @@ test) and `scipy.linalg.orthogonal_procrustes`; netrep was not used in the end (
   ([Huang et al.](https://arxiv.org/abs/2309.10312)); fuzzing scores of SAE latents (detection in an appendix) are similar
   for trained and random transformers in many settings ([Heap et al.](https://arxiv.org/abs/2501.17727), v2 2026). Relatedly, when
   LLM simulators predict a text classifier's outputs from concept explanations (not per-feature activations), the gains
-  over matched no-explanation baselines are statistically significant but small relative to their variability (in an
-  extension, attributions improve significantly with one of three simulators and rationales with none), which the authors explain by a "shortcut hypothesis": the simulator's
+  over matched no-explanation baselines are statistically significant but small relative to their variability (in an extension with four simulators, attributions improve significantly only with Qwen, and with Llama attributions and rationales fall significantly below the no-explanation baseline), which the authors explain by a "shortcut hypothesis": the simulator's
   predictions rest mainly on task priors (with meaningful class names it can solve the task directly), and explanations
   change them only slightly ([Poché et al. 2026](https://arxiv.org/abs/2609.08585)).
 - **Substitution-based scores** (Bills' ablation score; [Paulo & Belrose 2025](https://arxiv.org/abs/2501.18838);

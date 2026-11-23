@@ -28,7 +28,8 @@ Pizza build (reference compiler, W-alg) is on the Pizza side (q < 0.4); otherwis
 not be a wrong explanation of T0. Zhong et al. used p = 59 and inputs [a, b]; here p = 113 with an "=" token and
 causal attention, so the compiler's literal builds of the true explanation (E3) and of the Pizza explanation (W-alg)
 are reported as in-setting reference points. Audit 4: the literal E3 build is itself on the Pizza side (q ≈ 0.18), so
-it is a build of the rendered true explanation, not a Clock reference; no Clock-side build of an explanation exists.
+it is a build of the rendered true explanation, not a Clock reference. Audit 9: Clock-side builds of explanations
+do exist among the agents' (two of three E4 builds, all three W-scramble builds; `tables.clock_side_split`).
 Post hoc; no preregistered verdict uses this file.
 Sources: Zhong et al. 2023, The Clock and the Pizza, Defs. 4.1–4.2, §4.1.2 ranges, Fig. 7
 (https://arxiv.org/abs/2306.17844); gradients by torch.autograd.grad

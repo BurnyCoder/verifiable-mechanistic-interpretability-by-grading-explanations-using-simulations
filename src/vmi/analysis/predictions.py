@@ -17,6 +17,7 @@ import math  # rounding a lower bound down
 
 import numpy as np  # means
 
+from vmi.analysis import logit_fit  # audit 9: logit-level output comparison (post hoc)
 from vmi.analysis.hypotheses import LOCAL_MODELS, MAIN_MODEL, _select, compiler, load_runs  # same selection as the tests
 from vmi.config import REPO_ROOT  # results folder
 
@@ -260,6 +261,7 @@ def highlight_rows(max_round: int, target: str = "T0") -> list[dict]:
             out.append({"ok": ok, "title": title, "evidence": evidence[0].format(*[_f(x) for x in evidence[1]]), "means": means})
 
     c = {lv: compiler(target, lv) for lv in ("E2", "E3", "E4")}
+    lv9 = logit_fit.inline_values()  # audit 9: logit-level output comparison (post hoc)
     add(True, "Naming the key frequencies is what raises HS",  # audit 8: not "faithful" — E1–E3 rebuilds are Pizza-like
         ("HS {} with the algorithm only (E1) → {} once the frequencies are named (E2); the AI-free compiler gets {} from E2",
          [m("E1"), m("E2"), c["E2"] and c["E2"]["hs"]]),
@@ -267,20 +269,28 @@ def highlight_rows(max_round: int, target: str = "T0") -> list[dict]:
     add(True, "Right answers from the wrong key frequencies: caught by HS, missed by output KL",
         ("wrong-frequency explanation: accuracy {}, output KL {} (true E3: {}), but HS {} (true E3: {})",
          [m("W-freq", "accuracy"), m("W-freq", "kl_out"), m("E3", "kl_out"), m("W-freq"), m("E3")]),
-        "Checking only the answers would rate a wrong explanation as good as a true one.")
+        "Checking only the answers would rate a wrong explanation as good as a true one."
+        + (" The output logits do show it (post hoc): after one fitted scale, their centred-logit FVU is "
+           f"{lv9['a9-cal-w-freq']} for W-freq against {lv9['a9-cal-e3']} for E3." if "a9-cal-w-freq" in lv9 else ""))
     b = RES / "baselines" / f"{target}.json"
     ri = RES / "controls" / f"random_init_{target}.json"
     if b.exists() and ri.exists():
-        st, rnd = json.loads(b.read_text())["students"], json.loads(ri.read_text())
-        best_kl = min((r["kl_out"] for r in runs if r["target"] == target and not r.get("failed")), default=None)
-        rt = json.loads(b.read_text())["retrains"]
-        add(True, "Copying the outputs does not copy the mechanism",
-            ("networks trained to copy the target's outputs: KL {} (best explanation-built network: {}), HS {}; "
-             "random networks: HS {}; networks trained on the task from other seeds: HS {}",
-             [np.mean([x["kl_out"] for x in st]), best_kl, np.mean([x["hs"] for x in st]), np.mean([x["hs"] for x in rnd]),
-              np.mean([x["hs"] for x in rt])]),
-            "Matching the answers does not raise HS. HS measures overlap of internal features, and its scale is not "
-            "anchored at 0: random networks score above working networks that use other frequencies.")
+        bd, rnd = json.loads(b.read_text()), json.loads(ri.read_text())
+        st, rt = bd["students"], bd["retrains"]
+        # Audit 9: compare like with like — the students' mean against the mean of the true explanations' main runs
+        # (earlier versions took the minimum over every T0 run, which was a wrong-explanation W-freq variant)
+        true_kl = [r["kl_out"] for lv in ("E2", "E3", "E4") for r in _select(runs, target=target, level=lv, stage="main")
+                   if not r.get("failed")]
+        ls = bd.get("students_logit")
+        add(True, "Copying the output probabilities does not copy the mechanism",
+            ("networks trained to copy the target's output probabilities: KL {} (true explanations E2–E4: mean {}), HS {}; "
+             "random networks: HS {}; networks trained on the task from other seeds: HS {}"
+             + ("; networks trained to copy its centred logits (post hoc): HS {}" if ls else ""),
+             [np.mean([x["kl_out"] for x in st]), np.mean(true_kl) if true_kl else None, np.mean([x["hs"] for x in st]),
+              np.mean([x["hs"] for x in rnd]), np.mean([x["hs"] for x in rt])] + ([np.mean([x["hs"] for x in ls])] if ls else [])),
+            "Matching the answers and probabilities does not raise HS. HS measures overlap of internal features, and its "
+            "scale is not anchored at 0: random networks score above working networks that use other frequencies."
+            + (f" Matching the logits (pre-specified reading): {lv9['a9-ls-reading']}." if "a9-ls-reading" in lv9 else ""))
     p = RES / f"hypotheses_round{max_round}.json"
     H = json.loads(p.read_text())["hypotheses"] if p.exists() else {}
     if "H7" in H and H["H7"]["rows"]:
@@ -291,16 +301,19 @@ def highlight_rows(max_round: int, target: str = "T0") -> list[dict]:
              [np.mean([r["hs_T0"] for r in rows]), max(max(r["hs_wrong"].values()) for r in rows), len(rows[0]["hs_wrong"])]),
             "The score was specific to the network that was explained, against networks with other key frequencies "
             "(each trained wrong target shares at most one with T0); same-frequency networks were not among them.")
-    add(True, "Holds on a network trained after the protocol was frozen",
+    # Audit 9: descriptive only — T-new's preregistered replication tests cannot reach α at N = 3 (H1, H2 "not supported")
+    add(True, "The gap to the wrong-frequency explanation also appears on a network trained after the protocol was frozen",
         ("T-new: HS {} (E3) and {} (E4) vs {} (wrong frequencies)",
          [m("E3", t="T-new"), m("E4", t="T-new"), m("W-freq", t="T-new")]),
-        "Prompts and templates were frozen before this network was trained, so they cannot have been tuned to it.")
+        "Prompts and templates were frozen before this network was trained, so they cannot have been tuned to it. "
+        "Descriptive: with three runs per condition its preregistered replication tests cannot reach significance.")
     # Audit 5: "cannot tell" read as a demonstrated inability; at N = 3 the data show only that HS did not separate them.
     add(False, "Did not separate the Clock algorithm from the Pizza algorithm",
         ("Pizza explanation (W-alg): HS {}; true explanation (E3): HS {}", [m("W-alg"), m("E3")]),
         "Both builds use the same frequency features; HS, a linear fit over whole layers, did not separate what is "
         "computed from them (difference within noise at N = 3). Post hoc, Zhong et al.'s output diagnostic finds T0 "
-        "Clock-like but the true-explanation rebuilds Pizza-like too, and HS still rates them high (paper §5).")
+        "Clock-like but most true-explanation rebuilds Pizza-like too, and the rebuilds that are on the Clock side "
+        "score no higher HS than the Pizza-side ones (paper §5).")
     a5 = (RES / "audit5" / "checks.json")
     gap = json.loads(a5.read_text(encoding="utf-8"))["compiler_gaps"].get(target) if a5.exists() else None
     add(False, "Did not separate a correct neuron table from a shuffled one",

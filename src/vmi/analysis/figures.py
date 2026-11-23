@@ -55,7 +55,8 @@ def _references(target: str) -> dict[str, list[dict]]:
     """No-agent reference points for horizontal lines: random init, retrains, distilled students."""
     b = _json(RES / "baselines" / f"{target}.json") or {}
     return {k: v for k, v in (("random init", _json(RES / "controls" / f"random_init_{target}.json") or []),
-                              ("retrains", b.get("retrains", [])), ("distilled students", b.get("students", []))) if v}
+                              ("retrains", b.get("retrains", [])), ("KL-distilled students", b.get("students", [])),
+                              ("logit-matched students (post hoc)", b.get("students_logit", []))) if v}
 
 
 def fig_ladder(max_round: int, target: str = "T0") -> Path | None:
@@ -105,38 +106,35 @@ def fig_ladder(max_round: int, target: str = "T0") -> Path | None:
 
 
 def fig_kl_vs_hs(max_round: int, target: str = "T0") -> Path | None:
-    """Behaviour vs mechanism: output KL (x, log) against HS (y) for runs, compiler and no-agent references."""
+    """Behaviour vs mechanism: output KL (x, log) against HS (y) for runs and no-agent references.
+
+    Audit 9: one marker shape per explanation, named in a legend outside the axes; the earlier per-condition text labels
+    sat under the points in the crowded high-HS band and were hidden or clipped."""
     runs = [r for r in load_runs(max_round) if not r.get("failed")]
-    fig, ax = plt.subplots(figsize=(6.4, 4.2))
-    med = {}
+    fig, ax = plt.subplots(figsize=(8.2, 4.4))
+    shape = dict(zip(LADDER, ["P", "o", "s", "D", "^", "v", "<", ">", "X"]))  # explanation → marker
+    handles = []
     for lv in LADDER:
         col = TRUE if lv in IS_TRUE else CTRL
         rs = _select(runs, target=target, level=lv)
-        for r in rs:
-            ax.scatter(max(r["kl_out"], 1e-9), r["hs"], s=40, color=col, edgecolor=SURFACE, linewidth=1.5, zorder=3)
-        if rs:  # one direct label per condition, at its median point (no label on every point)
-            med[lv] = (float(np.median([max(r["kl_out"], 1e-9) for r in rs])), float(np.median([r["hs"] for r in rs])))
-    # Audit 6: the high-HS conditions crowd one band, so their labels alternate above/below in order of KL (left to
-    # right) instead of all sitting up-right of the point, where "E3" and "W-scramble" overlapped.
-    high = sorted((lv for lv, (_, y) in med.items() if y > 0.8), key=lambda lv: med[lv][0])
-    for lv, xy in med.items():
-        off = ((4, 6) if high.index(lv) % 2 == 0 else (4, -11)) if lv in high else (4, 3)
-        ax.annotate(lv, xy, xytext=off, textcoords="offset points", fontsize=7, color=INK2, zorder=2,  # under the points (audit 8)
-                    bbox={"boxstyle": "round,pad=0.1", "fc": SURFACE, "ec": "none", "alpha": 0.8})
-    ref_marker = {"random init": "v", "retrains": "s", "distilled students": "^"}  # shape tells reference types apart
+        if rs:
+            ax.scatter([max(r["kl_out"], 1e-9) for r in rs], [r["hs"] for r in rs], s=42, marker=shape[lv], color=col,
+                       alpha=0.85, edgecolor=INK, linewidth=0.4, zorder=3)
+            handles.append(plt.Line2D([], [], marker=shape[lv], color=col, markeredgecolor=INK, markeredgewidth=0.4,
+                                      linestyle="", label=f"{lv} ({'true' if lv in IS_TRUE else 'control'}, n={len(rs)})"))
+    ref_marker = {"random init": "*", "retrains": "p", "KL-distilled students": "d", "logit-matched students (post hoc)": "8"}
     for name, rs in _references(target).items():
-        ax.scatter([max(r["kl_out"], 1e-9) for r in rs], [r["hs"] for r in rs], s=36, marker=ref_marker[name], color=REF,
-                   edgecolor=SURFACE, linewidth=1.5, zorder=2)
+        ax.scatter([max(r["kl_out"], 1e-9) for r in rs], [r["hs"] for r in rs], s=46, marker=ref_marker[name], color=REF,
+                   alpha=0.85, edgecolor=INK, linewidth=0.4, zorder=2)
+        handles.append(plt.Line2D([], [], marker=ref_marker[name], color=REF, markeredgecolor=INK, markeredgewidth=0.4,
+                                  linestyle="", label=f"{name} (no agent, n={len(rs)})"))
     ax.set_xscale("log")
     ax.set_ylim(-0.02, 1.02)
-    ax.set_xlabel("Output KL(M ‖ M̂), nats (log) ← better behaviour")
+    ax.set_xlabel("Output KL(M ‖ M̂), nats (log) ← closer output probabilities")
     ax.set_ylabel("Hidden-state similarity HS → better mechanism")
-    h = [plt.Line2D([], [], marker="o", color=TRUE, linestyle="", label=f"{MAIN_MODEL} run, true explanation"),
-         plt.Line2D([], [], marker="o", color=CTRL, linestyle="", label=f"{MAIN_MODEL} run, control explanation"),
-         *[plt.Line2D([], [], marker=ref_marker[n], color=REF, linestyle="", label=f"{n} (no agent, n={len(rs)})")
-           for n, rs in _references(target).items()]]
-    ax.legend(handles=h, loc="center right", fontsize=7)
-    ax.set_title(f"Target {target}: behaviour (KL) vs mechanism (HS), round {max_round}", loc="left")
+    ax.legend(handles=handles, loc="upper left", bbox_to_anchor=(1.01, 1.0), fontsize=7,
+              title=f"{MAIN_MODEL} runs (blue/orange), no-agent networks (green)", title_fontsize=7)
+    ax.set_title(f"Target {target}: output probabilities (KL) vs mechanism (HS), round {max_round}", loc="left")
     return _save(fig, f"kl_vs_hs_{target}")
 
 

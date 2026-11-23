@@ -1,0 +1,461 @@
+{
+  "definition": "Logit-level output comparison with the target T0 (post hoc, audit 9, preregistration deviation 16).\n\nLocal explanation:\n- `centred_logits(L)`: each input's logits minus their mean over the 113 number classes, the part a softmax sees.\n- `calibrated_logit_fvu(Lm, Lr)`: fraction of the target's centred-logit variance left unexplained after rescaling the\n  replacement's centred logits by the one positive scale s that minimises it,\n  min_{s>0} \u03a3\u2016L\u0303m \u2212 s\u00b7L\u0303r\u2016\u00b2 / \u03a3\u2016L\u0303m\u2016\u00b2 = 1 \u2212 \u27e8L\u0303m, L\u0303r\u27e9\u00b2 / (\u2016L\u0303m\u2016\u00b2\u2016L\u0303r\u2016\u00b2) (1 if \u27e8L\u0303m, L\u0303r\u27e9 \u2264 0), i.e. one minus the squared\n  cosine of the two centred-logit tables. The raw value without the scale is the preregistered secondary metric\n  `centred_logit_fvu` (preregistration \u00a74, `vmi.grader.metrics`); the one-scale version mirrors the preregistered\n  temperature-calibrated KL, which also fits a single scale.\n- `analyse(settings)`: both values for every reported T0 run of the main and controls stages, the reference\n  compiler's T0 builds, the independent retrains, both kinds of distilled students and the random initialisations,\n  written to results/controls/logit_fvu_T0.json.",
+  "target": "T0",
+  "rows": [
+    {
+      "kind": "agent",
+      "name": "controls__T0__E0__claudehaiku55-claudecode__tdef__s0",
+      "level": "E0",
+      "hs": 0.0036951600291003314,
+      "centred_logit_fvu": 1.1404548274062536,
+      "calibrated_logit_fvu": 0.9999995975485328,
+      "scale": 0.0016898699301115753
+    },
+    {
+      "kind": "agent",
+      "name": "controls__T0__E0__claudehaiku55-claudecode__tdef__s1",
+      "level": "E0",
+      "hs": 0.19128190087590102,
+      "centred_logit_fvu": 1.2087009853894157,
+      "calibrated_logit_fvu": 0.9853680895450965,
+      "scale": 0.2037970716093828
+    },
+    {
+      "kind": "agent",
+      "name": "controls__T0__E0__claudehaiku55-claudecode__tdef__s2",
+      "level": "E0",
+      "hs": 0.19358232407689338,
+      "centred_logit_fvu": 4.7757432959335935,
+      "calibrated_logit_fvu": 0.971369222447643,
+      "scale": 0.07982609383829106
+    },
+    {
+      "kind": "agent",
+      "name": "controls__T0__W-alg__claudehaiku55-claudecode__tdef__s0",
+      "level": "W-alg",
+      "hs": 0.8888378520107217,
+      "centred_logit_fvu": 0.24593668638549274,
+      "calibrated_logit_fvu": 0.231713964093468,
+      "scale": 0.8802353375340795
+    },
+    {
+      "kind": "agent",
+      "name": "controls__T0__W-alg__claudehaiku55-claudecode__tdef__s1",
+      "level": "W-alg",
+      "hs": 0.8988570265709303,
+      "centred_logit_fvu": 0.27005649451235797,
+      "calibrated_logit_fvu": 0.23210278877186286,
+      "scale": 0.8181173919210492
+    },
+    {
+      "kind": "agent",
+      "name": "controls__T0__W-alg__claudehaiku55-claudecode__tdef__s2",
+      "level": "W-alg",
+      "hs": 0.9395328620009175,
+      "centred_logit_fvu": 0.2698956608865055,
+      "calibrated_logit_fvu": 0.23210236036639253,
+      "scale": 1.2850961618596248
+    },
+    {
+      "kind": "agent",
+      "name": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s0",
+      "level": "W-freq",
+      "hs": 0.05537189466979208,
+      "centred_logit_fvu": 1.9049346320314458,
+      "calibrated_logit_fvu": 1.0,
+      "scale": 0.0
+    },
+    {
+      "kind": "agent",
+      "name": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s1",
+      "level": "W-freq",
+      "hs": 0.06125435253934653,
+      "centred_logit_fvu": 1.8432594731864633,
+      "calibrated_logit_fvu": 1.0,
+      "scale": 0.0
+    },
+    {
+      "kind": "agent",
+      "name": "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s2",
+      "level": "W-freq",
+      "hs": 0.09449502631510821,
+      "centred_logit_fvu": 1.861700613856928,
+      "calibrated_logit_fvu": 1.0,
+      "scale": 0.0
+    },
+    {
+      "kind": "agent",
+      "name": "controls__T0__W-role__claudehaiku55-claudecode__tdef__s0",
+      "level": "W-role",
+      "hs": 0.168074316656719,
+      "centred_logit_fvu": 1.8881563083815538,
+      "calibrated_logit_fvu": 0.9999998169007517,
+      "scale": 0.00045383855648388786
+    },
+    {
+      "kind": "agent",
+      "name": "controls__T0__W-role__claudehaiku55-claudecode__tdef__s1",
+      "level": "W-role",
+      "hs": 0.17062011034752003,
+      "centred_logit_fvu": 1.8650527855124808,
+      "calibrated_logit_fvu": 0.9999998828832954,
+      "scale": 0.0003678140535584739
+    },
+    {
+      "kind": "agent",
+      "name": "controls__T0__W-role__claudehaiku55-claudecode__tdef__s2",
+      "level": "W-role",
+      "hs": 0.27330249839682996,
+      "centred_logit_fvu": 1.9001643709252725,
+      "calibrated_logit_fvu": 0.9999998717683014,
+      "scale": 0.00037728789544569055
+    },
+    {
+      "kind": "agent",
+      "name": "controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s0",
+      "level": "W-scramble",
+      "hs": 0.9175709030701787,
+      "centred_logit_fvu": 0.09784013922090447,
+      "calibrated_logit_fvu": 0.09783618231364855,
+      "scale": 1.00209867757504
+    },
+    {
+      "kind": "agent",
+      "name": "controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s1",
+      "level": "W-scramble",
+      "hs": 0.9541957040262264,
+      "centred_logit_fvu": 0.07383954148085865,
+      "calibrated_logit_fvu": 0.07383381208067141,
+      "scale": 1.0024933981867394
+    },
+    {
+      "kind": "agent",
+      "name": "controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s2",
+      "level": "W-scramble",
+      "hs": 0.9377029166304661,
+      "centred_logit_fvu": 0.09297834285124862,
+      "calibrated_logit_fvu": 0.09297372788988345,
+      "scale": 1.0022607619220174
+    },
+    {
+      "kind": "agent",
+      "name": "main__T0__E1__claudehaiku55-claudecode__tdef__s0",
+      "level": "E1",
+      "hs": 0.048345923249513034,
+      "centred_logit_fvu": 1.6442679222550682,
+      "calibrated_logit_fvu": 0.9999997845452652,
+      "scale": 0.0005779544598342437
+    },
+    {
+      "kind": "agent",
+      "name": "main__T0__E1__claudehaiku55-claudecode__tdef__s1",
+      "level": "E1",
+      "hs": 0.04482621260495612,
+      "centred_logit_fvu": 1.0259199715639307,
+      "calibrated_logit_fvu": 0.9999997763462347,
+      "scale": 0.0029288365059820386
+    },
+    {
+      "kind": "agent",
+      "name": "main__T0__E1__claudehaiku55-claudecode__tdef__s2",
+      "level": "E1",
+      "hs": 0.046219606805840086,
+      "centred_logit_fvu": 1.103868463316551,
+      "calibrated_logit_fvu": 0.9999997780609874,
+      "scale": 0.001459621120984532
+    },
+    {
+      "kind": "agent",
+      "name": "main__T0__E2__claudehaiku55-claudecode__tdef__s0",
+      "level": "E2",
+      "hs": 0.8994455393035308,
+      "centred_logit_fvu": 2.982374335930455,
+      "calibrated_logit_fvu": 0.35864489435509983,
+      "scale": 0.33084087382654026
+    },
+    {
+      "kind": "agent",
+      "name": "main__T0__E2__claudehaiku55-claudecode__tdef__s1",
+      "level": "E2",
+      "hs": 0.8945524617726366,
+      "centred_logit_fvu": 0.38464623174314544,
+      "calibrated_logit_fvu": 0.356684783206759,
+      "scale": 0.8274846093516747
+    },
+    {
+      "kind": "agent",
+      "name": "main__T0__E2__claudehaiku55-claudecode__tdef__s2",
+      "level": "E2",
+      "hs": 0.8886228825348276,
+      "centred_logit_fvu": 2.715162335596993,
+      "calibrated_logit_fvu": 0.4297441629401755,
+      "scale": 0.3331194969705758
+    },
+    {
+      "kind": "agent",
+      "name": "main__T0__E3__claudehaiku55-claudecode__tdef__s0",
+      "level": "E3",
+      "hs": 0.9394805798904734,
+      "centred_logit_fvu": 0.20958007843360518,
+      "calibrated_logit_fvu": 0.20950545079931915,
+      "scale": 1.0098116209473904
+    },
+    {
+      "kind": "agent",
+      "name": "main__T0__E3__claudehaiku55-claudecode__tdef__s1",
+      "level": "E3",
+      "hs": 0.9324099362097188,
+      "centred_logit_fvu": 0.12806345534589805,
+      "calibrated_logit_fvu": 0.1280231012826729,
+      "scale": 1.0068494497271774
+    },
+    {
+      "kind": "agent",
+      "name": "main__T0__E3__claudehaiku55-claudecode__tdef__s2",
+      "level": "E3",
+      "hs": 0.9153374040731904,
+      "centred_logit_fvu": 0.12328441937109975,
+      "calibrated_logit_fvu": 0.12324128757818209,
+      "scale": 1.0070634282071949
+    },
+    {
+      "kind": "agent",
+      "name": "main__T0__E4__claudehaiku55-claudecode__tdef__s0",
+      "level": "E4",
+      "hs": 0.9115119999542861,
+      "centred_logit_fvu": 0.13972182128587143,
+      "calibrated_logit_fvu": 0.13971778900093867,
+      "scale": 1.0021696835487308
+    },
+    {
+      "kind": "agent",
+      "name": "main__T0__E4__claudehaiku55-claudecode__tdef__s1",
+      "level": "E4",
+      "hs": 0.9529163502723046,
+      "centred_logit_fvu": 0.13947916864825988,
+      "calibrated_logit_fvu": 0.1394751295781449,
+      "scale": 1.002171205363473
+    },
+    {
+      "kind": "agent",
+      "name": "main__T0__E4__claudehaiku55-claudecode__tdef__s2",
+      "level": "E4",
+      "hs": 0.9654774109100147,
+      "centred_logit_fvu": 0.07978845991677061,
+      "calibrated_logit_fvu": 0.0797728220929711,
+      "scale": 1.0041393736102515
+    },
+    {
+      "kind": "compiler",
+      "name": "E0",
+      "level": "E0",
+      "centred_logit_fvu": 151.4937468354322,
+      "calibrated_logit_fvu": 1.0,
+      "scale": 0.0
+    },
+    {
+      "kind": "compiler",
+      "name": "E1",
+      "level": "E1",
+      "centred_logit_fvu": 151.4937468354322,
+      "calibrated_logit_fvu": 1.0,
+      "scale": 0.0
+    },
+    {
+      "kind": "compiler",
+      "name": "E2",
+      "level": "E2",
+      "centred_logit_fvu": 3.38103898156616,
+      "calibrated_logit_fvu": 0.35670327908940314,
+      "scale": 0.31563167064435643
+    },
+    {
+      "kind": "compiler",
+      "name": "E3",
+      "level": "E3",
+      "centred_logit_fvu": 0.08586727139911923,
+      "calibrated_logit_fvu": 0.08584309237492771,
+      "scale": 1.0051694973062022
+    },
+    {
+      "kind": "compiler",
+      "name": "E4",
+      "level": "E4",
+      "centred_logit_fvu": 0.0797850387949485,
+      "calibrated_logit_fvu": 0.0797786100275315,
+      "scale": 1.002650129577999
+    },
+    {
+      "kind": "compiler",
+      "name": "W-alg",
+      "level": "W-alg",
+      "centred_logit_fvu": 0.2691620748065799,
+      "calibrated_logit_fvu": 0.23173016315092576,
+      "scale": 1.283254575355637
+    },
+    {
+      "kind": "compiler",
+      "name": "W-freq",
+      "level": "W-freq",
+      "centred_logit_fvu": 1.9037587500258712,
+      "calibrated_logit_fvu": 1.0,
+      "scale": 0.0
+    },
+    {
+      "kind": "compiler",
+      "name": "W-role",
+      "level": "W-role",
+      "centred_logit_fvu": 0.9999999999999938,
+      "calibrated_logit_fvu": 0.9999999747916076,
+      "scale": 8087118.210223782
+    },
+    {
+      "kind": "compiler",
+      "name": "W-scramble",
+      "level": "W-scramble",
+      "centred_logit_fvu": 0.07264105453020174,
+      "calibrated_logit_fvu": 0.07264029973997499,
+      "scale": 1.0009029859841583
+    },
+    {
+      "kind": "retrain",
+      "name": "wd1_s0",
+      "centred_logit_fvu": 1.4077627013998997,
+      "calibrated_logit_fvu": 0.9999996959765619,
+      "scale": 0.0008627297647200441
+    },
+    {
+      "kind": "retrain",
+      "name": "wd1_s2",
+      "centred_logit_fvu": 1.4080196481705605,
+      "calibrated_logit_fvu": 1.0,
+      "scale": 0.0
+    },
+    {
+      "kind": "retrain",
+      "name": "wd1_s3",
+      "centred_logit_fvu": 2.091674088578495,
+      "calibrated_logit_fvu": 1.0,
+      "scale": 0.0
+    },
+    {
+      "kind": "retrain",
+      "name": "wd1_s4",
+      "centred_logit_fvu": 5.391498040660128,
+      "calibrated_logit_fvu": 1.0,
+      "scale": 0.0
+    },
+    {
+      "kind": "retrain",
+      "name": "wd1_s5",
+      "centred_logit_fvu": 1.7965887698375897,
+      "calibrated_logit_fvu": 0.9999999997261498,
+      "scale": 1.8540921802821532e-05
+    },
+    {
+      "kind": "retrain",
+      "name": "wd1_s6",
+      "centred_logit_fvu": 1.8591934425071979,
+      "calibrated_logit_fvu": 0.9999995851808332,
+      "scale": 0.0006943559574378745
+    },
+    {
+      "kind": "retrain",
+      "name": "wd1_s7",
+      "centred_logit_fvu": 1.7033194093074413,
+      "calibrated_logit_fvu": 0.9999999477314844,
+      "scale": 0.0002725369480793176
+    },
+    {
+      "kind": "retrain",
+      "name": "wd1_s8",
+      "centred_logit_fvu": 1.384557309769073,
+      "calibrated_logit_fvu": 0.9970010799417119,
+      "scale": 0.08085367054261983
+    },
+    {
+      "kind": "retrain",
+      "name": "wd1_s9",
+      "centred_logit_fvu": 3.557778746163339,
+      "calibrated_logit_fvu": 0.9999999875183817,
+      "scale": 6.985116001532688e-05
+    },
+    {
+      "kind": "student_kl",
+      "name": "student_T0_s1000",
+      "centred_logit_fvu": 1.3699321188326568,
+      "calibrated_logit_fvu": 1.0,
+      "scale": 0.0
+    },
+    {
+      "kind": "student_kl",
+      "name": "student_T0_s1001",
+      "centred_logit_fvu": 1.326981523615597,
+      "calibrated_logit_fvu": 0.9999992882952417,
+      "scale": 0.001473152143289392
+    },
+    {
+      "kind": "student_kl",
+      "name": "student_T0_s1002",
+      "centred_logit_fvu": 0.9430416262100708,
+      "calibrated_logit_fvu": 0.8711810730508813,
+      "scale": 0.5724465688703797
+    },
+    {
+      "kind": "student_logit",
+      "name": "student_logit_T0_s1000",
+      "centred_logit_fvu": 0.164528019813009,
+      "calibrated_logit_fvu": 0.16334576030209358,
+      "scale": 1.0390592325428298
+    },
+    {
+      "kind": "student_logit",
+      "name": "student_logit_T0_s1001",
+      "centred_logit_fvu": 0.05108587479665164,
+      "calibrated_logit_fvu": 0.04835239652730694,
+      "scale": 1.0566294639246394
+    },
+    {
+      "kind": "student_logit",
+      "name": "student_logit_T0_s1002",
+      "centred_logit_fvu": 0.02301525712588707,
+      "calibrated_logit_fvu": 0.022761922157155223,
+      "scale": 1.0163642750876984
+    },
+    {
+      "kind": "random_init",
+      "name": "seed 1000",
+      "centred_logit_fvu": 1.0000522017513653,
+      "calibrated_logit_fvu": 0.9999577447215928,
+      "scale": 0.40078199105118234
+    },
+    {
+      "kind": "random_init",
+      "name": "seed 1001",
+      "centred_logit_fvu": 1.0000765811473755,
+      "calibrated_logit_fvu": 0.9999882317907501,
+      "scale": 0.26738150958030965
+    },
+    {
+      "kind": "random_init",
+      "name": "seed 1002",
+      "centred_logit_fvu": 1.0001853531137739,
+      "calibrated_logit_fvu": 0.9999996574703731,
+      "scale": 0.041179905027544005
+    },
+    {
+      "kind": "random_init",
+      "name": "seed 1003",
+      "centred_logit_fvu": 1.0003198348657187,
+      "calibrated_logit_fvu": 1.0,
+      "scale": 0.0
+    },
+    {
+      "kind": "random_init",
+      "name": "seed 1004",
+      "centred_logit_fvu": 1.0001344858697812,
+      "calibrated_logit_fvu": 0.9999869669578948,
+      "scale": 0.22912928355928683
+    }
+  ]
+}

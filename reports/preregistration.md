@@ -219,7 +219,7 @@ Eleven agent smoke runs on the dev target `wd1_s10` (details and transcripts: `r
 `reports/progress.md`. Prompts, `TASK.md`, sandbox templates, explanation templates, harnesses, simulator settings and
 analysis code are fixed from that commit on. T-new is trained after it.
 
-### Post-freeze deviations (logged as they happen; 1–4 and 6 change no hypothesis, metric, test or condition; 5 removes conditions; 7 corrects how H1/H2 verdicts were computed; 8 adds missing preregistered statistics, discloses analyses not run and corrects §4's rationale; 9 corrects factual statements, narrows two claims to their evidence and adds post-hoc checks; 10 corrects how H1's verdict and the T-paper replication are reported, makes H1's trend test exact, corrects §4's rationale for `mlp_post` and adds post-hoc checks; 11 corrects how H4b and H8 are interpreted, states the coverage of three-run bootstrap intervals, corrects errata and citations and adds post-hoc checks; 12 re-derives every verdict independently, narrows the scope of the "true" explanations and of one blind spot, corrects how the deviations made after results are counted and corrects errata and citations; 13 re-derives every verdict and re-grades the scores with new code, reports H2's literal §5 reading beside "cannot tell", replaces a pattern count of the agents' parameter searches by a read count and corrects citations; 14 re-derives every verdict and re-grades the T0 scores with code independent of the project and of scipy, discloses searches inside final build scripts that the static audit missed and corrects citations; 15 shows the preregistered verdict reading first, narrows the readings of H4b and H7, discloses a leftover cue in the self-test ablation and corrects wording and citations)
+### Post-freeze deviations (logged as they happen; 1–4 and 6 change no hypothesis, metric, test or condition; 5 removes conditions; 7 corrects how H1/H2 verdicts were computed; 8 adds missing preregistered statistics, discloses analyses not run and corrects §4's rationale; 9 corrects factual statements, narrows two claims to their evidence and adds post-hoc checks; 10 corrects how H1's verdict and the T-paper replication are reported, makes H1's trend test exact, corrects §4's rationale for `mlp_post` and adds post-hoc checks; 11 corrects how H4b and H8 are interpreted, states the coverage of three-run bootstrap intervals, corrects errata and citations and adds post-hoc checks; 12 re-derives every verdict independently, narrows the scope of the "true" explanations and of one blind spot, corrects how the deviations made after results are counted and corrects errata and citations; 13 re-derives every verdict and re-grades the scores with new code, reports H2's literal §5 reading beside "cannot tell", replaces a pattern count of the agents' parameter searches by a read count and corrects citations; 14 re-derives every verdict and re-grades the T0 scores with code independent of the project and of scipy, discloses searches inside final build scripts that the static audit missed and corrects citations; 15 shows the preregistered verdict reading first, narrows the readings of H4b and H7, discloses a leftover cue in the self-test ablation and corrects wording and citations; 16 corrects what the distilled students are said to copy, adds a logit-level reading, a pre-specified post-hoc baseline and a Clock-side comparison, and corrects wording and citations)
 
 1. **2026-11-21, round 1, after the controls stage — analysis code brought in line with amendment 2.** The frozen
    `analysis/hypotheses.py` still selected the main condition as Qwen3.6-35B-A3B at temperature 0.6 (pre-amendment)
@@ -591,3 +591,61 @@ analysis code are fixed from that commit on. T-new is trained after it.
    and the figures redrawn so that every run is visible.
    None of (a)–(d) changes a primary metric, a preregistered test, a p-value or a stored score. (a) changes which
    verdict reading is shown first; (b)–(d) add disclosures and narrow claims.
+16. **2026-11-23, after round 2 — ninth independent audit: what the distilled students copy, a logit-level output
+   comparison, and a pre-specified post-hoc baseline.** Made without reading the earlier reviews or audit scripts,
+   after every round-2 number had been seen (`reports/reviews/audit-9-2026-11-23.md`).
+   (a) *Pre-specification, written and pushed before the run it describes.* The §7 students were trained to minimise
+   KL(T0 ‖ student) at temperature 1 (`training.train_from`, mode "distill"). T0's softmax puts at least 0.9999998 of
+   its mass on the answer, so the wrong-class logits get almost no gradient: the students match T0's output
+   probabilities (KL 1.5e-6 to 3.0e-6) but not its logits (centred-logit FVU against T0 0.94–1.37, where the E3
+   replacements reach 0.12–0.21). Because T0's centred logits carry its key frequencies (logit(c) ≈ Σ_k α_k
+   cos(w_k(a + b − c))), the existing students do not test whether copying T0's full logits copies its hidden states.
+   A post-hoc baseline tests that directly: three students from the same initialisations (`GrokTransformer(seed=1000+s)`,
+   s = 0–2), the same full-batch AdamW recipe and 20,000 steps, trained on all 113² inputs to minimise the mean squared
+   error between their per-input-centred logits and T0's over the 113 number classes (float64). *Training criterion:*
+   centred-logit FVU against T0 below 0.05; a student that misses it is reported as not converged and its HS is not
+   interpreted. *Reading, fixed before training:* mean HS ≥ 0.85 (the E2–E4 range) means that on this task HS adds
+   little beyond the logits; mean HS ≤ 0.35 (the range of retrains, KL students and random networks) with the
+   criterion met means the hidden states carry mechanism information that matched logits do not; a value in between is
+   reported as partial. The result is post hoc; no hypothesis or verdict depends on it.
+   (b) *What the students copy (wording).* The §7 students stay as they are, but every description that called them
+   "distilled on M's full logits", gave them "full behavioural access", or said that they and the retrains "reproduce
+   T0's outputs more closely" than the explanation-built replacements now says that they match T0's output
+   probabilities (KL at temperature 1); they do not match its logits.
+   (c) *Logit-level output comparison (post hoc reading of a preregistered secondary metric).* The secondary
+   centred-logit FVU separates W-freq, W-role, E0 and E1 from E3, E4, W-alg and W-scramble on T0; with one fitted
+   positive scale per network (as the preregistered temperature-calibrated KL fits one temperature) it orders
+   E2 > E3 > E4 like HS and gives the wrong-frequency, wrong-role, no-explanation and algorithm-only builds, the
+   retrains, the students and the random networks values near 1 (`vmi logitfit`, `results/controls/logit_fvu_T0.json`).
+   H3's verdict is unchanged (§5 defines behaviour by argmax agreement and KL), but statements that output checks
+   cannot see the wrong frequencies, that "copying behaviour does not copy the mechanism", and the conclusion that the
+   method's main requirement is a hidden-state metric are narrowed to output probabilities.
+   (d) *Clock-side builds exist.* Deviation 12(c) said that no Clock-side build of an explanation exists. By the reading
+   rule of deviation 10(f), two of the three E4 agent builds (q 0.46) and all three W-scramble agent builds (q 0.50–0.66)
+   are on the Clock side; among the builds that carry T0's frequencies, their HS (0.91–0.95) lies within the Pizza-side
+   builds' range (0.89–0.97). "HS did not separate Clock from Pizza" is therefore a measured, descriptive comparison
+   (confounded with the explanation level), not only an inference.
+   (e) *Readings and wording.* E0 above E1 (H1's untested clause) follows from HS's floor: two E0 builds spread over
+   eight consecutive frequencies and score like random networks, while E1's builds use four or five frequencies.
+   The two-sided student comparison, which cannot reach α at 3 vs 3 (smallest p 0.10), reads "not significant", with
+   the observed complete separation, not "no significant difference". The post-hoc multiplicity line adds Holm over all
+   nine confirmatory p-values (H1's HS trend and both H4 tests survive, H7 does not) beside the Bonferroni reading.
+   A README highlight compared the students' mean KL with the minimum over every T0 run, a wrong-explanation build;
+   it now compares means with the true explanations' main runs. The T-new highlight is marked descriptive.
+   (f) *Errata and citations.* Two E1 build scripts, not one, hard-code all five published frequencies; T-new's E4 runs
+   pass the 0.99 argmax criterion; E0 also outlines the training setup; the compiler's default build of the Clock text
+   is Pizza-like (q 0.22), not a "Clock build"; deviation 1 also added the "cannot tell" rule; H8's trajectory was
+   re-graded by sample, not in full; the target repository's upload date is not its publication date. Poché et al.'s
+   extension used four simulators (attributions significant only with Qwen; with Llama, attributions and rationales
+   significantly below the no-explanation baseline); Sutter et al.'s §8 calls the assumptions "strong" in its
+   limitations paragraph and "mild" in its conclusion; iWSP's rebuilds all run in Claude Code with 5.5 models, its
+   brain-encoding searches with other models; Terpstra 1952 is linked to its report version.
+   (g) *Re-derivation.* `scripts/audit9/verify.py` (numpy and the standard library only, written for this audit)
+   reproduces all 15 stored statistics it compares (`results/audit9/verify.json`) and the replication, H5 and cost
+   figures. No primary metric, preregistered test, p-value, stored score or verdict changes; (c) and (d) add post-hoc
+   readings, (b), (e) and (f) correct wording, and (a) adds a pre-specified post-hoc baseline.
+   (h) *Result of (a), recorded after training.* Centred-logit FVU against T0: 0.165, 0.051 and 0.023 (students 1000,
+   1001, 1002). Only student 1002 meets the criterion (1001 misses it narrowly; the criterion is not moved). Its HS is
+   0.849, just under the 0.85 bound, so the pre-specified reading is "partial". Descriptively, it matches T0's logits
+   more closely than any agent build yet scores lower HS than every E2–E4 build. The two unconverged students (HS 0.78)
+   are not interpreted.

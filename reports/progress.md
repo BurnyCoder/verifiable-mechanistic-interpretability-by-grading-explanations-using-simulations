@@ -6,6 +6,35 @@ and to scrambled tables" (now: did not separate the agents' builds at N = 3, dev
 sweep" (now 44 of 96 by reading, deviation 13), H2 "cannot tell at this N" (by §5 as written: "not supported" at N = 3,
 deviation 15) — are listed in the preregistration's deviations.*
 
+## 2026-11-23 — ninth independent audit (deviation 16; no agent runs; three post-hoc students trained)
+
+**Done** (N = 3 — not yet N = 10)
+- Independent audit (`reviews/audit-9-2026-11-23.md`):
+  - Every stored round-2 statistic was re-derived with new exact-enumeration code (`scripts/audit9/verify.py`):
+    15 of 15 reproduce, and so do the replication, H5 and cost figures.
+  - The grader and the Clock/Pizza diagnostic were checked against §4 and Zhong et al.
+  - More than 35 cited sources were re-read on the web; all 53 arXiv IDs resolve to the named works.
+  - Three agents fact-checked every report file against `results/`.
+- **Findings.**
+  - The "logit-distilled" students copy T0's output probabilities, not its logits (KL at temperature 1).
+  - A logit-level output comparison separates the explanations about as well as HS (post hoc, `vmi logitfit`). The
+    behaviour–mechanism result is now scoped to output probabilities.
+  - Clock-side builds of explanations do exist (two E4 and three W-scramble builds) and score no higher HS.
+  - E0 > E1 comes from HS's floor rising with spectral breadth.
+  - The student comparison now reads "not significant", not "no significant difference".
+  - Holm over all confirmatory tests is reported beside the Bonferroni line.
+  - A mislabelled KL comparison point was fixed.
+  - About 25 errata and stale statements were corrected, as were the Poché, Sutter, iWSP and Terpstra citations.
+  - The KL-vs-HS figure was made readable.
+- **Pre-specified post-hoc baseline.** Design, criterion and reading were pushed before training (commit 649ffa3).
+  Three students were trained to match T0's centred logits, about 45 minutes each on the GPU, $0. One of three met the
+  criterion (FVU 0.023) with HS 0.849, a "partial" reading just under the 0.85 bound; the other two (FVU 0.165, 0.051)
+  are not interpreted.
+- No primary metric, preregistered test, p-value, stored score or verdict changed.
+
+**Next:** nothing scheduled. Round 3 and the next-iteration items (now including J1–J2 from this audit) wait until you
+ask.
+
 ## 2026-11-23 — eighth independent audit (deviation 15; no new runs, no API spend, no score changed)
 
 **Done** (N = 3 — not yet N = 10)

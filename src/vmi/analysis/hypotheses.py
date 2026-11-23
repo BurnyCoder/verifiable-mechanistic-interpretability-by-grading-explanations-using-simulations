@@ -141,16 +141,19 @@ def evaluate(max_round: int) -> dict:
         adj = st.holm({k: v["p"] for k, v in tests.items()})
         n4 = min(len(_select(runs, level="E3")), len(_select(runs, level="E4")))
         verd = {lv: st.verdict(adj[lv], True, st.min_p_mann_whitney(len(_select(runs, level=lv)), len(retr))) for lv in tests}
-        # §5 secondary, two-sided, no predicted direction: E3/E4 vs the logit-distilled students (deviation 8), Holm over both
+        # §5 secondary, two-sided, no predicted direction: E3/E4 vs the distilled students (deviation 8; they match output probabilities, audit 9), Holm over both
         two = {lv: st.mann_whitney_two_sided(_vals(_select(runs, level=lv)), stud) for lv in ("E3", "E4")} if len(stud) else {}
         adj2 = st.holm({k: v["p"] for k, v in two.items()})
         for lv, t in two.items():
             t["holm_p"] = adj2[lv]
-            # Audit 8: a defined test that misses α reads "no significant difference" (§5); deviation 1's "cannot tell"
-            # for a test that cannot reach α (two-sided 3 vs 3: smallest p 0.10) is shown after it.
+            # Audit 9: "not significant", never "no significant difference": a test that cannot reach α (two-sided
+            # 3 vs 3: smallest p 0.10) says nothing about equality (Altman & Bland 1995, BMJ 311:485), so the smallest
+            # attainable p and the observed separation are stated; deviation 1's "cannot tell" follows.
+            sep = ("every agent run above every student" if t["r_rb"] == 1 else "every student above every agent run"
+                   if t["r_rb"] == -1 else f"rank-biserial r {t['r_rb']:+.2f}")
             t["result"] = ("cannot tell at this N" if t["p"] is None
                            else ("differ: " + ("agent higher" if t["r_rb"] > 0 else "students higher")) if adj2[lv] < ALPHA
-                           else f"no significant difference (Holm p {adj2[lv]:.2f}"
+                           else f"not significant (Holm p {adj2[lv]:.2f}; smallest attainable p {t['min_p']:.2f}; {sep}"
                            + ("; post-hoc rule: cannot tell at this N)" if t["min_p"] >= ALPHA else ")"))
         H["H4"] = {"N": n4, "label": _n_label(n4), "verdicts": verd, "tests": tests, "holm_p": adj, "students": two,
                    "retrain_hs_mean": float(retr.mean()) if len(retr) else None,

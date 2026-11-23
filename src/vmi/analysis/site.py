@@ -47,7 +47,10 @@ def build(max_round: int) -> dict:
         if b.exists():
             d = json.loads(b.read_text())
             refs += [{"target": t, "kind": "independent retrain", "hs": x["hs"], "kl_out": x["kl_out"]} for x in d["retrains"]]
-            refs += [{"target": t, "kind": "distilled student", "hs": x["hs"], "kl_out": x["kl_out"]} for x in d["students"]]
+            # audit 9: the §7 students copy output probabilities (KL at temperature 1); the post-hoc ones copy centred logits
+            refs += [{"target": t, "kind": "probability-distilled student", "hs": x["hs"], "kl_out": x["kl_out"]} for x in d["students"]]
+            refs += [{"target": t, "kind": "logit-matched student (post hoc)", "hs": x["hs"], "kl_out": x["kl_out"]}
+                     for x in d.get("students_logit", [])]
     hyp = RES / f"hypotheses_round{max_round}.json"
     H = json.loads(hyp.read_text())["hypotheses"] if hyp.exists() else {}
     from vmi.analysis.predictions import _verdict, prediction_rows  # same rows and verdict text as the docs' table
