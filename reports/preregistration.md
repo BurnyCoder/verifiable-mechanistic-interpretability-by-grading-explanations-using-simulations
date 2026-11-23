@@ -644,3 +644,8 @@ analysis code are fixed from that commit on. T-new is trained after it.
    reproduces all 15 stored statistics it compares (`results/audit9/verify.json`) and the replication, H5 and cost
    figures. No primary metric, preregistered test, p-value, stored score or verdict changes; (c) and (d) add post-hoc
    readings, (b), (e) and (f) correct wording, and (a) adds a pre-specified post-hoc baseline.
+   (h) *Result of (a), recorded after training.* Centred-logit FVU against T0: 0.165, 0.051 and 0.023 (students 1000,
+   1001, 1002). Only student 1002 meets the criterion (1001 misses it narrowly; the criterion is not moved). Its HS is
+   0.849, just under the 0.85 bound, so the pre-specified reading is "partial". Descriptively, it matches T0's logits
+   more closely than any agent build yet scores lower HS than every E2–E4 build. The two unconverged students (HS 0.78)
+   are not interpreted.
