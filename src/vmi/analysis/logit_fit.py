@@ -129,11 +129,11 @@ def student_reading(rows: list[dict]) -> str:
     hs = float(np.mean([r["hs"] for r in conv]))
     note = "" if len(conv) == len(rows) else f" ({len(conv)} of {len(rows)} met the training criterion; the others are not interpreted)"
     if hs >= 0.85:
-        return f"mean HS {hs:.2f} is in the E2–E4 range, so by the pre-specified reading HS adds little beyond the logits on this task{note}"
+        return f"mean HS {hs:.3f} is in the E2–E4 range, so by the pre-specified reading HS adds little beyond the logits on this task{note}"
     if hs <= 0.35:
-        return (f"mean HS {hs:.2f} stays in the range of retrains, probability-matched students and random networks, so by "
+        return (f"mean HS {hs:.3f} stays in the range of retrains, probability-matched students and random networks, so by "
                 f"the pre-specified reading T0's hidden states carry mechanism information that matched logits do not{note}")
-    return f"mean HS {hs:.2f} lies between those ranges, which the pre-specified reading calls partial{note}"
+    return f"mean HS {hs:.3f} lies between those ranges (below 0.85, above 0.35), which the pre-specified reading calls partial{note}"
 
 
 def table(baselines: dict | None = None) -> str:
@@ -192,10 +192,14 @@ def inline_values() -> dict[str, str]:
         bd = json.loads(b.read_text(encoding="utf-8"))
         st = bd.get("students_logit")
         if st:
-            v["a9-ls-hs"] = _rng([r["hs"] for r in st])
+            v["a9-ls-hs"] = _rng([r["hs"] for r in st], 3)
             v["a9-ls-fvu"] = _rng([r["centred_logit_fvu"] for r in st], 3)
             v["a9-ls-kl"] = f"{np.mean([r['kl_out'] for r in st]):.2e}"
             v["a9-ls-reading"] = student_reading(st)
+            conv = [r for r in st if r["converged"]]
+            if conv:  # the students that met the pre-specified criterion, for the descriptive contrast with the agent builds
+                v["a9-ls-conv-fvu"] = _rng([r["centred_logit_fvu"] for r in conv], 3)
+                v["a9-ls-conv-hs"] = _rng([r["hs"] for r in conv], 3)
     fr = RES / "frequencies_round2.json"  # E0 above E1 (H1's untested clause): what the runs built (post hoc)
     if fr.exists():
         rows = [r for r in json.loads(fr.read_text(encoding="utf-8"))["rows"] if r["target"] == TARGET and not r.get("variant")]

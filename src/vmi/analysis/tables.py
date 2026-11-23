@@ -144,7 +144,9 @@ def baselines_table(target: str = "T0") -> str:
         entries += [("Independent retrains", "same recipe, other seeds", d["retrains"]),
                     ("Distilled students", "M's output probabilities (KL at temperature 1), no explanation", d["students"])]
         if d.get("students_logit"):  # post hoc, pre-specified in deviation 16(a)
-            entries.append(("Logit-matched students (post hoc)", "M's centred logits (squared error), no explanation", d["students_logit"]))
+            n_ok = sum(bool(x.get("converged")) for x in d["students_logit"])
+            entries.append((f"Logit-matched students (post hoc; {n_ok} of {len(d['students_logit'])} met the training criterion)",
+                            "M's centred logits (squared error), no explanation", d["students_logit"]))
         entries += [
                     ("Fourier-restricted M", "M's weights, key frequencies only in W_E/W_U", [d["fourier_restricted"]]),
                     ("Weights dump", f"all {d['weights_dump_length']['numbers']:,} weights", [d["weights_dump"]])]

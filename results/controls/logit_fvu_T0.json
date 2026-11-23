@@ -402,6 +402,27 @@
       "scale": 0.5724465688703797
     },
     {
+      "kind": "student_logit",
+      "name": "student_logit_T0_s1000",
+      "centred_logit_fvu": 0.164528019813009,
+      "calibrated_logit_fvu": 0.16334576030209358,
+      "scale": 1.0390592325428298
+    },
+    {
+      "kind": "student_logit",
+      "name": "student_logit_T0_s1001",
+      "centred_logit_fvu": 0.05108587479665164,
+      "calibrated_logit_fvu": 0.04835239652730694,
+      "scale": 1.0566294639246394
+    },
+    {
+      "kind": "student_logit",
+      "name": "student_logit_T0_s1002",
+      "centred_logit_fvu": 0.02301525712588707,
+      "calibrated_logit_fvu": 0.022761922157155223,
+      "scale": 1.0163642750876984
+    },
+    {
       "kind": "random_init",
       "name": "seed 1000",
       "centred_logit_fvu": 1.0000522017513653,

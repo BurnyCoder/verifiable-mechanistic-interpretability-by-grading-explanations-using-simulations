@@ -354,5 +354,88 @@
   },
   "weights_dump_length": {
     "numbers": 226816
-  }
+  },
+  "students_logit": [
+    {
+      "seed": 1000,
+      "kl_out": 0.23232882736704985,
+      "argmax_agreement": 0.9135406061555329,
+      "accuracy": 0.9135406061555329,
+      "target_accuracy": 1.0,
+      "sites": {
+        "resid_mid": {
+          "completeness": 0.596175238106047,
+          "soundness": 0.9067103896987928,
+          "harmonic": 0.7193605055116008
+        },
+        "mlp_post": {
+          "completeness": 0.6337395737341285,
+          "soundness": 0.8898695750244405,
+          "harmonic": 0.7402758976794799
+        },
+        "resid_post": {
+          "completeness": 0.8486052410915854,
+          "soundness": 0.9371035414533501,
+          "harmonic": 0.8906614387475439
+        }
+      },
+      "hs": 0.7834326139795414,
+      "centred_logit_fvu": 0.164528019813009,
+      "converged": false
+    },
+    {
+      "seed": 1001,
+      "kl_out": 0.01311265225650989,
+      "argmax_agreement": 0.9969457279348422,
+      "accuracy": 0.9969457279348422,
+      "target_accuracy": 1.0,
+      "sites": {
+        "resid_mid": {
+          "completeness": 0.5853713199965712,
+          "soundness": 0.8875625339799287,
+          "harmonic": 0.7054677312123504
+        },
+        "mlp_post": {
+          "completeness": 0.5624994155423078,
+          "soundness": 0.8500223740599013,
+          "harmonic": 0.6769978235043457
+        },
+        "resid_post": {
+          "completeness": 0.9409395985080451,
+          "soundness": 0.9610727156117961,
+          "harmonic": 0.9508996008611766
+        }
+      },
+      "hs": 0.7777883851926243,
+      "centred_logit_fvu": 0.05108587479665164,
+      "converged": false
+    },
+    {
+      "seed": 1002,
+      "kl_out": 0.0009257959526799015,
+      "argmax_agreement": 0.9998433706633252,
+      "accuracy": 0.9998433706633252,
+      "target_accuracy": 1.0,
+      "sites": {
+        "resid_mid": {
+          "completeness": 0.7930184532928417,
+          "soundness": 0.7772523172334027,
+          "harmonic": 0.7850562361600152
+        },
+        "mlp_post": {
+          "completeness": 0.8553139575229709,
+          "soundness": 0.8428674118836963,
+          "harmonic": 0.8490450722319153
+        },
+        "resid_post": {
+          "completeness": 0.9649381909674057,
+          "soundness": 0.8669211859772169,
+          "harmonic": 0.9133073984133246
+        }
+      },
+      "hs": 0.8491362356017517,
+      "centred_logit_fvu": 0.02301525712588707,
+      "converged": true
+    }
+  ]
 }
