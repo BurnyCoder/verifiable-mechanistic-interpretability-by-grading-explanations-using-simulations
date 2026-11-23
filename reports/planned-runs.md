@@ -32,7 +32,7 @@ Hypotheses and tests: [preregistration.md](preregistration.md).*
 |---|---|---|---|
 | Main method | T0 × {E1, E2, E3, E4} | 4 / 8 / 28 | reference compiler on E1–E4 |
 | Controls | T0 × {E0, W-freq, W-alg, W-role, W-scramble} | 5 / 10 / 35 | random init ×5, wrong targets, planted calibration (trained), trajectory: every E3/E4 replacement × all 401 checkpoints (rounds 1–2 ran only the highest-HS E3/E4 replacement against every 10th checkpoint, 41 of 401; re-run as preregistered, deviation 8) |
-| Baselines | — | — | 9 retrains, 3 distilled students (trained), compiler on all explanations, Fourier-restricted M, weights dump; T-paper's extra retrains (`wd1_s0`, `split0_init*`, §7) not run, deviation 8 (c) |
+| Baselines | — | — | 9 retrains, 3 distilled students (trained; plus 3 logit-matched students, post hoc, audit 9), compiler on all explanations, Fourier-restricted M, weights dump; T-paper's extra retrains (`wd1_s0`, `split0_init*`, §7) not run, deviation 8 (c) |
 | Ablations | E3 math-format, E3 code-format; E3 self-test off (Haiku). Round 1 only: Qwen3.6-35B-A3B, Qwen3.5-9B, Qwen3.5-4B (local) × {E2, E3, E4, W-freq}, stopped after 5 runs at chance (deviation 5) | 15 planned, 8 run / 6 / 21 | — |
 | Hyperparameter sensitivity | effort low, high × {E3, W-freq} (amendment 2: Claude 5.5 rejects custom temperature) | 4 / 8 / 28 | grader and explainer settings re-scored |
 | Seed sensitivity | T1, T2 × {E2, E3, E4, W-freq}; T-new × {E3, E4, W-freq}; T-paper × {E-paper, E1, E3, E4, W-freq} | 16 / 32 / 112 | T-new trained (after freeze); grader fold seeds; redrawn W-freq/W-scramble (3 seeds, §8) not run, deviation 8 (c) |
@@ -50,7 +50,8 @@ marked "not run" above did not, and the trajectory was re-run as preregistered a
 |---|---|---|---|
 | Reproduction of T0 | `wd1` seed 1 | 40,000 | stage 0 |
 | Planted calibration | reference-compiled E3 model for T0; full-batch AdamW, task labels | 10,000 (snapshots 0/100/1,000/10,000) | round 1, controls |
-| Distilled students ×3 | fresh inits (seeds 1000–1002); loss = KL to T0's logits on all 113² inputs | 20,000 | round 1, baselines |
+| Distilled students ×3 | fresh inits (seeds 1000–1002); loss = KL(T0 ‖ student) on the softmax at temperature 1, all 113² inputs (copies T0's output probabilities, not its logits; audit 9) | 20,000 | round 1, baselines |
+| Logit-matched students ×3 (post hoc) | the same inits and recipe; loss = squared error between centred student and centred T0 logits, all 113² inputs; design, criterion (centred-logit FVU < 0.05) and reading pre-specified in deviation 16(a) before training | 20,000 | after round 2, audit 9 |
 | T-new | init = split seed 11 | 40,000 | round 1, before seed sensitivity |
 
 ## Postponed (not in this plan)

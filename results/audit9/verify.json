@@ -1,0 +1,119 @@
+{
+  "checks": [
+    {
+      "name": "H1 JT HS",
+      "derived": 9.46969696969697e-05,
+      "stored": 9.46969696969697e-05,
+      "agree": true
+    },
+    {
+      "name": "H1 JT -KL",
+      "derived": 0.9309442640692641,
+      "stored": 0.9309442640692641,
+      "agree": true
+    },
+    {
+      "name": "H7 Wilcoxon",
+      "derived": 0.015625,
+      "stored": 0.015625,
+      "agree": true
+    },
+    {
+      "name": "H2 p E3>W-freq",
+      "derived": 0.05,
+      "stored": 0.05,
+      "agree": true
+    },
+    {
+      "name": "H2 p E3>W-alg",
+      "derived": 0.35,
+      "stored": 0.35,
+      "agree": true
+    },
+    {
+      "name": "H2 p E3>W-role",
+      "derived": 0.05,
+      "stored": 0.05,
+      "agree": true
+    },
+    {
+      "name": "H2 p E4>W-scramble",
+      "derived": 0.5,
+      "stored": 0.5,
+      "agree": true
+    },
+    {
+      "name": "H2 Holm E3>W-freq",
+      "derived": 0.2,
+      "stored": 0.2,
+      "agree": true
+    },
+    {
+      "name": "H2 Holm E3>W-alg",
+      "derived": 0.7,
+      "stored": 0.7,
+      "agree": true
+    },
+    {
+      "name": "H2 Holm E3>W-role",
+      "derived": 0.2,
+      "stored": 0.2,
+      "agree": true
+    },
+    {
+      "name": "H2 Holm E4>W-scramble",
+      "derived": 0.7,
+      "stored": 0.7,
+      "agree": true
+    },
+    {
+      "name": "H4 Holm E3",
+      "derived": 0.00909090909090909,
+      "stored": 0.00909090909090909,
+      "agree": true
+    },
+    {
+      "name": "H4 Holm E4",
+      "derived": 0.00909090909090909,
+      "stored": 0.00909090909090909,
+      "agree": true
+    },
+    {
+      "name": "H4 students Holm E3",
+      "derived": 0.2,
+      "stored": 0.2,
+      "agree": true
+    },
+    {
+      "name": "H4 students Holm E4",
+      "derived": 0.2,
+      "stored": 0.2,
+      "agree": true
+    }
+  ],
+  "derived_only": {
+    "H4 students separated (every agent run above every student)": 1.0,
+    "replication JT T1": 0.5,
+    "replication MW E3>W-freq T1": 0.05,
+    "replication JT T2": 0.5,
+    "replication MW E3>W-freq T2": 0.05,
+    "replication JT T-new": 0.05,
+    "replication MW E3>W-freq T-new": 0.05,
+    "replication JT T-paper": 0.06130952380952381,
+    "replication MW E3>W-freq T-paper": 0.05,
+    "Holm-all H1 HS": 0.0008522727272727272,
+    "Holm-all H4 E3": 0.03636363636363636,
+    "Holm-all H4 E4": 0.03636363636363636,
+    "Holm-all H7": 0.09375,
+    "Holm-all H2 E3>W-freq": 0.25,
+    "Holm-all H2 E3>W-role": 0.25,
+    "Holm-all H2 E3>W-alg": 1.0,
+    "Holm-all H2 E4>W-scramble": 1.0,
+    "Holm-all H1 KL": 1.0,
+    "H5 seed pairs above compiler by sign": 6.0,
+    "H5 seed pairs beyond the range": 4.0,
+    "mean KL of the true E2-E4 main runs": 0.023326006402460485,
+    "spend of reported runs (USD)": 2.2001,
+    "requests of reported runs": 881.0
+  }
+}

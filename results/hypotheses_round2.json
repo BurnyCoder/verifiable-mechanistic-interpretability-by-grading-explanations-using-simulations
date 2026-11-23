@@ -199,7 +199,7 @@
           "r_rb": 1.0,
           "min_p": 0.1,
           "holm_p": 0.2,
-          "result": "no significant difference (Holm p 0.20; post-hoc rule: cannot tell at this N)"
+          "result": "not significant (Holm p 0.20; smallest attainable p 0.10; every agent run above every student; post-hoc rule: cannot tell at this N)"
         },
         "E4": {
           "p": 0.1,
@@ -207,7 +207,7 @@
           "r_rb": 1.0,
           "min_p": 0.1,
           "holm_p": 0.2,
-          "result": "no significant difference (Holm p 0.20; post-hoc rule: cannot tell at this N)"
+          "result": "not significant (Holm p 0.20; smallest attainable p 0.10; every agent run above every student; post-hoc rule: cannot tell at this N)"
         }
       },
       "retrain_hs_mean": 0.11857353858866843,
