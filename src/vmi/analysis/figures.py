@@ -69,11 +69,13 @@ def fig_ladder(max_round: int, target: str = "T0") -> Path | None:
         for i, lv in enumerate(levels):
             col = TRUE if lv in IS_TRUE else CTRL
             vals = [r[key] for r in _select(runs, target=target, level=lv)]
-            ax.scatter(np.full(len(vals), i) + np.linspace(-0.08, 0.08, len(vals)) if len(vals) > 1 else [i] * len(vals),
-                       vals, s=40, color=col, edgecolor=SURFACE, linewidth=1.5, zorder=3)
+            # audit 8: ±0.18 jitter, thin same-colour edge and alpha 0.8, so the three runs of a condition do not hide
+            # one another behind white-edged markers (E1's and E2's runs used to merge into one dot)
+            ax.scatter(np.full(len(vals), i) + np.linspace(-0.18, 0.18, len(vals)) if len(vals) > 1 else [i] * len(vals),
+                       vals, s=28, color=col, alpha=0.8, edgecolor=col, linewidth=0.5, zorder=3)
             c = _json(RES / "compiler" / target / f"{lv}.json")
             if c:
-                ax.scatter([i + 0.25], [max(c[key], 1e-9)], s=40, marker="D", facecolor="none", edgecolor=col, linewidth=1.5, zorder=3)
+                ax.scatter([i + 0.34], [max(c[key], 1e-9)], s=40, marker="D", facecolor="none", edgecolor=col, linewidth=1.5, zorder=3)
         if key == "kl_out":
             ax.set_yscale("log")
         else:
@@ -119,7 +121,7 @@ def fig_kl_vs_hs(max_round: int, target: str = "T0") -> Path | None:
     high = sorted((lv for lv, (_, y) in med.items() if y > 0.8), key=lambda lv: med[lv][0])
     for lv, xy in med.items():
         off = ((4, 6) if high.index(lv) % 2 == 0 else (4, -11)) if lv in high else (4, 3)
-        ax.annotate(lv, xy, xytext=off, textcoords="offset points", fontsize=7, color=INK2, zorder=4,
+        ax.annotate(lv, xy, xytext=off, textcoords="offset points", fontsize=7, color=INK2, zorder=2,  # under the points (audit 8)
                     bbox={"boxstyle": "round,pad=0.1", "fc": SURFACE, "ec": "none", "alpha": 0.8})
     ref_marker = {"random init": "v", "retrains": "s", "distilled students": "^"}  # shape tells reference types apart
     for name, rs in _references(target).items():
@@ -191,7 +193,7 @@ def fig_trajectory(target: str = "T0") -> Path | None:
     axes[1].set_title("Restricted loss of the checkpoint (key frequencies only; log) ↓", loc="left")
     axes[1].set_xlabel(f"training step of the target checkpoint ({len(steps)} checkpoints)")
     ctrl_rho = [c["rho"] for c in d.get("negative_controls", [])]
-    fig.suptitle(f"Training trajectory ({target}); Spearman(HS, −log restricted loss): E3/E4 min "
+    fig.suptitle(f"Training trajectory ({target})\nSpearman(HS, −log restricted loss): E3/E4 min "
                  f"{d['spearman_min']:.2f}, median {d['spearman_hs_vs_neglog_restricted_loss']:.2f}"
                  + (f"; controls max {max(ctrl_rho):+.2f}" if ctrl_rho else "")
                  + (f"; final T0 itself {pc['rho_vs_neglog_restricted_loss']['final T0 (weights dump)']:.2f}" if pc else ""),
@@ -254,7 +256,9 @@ def fig_simulators(max_round: int, target: str = "T0") -> Path | None:
         off = (j - (len(models) - 1) / 2) * 0.12
         for i, lv in enumerate(levels):
             vals = [r["hs"] for r in _select(runs, target=target, level=lv, model=m)]
-            ax.scatter([i + off] * len(vals), vals, s=40, marker=markers[j], color=SERIES[j], edgecolor=SURFACE, linewidth=1.5, zorder=3)
+            jit = np.linspace(-0.05, 0.05, len(vals)) if len(vals) > 1 else np.zeros(len(vals))  # audit 8: show every run
+            ax.scatter(i + off + jit, vals, s=28, marker=markers[j], color=SERIES[j], alpha=0.8, edgecolor=SERIES[j],
+                       linewidth=0.5, zorder=3)
     for i, lv in enumerate(levels):
         c = _json(RES / "compiler" / target / f"{lv}.json")
         if c:
@@ -349,7 +353,9 @@ def fig_outputs(max_round: int, target: str = "T0", panels: list[dict] | None = 
     axes[1][0].set_ylabel("best-matching neuron\n(scaled to its max)", fontsize=7)
     fig.colorbar(im, ax=axes[0].tolist(), fraction=0.012, pad=0.01)
     fig.suptitle(f"Outputs vs. internals on all 113×113 inputs (target {target}, round {max_round}): top, the probability "
-                 "of the true answer (ground truth: 1 everywhere); bottom, the neuron best matching the target's neuron",
+                 "of the true answer (ground truth: 1 everywhere); bottom, the neuron with the largest |r| to the target's "
+                 "highest-variance neuron.\nEach agent panel is the condition's first run (seed 0); the retrain is a fixed "
+                 "choice (wd1_s2), not the best or worst one",
                  x=0.01, ha="left", fontsize=8)
     return _save(fig, f"outputs_{target}")
 

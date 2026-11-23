@@ -72,17 +72,27 @@ def _match(checks: dict[str, bool]) -> str:
 
 
 def _verdict(h: dict) -> str:
-    """Formal verdict text. Audit 6: where the "cannot tell at this N" rule (deviation 1, applied at N = 3 by deviation 7,
-    after the N = 3 verdicts were first read) replaces §5's falsification column, the literal reading is shown too:
-    §5 falsifies a comparison that is "not significant after Holm", and a 3-vs-3 exact test cannot be significant."""
-    text = h.get("verdict") or "; ".join(f"{a}: {b}" for a, b in h.get("verdicts", {}).items())
+    """Formal verdict text, preregistered reading first.
+
+    Audit 8: preregistration §5 reserves "cannot tell at this N" for a test that is undefined at the current N and
+    falsifies a comparison that is "not significant after Holm"; at N = 3 a 3-vs-3 exact test is defined but cannot be
+    significant (§6 notes this and grants no exception), so §5's verdict is "not supported". The "cannot tell" rule is
+    deviation 1's (post hoc, applied at N = 3 by deviation 7 after the N = 3 verdicts were first read) and is shown
+    second. Audits 6–7 had shown the literal reading only in a parenthesis after "cannot tell"."""
+    if h.get("verdict"):
+        return h["verdict"]
     holm_p, verd = h.get("holm_p") or {}, h.get("verdicts") or {}
-    literal = [k for k, v in verd.items() if v == "cannot tell at this N" and holm_p.get(k) is not None and holm_p[k] >= 0.05]
-    if literal and isinstance(h.get("N"), int) and h["N"] > 1:
-        text += (" (by §5's falsification column read literally — not significant after Holm — "
-                 + ("all four read" if len(literal) == 4 else ", ".join(literal) + " read")
-                 + " \"not supported\"; the \"cannot tell\" rule is deviation 1's, applied at this N by deviation 7)")
-    return text
+    powerless = [k for k, v in verd.items() if v == "cannot tell at this N" and holm_p.get(k) is not None and holm_p[k] >= 0.05]
+    if not (powerless and isinstance(h.get("N"), int) and h["N"] > 1):
+        return "; ".join(f"{a}: {b}" for a, b in verd.items())
+    from math import comb
+    best = len(holm_p) / comb(2 * h["N"], h["N"])  # Holm p of a complete separation (m × smallest one-sided p)
+    prereg = h.get("verdicts_prereg") or {k: ("not supported" if k in powerless else v) for k, v in verd.items()}
+    return ("; ".join(f"{a}: {b}" + (f" (Holm p {_f(holm_p[a], 2)})" if a in powerless else "") for a, b in prereg.items())
+            + f" — preregistered §5 criterion; at N = {h['N']} even complete separation gives Holm p {_f(best, 2)}, so "
+            + ("these tests" if len(powerless) > 1 else "this test") + " could not reach α. Post-hoc rule of deviation 1 "
+            + "(applied at this N by deviation 7): " + ("all read" if len(powerless) == len(verd) else ", ".join(powerless) + " read")
+            + " \"cannot tell at this N\"")
 
 
 def _mean_hs(runs, **kw):
@@ -130,6 +140,8 @@ def h5_summary(g: dict[str, list[dict]]) -> dict[str, str]:
         "seed-sign": f"{w(len(above(seed)))} of {w(len(seed))}",
         "max": f"{top['gap']:+.3f} ({top['target']} {top['level']})" if top else "–",
         "list": ", ".join(f"{r['target']} {r['level']}" for r in beyond(seed)) or "none",
+        # audit 8: margins under 0.01 HS, which "beyond the range of three runs" still counts (about 1 in 8 by chance)
+        "small": ", ".join(f"{r['target']} {r['level']} {r['gap']:+.3f}" for r in beyond(seed) if r["gap"] < 0.01) or "none",
         "tpaper": ", ".join(f"{r['level']} {r['gap']:+.3f}" + (" beyond the CI" if r["beyond"] else "") for r in tp) or "–",
     }
 
@@ -196,7 +208,8 @@ def prediction_rows(max_round: int) -> list[dict]:
         s5 = h5_summary(g5)
         obs = ("T0 (preregistered): agent − compiler " + ", ".join(f"{r['level']} {r['gap']:+.3f}" for r in g5["T0"])
                + f", {s5['t0']}; seed targets T1, T2, T-new (extension, post hoc): agent above compiler in {s5['seed-sign']} "
-               f"pairs by sign, {s5['seed']} beyond the bootstrap CI ({s5['list']}; largest {s5['max']}); "
+               f"pairs by sign, {s5['seed']} beyond the bootstrap CI ({s5['list']}; largest {s5['max']}; margins under "
+               f"0.01: {s5['small']}); "
                f"T-paper (memorisation-flagged, not counted): {s5['tpaper']}")
         local = [r for r in runs if r["model"] in LOCAL_MODELS]
         add("H5", obs + f"; {len(local)} local runs, {sum(r['accuracy'] > 2 / 113 for r in local)} above chance",
@@ -247,10 +260,10 @@ def highlight_rows(max_round: int, target: str = "T0") -> list[dict]:
             out.append({"ok": ok, "title": title, "evidence": evidence[0].format(*[_f(x) for x in evidence[1]]), "means": means})
 
     c = {lv: compiler(target, lv) for lv in ("E2", "E3", "E4")}
-    add(True, "Naming the key frequencies is what makes the rebuild faithful",
+    add(True, "Naming the key frequencies is what raises HS",  # audit 8: not "faithful" — E1–E3 rebuilds are Pizza-like
         ("HS {} with the algorithm only (E1) → {} once the frequencies are named (E2); the AI-free compiler gets {} from E2",
          [m("E1"), m("E2"), c["E2"] and c["E2"]["hs"]]),
-        "The score rewards the part of the explanation that pins down this network's mechanism.")
+        "The score rewards the part of the explanation that pins down which frequencies this network uses.")
     add(True, "Right answers from the wrong key frequencies: caught by HS, missed by output KL",
         ("wrong-frequency explanation: accuracy {}, output KL {} (true E3: {}), but HS {} (true E3: {})",
          [m("W-freq", "accuracy"), m("W-freq", "kl_out"), m("E3", "kl_out"), m("W-freq"), m("E3")]),
@@ -276,7 +289,8 @@ def highlight_rows(max_round: int, target: str = "T0") -> list[dict]:
             ("T0's E3/E4 rebuilds: HS {} against T0, at most {} against {} other trained networks (other seeds, the "
              "published model, no-mechanism controls)",
              [np.mean([r["hs_T0"] for r in rows]), max(max(r["hs_wrong"].values()) for r in rows), len(rows[0]["hs_wrong"])]),
-            "The score was specific to the network that was explained.")
+            "The score was specific to the network that was explained, against networks with other key frequencies "
+            "(each trained wrong target shares at most one with T0); same-frequency networks were not among them.")
     add(True, "Holds on a network trained after the protocol was frozen",
         ("T-new: HS {} (E3) and {} (E4) vs {} (wrong frequencies)",
          [m("E3", t="T-new"), m("E4", t="T-new"), m("W-freq", t="T-new")]),
@@ -312,8 +326,8 @@ def highlight_rows(max_round: int, target: str = "T0") -> list[dict]:
         if e1:
             paper = set(F["paper_freqs"])
             listed = sum(bool(r.get("declared_freqs")) and len(set(r["declared_freqs"]) & paper) >= 4 for r in e1)
-            # audit 5: recall of the published mechanism, cued by the task description (E0/ARCHITECTURE.md give the
-            # paper's exact architecture and an outline of its training setup), not necessarily of the paper's text
+            # audit 5/8: recall of the published mechanism, cued by ARCHITECTURE.md (the paper's exact architecture) and
+            # E1's text (the paper's algorithm); only E0's text outlines the training setup; not necessarily the paper's text
             add(False, "The AI fills gaps from memory of the published mechanism",
                 ("algorithm-only rebuilds ({} runs on T0 and the published checkpoint; same input text): {} build scripts "
                  "list at least four of the paper's five frequencies; HS {} against T0 but {} against the published "
@@ -332,15 +346,17 @@ def highlight_rows(max_round: int, target: str = "T0") -> list[dict]:
 
 
 def _trend_test(groups: list[np.ndarray]) -> str:
-    """§5's H1 rule on one target: one-sided Jonckheere–Terpstra p < α and Spearman ρ's bootstrap CI above 0; 'cannot
-    tell' when even a perfect order could not reach p < α (smallest exact p = 1 / number of distinct orderings)."""
+    """§5's H1 rule on one target: one-sided Jonckheere–Terpstra p < α and Spearman ρ's bootstrap CI above 0, else "not
+    supported". Audit 8: when even a perfect order could not reach p < α (smallest exact p = 1 / number of distinct
+    orderings), deviation 1's post-hoc rule reads "cannot tell at this N"; it is shown after the preregistered verdict."""
     from vmi.analysis import stats as st
     jt = st.jonckheere(groups)
     lv = np.concatenate([np.full(len(g), i) for i, g in enumerate(groups)])
     sp = st.spearman_ci(lv, np.concatenate(groups), groups)
     ok = jt["p"] < 0.05 and sp["rho"] > 0 and (sp["ci"] is None or sp["ci"][0] > 0)
-    v = "cannot tell at this N" if 1 / jt["orderings"] >= 0.05 else ("supported" if ok else "not supported")
-    return f"{v} (JT p {_f(jt['p'])}, ρ {_f(sp['rho'], 2)})"
+    v = "supported" if ok else "not supported"
+    post_hoc = "; post-hoc rule: cannot tell at this N" if 1 / jt["orderings"] >= 0.05 else ""
+    return f"{v} (JT p {_f(jt['p'])}, ρ {_f(sp['rho'], 2)}{post_hoc})"
 
 
 def replication_rows(max_round: int) -> list[dict]:
@@ -369,14 +385,17 @@ def replication_rows(max_round: int) -> list[dict]:
         w_kl, w_hs = float(np.mean([r["kl_out"] for r in wf])), float(np.mean([r["hs"] for r in wf]))
         e3, wfv = np.array([r["hs"] for r in _select(runs, target=t, level="E3")]), np.array([r["hs"] for r in wf])
         mw = st.mann_whitney_greater(e3, wfv) if len(e3) else {"p": None}
-        h2v = st.verdict(mw["p"], len(e3) > 0 and e3.mean() > wfv.mean(), st.min_p_mann_whitney(len(e3), len(wfv)))
+        up = len(e3) > 0 and e3.mean() > wfv.mean()
+        h2v = st.verdict_prereg(mw["p"], up)  # §5 as written first; deviation 1's reading after it (audit 8)
+        post_hoc = st.verdict(mw["p"], up, st.min_p_mann_whitney(len(e3), len(wfv)))
         out.append({
             "target": t + (" (flagged: memorisation)" if t == "T-paper" else
                            " (E2–E4 only; post hoc, for comparison)" if t == "T0" else ""),
             "hs_by_level": ", ".join(f"{lv} {_f(v)}" for lv, v in hs.items()),
             "h1": (("means rise" if _mono([hs[lv] for lv in trend_lv]) else "means do not rise") + f" {'→'.join(trend_lv)}; "
                    + _trend_test([np.array([r["hs"] for r in _select(runs, target=t, level=lv)]) for lv in trend_lv])),
-            "h2": (f"{hs['E3'] - w_hs:+.3f}; {h2v}" + (f" (p {_f(mw['p'])})" if mw["p"] is not None else "")) if "E3" in hs else "–",
+            "h2": (f"{hs['E3'] - w_hs:+.3f}; {h2v}" + (f" (p {_f(mw['p'])}" if mw["p"] is not None else "")
+                   + (f"; post-hoc rule: {post_hoc})" if post_hoc != h2v else ")" if mw["p"] is not None else "")) if "E3" in hs else "–",
             "h3_observed": f"agreement {_f(w_agree)}, KL {_f(w_kl)} (true max {_f(max(kl_true))}), HS {_f(w_hs)}",
             "h3": _match({"agreement < 0.99": w_agree >= 0.99, "KL above the true range": w_kl <= max(kl_true),
                           "HS not below every true explanation": all(w_hs < hs[lv] for lv in true_lv)}),

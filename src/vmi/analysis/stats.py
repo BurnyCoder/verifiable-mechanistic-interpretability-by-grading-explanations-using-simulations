@@ -191,7 +191,18 @@ def min_p_mann_whitney(n1: int, n2: int, two_sided: bool = False) -> float:
 
 
 def verdict(p: float | None, effect_positive: bool, min_p: float, alpha: float = 0.05) -> str:
-    """Preregistered verdict wording: a test whose smallest attainable p is ≥ alpha cannot decide at this N."""
+    """Deviation 1's verdict wording (post hoc, not preregistered): a test whose smallest attainable p is ≥ alpha
+    returns "cannot tell at this N". Preregistration §5 reserves "cannot tell" for a test that is undefined at the
+    current N (audit 8); `verdict_prereg` is that reading, and the documents show it first."""
     if p is None or min_p >= alpha:
+        return "cannot tell at this N"
+    return "supported" if p < alpha and effect_positive else "not supported"
+
+
+def verdict_prereg(p: float | None, effect_positive: bool, alpha: float = 0.05) -> str:
+    """Preregistration §5 verdict: "supported" needs the predicted direction and p < alpha, otherwise "not supported";
+    "cannot tell at this N" only when the test is undefined (p is None, e.g. one run per arm). §6 notes that at N = 3 a
+    3-vs-3 Mann–Whitney is defined but cannot go below 1/20, and grants no exception (audit 8)."""
+    if p is None:
         return "cannot tell at this N"
     return "supported" if p < alpha and effect_positive else "not supported"

@@ -117,7 +117,9 @@ def test_verdict_rules_follow_preregistration_sections_5_and_6():
         assert set(H["H1"]["verdicts"]) == {"HS trend E1→E4", "E0 below E1", "KL_out"}
         assert H["H1"]["verdicts"]["E0 below E1"].startswith(("observed", "not observed", "not run"))
     if "H2" in H and H["H2"]["N"] == 3:
-        assert set(H["H2"]["verdicts"].values()) == {"cannot tell at this N"}
+        assert set(H["H2"]["verdicts"].values()) == {"cannot tell at this N"}  # deviation 1 (post hoc)
+        assert set(H["H2"]["verdicts_prereg"].values()) == {"not supported"}  # §5 as written (audit 8)
+    assert st.verdict_prereg(0.05, True) == "not supported" and st.verdict_prereg(None, True) == "cannot tell at this N"
 
 
 def test_glossary_explains_labels_once_per_unit_and_leaves_code_and_links_alone():

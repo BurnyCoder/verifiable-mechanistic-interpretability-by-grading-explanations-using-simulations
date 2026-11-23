@@ -120,7 +120,9 @@ def prepare_run(settings: Settings, run_dir: Path, *, explanation: str, extra_fi
     task = (TEMPLATE / "TASK.md").read_text(encoding="utf-8")
     # the budget the agent is told about is the one the runner enforces
     task = task.replace("{MINUTES}", str(settings.run_timeout_s // 60)).replace("{STEPS}", str(settings.run_max_steps))
-    if not selftest:  # self-test ablation: drop the tool and every mention of it
+    if not selftest:  # self-test ablation: drop the tool and its mentions in TASK.md and the prompt. Audit 8: the starter
+        # build_weights.py (copied above in every variant) still says "re-run this script and selftest.py"; all three
+        # reported no-self-test runs read that line (none ran selftest.py). Kept as is: the protocol is frozen across rounds.
         task = task.replace("`forward.py` (reference forward pass) and `selftest.py` (checks shapes and task accuracy) are provided; do not edit\n  them. Run `python3 build_weights.py` and then `python3 selftest.py` and fix problems until the self-test passes and\n  the accuracy is as high as you can get it.",
                             "`forward.py` (reference forward pass) is provided; do not edit it. Run `python3 build_weights.py` and fix\n  problems until it runs.").replace("script and the self-test after each stage", "script after each stage")
         assert "selftest" not in task and "self-test" not in task, "self-test ablation still mentions the self-test"

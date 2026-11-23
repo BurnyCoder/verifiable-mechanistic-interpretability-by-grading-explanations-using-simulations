@@ -105,11 +105,14 @@ def evaluate(max_round: int) -> dict:
         adj = st.holm({k: v["p"] for k, v in tests.items()})
         if nmin < 2:
             verdicts = {k: ("cannot tell at this N" if effects[k] is None or effects[k]["diff"] > 0 else "not supported") for k in pairs}
-        else:  # §6 / deviation 1: a test whose smallest attainable p is ≥ α cannot decide (3 vs 3: 1/20); deviation 7
+            prereg = dict(verdicts)  # one run per arm: the test is undefined, so both readings agree
+        else:  # deviation 1 (post hoc): a test whose smallest attainable p is ≥ α cannot decide (3 vs 3: 1/20); deviation 7
             verdicts = {k: st.verdict(adj[k], effects[k]["diff"] > 0,
                                       st.min_p_mann_whitney(len(_select(runs, level=a)), len(_select(runs, level=b))))
                         for k, (a, b) in pairs.items()}
-        H["H2"] = {"N": nmin, "label": _n_label(nmin), "verdicts": verdicts, "tests": tests, "holm_p": adj, "effects": effects}
+            prereg = {k: st.verdict_prereg(adj[k], effects[k]["diff"] > 0) for k in pairs}  # §5 as written (audit 8)
+        H["H2"] = {"N": nmin, "label": _n_label(nmin), "verdicts": verdicts, "verdicts_prereg": prereg, "tests": tests,
+                   "holm_p": adj, "effects": effects}
     # H3 — W-freq fools output KL but not HS
     wf = _select(runs, level="W-freq")
     trues = {lv: _select(runs, level=lv) for lv in ("E2", "E3", "E4")}

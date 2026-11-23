@@ -235,8 +235,9 @@ def key_results(max_round: int, target: str = "T0") -> str:
                    "target, and the sandbox does not reveal the target), so their runs on T0 and on the published "
                    "checkpoint are replicates of one condition. When the explanation gives no frequencies, the simulator "
                    "often builds most of the published paper's frequencies {14, 35, 41, 42, 52} into its replacement "
-                   "(recall cued by the task description, which gives the paper's exact architecture and an outline of its "
-                   "training setup; no sandbox file names a frequency or the paper). "
+                   "(recall cued by the sandbox's description of the paper's exact architecture and, for E1, by the "
+                   "paper's own algorithm; only E0's text also outlines the training setup; no sandbox file names a "
+                   "frequency or the paper; audit 8). "
                    + "; ".join(x for x in (per_level("E1"), per_level("E0")) if x)
                    + ". On a published model, a high score can therefore come from the simulator's memory rather than the "
                    "explanation (one published model and one simulator tested).")
@@ -357,7 +358,7 @@ def inline_values(max_round: int) -> dict[str, str]:
         v["chance-share"] = f"{mem['chance']:.0%}".replace("%", " %")
     from vmi.analysis.predictions import h5_gaps, h5_summary  # agent vs compiler, one wording everywhere
     s5 = h5_summary(h5_gaps(runs))
-    for k in ("t0", "seed", "max", "tpaper"):
+    for k in ("t0", "seed", "max", "tpaper", "small"):
         v[f"h5-{k}"] = s5[k]
     from vmi.analysis.predictions import _trend_test  # T0's own E2–E4 trend, for comparison with the seed targets
     g24 = [np.array([r["hs"] for r in _select(runs, level=lv)]) for lv in ("E2", "E3", "E4")]
@@ -898,7 +899,8 @@ def clock_pizza_table() -> str:
             a = S["agent"][lv]
             out.append(f"| T0 {lv}, agent (n = {len(a)}) | {rng([x[q] for x in a])} | {rng([x[g] for x in a])} | "
                        f"{rng([x[gf] for x in a])} | {np.mean([x['accuracy'] for x in a]):.4f} |")
-    # Audit 6 (correcting audit 5): Fig. 7's "phase transition lines" are drawn in attention-rate × width space and
+    # Audit 6 (correcting audit 5): Fig. 7's "phase transition lines" are drawn against attention rate (bottom panel:
+    # also width; audit 8) and
     # "calculated by logistic regression (classify the runs by whether gradient symmetricity > 98% and whether distance
     # irrelevance < 0.6)" (Zhong et al., Fig. 7 caption); 0.98 and 0.6 are the labels of that regression, not lines on
     # either metric. Def. 4.1 is gradient symmetricity, Def. 4.2 distance irrelevance. Targets with q in [0.4, 0.6) are
@@ -908,7 +910,7 @@ def clock_pizza_table() -> str:
             "within one difference a − b with its spread over all inputs (§4.1.2: 0–0.4 typical of Pizza, 0.4–1 of Clock; "
             "the decisive diagnostic, §4.1.3); gradient symmetricity (Def. 4.1) is the mean cosine of the logit's gradients with "
             "respect to the input embeddings of a and b (their Pizza Model A: 0.994). Their Fig. 7 draws phase-transition lines "
-            "in attention-rate × width space, fitted by logistic regression to two labels per run: gradient symmetricity "
+            "against attention rate (and, in the bottom panel, width), fitted by logistic regression to two labels per run: gradient symmetricity "
             "> 98 % and q < 0.6"
             + (f"; {', '.join(near)} is Clock-typical by §4.1.2 but just under the q < 0.6 label, and far below the "
                f"gradient-symmetricity label, so not Pizza-like by both of Fig. 7's labels either" if near else "")
