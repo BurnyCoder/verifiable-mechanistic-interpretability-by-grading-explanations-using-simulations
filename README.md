@@ -5,21 +5,17 @@ Developed in a mechanistic interpretability hackathon on **automatically evaluat
 explanations**, which the authors co-organized in their mechanistic interpretability community and its Discord
 server, [mechinterp.com](https://mechinterp.com/).
 
-> **Status (2026-11-22): rounds 1 and 2 complete (N = 3 runs per condition); round 3 (N = 10) postponed to a later
-> day.** Results below are at N = 3 — not yet N = 10. Hypotheses,
-> metrics and analyses were preregistered and pushed before any result
-> ([reports/preregistration.md](reports/preregistration.md)); every result number below is regenerated from `results/` by
-> `vmi analyse 2`. Paper draft: [reports/paper.pdf](reports/paper.pdf). Progress: [reports/progress.md](reports/progress.md).
+> **Status (2026-11-23): rounds 1 and 2 complete (N = 3 runs per condition); round 3 (N = 10) postponed to a later
+> day.** Results below are at N = 3 — not yet N = 10. Hypotheses, metrics and analyses were preregistered and pushed
+> before any result ([reports/preregistration.md](reports/preregistration.md)); every result number below is
+> regenerated from `results/` by `vmi analyse 2`. Paper draft: [reports/paper.pdf](reports/paper.pdf). Progress:
+> [reports/progress.md](reports/progress.md).
 > **Interactive results explorer:** [burnycoder.github.io/…](https://burnycoder.github.io/verifiable-mechanistic-interpretability-by-grading-explanations-using-simulations/).
-> Reviews: [round 1](reports/reviews/round1-review.md), [round 2](reports/reviews/round2-review.md),
-> [independent audit (2026-11-22)](reports/reviews/independent-audit-2026-11-22.md),
-> [second independent audit (2026-11-22)](reports/reviews/audit-2-2026-11-22.md),
-> [third independent audit (2026-11-22)](reports/reviews/audit-3-2026-11-22.md),
-> [fourth independent audit (2026-11-22)](reports/reviews/audit-4-2026-11-22.md),
-> [fifth independent audit (2026-11-22)](reports/reviews/audit-5-2026-11-22.md),
-> [sixth independent audit (2026-11-22)](reports/reviews/audit-6-2026-11-22.md).
+> Round reviews, independent audits and a citation check: [reports/reviews/](reports/reviews/).
 > Replacement networks, agent transcripts and trained models: [Hugging Face](https://huggingface.co/BurnyCoder/grading-explanations-by-simulation)
 > ([collection](https://huggingface.co/collections/BurnyCoder/grading-mechanistic-explanations-by-simulation-6b01ab93022d76813a8b5c02)).
+
+**Contents:** [In one paragraph](#in-one-paragraph) · [Highlights](#highlights-what-works-and-what-doesnt) · [Visual overview](#visual-overview) · [Methodology](#methodology) · [Architecture](#architecture) · [Results](#results) · [Run matrix](#run-matrix) · [Novelty and related work](#novelty-and-related-work) · [Features](#features) · [Technologies](#technologies) · [Install, set up and use](#install-set-up-and-use) · [Repository layout](#repository-layout) · [To do](#to-do)
 
 ## In one paragraph
 
@@ -61,7 +57,7 @@ accounting, and no-, wrong-explanation, wrong-target and planted-mechanism contr
 [Novelty and related work](#novelty-and-related-work)). *Stack:* Python 3.12, PyTorch, Claude Code with Claude Haiku
 5.5, bubblewrap in WSL2, uv, Hugging Face Hub, GitHub Pages ([Features](#features), [Technologies](#technologies)).
 
-## What works and what doesn't: highlighted examples
+## Highlights: what works and what doesn't
 
 Each row is one concrete comparison from the experiments, with its numbers read from `results/` (✅ the grader does
 what a valid grader should; ❌ it fails, or a trap the experiments exposed). HS = hidden-state similarity (0–1, higher
@@ -84,7 +80,376 @@ what a valid grader should; ❌ it fails, or a trap the experiments exposed). HS
 | ❌ | **Small local AI models cannot do the task at all** | 5 local runs (Qwen3.5-4B, 9B): task accuracy 0.009 (chance = 1/113), HS (hidden-state similarity, 1 = internals match up to a linear map) 0.000 | In this harness, with 4-bit weights and a 60-step, 60-minute budget, the small local models never built a working network; model size, quantisation and harness are not separated. |
 <!-- END highlights -->
 
-### Concrete outputs, next to the ground truth
+## Visual overview
+
+Four figures for the main target T0 (main target network), round 2, drawn from `results/` by `vmi analyse`. Blue:
+runs of the main simulator on true explanations; orange: on wrong (control) explanations; green: networks built
+without an agent; diamonds: the AI-free reference compiler. The ground truth is the target network itself and the true
+answer (a + b) mod 113. ✅ marks what a valid grader should show, ❌ where it fails.
+
+| **Behaviour is not mechanism** | **Score per explanation** |
+|---|---|
+| ![Behaviour (output KL) against mechanism (HS)](reports/figures/kl_vs_hs_T0.png) | ![Scores per explanation on T0](reports/figures/ladder_T0.png) |
+| Output KL (x, log scale; left = the same answers) against HS (hidden-state similarity, 1 = internals match up to a linear map; y) for every T0 run and no-agent network. ✅ Retrains, distilled students and the wrong-frequency (W-freq) and wrong-role (W-role) builds give the right answers (low KL) with low HS; only builds that use T0's frequencies reach the top. ❌ The Pizza (W-alg) and shuffled-table (W-scramble) builds sit up there with the true ones. | HS (left) and output KL (right, log scale) per explanation; dots are single runs, diamonds the AI-free compiler, dashed lines the no-agent references. ✅ HS jumps once the explanation names the key frequencies (E1 → E2) and stays low for the wrong frequencies (W-freq). ❌ W-alg (Pizza) and W-scramble score as high as E3 and E4, and output KL does not fall with detail (lowest at E2). |
+| **Answers vs. insides, against the ground truth** | **Which frequencies each network built** |
+| ![Outputs vs. internals](reports/figures/outputs_T0.png) | ![Frequencies built by each network](reports/figures/examples_T0.png) |
+| Top: probability of the true answer on all 113 × 113 inputs (the target, left, is the ground truth). Bottom: each network's neuron that best matches one of the target's (correlation r printed). ✅ The E3 and E4 rebuilds match both the answers and a target neuron; E1, W-freq and an independent retrain answer just as well with unrelated neurons; random initialisation fails both. ❌ The Pizza build (W-alg) also matches the neuron. | Fourier spectrum of each network's neuron-to-logit map W_L; shaded bars are the target's key frequencies (the ground truth). ✅ E3 and E4 build T0's frequencies; W-freq builds the wrong ones it was told. ❌ The first E1 run, given no frequencies, builds the published paper's frequencies from memory; W-alg (Pizza) builds the same frequencies as the true explanations, which is why HS did not separate it. |
+
+The same results, explorable run by run (hover for each run's numbers; switch target, metric and simulator):
+[interactive results explorer](https://burnycoder.github.io/verifiable-mechanistic-interpretability-by-grading-explanations-using-simulations/).
+GitHub READMEs cannot run scripts, so the interactive views live there; there is no video.
+
+## Methodology
+
+The full protocol, frozen before any result, is in the [preregistration](reports/preregistration.md) §2–§5; the
+[paper](reports/paper.pdf) §3 gives the details. The study varies the explanation and holds everything else fixed.
+
+### Model: the target networks
+
+Every target is the one-layer modular-addition transformer of [Nanda et al. 2023](https://arxiv.org/abs/2301.05217):
+input `a b =` with p = 113, d_model 128, 4 attention heads of size 32, an MLP of 512 ReLU neurons, no LayerNorm, and
+the answer read at the "=" position (the paper's parameter layout, via the paper-faithful
+[grokviz](https://github.com/BurnyCoder/visualizing-grokking-modular-addition-in-transformer) `GrokTransformer`). Each
+was trained with the paper's recipe (full-batch AdamW, lr 10⁻³, betas (0.9, 0.98), weight decay 1, 30 % of the 113²
+pairs as the training split, 40,000 steps) and reaches 100 % test accuracy. The targets were chosen by preregistered
+rules (§2); their key frequencies as measured by the explainer:
+
+<!-- BEGIN targets -->
+| Target | run | role | key frequencies | neurons per key frequency | unclustered neurons | logit fit FVE | loss (all 113² inputs) |
+|---|---|---|---|---|---|---|---|
+| T0 (main target network) | `wd1_s1` | main target | 2, 3, 23, 37, 39 | 0, 197, 49, 42, 99 | 125 | 0.933 | 2.06e-07 |
+| T1 (target from another seed) | `wd1_s4` | seed sensitivity (fewest frequencies) | 11, 25, 49 | 154, 111, 156 | 91 | 0.984 | 1.36e-07 |
+| T2 (target from another seed) | `wd1_s8` | seed sensitivity (most frequencies) | 37, 44, 45, 46, 47, 51 | 58, 63, 81, 78, 88, 79 | 65 | 0.949 | 8.42e-07 |
+| T-new (target trained after the freeze) | `new_s11` | held-out, trained after the protocol freeze | 22, 37, 41, 51 | 138, 77, 79, 130 | 88 | 0.954 | 2.41e-07 |
+| T-paper (the published checkpoint) | `paper` | published checkpoint (contamination-flagged) | 14, 35, 41, 42, 52 | 44, 93, 145, 87, 64 | 79 | 0.961 | 2.41e-07 |
+| dev | `wd1_s10` | development only (never reported) | 19, 31, 45, 47 | 80, 81, 189, 79 | 83 | 0.970 | 1.77e-07 |
+<!-- END targets -->
+
+### Data
+
+The task is (a + b) mod 113. Every score uses all 113² = 12,769 input pairs, so no score depends on a sample of
+inputs. The targets were trained on a 30 % split of these pairs. The simulator gets the target only through the
+explanation: its `selftest.py` checks accuracy against the task labels, never against the target.
+
+### Explanations: what is varied
+
+A script with weights access measures each target's mechanism (key frequencies, neuron clusters, attention fits,
+per-neuron fits) and renders every explanation from one parameter dict. No number in an explanation is typed by hand,
+and each explanation's length is recorded.
+
+*Labels.* **T0**: the main target network (no paper analyses it; its weights and key frequencies were uploaded to Hugging Face on 2026-10-21, after the simulator's June 2026 training-data cutoff and its 2026-10-07 release, and the sandbox has no internet). **E0–E4**: true explanations with increasing detail (E0 task only, E1 algorithm only, E2 + the key frequencies, E3 + per-frequency quantities, E4 + a per-neuron table); "true" at the level of frequencies and component roles, except that T0's describe frequency <!-- v:a5-weak-k -->2<!-- /v -->, which T0 uses only in its read-out, as used everywhere (paper §3.2). **W-freq, W-alg, W-role, W-scramble**: wrong explanations (wrong frequencies, the Pizza algorithm, wrong component roles, shuffled neurons), length-matched except W-alg (about <!-- v:walg-shorter -->40<!-- /v --> % shorter). **HS**: hidden-state similarity, 0–1; 1 means each network's intermediate states are a linear function of the other's, and unrelated networks do not score 0 (random networks score above working networks that use other frequencies). **KL**: output divergence in nats, lower means the same answers with the same confidence. **Compiler**: our script that turns an explanation into weights without any AI.
+
+### Simulator: how a replacement is built, without training
+
+The main simulator is Claude Haiku 5.5 in Claude Code 2.1.330 (default sampling, effort `medium`; `low` and `high` are
+hyperparameter variants). It runs in a bubblewrap sandbox in WSL2 with no network except its model endpoint: a proxy
+outside the sandbox holds the API key, allows only the run's model and enforces per-run and total budgets. The
+sandbox has no path to the target's weights, and a run gets at most 60 minutes and $2. The agent gets `TASK.md`,
+`ARCHITECTURE.md`, `EXPLANATION.md` (plus `neurons.csv` for E4 and W-scramble), a numpy `forward.py`, `selftest.py`
+(shapes and accuracy against the task labels) and a starter `build_weights.py`. It must write a `build_weights.py`
+that produces `weights.npz` without training: gradient descent, optimisers and any loop that updates weights to
+reduce a loss are forbidden. A static audit checks every script, and audit 7 also read every script and found small
+searches over constants (see the agent examples below). Local Qwen3.5-4B and Qwen3.5-9B models in a bash-only harness
+were the preregistered simulator-capability ablation.
+
+### Baselines and controls without an agent
+
+- The reference compiler: a fixed script that turns an explanation's parameters into weights, with no AI.
+- Independent retrains: the 9 other `wd1` seeds, trained with the same recipe.
+- Logit-distilled students: 3 networks, trained in this project on all inputs to match T0's logits.
+- The planted-mechanism series: the compiled E3 network trained further, with snapshots at 0, 100, 1,000 and 10,000
+  steps.
+- Random initialisations: 5.
+- Wrong targets: other trained networks and no-mechanism networks (H7).
+- T0's 401 training checkpoints (H8).
+- Upper references: the Fourier-restricted T0 and the full weights dump.
+
+### Evaluation
+
+**Primary metrics** (§4):
+
+- **Output KL**: the mean over all 12,769 inputs of KL(P_target ‖ P_replacement) over the 113 answer logits, in
+  nats, float64.
+- **HS**: measured at three sites at the "=" position (`resid_mid`, 128-d; `mlp_post`, 512-d; `resid_post`, 128-d).
+  At each site, 5-fold cross-validated ridge-regression R² is computed in both directions (replacement → target and
+  target → replacement) and combined by their harmonic mean; HS is the mean over the three sites. Why linear:
+  [In one paragraph](#in-one-paragraph).
+
+**Secondary metrics:** task accuracy, argmax agreement, matched-neuron correlation (Hungarian matching), linear CKA,
+Procrustes distance, stitching KL and others. Failed runs are scored as the all-zero model.
+
+**Preregistered tests** (§5): a Jonckheere–Terpstra trend test (H1), one-sided Mann–Whitney U with Holm correction
+(H2, H4), Wilcoxon signed-rank (H7), Spearman ρ (H8) and percentile-bootstrap intervals (10,000 resamples). Every
+verdict is labelled with its N.
+
+**Rounds:** each condition runs in rounds of N = 1, 3 and 10 runs (round 3 postponed). Each round runs main method →
+controls → baselines → ablations → hyperparameter sensitivity → seed sensitivity.
+
+## Architecture
+
+### Pipeline
+
+![Pipeline](reports/figures/architecture.png)
+
+```mermaid
+flowchart LR
+    M[(Target model M<br/>trained weights)] --> X[Explainer script<br/>Fourier analysis]
+    X --> E[EXPLANATION.md<br/>E0-E4, W-*]
+    X --> S[spec.json] --> C[Reference compiler<br/>no agent] --> G
+    subgraph SB[Sandbox: WSL + bubblewrap, no network except the model endpoint, no path to M]
+        E --> A[Claude Code + Haiku 5.5<br/>or bash harness + Qwen]
+        A --> B[build_weights.py] --> W[weights.npz = M̂]
+    end
+    P[API proxy outside the sandbox<br/>key, model allowlist, budget ledger] <-. unix socket .-> A
+    M --> G{Grader}
+    W --> G
+    G --> S1[KL_out over 113² inputs]
+    G --> S2[Hidden-state similarity<br/>resid_mid, mlp_post, resid_post]
+```
+
+### Code modules
+
+The `src/vmi/` package, one module per phase (module table and design choices:
+[docs/architecture.md](docs/architecture.md)):
+
+```mermaid
+flowchart TB
+    CLI["pipeline.py<br/>uv run vmi ..."]
+    TG["targets.py<br/>target runs, paper checkpoint"]
+    EXP["explainer/<br/>analysis → ladder → render"]
+    REF["reference/compile.py<br/>agent-free compiler"]
+    SIM["simulator/<br/>sandbox, WSL runner, proxy, harness, audit"]
+    NA["training.py + nonagent.py<br/>retrains, students, planted, random init"]
+    GR["grader/<br/>KL_out, HS, secondary metrics"]
+    RES[("results/*.json")]
+    AN["analysis/<br/>hypotheses, tables, figures, site"]
+    OUT["README, reports, paper.pdf,<br/>docs/ (GitHub Pages)"]
+    PUB["publish.py<br/>Hugging Face export"]
+    CLI -.-> TG & EXP & REF & SIM & NA & GR & AN & PUB
+    TG --> EXP
+    EXP --> REF
+    EXP --> SIM
+    TG --> GR
+    REF --> GR
+    SIM --> GR
+    NA --> GR
+    GR --> RES
+    RES --> AN
+    AN --> OUT
+    SIM --> PUB
+```
+
+### What happens when you run it
+
+(1) Target runs are downloaded at pinned revisions. (2) The explainer computes the
+target's key frequencies, neuron clusters, attention fits and per-neuron fits and renders every explanation level
+from one parameter dict, which also feeds the reference compiler. (3) For each agent run a fresh folder gets the
+task files and one explanation. (4) The agent runs offline inside bubblewrap; its only way out is a unix socket to a
+proxy (Claude) or relay (llama-server) outside the sandbox, which logs every request and response body in full (headers excluded). (5) The
+build script is audited for gradient-descent and optimiser patterns (small searches over a constant pass it; audit 7
+found them by reading every script); the grader runs both networks on all 12,769 inputs and computes the
+metrics. (6) `vmi analyse` evaluates every preregistered hypothesis and regenerates every table and figure in this
+README, the reports and the paper from `results/`.
+
+## Results
+
+### Key results
+
+<!-- BEGIN key-results -->
+*Round 2, N = 3 run(s) per condition — not yet N=10*
+
+- **Model-specific detail raises hidden-state similarity:** HS on T0 (main target network) is 0.05 (E1, algorithm only), 0.89 (E2 (+ key frequencies)), 0.93 (E3 (+ per-frequency details)) and 0.94 (E4 (+ per-neuron table)); with no explanation (E0) it is 0.13. Monotone from E1 to E4; E0 lies above E1, against the preregistered prediction.
+- **Correct behaviour from the wrong key frequencies is caught by HS (hidden-state similarity, 1 = internals match up to a linear map), not by output KL (output divergence, 0 = same answers):** the wrong-frequency replacement reaches KL 0.003 nats (true E3 (+ per-frequency details): 0.010) but HS 0.07.
+- **Copying behaviour does not copy the mechanism:** independent retrains (HS (hidden-state similarity, 1 = internals match up to a linear map) 0.12) and logit-distilled students (HS 0.23, KL (output divergence, 0 = same answers) 2.38e-06) score no higher than randomly initialised networks (HS 0.24). HS's scale is therefore not anchored at 0 for unrelated networks: it measures overlap of internal features, and working networks built on other frequencies score below random ones.
+- **Negative result:** at N = 3 the primary HS (hidden-state similarity, 1 = internals match up to a linear map) does not separate the Pizza explanation (W-alg (wrong algorithm: Pizza), HS 0.91; E3 (+ per-frequency details) − W-alg +0.020, bootstrap CI [-0.008, +0.045]) or the scrambled neuron table (W-scramble (shuffled neuron table), HS 0.94; E4 (+ per-neuron table) − W-scramble +0.007, CI [-0.025, +0.037]) from the true explanations (a failure to separate, not a demonstrated equivalence); the secondary matched-neuron correlation separates W-scramble (0.65) from E4 (0.91). The agent-free compiler's literal build of the scrambled table does score 0.09 below its E4 build on T0 (main target network), mostly at resid_post: 0.69 vs 0.95; elsewhere the gap is within ±0.007 on T1 (target from another seed), T-new (target trained after the freeze), T-paper (the published checkpoint); on T2 (target from another seed) the scrambled build scores 0.05 higher. Post hoc, by Zhong et al.'s distance irrelevance (≥ 0.4 Clock-like, < 0.4 Pizza-like) T0 is a Clock (0.75) and the literal Pizza build a Pizza (0.003), but the agents' replacements from the true E1–E3 are Pizza-like too (means 0.13–0.18; E4 0.41), and HS still rates the E2–E4 ones 0.89–0.94 against the Clock target, as high as the Pizza explanation's builds: at this N, HS did not separate Clock from Pizza mechanisms that share the key frequencies (no Clock-side build of an explanation exists to compare).
+- **Memorisation (post hoc):** E0 (no explanation) and E1 (algorithm only) contain nothing target-specific (identical text on every target, and the sandbox does not reveal the target), so their runs on T0 (main target network) and on the published checkpoint are replicates of one condition. When the explanation gives no frequencies, the simulator often builds most of the published paper's frequencies {14, 35, 41, 42, 52} into its replacement (recall cued by the task description, which gives the paper's exact architecture and an outline of its training setup; no sandbox file names a frequency or the paper). E1 (6 runs on T0 and T-paper (the published checkpoint)): 5 of 6 build scripts list at least four of the paper's five frequencies (3 of 6 replacements build at least four by the key-frequency rule, a lower bound); on average 68% of the replacements' W_L spectrum lies on those five frequencies (chance 9%); mean HS (hidden-state similarity, 1 = internals match up to a linear map) 0.08 against T0 but 0.70 against the published checkpoint (target swap: same weights, other target; range 0.24–0.95); E0 (3 runs on T0): 1 of 3 build scripts list at least four of the paper's five frequencies (1 of 3 replacements build at least four by the key-frequency rule, a lower bound); on average 36% of the replacements' W_L spectrum lies on those five frequencies (chance 9%); mean HS 0.13 against T0 but 0.28 against the published checkpoint (target swap: same weights, other target; range 0.03–0.63). On a published model, a high score can therefore come from the simulator's memory rather than the explanation (one published model and one simulator tested).
+- **Cost:** the 96 reported Claude Haiku 5.5 runs cost $2.20 ($2.33 including development runs and plumbing checks).
+<!-- END key-results -->
+
+| Calibration on a planted mechanism (H4b): HS (hidden-state similarity, 1 = internals match up to a linear map) falls steadily, output KL (output divergence, 0 = same answers) does not | Score against the target's training checkpoints (H8) |
+|---|---|
+| ![Planted-mechanism calibration](reports/figures/planted_T0.png) | ![Trajectory](reports/figures/trajectory_T0.png) |
+| **Score against explanation length:** the jump comes with the key frequencies (E2 (+ key frequencies)), not with length | **Simulator ablation (negative):** local Qwen models at chance, Haiku near the compiler |
+| ![Length](reports/figures/length_T0.png) | ![Simulators](reports/figures/simulators_T0.png) |
+
+### Eval scores: method, controls, baselines and ablations
+
+Three tables, every number read from `results/` (± is the sample standard deviation over runs):
+
+- the agent and the AI-free compiler on each explanation (the method, E1–E4, and the controls);
+- the no-agent baselines;
+- the ablations and hyperparameter variants.
+
+#### Scores on the main target T0 (agent vs. agent-free reference compiler)
+
+<!-- BEGIN scoreboard-T0 -->
+| Explanation | role | chars | N | agent accuracy | agent KL_out (output divergence, 0 = same answers) ↓ | agent HS (hidden-state similarity, 1 = internals match up to a linear map) ↑ | agent matched-neuron corr ↑ | compiler KL_out ↓ | compiler HS ↑ |
+|---|---|---|---|---|---|---|---|---|---|
+| E0 (no explanation) | control: no mechanism | 279 | 3 | 1.000 ± 0.000 | 0.005 ± 0.004 | 0.130 ± 0.109 | 0.056 ± 0.031 | 1.64e-04 | 0.051 |
+| E1 (algorithm only) | method | 1556 | 3 | 1.000 ± 0.000 | 0.097 ± 0.152 | 0.046 ± 0.002 | 0.028 ± 1.59e-04 | 1.64e-04 | 0.051 |
+| E2 (+ key frequencies) | method | 1788 | 3 | 1.000 ± 0.000 | 2.12e-04 ± 1.78e-04 | 0.894 ± 0.005 | 0.669 ± 0.005 | 1.30e-05 | 0.895 |
+| E3 (+ per-frequency details) | method | 3712 | 3 | 1.000 ± 4.70e-04 | 0.010 ± 0.012 | 0.929 ± 0.012 | 0.759 ± 0.060 | 4.25e-04 | 0.927 |
+| E4 (+ per-neuron table) | method | 51329 | 3 | 0.986 ± 0.012 | 0.060 ± 0.045 | 0.943 ± 0.028 | 0.913 ± 0.044 | 0.010 | 0.952 |
+| W-freq | control: wrong frequencies | 3724 | 3 | 1.000 ± 9.04e-05 | 0.003 ± 0.002 | 0.070 ± 0.021 | 0.030 ± 1.64e-04 | 0.001 | 0.095 |
+| W-alg (wrong algorithm: Pizza) | control: wrong algorithm (Pizza) | 2224 | 3 | 1.000 ± 0.000 | 0.024 ± 0.017 | 0.909 ± 0.027 | 0.737 ± 0.061 | 0.040 | 0.921 |
+| W-role | control: wrong component roles | 3777 | 3 | 1.000 ± 2.71e-04 | 9.80e-04 ± 7.60e-04 | 0.204 ± 0.060 | 0.013 ± 0.002 | 4.727 | 0.500 |
+| W-scramble (shuffled neuron table) | control: scrambled neurons | 51590 | 3 | 0.998 ± 0.004 | 0.006 ± 0.008 | 0.936 ± 0.018 | 0.653 ± 0.027 | 2.02e-05 | 0.859 |
+<!-- END scoreboard-T0 -->
+
+#### Explanation-free baselines on T0 (no agent)
+
+<!-- BEGIN baselines-T0 -->
+| Reference point | what it has | n | task accuracy | KL_out (output divergence, 0 = same answers) ↓ | HS (hidden-state similarity, 1 = internals match up to a linear map) ↑ |
+|---|---|---|---|---|---|
+| Random initialisation | nothing (floor) | 5 | 0.009 ± 0.001 | 4.766 ± 0.006 | 0.236 ± 0.006 |
+| Independent retrains | same recipe, other seeds | 9 | 1.000 ± 0.000 | 6.90e-06 ± 3.96e-06 | 0.119 ± 0.097 |
+| Logit-distilled students | M's full output logits, no explanation | 3 | 1.000 ± 0.000 | 2.38e-06 ± 8.25e-07 | 0.233 ± 0.058 |
+| Fourier-restricted M | M's weights, key frequencies only in W_E/W_U | 1 | 1.000 | 0.002 | 0.992 |
+| Weights dump | all 226,816 weights | 1 | 1.000 | 0.000 | 1.000 |
+<!-- END baselines-T0 -->
+
+#### Ablations and hyperparameter variants on T0
+
+<!-- BEGIN ablations-T0 -->
+| Change | Explanation | Simulator | N | task accuracy | KL_out (output divergence, 0 = same answers) ↓ | HS (hidden-state similarity, 1 = internals match up to a linear map) ↑ | matched-neuron corr ↑ |
+|---|---|---|---|---|---|---|---|
+| none (main condition) | E3 (+ per-frequency details) | claude-haiku-5-5 | 3 | 1.000 ± 4.70e-04 | 0.010 ± 0.012 | 0.929 ± 0.012 | 0.759 ± 0.060 |
+| explanation as maths | E3 (+ per-frequency details) | claude-haiku-5-5 | 3 | 0.999 ± 0.002 | 0.003 ± 0.004 | 0.915 ± 0.003 | 0.771 ± 0.036 |
+| explanation as code | E3 (+ per-frequency details) | claude-haiku-5-5 | 3 | 1.000 ± 9.04e-05 | 0.002 ± 3.96e-04 | 0.897 ± 0.030 | 0.805 ± 2.48e-04 |
+| self-test removed | E3 (+ per-frequency details) | claude-haiku-5-5 | 3 | 1.000 ± 3.62e-04 | 0.004 ± 0.002 | 0.942 ± 0.025 | 0.765 ± 0.043 |
+| effort low | E3 (+ per-frequency details) | claude-haiku-5-5 | 3 | 0.853 ± 0.252 | 0.661 ± 1.137 | 0.921 ± 0.003 | 0.751 ± 0.027 |
+| effort high | E3 (+ per-frequency details) | claude-haiku-5-5 | 3 | 1.000 ± 0.000 | 0.001 ± 7.17e-04 | 0.936 ± 0.034 | 0.791 ± 0.025 |
+| none (main condition) | W-freq (wrong frequencies) | claude-haiku-5-5 | 3 | 1.000 ± 9.04e-05 | 0.003 ± 0.002 | 0.070 ± 0.021 | 0.030 ± 1.64e-04 |
+| effort low | W-freq (wrong frequencies) | claude-haiku-5-5 | 3 | 0.923 ± 0.133 | 0.344 ± 0.594 | 0.088 ± 0.025 | 0.061 ± 0.031 |
+| effort high | W-freq (wrong frequencies) | claude-haiku-5-5 | 3 | 1.000 ± 0.000 | 0.001 ± 6.05e-04 | 0.093 ± 0.005 | 0.032 ± 0.003 |
+| simulator qwen3.5-4b | E2 (+ key frequencies) | qwen3.5-4b | 1 | 0.009 | 4.727 | 0.000 | 0.000 |
+| simulator qwen3.5-4b | E3 (+ per-frequency details) | qwen3.5-4b | 1 | 0.009 | 4.727 | 0.000 | 0.000 |
+| simulator qwen3.5-4b | E4 (+ per-neuron table) | qwen3.5-4b | 1 | 0.009 | 4.727 | 0.000 | 0.000 |
+| simulator qwen3.5-4b | W-freq (wrong frequencies) | qwen3.5-4b | 1 | 0.009 | 6.066 | 0.000 | 1.41e-16 |
+| simulator qwen3.5-9b | E2 (+ key frequencies) | qwen3.5-9b | 1 | 0.009 | 7.628 | 0.000 | 0.000 |
+<!-- END ablations-T0 -->
+
+### Predicted vs. measured with Claude Haiku
+
+Before any experiment we wrote down, and pushed to GitHub, what a valid grader should show
+([preregistration](reports/preregistration.md) §5). The table puts each prediction next to what Claude Haiku 5.5 and
+the grader actually produced; it is regenerated from `results/` after every round, and the last column says how many
+runs per condition each verdict rests on.
+
+**In plain words.** We expected the score to reward every bit of true detail and to punish every wrong explanation.
+With three runs per condition, five predictions pass their preregistered tests: the score rises with true detail,
+mostly once the explanation names *which frequencies* the network uses (the handful of numbers it does the arithmetic
+with), although giving no explanation at all scored slightly above giving only the algorithm, against H1's prediction; it punishes a wrong explanation even when that explanation gives all the right answers; it rates networks rebuilt
+from the detailed explanations (E3, E4) above freshly trained ones; it does not fit one network's explanation to another network; and against the original's training checkpoints it rises while the
+original forms its mechanism — but the original's own final weights do that too, so this shows shared structure, not a
+separate ability (H1, H3, H4, H7, H8). These expectations failed: grading by the answers alone (output
+KL (output divergence, 0 = same answers)) does not improve with more detail — it is best for E2 and worse for E3 and E4, and worst for the algorithm alone (H1's second part); with three runs, the score did not separate two algorithms that use the same
+frequencies, or the AI's rebuild of a correct list of neurons from its rebuild of a shuffled one (H2); on the main network the AI stayed at the
+level of our own AI-free compiler, but on other networks it sometimes beat it, so the compiler is not a ceiling (H5);
+and on a network whose mechanism we planted, further training first disturbed and then restored its answers, so
+output KL rose and fell again instead of rising steadily (H4b; this says more about the planted series than about the
+grader). Whether stronger AIs do better (H5, H6) could not be tested, because the small local models never built
+a working network. "Direction matches" only says whether the numbers went the predicted way; the formal verdict adds
+the preregistered statistical test, which for H2 needs more than three runs per condition.
+
+**Changes after the protocol freeze.** Every change after the freeze is a dated deviation in the
+[preregistration](reports/preregistration.md) ("Post-freeze deviations"), and every one was made after some per-run
+scores had been seen.
+
+- Deviations 1–4, during round 1, only aligned the analysis code with the amended protocol, reordered stages, re-ran
+  an infrastructure failure and repaired a secondary metric.
+- Three came after round-level results or because of them:
+  - the local runs were stopped because of their results (deviation 5);
+  - round 3 was postponed (deviation 6, scheduling only);
+  - two analysis-code errors were corrected when the N = 3 verdicts were first read (deviation 7; neither made a
+    verdict "supported").
+- From deviation 8 on, each deviation records an independent audit made after every round-2 number had been seen
+  ([reports/reviews/](reports/reviews/)). The audits re-derived the verdicts and re-graded the stored scores with
+  independent code. For example, in audit 5 <!-- v:a5-hyp -->88 of 88<!-- /v --> stored statistics, verdicts and published
+  values reproduce, and <!-- v:a5-regrade -->306 gradings, largest differences 1.3e-10 in HS and 4.4e-12 in KL<!-- /v -->. They also corrected errata, scope and citations, and added
+  post-hoc checks, labelled as such. None of them made a verdict "supported".
+
+The labels used below (T0, E0–E4, W-*, HS, KL, compiler) are defined under
+[Methodology](#explanations-what-is-varied).
+
+<!-- BEGIN predictions-plain -->
+| Hypothesis | Expected, in plain words | Predicted (preregistration §5) | Measured with the main simulator (T0 (main target network)) | Direction matches? | Formal verdict |
+|---|-------|-------|---------|-----|------|
+| H1 | The more true detail an explanation gives, the more faithfully the rebuilt network should match the original. | HS (hidden-state similarity, 1 = internals match up to a linear map) rises and output KL (output divergence, 0 = same answers) falls from E1 (algorithm only) to E4 (+ per-neuron table) on T0 (main target network); E0 (no explanation) lies below E1 | HS E0 0.130, E1 0.046, E2 (+ key frequencies) 0.894, E3 (+ per-frequency details) 0.929, E4 0.943; KL E1 0.097, E2 2.12e-04, E3 0.010, E4 0.060 | partly (KL does not fall E1 → E4; E0 not below E1) | HS trend E1 → E4: supported; E0 below E1: not observed (E0 above E1; direction only, no test preregistered); KL_out (output divergence, 0 = same answers): not supported · at N=3 — not yet N=10 |
+| H2 | A true explanation should beat a wrong explanation of the same length. | true explanations beat length-matched false ones on HS (hidden-state similarity, 1 = internals match up to a linear map): E3 (+ per-frequency details) > W-freq (wrong frequencies), W-alg (wrong algorithm: Pizza), W-role (wrong component roles); E4 (+ per-neuron table) > W-scramble (shuffled neuron table) | HS difference E3 > W-freq +0.859 [+0.835, +0.880]; E3 > W-alg +0.020 [-0.008, +0.045]; E3 > W-role +0.725 [+0.661, +0.768]; E4 > W-scramble +0.007 [-0.025, +0.037] | partly (E3 > W-alg tie (CI includes 0); E4 > W-scramble tie (CI includes 0)) | E3 > W-freq: cannot tell at this N; E3 > W-alg: cannot tell at this N; E3 > W-role: cannot tell at this N; E4 > W-scramble: cannot tell at this N (by §5's falsification column read literally — not significant after Holm — all four read "not supported"; the "cannot tell" rule is deviation 1's, applied at this N by deviation 7) · at N=3 — not yet N=10 |
+| H3 | A wrong explanation can still give all the right answers; checking only the answers is fooled, checking the insides (HS (hidden-state similarity, 1 = internals match up to a linear map)) should not be. | W-freq (wrong frequencies): argmax agreement ≥ 0.99, KL (output divergence, 0 = same answers) not above the true E2–E4 range, HS below each of E2–E4 | W-freq: agreement 1.000, KL 0.003 (true 2.12e-04–0.060), HS 0.070 (true 0.894–0.943); HS − E2 (+ key frequencies) -0.824 [-0.840, -0.801], E3 (+ per-frequency details) -0.859 [-0.880, -0.835], E4 (+ per-neuron table) -0.873 [-0.904, -0.841] | yes | supported · at N=3 — not yet N=10 |
+| H4 | Rebuilding from an explanation should match the original's insides better than training a fresh network the same way does. | E3 (+ per-frequency details) and E4 (+ per-neuron table) beat independent retrains on HS (vs. distilled students: open question, no direction) | E3 0.929, E4 0.943; 9 retrains mean 0.119 (max 0.329); 3 students mean 0.233 (max 0.282); vs students, two-sided: E3 cannot tell at this N, E4 cannot tell at this N | yes | E3: supported; E4: supported · at N=3 — not yet N=10 |
+| H4b | On a network whose mechanism we planted ourselves, the score should start perfect and drop as further training moves the network away from it. | planted model: HS (hidden-state similarity, 1 = internals match up to a linear map) = 1 and KL (output divergence, 0 = same answers) = 0 at step 0, then HS strictly falls and KL strictly rises | HS 1.000 → 0.998 → 0.957 → 0.888; KL 0.000 → 0.371 → 0.040 → 4.25e-04 | partly (KL not strictly rising) | not supported · deterministic |
+| H5 | The AI should not beat our automatic, AI-free compiler, and stronger AIs should come closer to it. | agent ≤ reference compiler on every explanation; the gap shrinks with simulator capability | T0 (preregistered): agent − compiler E2 (+ key frequencies) -0.001, E3 (+ per-frequency details) +0.002, E4 (+ per-neuron table) -0.009, W-freq (wrong frequencies) -0.024, none of the four explanations beyond the bootstrap CI; seed targets T1 (target from another seed), T2 (target from another seed), T-new (extension, post hoc): agent above compiler in six of eleven pairs by sign, four of eleven target–explanation pairs on three targets beyond the bootstrap CI (T1 E2, T2 E3, T2 E4, T-new E4; largest +0.179 (T2 E3)); T-paper (memorisation-flagged, not counted): E3 +0.073 beyond the CI, E4 -0.046, W-freq -0.004; 5 local runs, 0 above chance | partly (seed targets: agent above compiler beyond its CI; capability trend not testable) | not evaluable (local simulators stopped at chance, deviation 5) · 5 local runs, qwen3.5-4b: 0/4 above chance, qwen3.5-9b: 0/1 above chance |
+| H6 | Different AIs should put the explanations in the same order. | the local simulators rank E2 (+ key frequencies), E3 (+ per-frequency details), E4 (+ per-neuron table), W-freq (wrong frequencies) the same way | 5 local runs, 0 above chance: nothing to rank | not testable | not evaluable (local simulators stopped at chance, deviation 5) · 5 local runs, qwen3.5-4b: 0/4 above chance, qwen3.5-9b: 0/1 above chance |
+| H7 | An explanation of one network should not fit a different network. | a T0 (main target network) replacement fits T0 better than any other trained or no-mechanism model (HS (hidden-state similarity, 1 = internals match up to a linear map)) | E3 (+ per-frequency details): HS 0.939 vs best other 0.274 (T2 (target from another seed)); E3: HS 0.932 vs best other 0.240 (T2); E3: HS 0.915 vs best other 0.290 (T2); E4 (+ per-neuron table): HS 0.912 vs best other 0.226 (T2); E4: HS 0.953 vs best other 0.227 (T2); E4: HS 0.965 vs best other 0.258 (T2) | yes | supported · 6 E3 and E4 replacements (at N=3 — not yet N=10) |
+| H8 | The score should rise while the original network learns its mechanism during training. | HS (hidden-state similarity, 1 = internals match up to a linear map) against T0's checkpoints rises as restricted loss falls (circuit formation) | Spearman ρ(HS, −log restricted loss) per replacement: median 0.774, min 0.751 (6 E3 (+ per-frequency details) and E4 (+ per-neuron table) replacements × 401 checkpoints); negative controls (post hoc), ρ per replacement: E0 (no explanation) -0.83, -0.45, +0.14; W-freq (wrong frequencies) -0.40, -0.24, -0.38; E1 (algorithm only) -0.58, -0.58, -0.57; reference networks (post hoc, audit 4): final T0 (main target network) itself +0.59, Fourier-restricted T0 +0.99, compiler E3 +0.88, a retrain -0.53; during circuit formation (steps ≤ 14,900) every network with T0's frequencies has ρ ≥ 0.996 | yes | supported · 6 E3 and E4 replacements × 401 checkpoints |
+<!-- END predictions-plain -->
+
+**In expert terms.** At N = 3 the preregistered tests support H1's HS (hidden-state similarity, 1 = internals match up to a linear map) trend from E1 to E4, H3, H4, H7 and H8 (H1's further prediction that E0 lies below E1 fails, <!-- v:e0-vs-e1 -->E0 0.130 vs E1 0.046<!-- /v -->; no test was preregistered for it): HS rises with true detail (the big step is E1 (algorithm only) → E2 (+ key frequencies); <!-- v:e3-vs-e2 -->every E3 run is above every E2 run<!-- /v --> under the preregistered HS, though E2 and E3 tie under the post-hoc whitened check; E3 → E4 (+ per-neuron table) is mixed), a wrong-frequency explanation keeps correct answers while its HS falls below every true explanation that names the frequencies (E2–E4), E3 and E4 replacements beat independent retrains and fit T0 (main target network) better than any other model, and HS against T0's training checkpoints rises during circuit formation (descriptively; replacements without T0's frequencies do not, but final T0 itself and every other network with T0's frequencies do too, and the size of the correlation is set by drift after grokking, so H8 shows shared frequency structure, not a separate ability to track circuit formation; post hoc, audit 4, the paper's §4.3). The predictions fail where they assumed that output KL (output divergence, 0 = same answers) improves with detail (H1's KL part: it is lowest at E2 and rises at E3 and E4), that HS sees below the frequency level (H2: W-alg (wrong algorithm: Pizza) and W-scramble (shuffled neuron table) tie with the true explanations, their bootstrap CIs include 0), that the reference compiler is a ceiling (H5: the agent stays within its level on T0, the preregistered comparison, but exceeds it on the seed targets in <!-- v:h5-seed -->four of eleven target–explanation pairs on three targets<!-- /v -->), or that further training moves a planted model's function away monotonically (H4b: its accuracy dips and recovers, and output KL follows it, so this control did not test the grader as intended). "Direction matches" compares directions and preregistered thresholds only (a difference whose bootstrap CI includes 0 counts as a tie; with three runs per group the nominal 95 % percentile-bootstrap interval of a mean is the range of the three runs, whose true coverage is about 75 % (about 80 % for a difference of two such means; our calculation and simulation, `results/audit5/checks.json`; Hesterberg 2015 on percentile intervals being too narrow in small samples), so a tie is the safe reading and an "ahead" is not significance); the formal verdict adds the preregistered test, and 3 vs 3 runs cannot reach significance for H2 (smallest attainable p = 0.05; "cannot tell" under deviation 1's rule, "not supported" under §5's falsification column read literally). On the seed-sensitivity targets the gap between E3 and the wrong-frequency explanation replicates on every target (its rank test cannot decide at N = 3), while the fine E2 → E4 rise does not replicate (its trend test is not supported on T1 and T2, although on T0 the same E2–E4 test gives <!-- v:t0-e24 -->supported (JT p 0.011, ρ 0.79)<!-- /v -->; on T-new, with only E3 and E4, the means rise but the test cannot decide at N = 3; T1, T2 and T-new ran no E1, so the large E1 → E2 step was not tested there, and on T-paper, the one seed target that ran E1, the trend test over E1 < E3 < E4 gives <!-- v:tpaper-trend -->not supported (JT p 0.061, ρ 0.63)<!-- /v -->, where E1's memorised published frequencies raise E1's HS and flatten the trend); where H3 fails there, argmax agreement is below the preregistered 0.99 for the wrong-frequency replacement and also for the true E3 and E4 replacements, so the explanation is not shown to be the cause (not diagnosed). *Kind of evidence:* H1–H3 are
+interventions on the explanation with everything else fixed; H4 compares with explanation-free baselines; H7 and the
+memorisation target swap are counterfactual swaps of the target network; the format, self-test, effort and simulator
+variants are ablations; H8 is a correlation over training checkpoints. *Strength:* the supported hypotheses rest on three runs
+per condition (H1: a one-sided trend test; H4 and H7: one-sided rank tests at α = 0.05, Holm-corrected where
+preregistered; H3: a comparison of condition means; H8: descriptive); the wrong-frequency
+gap holds on <!-- v:wfreq-gap-targets -->all five targets<!-- /v -->; nothing here has reached the preregistered N = 10.
+
+Replications on the seed-sensitivity targets (preregistration §5: H1–H3 re-tested per target with the preregistered
+tests, which earlier versions only checked by direction; deviation 8):
+
+<!-- BEGIN replications -->
+| Target | HS (hidden-state similarity, 1 = internals match up to a linear map) per true explanation | H1: HS rises with detail? (trend test) | H2: HS(E3 (+ per-frequency details)) − HS(W-freq (wrong frequencies)); Mann–Whitney | H3 observed (W-freq) | H3 holds? |
+|-----|------|---|---|-------|-----|
+| T0 (E2–E4 only; post hoc, for comparison) | E2 (+ key frequencies) 0.894, E3 (+ per-frequency details) 0.929, E4 (+ per-neuron table) 0.943 | means rise E2 → E3 → E4; supported (JT p 0.011, ρ 0.79) | +0.859; cannot tell at this N (p 0.050) | agreement 1.000, KL (output divergence, 0 = same answers) 0.003 (true max 0.060), HS (hidden-state similarity, 1 = internals match up to a linear map) 0.070 | yes |
+| T1 (target from another seed) | E2 (+ key frequencies) 0.957, E3 (+ per-frequency details) 0.936, E4 (+ per-neuron table) 0.960 | means do not rise E2 → E3 → E4; not supported (JT p 0.500, ρ 0.05) | +0.885; cannot tell at this N (p 0.050) | agreement 0.854, KL (output divergence, 0 = same answers) 0.537 (true max 0.498), HS (hidden-state similarity, 1 = internals match up to a linear map) 0.051 | partly (agreement < 0.99; KL above the true range) |
+| T2 (target from another seed) | E2 (+ key frequencies) 0.900, E3 (+ per-frequency details) 0.962, E4 (+ per-neuron table) 0.951 | means do not rise E2 → E3 → E4; not supported (JT p 0.500, ρ 0.05) | +0.864; cannot tell at this N (p 0.050) | agreement 0.999, KL (output divergence, 0 = same answers) 0.006 (true max 0.049), HS (hidden-state similarity, 1 = internals match up to a linear map) 0.098 | yes |
+| T-new (target trained after the freeze) | E3 (+ per-frequency details) 0.910, E4 (+ per-neuron table) 0.984 | means rise E3 → E4; cannot tell at this N (JT p 0.050, ρ 0.88) | +0.816; cannot tell at this N (p 0.050) | agreement 0.907, KL (output divergence, 0 = same answers) 0.432 (true max 0.328), HS (hidden-state similarity, 1 = internals match up to a linear map) 0.094 | partly (agreement < 0.99; KL above the true range) |
+| T-paper (flagged: memorisation) | E1 (algorithm only) 0.590, E3 (+ per-frequency details) 0.940, E4 (+ per-neuron table) 0.937 | means do not rise E1 → E3 → E4; not supported (JT p 0.061, ρ 0.63) | +0.823; cannot tell at this N (p 0.050) | agreement 0.998, KL (output divergence, 0 = same answers) 0.007 (true max 0.413), HS (hidden-state similarity, 1 = internals match up to a linear map) 0.117 | yes |
+<!-- END replications -->
+
+### Better or worse than the baselines, controls and ablations, in plain words
+
+- **Better than output KL (output divergence, 0 = same answers):** a network trained with the same recipe from another seed, a network trained to copy the
+  target's outputs exactly, and a network built from a *wrong-frequency* explanation all give the right answers —
+  output KL rates them as good as the true explanations (the wrong-frequency one above E3 and E4, below E2); HS (hidden-state similarity, 1 = internals match up to a linear map) rates them at the bottom, where they belong.
+- **Better than chance and than explanation-free baselines:** naming the key frequencies (E2 (+ key frequencies)) lifts HS (hidden-state similarity, 1 = internals match up to a linear map) from the
+  floor to near the agent-free compiler's value; without model-specific information (E0 (no explanation), E1 (algorithm only)) the agent builds a
+  working adder with none of the target's internals.
+- **Worse than hoped (negative result):** with three runs, HS (hidden-state similarity, 1 = internals match up to a linear map) did not separate the AI's rebuilds of the true explanation (E3) from its rebuilds of a Pizza explanation with the
+  same frequencies, nor of a correct per-neuron table from a scrambled one; both keep every frequency subspace intact.
+  The secondary matched-neuron correlation catches the scrambled table, and so does HS when our AI-free compiler
+  builds the scrambled table literally on T0 (<!-- v:a5-scr-t0 -->0.09<!-- /v --> lower), though not on the other targets. Post hoc, by the Clock/Pizza diagnostic of
+  Zhong et al., T0 is a Clock (<!-- v:cp-t0 -->0.75<!-- /v -->) but the networks rebuilt from the *true* explanations are
+  Pizza-like too (<!-- v:cp-e13 -->0.13–0.18<!-- /v --> for E1–E3), and HS still rates them high: the true explanations, as
+  written, do not say what makes T0 a Clock, and HS does not notice.
+- **A trap the design caught (post hoc):** when an explanation describes the algorithm but leaves the frequencies
+  open, the agent fills them in with most of the *published paper's* frequencies from memory. The algorithm-only
+  explanation is the same text for every target, so its runs on our main target and on the paper's checkpoint are
+  replicates: <!-- v:e1-mem -->five of six<!-- /v --> of their build scripts list at least <!-- v:e1-k -->four<!-- /v --> of the paper's five frequencies (with no explanation
+  at all, <!-- v:e0-mem-in -->one run in three<!-- /v -->). The same weights score <!-- v:e1-hs-t0 -->0.08<!-- /v --> on average against our target but <!-- v:e1-hs-paper -->0.70<!-- /v --> against the
+  published checkpoint. On a published model a high score can therefore come from memory, so the study's conclusions
+  rest on targets whose mechanism the simulator cannot have seen.
+- **Ablations:** writing the explanation as maths or as code instead of prose, or removing the self-test,
+  barely changed HS (hidden-state similarity, 1 = internals match up to a linear map). Removing the self-test did
+  not remove the feedback, though: <!-- v:noselftest-own -->all three<!-- /v --> agents without it measured accuracy with
+  their own code, so this ablation says nothing about how much accuracy-driven repair shapes the score. Low effort broke the answers in <!-- v:lowfx-e3 -->one of three<!-- /v --> E3 (+ per-frequency details) runs and <!-- v:lowfx-wfreq -->one of three<!-- /v --> W-freq (wrong frequencies) runs, without
+  changing HS. The E3 failure was a bug in that run's own script, not in the explanation: it placed one attention
+  head's output on the dimensions the network reads its answer from, and changing that one number gives full accuracy
+  (agent examples below). The <!-- v:lowfx-e3-n -->three<!-- /v --> low-effort E3 runs were identical in everything the agent could see except the
+  unseedable sampling (same files, prompt, model, Claude Code version, settings and grading, checked), so the bug was a
+  chance slip of the model that the setup does not force, and one failure in three runs says little about how often it
+  happens (interval in the agent example below). The W-freq failure was not tested further; the agent blamed its MLP features. The small local
+  models never built a working network from any explanation.
+- **Not yet decided:** H2's comparisons cannot reach significance with three runs per condition (3 vs 3 runs:
+  smallest attainable p = 0.05) and read "cannot tell at this N"; round 3 (N = 10) is postponed.
+
+### Output examples next to the ground truth: method, controls, baselines and ablations
+
+The method (E3, E4 and the other true explanations), the controls (wrong explanations), the baselines (retrain,
+random initialisation) and the ablations (low effort and the local-model simulator, in the agent examples) on concrete
+inputs, next to the true answer.
+
+#### Concrete outputs, next to the ground truth
 
 What the networks answer on a few inputs (answer ✓/✗ and the probability it gives that answer; ground truth =
 (a + b) mod 113). The three fixed sums are ordinary, wrap-around and the largest input; the other rows are the first
@@ -105,15 +470,13 @@ the answers alone cannot tell a faithful rebuild from an unfaithful one; the las
 *One network per condition: the first replicate (seed 0) of each agent condition, one retrain and one random initialisation; the tables above give means over replicates.*
 <!-- END outputs-T0 -->
 
-The same on all 12,769 inputs, outputs on top and insides below. Top: probability of the true answer (dark = 1, the
+The same on all 12,769 inputs is the third figure of the [visual overview](#visual-overview), outputs on top and insides below. Top: probability of the true answer (dark = 1, the
 ground truth). Bottom: for each network, the neuron that best matches one of the target's neurons. The faithful
 rebuilds (E3 (+ per-frequency details), E4 (+ per-neuron table)) and the Pizza rebuild (W-alg (wrong algorithm: Pizza)) contain a neuron that closely tracks the target's (correlation
 printed in each panel); the wrong-frequency, algorithm-only and independently trained networks do not, although their
 answers are just as correct.
 
-![Outputs vs. internals](reports/figures/outputs_T0.png)
-
-### What the agent did: successes and failure modes, from its own transcripts
+#### What the agent did: successes and failure modes, from its own transcripts
 
 One run per case, chosen by a fixed rule (listed in [reports/agent-examples.md](reports/agent-examples.md); not by
 reading transcripts first). The line shown is from
@@ -202,238 +565,11 @@ visible messages, quoted verbatim.)
 <!-- END agent-words -->
 
 
-**Output examples: which frequencies each network actually built**, against the target's own spectrum (the ground
+**Output examples: which frequencies each network actually built** (the fourth figure of the [visual overview](#visual-overview)), against the target's own spectrum (the ground
 truth). The true-explanation replacement (E3 (+ per-frequency details)) builds the target's frequencies; the algorithm-only replacement (E1 (algorithm only))
 builds most of the *published paper's* frequencies from memory; the wrong-frequency replacement builds the wrong ones; the
 Pizza replacement (W-alg (wrong algorithm: Pizza)) builds the *same* frequencies as the true ones, which is why HS (hidden-state similarity, 1 = internals match up to a linear map) did not separate it; an
 independent retrain picks other frequencies; a random network has no structure.
-
-![Frequencies built by each network](reports/figures/examples_T0.png)
-
-## Predicted vs. measured with Claude Haiku
-
-Before any experiment we wrote down, and pushed to GitHub, what a valid grader should show
-([preregistration](reports/preregistration.md) §5). The table puts each prediction next to what Claude Haiku 5.5 and
-the grader actually produced; it is regenerated from `results/` after every round, and the last column says how many
-runs per condition each verdict rests on.
-
-**In plain words.** We expected the score to reward every bit of true detail and to punish every wrong explanation.
-With three runs per condition, five predictions pass their preregistered tests: the score rises with true detail,
-mostly once the explanation names *which frequencies* the network uses (the handful of numbers it does the arithmetic
-with), although giving no explanation at all scored slightly above giving only the algorithm, against H1's prediction; it punishes a wrong explanation even when that explanation gives all the right answers; it rates networks rebuilt
-from the detailed explanations (E3, E4) above freshly trained ones; it does not fit one network's explanation to another network; and against the original's training checkpoints it rises while the
-original forms its mechanism — but the original's own final weights do that too, so this shows shared structure, not a
-separate ability (H1, H3, H4, H7, H8). These expectations failed: grading by the answers alone (output
-KL (output divergence, 0 = same answers)) does not improve with more detail — it is best for E2 and worse for E3 and E4, and worst for the algorithm alone (H1's second part); with three runs, the score did not separate two algorithms that use the same
-frequencies, or the AI's rebuild of a correct list of neurons from its rebuild of a shuffled one (H2); on the main network the AI stayed at the
-level of our own AI-free compiler, but on other networks it sometimes beat it, so the compiler is not a ceiling (H5);
-and on a network whose mechanism we planted, further training first disturbed and then restored its answers, so
-output KL rose and fell again instead of rising steadily (H4b; this says more about the planted series than about the
-grader). Whether stronger AIs do better (H5, H6) could not be tested, because the small local models never built
-a working network. "Direction matches" only says whether the numbers went the predicted way; the formal verdict adds
-the preregistered statistical test, which for H2 needs more than three runs per condition. Every change after the
-protocol freeze (twelve deviations) was made after some per-run scores had been seen; the first four, during round 1,
-only aligned the analysis code with the amended protocol, reordered stages, re-ran an infrastructure failure and
-repaired a secondary metric. Eight changes came after round-level results or because of them and are disclosed as such in the [preregistration](reports/preregistration.md): the
-local runs were stopped because of their results (deviation 5); round 3 was postponed (deviation 6, scheduling only); two analysis-code errors were corrected when the
-N = 3 verdicts were first read (deviation 7; neither made a verdict "supported"); an independent audit added
-preregistered statistics that had not been computed and corrected the metric's stated invariance (deviation 8; no
-verdict changed); a second audit corrected factual errors (the targets' key frequencies are in fact public, but
-only since after the simulator's training cutoff; Claude Code does have a turn-cap option, which was not used),
-narrowed the H5 and memorisation claims, disclosed that agents tune constants against their self-test, and added
-post-hoc checks (deviation 9; no verdict changed); and a third audit recomputed every verdict independently, gave
-H1's failed "E0 below E1" clause its own verdict, ran the T-paper replication over every level it has (now "not
-supported"), made H1's trend test exact, showed that the self-test ablation did not remove label feedback, and
-added Clock/Pizza diagnostics (deviation 10; no preregistered test result changed); and a fourth audit re-graded every
-stored score that has its own weight file and recomputed every test with independent code (all reproduce), corrected how H4b
-and H8 are read (the planted model's answers do not drift steadily; during circuit formation final T0 itself rises against its own
-checkpoints exactly as the replacements do, and the size of H8's correlation is set by drift after grokking), stated that three-run bootstrap intervals cover about 75 %, not 95 %, and corrected
-citations (deviation 11; no verdict changed); and a fifth audit re-derived every verdict with exact methods
-(<!-- v:a5-hyp -->88 of 88<!-- /v --> stored statistics, verdicts and published values reproduce, rounds 1 and 2) and re-graded every score those tests use with an independent forward pass (<!-- v:a5-regrade -->306 gradings, largest differences 1.3e-10 in HS and 4.4e-12 in KL<!-- /v -->, all reproduce), found that T0's "true" explanations call a frequency that T0 uses only
-in its read-out (frequency <!-- v:a5-weak-k -->2<!-- /v -->) a full key frequency, narrowed the shuffled-table blind spot to the AI's rebuilds (a literal
-rebuild of the shuffled table does lose HS on T0), and corrected this count and several citations (deviation 12; no verdict changed).
-
-<!-- BEGIN predictions-plain -->
-| Hypothesis | Expected, in plain words | Predicted (preregistration §5) | Measured with the main simulator (T0 (main target network)) | Direction matches? | Formal verdict |
-|---|-------|-------|---------|-----|------|
-| H1 | The more true detail an explanation gives, the more faithfully the rebuilt network should match the original. | HS (hidden-state similarity, 1 = internals match up to a linear map) rises and output KL (output divergence, 0 = same answers) falls from E1 (algorithm only) to E4 (+ per-neuron table) on T0 (main target network); E0 (no explanation) lies below E1 | HS E0 0.130, E1 0.046, E2 (+ key frequencies) 0.894, E3 (+ per-frequency details) 0.929, E4 0.943; KL E1 0.097, E2 2.12e-04, E3 0.010, E4 0.060 | partly (KL does not fall E1 → E4; E0 not below E1) | HS trend E1 → E4: supported; E0 below E1: not observed (E0 above E1; direction only, no test preregistered); KL_out (output divergence, 0 = same answers): not supported · at N=3 — not yet N=10 |
-| H2 | A true explanation should beat a wrong explanation of the same length. | true explanations beat length-matched false ones on HS (hidden-state similarity, 1 = internals match up to a linear map): E3 (+ per-frequency details) > W-freq (wrong frequencies), W-alg (wrong algorithm: Pizza), W-role (wrong component roles); E4 (+ per-neuron table) > W-scramble (shuffled neuron table) | HS difference E3 > W-freq +0.859 [+0.835, +0.880]; E3 > W-alg +0.020 [-0.008, +0.045]; E3 > W-role +0.725 [+0.661, +0.768]; E4 > W-scramble +0.007 [-0.025, +0.037] | partly (E3 > W-alg tie (CI includes 0); E4 > W-scramble tie (CI includes 0)) | E3 > W-freq: cannot tell at this N; E3 > W-alg: cannot tell at this N; E3 > W-role: cannot tell at this N; E4 > W-scramble: cannot tell at this N (by §5's falsification column read literally — not significant after Holm — all four read "not supported"; the "cannot tell" rule is deviation 1's, applied at this N by deviation 7) · at N=3 — not yet N=10 |
-| H3 | A wrong explanation can still give all the right answers; checking only the answers is fooled, checking the insides (HS (hidden-state similarity, 1 = internals match up to a linear map)) should not be. | W-freq (wrong frequencies): argmax agreement ≥ 0.99, KL (output divergence, 0 = same answers) not above the true E2–E4 range, HS below each of E2–E4 | W-freq: agreement 1.000, KL 0.003 (true 2.12e-04–0.060), HS 0.070 (true 0.894–0.943); HS − E2 (+ key frequencies) -0.824 [-0.840, -0.801], E3 (+ per-frequency details) -0.859 [-0.880, -0.835], E4 (+ per-neuron table) -0.873 [-0.904, -0.841] | yes | supported · at N=3 — not yet N=10 |
-| H4 | Rebuilding from an explanation should match the original's insides better than training a fresh network the same way does. | E3 (+ per-frequency details) and E4 (+ per-neuron table) beat independent retrains on HS (vs. distilled students: open question, no direction) | E3 0.929, E4 0.943; 9 retrains mean 0.119 (max 0.329); 3 students mean 0.233 (max 0.282); vs students, two-sided: E3 cannot tell at this N, E4 cannot tell at this N | yes | E3: supported; E4: supported · at N=3 — not yet N=10 |
-| H4b | On a network whose mechanism we planted ourselves, the score should start perfect and drop as further training moves the network away from it. | planted model: HS (hidden-state similarity, 1 = internals match up to a linear map) = 1 and KL (output divergence, 0 = same answers) = 0 at step 0, then HS strictly falls and KL strictly rises | HS 1.000 → 0.998 → 0.957 → 0.888; KL 0.000 → 0.371 → 0.040 → 4.25e-04 | partly (KL not strictly rising) | not supported · deterministic |
-| H5 | The AI should not beat our automatic, AI-free compiler, and stronger AIs should come closer to it. | agent ≤ reference compiler on every explanation; the gap shrinks with simulator capability | T0 (preregistered): agent − compiler E2 (+ key frequencies) -0.001, E3 (+ per-frequency details) +0.002, E4 (+ per-neuron table) -0.009, W-freq (wrong frequencies) -0.024, none of the four explanations beyond the bootstrap CI; seed targets T1 (target from another seed), T2 (target from another seed), T-new (extension, post hoc): agent above compiler in six of eleven pairs by sign, four of eleven target–explanation pairs on three targets beyond the bootstrap CI (T1 E2, T2 E3, T2 E4, T-new E4; largest +0.179 (T2 E3)); T-paper (memorisation-flagged, not counted): E3 +0.073 beyond the CI, E4 -0.046, W-freq -0.004; 5 local runs, 0 above chance | partly (seed targets: agent above compiler beyond its CI; capability trend not testable) | not evaluable (local simulators stopped at chance, deviation 5) · 5 local runs, qwen3.5-4b: 0/4 above chance, qwen3.5-9b: 0/1 above chance |
-| H6 | Different AIs should put the explanations in the same order. | the local simulators rank E2 (+ key frequencies), E3 (+ per-frequency details), E4 (+ per-neuron table), W-freq (wrong frequencies) the same way | 5 local runs, 0 above chance: nothing to rank | not testable | not evaluable (local simulators stopped at chance, deviation 5) · 5 local runs, qwen3.5-4b: 0/4 above chance, qwen3.5-9b: 0/1 above chance |
-| H7 | An explanation of one network should not fit a different network. | a T0 (main target network) replacement fits T0 better than any other trained or no-mechanism model (HS (hidden-state similarity, 1 = internals match up to a linear map)) | E3 (+ per-frequency details): HS 0.939 vs best other 0.274 (T2 (target from another seed)); E3: HS 0.932 vs best other 0.240 (T2); E3: HS 0.915 vs best other 0.290 (T2); E4 (+ per-neuron table): HS 0.912 vs best other 0.226 (T2); E4: HS 0.953 vs best other 0.227 (T2); E4: HS 0.965 vs best other 0.258 (T2) | yes | supported · 6 E3 and E4 replacements (at N=3 — not yet N=10) |
-| H8 | The score should rise while the original network learns its mechanism during training. | HS (hidden-state similarity, 1 = internals match up to a linear map) against T0's checkpoints rises as restricted loss falls (circuit formation) | Spearman ρ(HS, −log restricted loss) per replacement: median 0.774, min 0.751 (6 E3 (+ per-frequency details) and E4 (+ per-neuron table) replacements × 401 checkpoints); negative controls (post hoc), ρ per replacement: E0 (no explanation) -0.83, -0.45, +0.14; W-freq (wrong frequencies) -0.40, -0.24, -0.38; E1 (algorithm only) -0.58, -0.58, -0.57; reference networks (post hoc, audit 4): final T0 (main target network) itself +0.59, Fourier-restricted T0 +0.99, compiler E3 +0.88, a retrain -0.53; during circuit formation (steps ≤ 14,900) every network with T0's frequencies has ρ ≥ 0.996 | yes | supported · 6 E3 and E4 replacements × 401 checkpoints |
-<!-- END predictions-plain -->
-
-*Labels.* **T0**: the main target network (no paper analyses it; its weights and key frequencies were uploaded to Hugging Face on 2026-10-21, after the simulator's June 2026 training-data cutoff and its 2026-10-07 release, and the sandbox has no internet). **E0–E4**: true explanations with increasing detail (E0 task only, E1 algorithm only, E2 + the key frequencies, E3 + per-frequency quantities, E4 + a per-neuron table); "true" at the level of frequencies and component roles, except that T0's describe frequency <!-- v:a5-weak-k -->2<!-- /v -->, which T0 uses only in its read-out, as used everywhere (paper §3.2). **W-freq, W-alg, W-role, W-scramble**: wrong explanations (wrong frequencies, the Pizza algorithm, wrong component roles, shuffled neurons), length-matched except W-alg (about <!-- v:walg-shorter -->40<!-- /v --> % shorter). **HS**: hidden-state similarity, 0–1; 1 means each network's intermediate states are a linear function of the other's, and unrelated networks do not score 0 (random networks score above working networks that use other frequencies). **KL**: output divergence in nats, lower means the same answers with the same confidence. **Compiler**: our script that turns an explanation into weights without any AI.
-
-**In expert terms.** At N = 3 the preregistered tests support H1's HS (hidden-state similarity, 1 = internals match up to a linear map) trend from E1 to E4, H3, H4, H7 and H8 (H1's further prediction that E0 lies below E1 fails, <!-- v:e0-vs-e1 -->E0 0.130 vs E1 0.046<!-- /v -->; no test was preregistered for it): HS rises with true detail (the big step is E1 (algorithm only) → E2 (+ key frequencies); <!-- v:e3-vs-e2 -->every E3 run is above every E2 run<!-- /v --> under the preregistered HS, though E2 and E3 tie under the post-hoc whitened check; E3 → E4 (+ per-neuron table) is mixed), a wrong-frequency explanation keeps correct answers while its HS falls below every true explanation that names the frequencies (E2–E4), E3 and E4 replacements beat independent retrains and fit T0 (main target network) better than any other model, and HS against T0's training checkpoints rises during circuit formation (descriptively; replacements without T0's frequencies do not, but final T0 itself and every other network with T0's frequencies do too, and the size of the correlation is set by drift after grokking, so H8 shows shared frequency structure, not a separate ability to track circuit formation; post hoc, audit 4, the paper's §4.3). The predictions fail where they assumed that output KL (output divergence, 0 = same answers) improves with detail (H1's KL part: it is lowest at E2 and rises at E3 and E4), that HS sees below the frequency level (H2: W-alg (wrong algorithm: Pizza) and W-scramble (shuffled neuron table) tie with the true explanations, their bootstrap CIs include 0), that the reference compiler is a ceiling (H5: the agent stays within its level on T0, the preregistered comparison, but exceeds it on the seed targets in <!-- v:h5-seed -->four of eleven target–explanation pairs on three targets<!-- /v -->), or that further training moves a planted model's function away monotonically (H4b: its accuracy dips and recovers, and output KL follows it, so this control did not test the grader as intended). "Direction matches" compares directions and preregistered thresholds only (a difference whose bootstrap CI includes 0 counts as a tie; with three runs per group the nominal 95 % percentile-bootstrap interval of a mean is the range of the three runs, whose true coverage is about 75 % (about 80 % for a difference of two such means; our calculation and simulation, `results/audit5/checks.json`; Hesterberg 2015 on percentile intervals being too narrow in small samples), so a tie is the safe reading and an "ahead" is not significance); the formal verdict adds the preregistered test, and 3 vs 3 runs cannot reach significance for H2 (smallest attainable p = 0.05; "cannot tell" under deviation 1's rule, "not supported" under §5's falsification column read literally). On the seed-sensitivity targets the gap between E3 and the wrong-frequency explanation replicates on every target (its rank test cannot decide at N = 3), while the fine E2 → E4 rise does not replicate (its trend test is not supported on T1 and T2, although on T0 the same E2–E4 test gives <!-- v:t0-e24 -->supported (JT p 0.011, ρ 0.79)<!-- /v -->; on T-new, with only E3 and E4, the means rise but the test cannot decide at N = 3; T1, T2 and T-new ran no E1, so the large E1 → E2 step was not tested there, and on T-paper, the one seed target that ran E1, the trend test over E1 < E3 < E4 gives <!-- v:tpaper-trend -->not supported (JT p 0.061, ρ 0.63)<!-- /v -->, where E1's memorised published frequencies raise E1's HS and flatten the trend); where H3 fails there, argmax agreement is below the preregistered 0.99 for the wrong-frequency replacement and also for the true E3 and E4 replacements, so the explanation is not shown to be the cause (not diagnosed). *Kind of evidence:* H1–H3 are
-interventions on the explanation with everything else fixed; H4 compares with explanation-free baselines; H7 and the
-memorisation target swap are counterfactual swaps of the target network; the format, self-test, effort and simulator
-variants are ablations; H8 is a correlation over training checkpoints. *Strength:* the supported hypotheses rest on three runs
-per condition (H1: a one-sided trend test; H4 and H7: one-sided rank tests at α = 0.05, Holm-corrected where
-preregistered; H3: a comparison of condition means; H8: descriptive); the wrong-frequency
-gap holds on <!-- v:wfreq-gap-targets -->all five targets<!-- /v -->; nothing here has reached the preregistered N = 10.
-
-Replications on the seed-sensitivity targets (preregistration §5: H1–H3 re-tested per target with the preregistered
-tests, which earlier versions only checked by direction; deviation 8):
-
-<!-- BEGIN replications -->
-| Target | HS (hidden-state similarity, 1 = internals match up to a linear map) per true explanation | H1: HS rises with detail? (trend test) | H2: HS(E3 (+ per-frequency details)) − HS(W-freq (wrong frequencies)); Mann–Whitney | H3 observed (W-freq) | H3 holds? |
-|-----|------|---|---|-------|-----|
-| T0 (E2–E4 only; post hoc, for comparison) | E2 (+ key frequencies) 0.894, E3 (+ per-frequency details) 0.929, E4 (+ per-neuron table) 0.943 | means rise E2 → E3 → E4; supported (JT p 0.011, ρ 0.79) | +0.859; cannot tell at this N (p 0.050) | agreement 1.000, KL (output divergence, 0 = same answers) 0.003 (true max 0.060), HS (hidden-state similarity, 1 = internals match up to a linear map) 0.070 | yes |
-| T1 (target from another seed) | E2 (+ key frequencies) 0.957, E3 (+ per-frequency details) 0.936, E4 (+ per-neuron table) 0.960 | means do not rise E2 → E3 → E4; not supported (JT p 0.500, ρ 0.05) | +0.885; cannot tell at this N (p 0.050) | agreement 0.854, KL (output divergence, 0 = same answers) 0.537 (true max 0.498), HS (hidden-state similarity, 1 = internals match up to a linear map) 0.051 | partly (agreement < 0.99; KL above the true range) |
-| T2 (target from another seed) | E2 (+ key frequencies) 0.900, E3 (+ per-frequency details) 0.962, E4 (+ per-neuron table) 0.951 | means do not rise E2 → E3 → E4; not supported (JT p 0.500, ρ 0.05) | +0.864; cannot tell at this N (p 0.050) | agreement 0.999, KL (output divergence, 0 = same answers) 0.006 (true max 0.049), HS (hidden-state similarity, 1 = internals match up to a linear map) 0.098 | yes |
-| T-new (target trained after the freeze) | E3 (+ per-frequency details) 0.910, E4 (+ per-neuron table) 0.984 | means rise E3 → E4; cannot tell at this N (JT p 0.050, ρ 0.88) | +0.816; cannot tell at this N (p 0.050) | agreement 0.907, KL (output divergence, 0 = same answers) 0.432 (true max 0.328), HS (hidden-state similarity, 1 = internals match up to a linear map) 0.094 | partly (agreement < 0.99; KL above the true range) |
-| T-paper (flagged: memorisation) | E1 (algorithm only) 0.590, E3 (+ per-frequency details) 0.940, E4 (+ per-neuron table) 0.937 | means do not rise E1 → E3 → E4; not supported (JT p 0.061, ρ 0.63) | +0.823; cannot tell at this N (p 0.050) | agreement 0.998, KL (output divergence, 0 = same answers) 0.007 (true max 0.413), HS (hidden-state similarity, 1 = internals match up to a linear map) 0.117 | yes |
-<!-- END replications -->
-
-## Key results so far
-
-<!-- BEGIN key-results -->
-*Round 2, N = 3 run(s) per condition — not yet N=10*
-
-- **Model-specific detail raises hidden-state similarity:** HS on T0 (main target network) is 0.05 (E1, algorithm only), 0.89 (E2 (+ key frequencies)), 0.93 (E3 (+ per-frequency details)) and 0.94 (E4 (+ per-neuron table)); with no explanation (E0) it is 0.13. Monotone from E1 to E4; E0 lies above E1, against the preregistered prediction.
-- **Correct behaviour from the wrong key frequencies is caught by HS (hidden-state similarity, 1 = internals match up to a linear map), not by output KL (output divergence, 0 = same answers):** the wrong-frequency replacement reaches KL 0.003 nats (true E3 (+ per-frequency details): 0.010) but HS 0.07.
-- **Copying behaviour does not copy the mechanism:** independent retrains (HS (hidden-state similarity, 1 = internals match up to a linear map) 0.12) and logit-distilled students (HS 0.23, KL (output divergence, 0 = same answers) 2.38e-06) score no higher than randomly initialised networks (HS 0.24). HS's scale is therefore not anchored at 0 for unrelated networks: it measures overlap of internal features, and working networks built on other frequencies score below random ones.
-- **Negative result:** at N = 3 the primary HS (hidden-state similarity, 1 = internals match up to a linear map) does not separate the Pizza explanation (W-alg (wrong algorithm: Pizza), HS 0.91; E3 (+ per-frequency details) − W-alg +0.020, bootstrap CI [-0.008, +0.045]) or the scrambled neuron table (W-scramble (shuffled neuron table), HS 0.94; E4 (+ per-neuron table) − W-scramble +0.007, CI [-0.025, +0.037]) from the true explanations (a failure to separate, not a demonstrated equivalence); the secondary matched-neuron correlation separates W-scramble (0.65) from E4 (0.91). The agent-free compiler's literal build of the scrambled table does score 0.09 below its E4 build on T0 (main target network), mostly at resid_post: 0.69 vs 0.95; elsewhere the gap is within ±0.007 on T1 (target from another seed), T-new (target trained after the freeze), T-paper (the published checkpoint); on T2 (target from another seed) the scrambled build scores 0.05 higher. Post hoc, by Zhong et al.'s distance irrelevance (≥ 0.4 Clock-like, < 0.4 Pizza-like) T0 is a Clock (0.75) and the literal Pizza build a Pizza (0.003), but the agents' replacements from the true E1–E3 are Pizza-like too (means 0.13–0.18; E4 0.41), and HS still rates the E2–E4 ones 0.89–0.94 against the Clock target, as high as the Pizza explanation's builds: at this N, HS did not separate Clock from Pizza mechanisms that share the key frequencies (no Clock-side build of an explanation exists to compare).
-- **Memorisation (post hoc):** E0 (no explanation) and E1 (algorithm only) contain nothing target-specific (identical text on every target, and the sandbox does not reveal the target), so their runs on T0 (main target network) and on the published checkpoint are replicates of one condition. When the explanation gives no frequencies, the simulator often builds most of the published paper's frequencies {14, 35, 41, 42, 52} into its replacement (recall cued by the task description, which gives the paper's exact architecture and an outline of its training setup; no sandbox file names a frequency or the paper). E1 (6 runs on T0 and T-paper (the published checkpoint)): 5 of 6 build scripts list at least four of the paper's five frequencies (3 of 6 replacements build at least four by the key-frequency rule, a lower bound); on average 68% of the replacements' W_L spectrum lies on those five frequencies (chance 9%); mean HS (hidden-state similarity, 1 = internals match up to a linear map) 0.08 against T0 but 0.70 against the published checkpoint (target swap: same weights, other target; range 0.24–0.95); E0 (3 runs on T0): 1 of 3 build scripts list at least four of the paper's five frequencies (1 of 3 replacements build at least four by the key-frequency rule, a lower bound); on average 36% of the replacements' W_L spectrum lies on those five frequencies (chance 9%); mean HS 0.13 against T0 but 0.28 against the published checkpoint (target swap: same weights, other target; range 0.03–0.63). On a published model, a high score can therefore come from the simulator's memory rather than the explanation (one published model and one simulator tested).
-- **Cost:** the 96 reported Claude Haiku 5.5 runs cost $2.20 ($2.33 including development runs and plumbing checks).
-<!-- END key-results -->
-
-![Scores per explanation on T0](reports/figures/ladder_T0.png)
-
-![Behaviour (output KL) against mechanism (HS)](reports/figures/kl_vs_hs_T0.png)
-
-| Calibration on a planted mechanism (H4b): HS (hidden-state similarity, 1 = internals match up to a linear map) falls steadily, output KL (output divergence, 0 = same answers) does not | Score against the target's training checkpoints (H8) |
-|---|---|
-| ![Planted-mechanism calibration](reports/figures/planted_T0.png) | ![Trajectory](reports/figures/trajectory_T0.png) |
-| **Score against explanation length:** the jump comes with the key frequencies (E2 (+ key frequencies)), not with length | **Simulator ablation (negative):** local Qwen models at chance, Haiku near the compiler |
-| ![Length](reports/figures/length_T0.png) | ![Simulators](reports/figures/simulators_T0.png) |
-
-The same results, explorable run by run (hover for each run's numbers; switch target, metric and simulator):
-[interactive results explorer](https://burnycoder.github.io/verifiable-mechanistic-interpretability-by-grading-explanations-using-simulations/).
-GitHub READMEs cannot run scripts, so the interactive views live there; there is no video.
-
-**Better or worse than the baselines, controls and ablations, in plain words.**
-- **Better than output KL (output divergence, 0 = same answers):** a network trained with the same recipe from another seed, a network trained to copy the
-  target's outputs exactly, and a network built from a *wrong-frequency* explanation all give the right answers —
-  output KL rates them as good as the true explanations (the wrong-frequency one above E3 and E4, below E2); HS (hidden-state similarity, 1 = internals match up to a linear map) rates them at the bottom, where they belong.
-- **Better than chance and than explanation-free baselines:** naming the key frequencies (E2 (+ key frequencies)) lifts HS (hidden-state similarity, 1 = internals match up to a linear map) from the
-  floor to near the agent-free compiler's value; without model-specific information (E0 (no explanation), E1 (algorithm only)) the agent builds a
-  working adder with none of the target's internals.
-- **Worse than hoped (negative result):** with three runs, HS (hidden-state similarity, 1 = internals match up to a linear map) did not separate the AI's rebuilds of the true explanation (E3) from its rebuilds of a Pizza explanation with the
-  same frequencies, nor of a correct per-neuron table from a scrambled one; both keep every frequency subspace intact.
-  The secondary matched-neuron correlation catches the scrambled table, and so does HS when our AI-free compiler
-  builds the scrambled table literally on T0 (<!-- v:a5-scr-t0 -->0.09<!-- /v --> lower), though not on the other targets. Post hoc, by the Clock/Pizza diagnostic of
-  Zhong et al., T0 is a Clock (<!-- v:cp-t0 -->0.75<!-- /v -->) but the networks rebuilt from the *true* explanations are
-  Pizza-like too (<!-- v:cp-e13 -->0.13–0.18<!-- /v --> for E1–E3), and HS still rates them high: the true explanations, as
-  written, do not say what makes T0 a Clock, and HS does not notice.
-- **A trap the design caught (post hoc):** when an explanation describes the algorithm but leaves the frequencies
-  open, the agent fills them in with most of the *published paper's* frequencies from memory. The algorithm-only
-  explanation is the same text for every target, so its runs on our main target and on the paper's checkpoint are
-  replicates: <!-- v:e1-mem -->five of six<!-- /v --> of their build scripts list at least <!-- v:e1-k -->four<!-- /v --> of the paper's five frequencies (with no explanation
-  at all, <!-- v:e0-mem-in -->one run in three<!-- /v -->). The same weights score <!-- v:e1-hs-t0 -->0.08<!-- /v --> on average against our target but <!-- v:e1-hs-paper -->0.70<!-- /v --> against the
-  published checkpoint. On a published model a high score can therefore come from memory, so the study's conclusions
-  rest on targets whose mechanism the simulator cannot have seen.
-- **Ablations:** writing the explanation as maths or as code instead of prose, or removing the self-test,
-  barely changed HS (hidden-state similarity, 1 = internals match up to a linear map). Removing the self-test did
-  not remove the feedback, though: <!-- v:noselftest-own -->all three<!-- /v --> agents without it measured accuracy with
-  their own code, so this ablation says nothing about how much accuracy-driven repair shapes the score. Low effort broke the answers in <!-- v:lowfx-e3 -->one of three<!-- /v --> E3 (+ per-frequency details) runs and <!-- v:lowfx-wfreq -->one of three<!-- /v --> W-freq (wrong frequencies) runs, without
-  changing HS. The E3 failure was a bug in that run's own script, not in the explanation: it placed one attention
-  head's output on the dimensions the network reads its answer from, and changing that one number gives full accuracy
-  (examples above). The <!-- v:lowfx-e3-n -->three<!-- /v --> low-effort E3 runs were identical in everything the agent could see except the
-  unseedable sampling (same files, prompt, model, Claude Code version, settings and grading, checked), so the bug was a
-  chance slip of the model that the setup does not force, and one failure in three runs says little about how often it
-  happens (interval in the example above). The W-freq failure was not tested further; the agent blamed its MLP features. The small local
-  models never built a working network from any explanation.
-- **Not yet decided:** H2's comparisons cannot reach significance with three runs per condition (3 vs 3 runs:
-  smallest attainable p = 0.05) and read "cannot tell at this N"; round 3 (N = 10) is postponed.
-
-### Scores on the main target T0 (agent vs. agent-free reference compiler)
-
-<!-- BEGIN scoreboard-T0 -->
-| Explanation | role | chars | N | agent accuracy | agent KL_out (output divergence, 0 = same answers) ↓ | agent HS (hidden-state similarity, 1 = internals match up to a linear map) ↑ | agent matched-neuron corr ↑ | compiler KL_out ↓ | compiler HS ↑ |
-|---|---|---|---|---|---|---|---|---|---|
-| E0 (no explanation) | control: no mechanism | 279 | 3 | 1.000 ± 0.000 | 0.005 ± 0.004 | 0.130 ± 0.109 | 0.056 ± 0.031 | 1.64e-04 | 0.051 |
-| E1 (algorithm only) | method | 1556 | 3 | 1.000 ± 0.000 | 0.097 ± 0.152 | 0.046 ± 0.002 | 0.028 ± 1.59e-04 | 1.64e-04 | 0.051 |
-| E2 (+ key frequencies) | method | 1788 | 3 | 1.000 ± 0.000 | 2.12e-04 ± 1.78e-04 | 0.894 ± 0.005 | 0.669 ± 0.005 | 1.30e-05 | 0.895 |
-| E3 (+ per-frequency details) | method | 3712 | 3 | 1.000 ± 4.70e-04 | 0.010 ± 0.012 | 0.929 ± 0.012 | 0.759 ± 0.060 | 4.25e-04 | 0.927 |
-| E4 (+ per-neuron table) | method | 51329 | 3 | 0.986 ± 0.012 | 0.060 ± 0.045 | 0.943 ± 0.028 | 0.913 ± 0.044 | 0.010 | 0.952 |
-| W-freq | control: wrong frequencies | 3724 | 3 | 1.000 ± 9.04e-05 | 0.003 ± 0.002 | 0.070 ± 0.021 | 0.030 ± 1.64e-04 | 0.001 | 0.095 |
-| W-alg (wrong algorithm: Pizza) | control: wrong algorithm (Pizza) | 2224 | 3 | 1.000 ± 0.000 | 0.024 ± 0.017 | 0.909 ± 0.027 | 0.737 ± 0.061 | 0.040 | 0.921 |
-| W-role | control: wrong component roles | 3777 | 3 | 1.000 ± 2.71e-04 | 9.80e-04 ± 7.60e-04 | 0.204 ± 0.060 | 0.013 ± 0.002 | 4.727 | 0.500 |
-| W-scramble (shuffled neuron table) | control: scrambled neurons | 51590 | 3 | 0.998 ± 0.004 | 0.006 ± 0.008 | 0.936 ± 0.018 | 0.653 ± 0.027 | 2.02e-05 | 0.859 |
-<!-- END scoreboard-T0 -->
-
-### Explanation-free baselines on T0 (no agent)
-
-<!-- BEGIN baselines-T0 -->
-| Reference point | what it has | n | task accuracy | KL_out (output divergence, 0 = same answers) ↓ | HS (hidden-state similarity, 1 = internals match up to a linear map) ↑ |
-|---|---|---|---|---|---|
-| Random initialisation | nothing (floor) | 5 | 0.009 ± 0.001 | 4.766 ± 0.006 | 0.236 ± 0.006 |
-| Independent retrains | same recipe, other seeds | 9 | 1.000 ± 0.000 | 6.90e-06 ± 3.96e-06 | 0.119 ± 0.097 |
-| Logit-distilled students | M's full output logits, no explanation | 3 | 1.000 ± 0.000 | 2.38e-06 ± 8.25e-07 | 0.233 ± 0.058 |
-| Fourier-restricted M | M's weights, key frequencies only in W_E/W_U | 1 | 1.000 | 0.002 | 0.992 |
-| Weights dump | all 226,816 weights | 1 | 1.000 | 0.000 | 1.000 |
-<!-- END baselines-T0 -->
-
-### Ablations and hyperparameter variants on T0
-
-<!-- BEGIN ablations-T0 -->
-| Change | Explanation | Simulator | N | task accuracy | KL_out (output divergence, 0 = same answers) ↓ | HS (hidden-state similarity, 1 = internals match up to a linear map) ↑ | matched-neuron corr ↑ |
-|---|---|---|---|---|---|---|---|
-| none (main condition) | E3 (+ per-frequency details) | claude-haiku-5-5 | 3 | 1.000 ± 4.70e-04 | 0.010 ± 0.012 | 0.929 ± 0.012 | 0.759 ± 0.060 |
-| explanation as maths | E3 (+ per-frequency details) | claude-haiku-5-5 | 3 | 0.999 ± 0.002 | 0.003 ± 0.004 | 0.915 ± 0.003 | 0.771 ± 0.036 |
-| explanation as code | E3 (+ per-frequency details) | claude-haiku-5-5 | 3 | 1.000 ± 9.04e-05 | 0.002 ± 3.96e-04 | 0.897 ± 0.030 | 0.805 ± 2.48e-04 |
-| self-test removed | E3 (+ per-frequency details) | claude-haiku-5-5 | 3 | 1.000 ± 3.62e-04 | 0.004 ± 0.002 | 0.942 ± 0.025 | 0.765 ± 0.043 |
-| effort low | E3 (+ per-frequency details) | claude-haiku-5-5 | 3 | 0.853 ± 0.252 | 0.661 ± 1.137 | 0.921 ± 0.003 | 0.751 ± 0.027 |
-| effort high | E3 (+ per-frequency details) | claude-haiku-5-5 | 3 | 1.000 ± 0.000 | 0.001 ± 7.17e-04 | 0.936 ± 0.034 | 0.791 ± 0.025 |
-| none (main condition) | W-freq (wrong frequencies) | claude-haiku-5-5 | 3 | 1.000 ± 9.04e-05 | 0.003 ± 0.002 | 0.070 ± 0.021 | 0.030 ± 1.64e-04 |
-| effort low | W-freq (wrong frequencies) | claude-haiku-5-5 | 3 | 0.923 ± 0.133 | 0.344 ± 0.594 | 0.088 ± 0.025 | 0.061 ± 0.031 |
-| effort high | W-freq (wrong frequencies) | claude-haiku-5-5 | 3 | 1.000 ± 0.000 | 0.001 ± 6.05e-04 | 0.093 ± 0.005 | 0.032 ± 0.003 |
-| simulator qwen3.5-4b | E2 (+ key frequencies) | qwen3.5-4b | 1 | 0.009 | 4.727 | 0.000 | 0.000 |
-| simulator qwen3.5-4b | E3 (+ per-frequency details) | qwen3.5-4b | 1 | 0.009 | 4.727 | 0.000 | 0.000 |
-| simulator qwen3.5-4b | E4 (+ per-neuron table) | qwen3.5-4b | 1 | 0.009 | 4.727 | 0.000 | 0.000 |
-| simulator qwen3.5-4b | W-freq (wrong frequencies) | qwen3.5-4b | 1 | 0.009 | 6.066 | 0.000 | 1.41e-16 |
-| simulator qwen3.5-9b | E2 (+ key frequencies) | qwen3.5-9b | 1 | 0.009 | 7.628 | 0.000 | 0.000 |
-<!-- END ablations-T0 -->
-
-### Preregistered hypotheses
-
-Predicted vs. measured for every hypothesis, in plain words and in expert terms: [top of this README](#predicted-vs-measured-with-claude-haiku). Exact tests and falsification criteria: [reports/preregistration.md](reports/preregistration.md) §5.
-
-## How it works
-
-![Pipeline](reports/figures/architecture.png)
-
-```mermaid
-flowchart LR
-    M[(Target model M<br/>trained weights)] --> X[Explainer script<br/>Fourier analysis]
-    X --> E[EXPLANATION.md<br/>E0-E4, W-*]
-    X --> S[spec.json] --> C[Reference compiler<br/>no agent] --> G
-    subgraph SB[Sandbox: WSL + bubblewrap, no network except the model endpoint, no path to M]
-        E --> A[Claude Code + Haiku 5.5<br/>or bash harness + Qwen]
-        A --> B[build_weights.py] --> W[weights.npz = M̂]
-    end
-    P[API proxy outside the sandbox<br/>key, model allowlist, budget ledger] <-. unix socket .-> A
-    M --> G{Grader}
-    W --> G
-    G --> S1[KL_out over 113² inputs]
-    G --> S2[Hidden-state similarity<br/>resid_mid, mlp_post, resid_post]
-```
-
-**What happens when you run it.** (1) Target runs are downloaded at pinned revisions. (2) The explainer computes the
-target's key frequencies, neuron clusters, attention fits and per-neuron fits and renders every explanation level
-from one parameter dict, which also feeds the reference compiler. (3) For each agent run a fresh folder gets the
-task files and one explanation. (4) The agent runs offline inside bubblewrap; its only way out is a unix socket to a
-proxy (Claude) or relay (llama-server) outside the sandbox, which logs every request and response body in full (headers excluded). (5) The
-build script is audited for gradient-descent and optimiser patterns (small searches over a constant pass it; audit 7
-found them by reading every script); the grader runs both networks on all 12,769 inputs and computes the
-metrics. (6) `vmi analyse` evaluates every preregistered hypothesis and regenerates every table and figure in this
-README, the reports and the paper from `results/`.
 
 ## Run matrix
 
@@ -485,7 +621,9 @@ Python 3.12, PyTorch 2.14 (CUDA 13.0), numpy/scipy (versions recorded in `result
 with Qwen3.6-35B-A3B / Qwen3.5-9B / Qwen3.5-4B GGUFs (tried; stopped at chance), bubblewrap 0.9 in WSL2 Ubuntu 24.04, pandoc + XeLaTeX, uv,
 Hugging Face Hub.
 
-## Setup
+## Install, set up and use
+
+### Setup
 
 Requirements: Windows 11 with an NVIDIA GPU (tested on an RTX 5070 Laptop, 8 GB), WSL2 Ubuntu with bubblewrap,
 [uv](https://docs.astral.sh/uv/), llama.cpp b12600 (local models), Claude Code in WSL (Claude runs), pandoc and a
@@ -505,7 +643,14 @@ For Claude runs, add `ANTHROPIC_API_KEY` and `ANTHROPIC_WORKSPACE_ID` to `.env` 
 wsl bash scripts/setup_wsl.sh
 ```
 
-## Usage
+Download the target runs at the pinned revision (the paper's checkpoint is downloaded and sha256-checked on first
+use):
+
+```powershell
+hf download BurnyCoder/grokking-modular-addition-runs --revision 98c61de0c6e6219be70bb7eef60390ab510164f2 --local-dir D:/AI/vmi-sim/data/grokking-runs
+```
+
+### Usage
 
 ```powershell
 uv run vmi explain T0
@@ -534,6 +679,42 @@ uv run vmi paper
 All commands and what they write: [docs/usage.md](docs/usage.md). Module map and design choices:
 [docs/architecture.md](docs/architecture.md).
 
+### Reproduce
+
+Unit and integration tests:
+
+```powershell
+uv run pytest -q
+```
+
+Re-derive every preregistered verdict from the committed raw results. The script uses numpy and the standard library
+only and needs no targets, run folders or API key. It prints how many checks agree with
+`results/hypotheses_round2.json`:
+
+```powershell
+uv run python scripts/audit7/verdicts.py
+```
+
+To regenerate every table, figure, README block and the paper's text, run `uv run vmi analyse 2`, then `uv run vmi
+paper` for the PDF. This needs the target runs (see Setup) and the agent run folders in `VMI_RUNS_DIR` (weights, event
+logs, transcripts). Those folders are not in git. Without them, `vmi analyse` would replace the agent-example blocks
+with a placeholder and draw the example figures without the agents' networks, so run it only where the folders
+exist. The same replacement weights, build scripts and transcripts are on
+[Hugging Face](https://huggingface.co/BurnyCoder/grading-explanations-by-simulation) under `replacements/<run_id>/`.
+That is a flat layout, not the run-folder layout the pipeline reads.
+
+To re-run the experiments (needs the Claude API key in `.env` and the WSL setup; costs are in [Key results](#key-results)),
+write a round's manifests and queue each stage (`main`, `controls`, `ablations`, `hyper`, `seed`). The no-agent
+stages run with `vmi controls 2` and `vmi baselines T0`:
+
+```powershell
+uv run vmi manifests 2
+```
+
+```powershell
+uv run vmi queue results/manifests/round2_main.jsonl
+```
+
 ## Repository layout
 
 ```
@@ -559,24 +740,8 @@ docs/               usage and architecture
 - [x] Interactive results explorer on GitHub Pages (regenerated by `vmi analyse`)
 - [ ] A neuron-level or causal second metric for what HS (hidden-state similarity, 1 = internals match up to a linear map) did not separate (Clock vs Pizza, per-neuron assignment)
 - [ ] Other toy models (Clock/Pizza p = 59, the paper's 2-layer and LayerNorm variants, ARENA monthly problems)
-- [x] Independent audit (deviation 8): statistics reproduced, HS invariance corrected, missing preregistered analyses
-      added ([report](reports/reviews/independent-audit-2026-11-22.md))
-- [x] Second independent audit (deviation 9): contamination wording, H5 scope, pooled memorisation, agent repair and
-      self-test tuning disclosed, H8 negative controls, citation fixes ([report](reports/reviews/audit-2-2026-11-22.md))
-- [x] Third independent audit (deviation 10): every verdict recomputed independently, H1's E0 clause and the T-paper
-      replication corrected, exact H1 trend test, label feedback in the self-test ablation, alignment class at
-      `mlp_post`, Clock/Pizza diagnostics, citation fixes ([report](reports/reviews/audit-3-2026-11-22.md))
-- [x] Fourth independent audit (deviation 11): independent regrade and tests, H4b/H8 re-read, citation corrections
-      ([report](reports/reviews/audit-4-2026-11-22.md))
-- [x] Fifth independent audit (deviation 12): every verdict re-derived with exact methods, T0's read-out-only
-      frequency 2, scrambled-table blind spot narrowed, deviation count and citations corrected
-      ([report](reports/reviews/audit-5-2026-11-22.md))
-- [x] Sixth independent audit (deviation 13): verdicts re-derived and scores re-graded with new code, H2's literal
-      §5 reading shown, the agents' parameter searches counted by reading, citation fixes
-      ([report](reports/reviews/audit-6-2026-11-22.md))
-- [x] Seventh independent audit (deviation 14): verdicts re-derived without project code or scipy, T0 scores
-      re-graded with numpy, searches inside <!-- v:a7-search -->7 of 96<!-- /v --> final build scripts disclosed with a sensitivity check,
-      citation fixes ([report](reports/reviews/audit-7-2026-11-22.md))
+- [x] Independent audits after round 2 (preregistration deviations 8 onward): verdicts re-derived and scores
+      re-graded with independent code, errata, scope and citation fixes ([reports/reviews/](reports/reviews/))
 - [ ] Extend the static audit to flag selection loops (a variable that keeps the best candidate, fixed-count
       calibration loops) before round 3, and review flagged scripts by hand as §2 prescribes
 - [ ] Render the embedding's own frequency set separately from the read-out's (T0's frequency 2, embedding harmonics)
