@@ -2,7 +2,11 @@
 
 All commands run from the repository root on Windows; agent runs call into WSL automatically.
 
-## One-time setup
+## Rebuild the published results from saved records
+
+After `uv sync --frozen`, run `uv run --frozen vmi analyse 1 --saved-only` for the first-round report and `docs/data_round1.json`. Run `uv run --frozen vmi analyse 2 --saved-only` for the cumulative tables, aggregate figures, paper source, audit report and Pages data. The commands use the tracked results without model downloads. The displayed per-input examples retain their archived precision. The two example panels are authenticated by SHA-256. Run `uv run --frozen python scripts/verify_saved_report.py` to exercise both commands with model, weight and network access disabled. Typeset the paper with `uv run --frozen vmi paper` (Pandoc and XeLaTeX). [Evidence limits](../reports/reviews/scientific-audit-2026-11-26.md).
+
+## One-time setup for the experimental pipeline
 
 1. Python environment: `uv sync` (Python 3.12, torch 2.14 CUDA 13.0, pinned `grokviz`).
 2. Settings: copy `.env.example` to `.env` and adjust paths (defaults use `D:\AI\vmi-sim`).

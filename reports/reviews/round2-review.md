@@ -1,5 +1,7 @@
 # Round-2 adversarial review (N = 3)
 
+**Historical record · erratum dated 26 November 2026.** Later reconstruction distinguishes the originally sampled H8 analysis, the complete trajectories and the two KL readings of H3. [Independent reconstruction and evidence limits](scientific-audit-2026-11-26.md).
+
 *2026-11-22, against the code, results and paper after round 2 (three runs per condition). Reviewer stance as in
 [round 1](round1-review.md): assume the headline claims are wrong and look for what would make them so. Numbers are in
 the generated tables of [02-round2/experiment.md](../experiments/02-round2/experiment.md).*

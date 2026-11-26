@@ -1,59 +1,7 @@
 {
-  "hypotheses": "results\\hypotheses_round1.json",
-  "figures": [
-    "reports\\figures\\architecture.png",
-    "reports\\figures\\ladder_T0.png",
-    "reports\\figures\\kl_vs_hs_T0.png",
-    "reports\\figures\\planted_T0.png",
-    "reports\\figures\\trajectory_T0.png",
-    "reports\\figures\\length_T0.png",
-    "reports\\figures\\simulators_T0.png",
-    "reports\\figures\\examples_T0.png"
-  ],
+  "hypotheses": "results/hypotheses_round1.json",
+  "figures": [],
   "filled": {
-    "README.md": [
-      "scoreboard-T0",
-      "baselines-T0",
-      "key-results",
-      "replications",
-      "predictions-plain",
-      "ablations-T0"
-    ],
-    "reports/summary.md": [
-      "key-results",
-      "predictions",
-      "replications"
-    ],
-    "reports/experiments/experiments.md": [
-      "runs",
-      "cost",
-      "targets"
-    ],
-    "reports/paper/paper.md": [
-      "runs",
-      "scoreboard-T0",
-      "baselines-T0",
-      "controls-T0",
-      "cost",
-      "targets",
-      "key-results",
-      "grader-sensitivity-T0",
-      "grader-sensitivity-compiler-T0",
-      "explainer-sensitivity-T0",
-      "frequencies",
-      "stitching-T0",
-      "predictions",
-      "replications",
-      "ablations-T0",
-      "compiler-T0",
-      "compiler-T1",
-      "compiler-T2",
-      "compiler-T-new",
-      "compiler-T-paper"
-    ],
-    "reports/experiments/00-stage0-dev/experiment.md": [
-      "compiler-dev"
-    ],
     "reports/experiments/01-round1/experiment.md": [
       "runs",
       "scoreboard-T0",
@@ -71,5 +19,7 @@
       "compiler-T-new",
       "compiler-T-paper"
     ]
-  }
+  },
+  "source": "saved measurements and archived examples",
+  "archived_figures": []
 }

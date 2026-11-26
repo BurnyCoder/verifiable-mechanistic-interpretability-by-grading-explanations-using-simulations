@@ -82,15 +82,14 @@ disturbs, then re-sharpens the outputs), so H4b's KL half fails while its HS hal
 explanation fit T0 far better than each of the 12 wrong targets, which share at most one key frequency with T0 (H7 direction), and HS against T0's
 checkpoints rises through circuit formation together with the fall of the restricted loss (H8). H8 here used one
 replacement (`main__T0__E3…s0`, the highest-HS E3/E4 run of round 1) against every 10th checkpoint (41 of 401), not
-every E3/E4 replacement × all 401 checkpoints as preregistered; the "all checkpoints" label in the H8 row below is
-wrong. After round 2 it was re-run as preregistered with all six round-1–2 replacements (deviation 8; still supported, `results/controls/trajectory_T0.json`).
+every eligible E3/E4 build over all checkpoints. The H8 row below distinguishes this contemporaneous analysis from the retrospective calculation using both round-one builds and the full trajectory. [Contemporaneous record](../../../results/controls/trajectory_T0_round1_historical.json) · [Dated erratum](../../reviews/scientific-audit-2026-11-26.md).
 
 ## Baselines (no agent)
 
 <!-- BEGIN baselines-T0 -->
 | Reference point | what it has | n | task accuracy | KL_out ↓ | HS ↑ |
 |---|---|---|---|---|---|
-| Random initialisation | nothing (floor) | 5 | 0.009 ± 0.001 | 4.766 ± 0.006 | 0.236 ± 0.006 |
+| Random initialisation | untrained reference | 5 | 0.009 ± 0.001 | 4.766 ± 0.006 | 0.236 ± 0.006 |
 | Independent retrains | same recipe, other seeds | 9 | 1.000 ± 0.000 | 6.90e-06 ± 3.96e-06 | 0.119 ± 0.097 |
 | Distilled students | M's output probabilities (KL at temperature 1), no explanation | 3 | 1.000 ± 0.000 | 2.38e-06 ± 8.25e-07 | 0.233 ± 0.058 |
 | Fourier-restricted M | M's weights, key frequencies only in W_E/W_U | 1 | 1.000 | 0.002 | 0.992 |
@@ -197,33 +196,33 @@ each replacement built by the main simulator. Frequencies with small amplitude f
 "used" sets are lower bounds.
 
 <!-- BEGIN frequencies -->
-| Target | Explanation | frequencies used by the replacement | target's key frequencies | overlap with target (Jaccard) | overlap with paper's {14, 35, 41, 42, 52} | HS | same weights: HS against the published checkpoint |
+| Target | Explanation | frequencies built (key-frequency rule) | frequencies the script lists | target's key frequencies | W_L norm share: target's / paper's frequencies | HS | E0/E1, same weights: HS vs T0 / vs published checkpoint |
 |---|---|---|---|---|---|---|---|
-| T0 | E0 | 14, 35, 41, 52 | 2, 3, 23, 37, 39 | 0.00 | 0.80 | 0.004 | 0.626 |
-| T0 | E1 | 14, 35, 41, 52 | 2, 3, 23, 37, 39 | 0.00 | 0.80 | 0.048 | 0.951 |
-| T0 | E2 | 3, 23, 39 | 2, 3, 23, 37, 39 | 0.60 | 0.00 | 0.899 | – |
-| T0 | E3 | 3, 23 | 2, 3, 23, 37, 39 | 0.40 | 0.00 | 0.939 | – |
-| T0 | E4 | 3, 23, 39 | 2, 3, 23, 37, 39 | 0.60 | 0.00 | 0.912 | – |
-| T0 | W-freq | 31, 42, 52, 55 | 2, 3, 23, 37, 39 | 0.00 | 0.29 | 0.055 | – |
-| T0 | W-alg | 3, 23, 37, 39 | 2, 3, 23, 37, 39 | 0.80 | 0.00 | 0.889 | – |
-| T0 | W-role | 32, 34, 41, 54 | 2, 3, 23, 37, 39 | 0.00 | 0.12 | 0.168 | – |
-| T0 | W-scramble | 3, 23, 39 | 2, 3, 23, 37, 39 | 0.60 | 0.00 | 0.918 | – |
-| T1 | E2 | 11, 25, 49 | 11, 25, 49 | 1.00 | 0.00 | 0.955 | – |
-| T1 | E3 | 11, 49 | 11, 25, 49 | 0.67 | 0.00 | 0.917 | – |
-| T1 | E4 | 25, 49 | 11, 25, 49 | 0.67 | 0.00 | 0.955 | – |
-| T1 | W-freq | 38, 52 | 11, 25, 49 | 0.00 | 0.17 | 0.034 | – |
-| T2 | E2 | 37, 44, 45, 46, 47, 51 | 37, 44, 45, 46, 47, 51 | 1.00 | 0.00 | 0.949 | – |
-| T2 | E3 | 37, 45, 47, 51 | 37, 44, 45, 46, 47, 51 | 0.67 | 0.00 | 0.944 | – |
-| T2 | E4 | 37, 44, 45, 46, 47, 51 | 37, 44, 45, 46, 47, 51 | 1.00 | 0.00 | 0.934 | – |
-| T2 | W-freq | 32 | 37, 44, 45, 46, 47, 51 | 0.00 | 0.00 | 0.089 | – |
-| T-new | E3 | 22, 41 | 22, 37, 41, 51 | 0.50 | 0.17 | 0.846 | – |
-| T-new | E4 | 37, 41 | 22, 37, 41, 51 | 0.50 | 0.17 | 0.984 | – |
-| T-new | W-freq | 10 | 22, 37, 41, 51 | 0.00 | 0.00 | 0.087 | – |
-| T-paper | E1 | 42, 52 | 14, 35, 41, 42, 52 | 0.40 | 0.40 | 0.925 | – |
-| T-paper | E3 | 14, 35, 41, 42, 52 | 14, 35, 41, 42, 52 | 1.00 | 1.00 | 0.944 | – |
-| T-paper | E4 | 14, 35, 41, 42, 52 | 14, 35, 41, 42, 52 | 1.00 | 1.00 | 0.929 | – |
-| T-paper | W-freq | 8, 21, 39, 44, 49 | 14, 35, 41, 42, 52 | 0.00 | 0.00 | 0.091 | – |
-| T-paper | E-paper | 14, 35, 41, 42, 52 | 14, 35, 41, 42, 52 | 1.00 | 1.00 | 0.984 | – |
+| T0 | E0 | 14, 35, 41, 52 | 14, 35, 41, 52 | 2, 3, 23, 37, 39 | 0.00 / 1.00 | 0.004 | 0.004 / 0.626 |
+| T0 | E1 | 14, 35, 41, 52 | 14, 35, 41, 42, 52 | 2, 3, 23, 37, 39 | 0.00 / 1.00 | 0.048 | 0.048 / 0.951 |
+| T0 | E2 | 3, 23, 39 | 2, 3, 23, 37, 39 | 2, 3, 23, 37, 39 | 1.00 / 0.00 | 0.899 | – |
+| T0 | E3 | 3, 23 | 2, 3, 23, 37, 39 | 2, 3, 23, 37, 39 | 1.00 / 0.00 | 0.939 | – |
+| T0 | E4 | 3, 23, 39 | computed | 2, 3, 23, 37, 39 | 1.00 / 0.00 | 0.912 | – |
+| T0 | W-freq | 31, 42, 52, 55 | 22, 31, 42, 52, 55 | 2, 3, 23, 37, 39 | 0.00 / 0.48 | 0.055 | – |
+| T0 | W-alg | 3, 23, 37, 39 | 2, 3, 23, 37, 39 | 2, 3, 23, 37, 39 | 1.00 / 0.00 | 0.889 | – |
+| T0 | W-role | 32, 34, 41, 54 | 2, 3, 23, 37, 39 | 2, 3, 23, 37, 39 | 0.00 / 0.13 | 0.168 | – |
+| T0 | W-scramble | 3, 23, 39 | 2, 3, 23, 37, 39 | 2, 3, 23, 37, 39 | 1.00 / 0.00 | 0.918 | – |
+| T1 | E2 | 11, 25, 49 | 11, 25, 49 | 11, 25, 49 | 1.00 / 0.00 | 0.955 | – |
+| T1 | E3 | 11, 49 | 11, 25, 49 | 11, 25, 49 | 1.00 / 0.00 | 0.917 | – |
+| T1 | E4 | 25, 49 | 11, 25, 49 | 11, 25, 49 | 1.00 / 0.00 | 0.955 | – |
+| T1 | W-freq | 38, 52 | 15, 38, 52 | 11, 25, 49 | 0.00 / 0.66 | 0.034 | – |
+| T2 | E2 | 37, 44, 45, 46, 47, 51 | 37, 44, 45, 46, 47, 51 | 37, 44, 45, 46, 47, 51 | 1.00 / 0.00 | 0.949 | – |
+| T2 | E3 | 37, 45, 47, 51 | 37, 44, 45, 46, 47, 51 | 37, 44, 45, 46, 47, 51 | 1.00 / 0.00 | 0.944 | – |
+| T2 | E4 | 37, 44, 45, 46, 47, 51 | 37, 44, 45, 46, 47, 51 | 37, 44, 45, 46, 47, 51 | 1.00 / 0.00 | 0.934 | – |
+| T2 | W-freq | 32 | computed | 37, 44, 45, 46, 47, 51 | 0.00 / 0.00 | 0.089 | – |
+| T-new | E3 | 22, 41 | 22, 37, 41, 51 | 22, 37, 41, 51 | 1.00 / 0.85 | 0.846 | – |
+| T-new | E4 | 37, 41 | 22, 37, 41, 51 | 22, 37, 41, 51 | 1.00 / 0.83 | 0.984 | – |
+| T-new | W-freq | 10 | 10, 25, 33, 39 | 22, 37, 41, 51 | 0.00 / 0.00 | 0.087 | – |
+| T-paper | E1 | 42, 52 | 14, 35, 41, 42, 52 | 14, 35, 41, 42, 52 | 1.00 / 1.00 | 0.925 | 0.006 / 0.925 |
+| T-paper | E3 | 14, 35, 41, 42, 52 | 14, 35, 41, 42, 52 | 14, 35, 41, 42, 52 | 1.00 / 1.00 | 0.944 | – |
+| T-paper | E4 | 14, 35, 41, 42, 52 | 14, 35, 41, 42, 52 | 14, 35, 41, 42, 52 | 1.00 / 1.00 | 0.929 | – |
+| T-paper | W-freq | 8, 21, 39, 44, 49 | computed | 14, 35, 41, 42, 52 | 0.00 / 0.00 | 0.091 | – |
+| T-paper | E-paper | 14, 35, 41, 42, 52 | 14, 35, 41, 42, 52 | 14, 35, 41, 42, 52 | 1.00 / 1.00 | 0.984 | – |
 <!-- END frequencies -->
 
 **Reading.** With no frequencies in the explanation (E0, E1), Haiku builds four of the published paper's five
@@ -247,7 +246,7 @@ compares the ordering of explanations with the preregistered settings (1 = same 
 
 <!-- BEGIN grader-sensitivity-T0 -->
 | Grader setting | E0 | E1 | E2 | E3 | E4 | W-freq | W-alg | W-role | W-scramble | Kendall τ vs. preregistered |
-|---|---|---|---|---|---|---|---|---|---|---|
+|--------------------------|-------|-------|-------|-------|-------|-------|-------|-------|-----------|-----------|
 | preregistered (λ 1e-6, 5 folds, seed 0, 3 sites, general linear) | 0.00 | 0.05 | 0.90 | 0.94 | 0.91 | 0.06 | 0.89 | 0.17 | 0.92 | 1.00 |
 | ridge λ × 100 | 0.00 | 0.05 | 0.87 | 0.91 | 0.89 | 0.05 | 0.86 | 0.16 | 0.91 | 1.00 |
 | ridge λ / 100 | 0.00 | 0.05 | 0.92 | 0.94 | 0.93 | 0.06 | 0.91 | 0.19 | 0.92 | 0.94 |
@@ -265,7 +264,7 @@ The same for the reference compiler's builds:
 
 <!-- BEGIN grader-sensitivity-compiler-T0 -->
 | Grader setting | E0 | E1 | E2 | E3 | E4 | W-freq | W-alg | W-role | W-scramble | Kendall τ vs. preregistered |
-|---|---|---|---|---|---|---|---|---|---|---|
+|--------------------------|-------|-------|-------|-------|-------|-------|-------|-------|-----------|-----------|
 | preregistered (λ 1e-6, 5 folds, seed 0, 3 sites, general linear) | 0.05 | 0.05 | 0.89 | 0.93 | 0.95 | 0.09 | 0.92 | 0.50 | 0.86 | 1.00 |
 | ridge λ × 100 | 0.04 | 0.04 | 0.87 | 0.79 | 0.87 | 0.08 | 0.90 | 0.46 | 0.75 | 0.77 |
 | ridge λ / 100 | 0.05 | 0.05 | 0.91 | 0.96 | 0.96 | 0.10 | 0.92 | 0.51 | 0.93 | 0.89 |
@@ -364,29 +363,40 @@ then stopped (deviation 5), so H5's capability trend and H6's cross-simulator ra
 <!-- BEGIN predictions -->
 | Hypothesis | Predicted (preregistration §5) | Measured with the main simulator (T0) | Direction matches? | Formal verdict |
 |---|-------|---------|-----|------|
-| H1 | HS rises and output KL falls from E1 to E4 on T0; E0 lies below E1 | HS E0 0.004, E1 0.048, E2 0.899, E3 0.939, E4 0.912; KL E1 1.05e-04, E2 1.20e-05, E3 0.023, E4 0.087 | partly (HS not monotone E1→E4; KL does not fall E1→E4) | not supported · at N=1 — not yet N=3 or N=10 |
-| H2 | true explanations beat length-matched false ones on HS: E3 > W-freq, W-alg, W-role; E4 > W-scramble | HS difference E3>W-freq +0.884; E3>W-alg +0.051; E3>W-role +0.771; E4>W-scramble -0.006 | partly (E4>W-scramble reversed) | E3>W-freq: cannot tell at this N; E3>W-alg: cannot tell at this N; E3>W-role: cannot tell at this N; E4>W-scramble: not supported · at N=1 — not yet N=3 or N=10 |
-| H3 | W-freq: argmax agreement ≥ 0.99, KL not above the true E2–E4 range, HS below each of E2–E4 | W-freq: agreement 1.000, KL 9.31e-04 (true 1.20e-05–0.087), HS 0.055 (true 0.899–0.939) | yes | supported · at N=1 — not yet N=3 or N=10 |
-| H4 | E3 and E4 beat independent retrains on HS (vs. distilled students: open question, no direction) | E3 0.939, E4 0.912; 9 retrains mean 0.119 (max 0.329); 3 students mean 0.233 (max 0.282) | yes | E3: cannot tell at this N; E4: cannot tell at this N · at N=1 — not yet N=3 or N=10 |
-| H4b | planted model: HS = 1 and KL = 0 at step 0, then HS strictly falls and KL strictly rises | HS 1.000 → 0.998 → 0.957 → 0.888; KL 0.000 → 0.371 → 0.040 → 4.25e-04 | partly (KL not strictly rising) | not supported · deterministic |
-| H5 | agent ≤ reference compiler on every explanation; the gap shrinks with simulator capability | agent − compiler on T0: E2 +0.005, E3 +0.013, E4 -0.040, W-freq -0.039; agent above compiler in 7 of 15 target–explanation pairs (largest +0.161, T2 E3); 5 local runs, 0 above chance | no (agent above compiler somewhere; capability trend not testable) | not evaluable (local simulators stopped at chance, deviation 5) · 5 local runs, qwen3.5-4b: 0/4 above chance, qwen3.5-9b: 0/1 above chance |
-| H6 | the local simulators rank E2, E3, E4, W-freq the same way | 5 local runs, 0 above chance: nothing to rank | not testable | not evaluable (local simulators stopped at chance, deviation 5) · 5 local runs, qwen3.5-4b: 0/4 above chance, qwen3.5-9b: 0/1 above chance |
+| H1 | HS rises and output KL falls from E1 to E4 on T0; E0 lies below E1 | HS E0 0.004, E1 0.048, E2 0.899, E3 0.939, E4 0.912; KL E1 1.05e-04, E2 1.20e-05, E3 0.023, E4 0.087 | partly (HS not monotone E1→E4; KL does not fall E1→E4) | HS trend E1→E4: not supported; E0 below E1: observed (direction only, no test preregistered); KL_out: not supported · at N=1 — not yet N=3 or N=10 |
+| H2 | true explanations beat length-matched false ones on HS: E3 > W-freq, W-alg, W-role; E4 > W-scramble | HS difference E3>W-freq +0.884; E3>W-alg +0.051; E3>W-role +0.771; E4>W-scramble -0.006 | partly (E4>W-scramble reversed) | E3>W-freq: cannot tell at this N; E3>W-alg: cannot tell at this N; E3>W-role: cannot tell at this N; E4>W-scramble: cannot tell at this N · at N=1 — not yet N=3 or N=10 |
+| H3 | W-freq: argmax agreement ≥ 0.99, KL within the E2–E4 mean range, HS below each true mean; the falsifier tests only the upper KL bound | W-freq: agreement 1.000, KL 9.31e-04 (true 1.20e-05–0.087), HS 0.055 (true 0.899–0.939); HS − E2 -0.844, E3 -0.884, E4 -0.856 | yes | supported · at N=1 — not yet N=3 or N=10 |
+| H4 | E3 and E4 beat independent retrains on HS (vs. distilled students: open question, no direction) | E3 0.939, E4 0.912; 9 retrains mean 0.119 (max 0.329); 3 students mean 0.233 (max 0.282); vs students, two-sided: E3 cannot tell at this N (protocol §6), E4 cannot tell at this N (protocol §6) | yes | E3: cannot tell at this N; E4: cannot tell at this N · at N=1 — not yet N=3 or N=10 |
+| H4b | planted model: HS = 1 and KL = 0 at step 0, then HS strictly falls and KL strictly rises | HS 1.000 → 0.998 → 0.957 → 0.888 (step 0 unrounded: 0.999999966590); KL 0.000 → 0.371 → 0.040 → 4.25e-04 | partly (step-zero HS differs from exact identity; KL not strictly rising) | not supported · deterministic |
+| H5 | agent ≤ reference compiler on every explanation; the gap shrinks with simulator capability | T0 agent minus compiler HS: E2 +0.005, E3 +0.013, E4 -0.040, W-freq -0.039. One run per condition; interval unavailable; 5 local runs, 0 above chance | partly (capability trend not testable) | not evaluable (local simulators stopped at chance, deviation 5) · 5 local runs, qwen3.5-4b: 0/4 above chance, qwen3.5-9b: 0/1 above chance |
+| H6 | the local simulators rank E2, E3, E4, W-freq the same way | 5 local runs, 0 above uniform-guess accuracy. The three-model ranking matrix is incomplete | not testable | not evaluable (local simulators stopped at chance, deviation 5) · 5 local runs, qwen3.5-4b: 0/4 above chance, qwen3.5-9b: 0/1 above chance |
 | H7 | a T0 replacement fits T0 better than any other trained or no-mechanism model (HS) | E3: HS 0.939 vs best other 0.274 (T2); E4: HS 0.912 vs best other 0.226 (T2) | yes | cannot tell at this N · 2 E3/E4 replacements (at N=1 — not yet N=3 or N=10) |
-| H8 | HS against T0's checkpoints rises as restricted loss falls (circuit formation) | Spearman ρ(HS, −log restricted loss) = 0.842 | yes | supported · one replacement, all checkpoints |
+| H8 | HS against T0's checkpoints rises as restricted loss falls (circuit formation) | Historical round 1: one selected replacement, 41 checkpoints, ρ 0.842. Retrospective full-checkpoint analysis: Spearman ρ(HS, −log restricted loss) per replacement: median 0.786, min 0.752 (2 E3/E4 replacements × 401 checkpoints); negative controls (post hoc), ρ per replacement: E0 -0.83; W-freq -0.40; E1 -0.58 | yes | supported · 2 E3/E4 replacements × 401 checkpoints |
 <!-- END predictions -->
 
 Replications on the seed-sensitivity targets (preregistration §5: H1–H3 re-tested per target with the same rules):
 
 <!-- BEGIN replications -->
-| Target | HS per true explanation | H1: HS rises E2→E4? | H2: HS(E3) − HS(W-freq) | H3 observed (W-freq) | H3 holds? |
-|-----|------|---|---|-------|-----|
-| T1 | E2 0.955, E3 0.917, E4 0.955 | no | +0.883 | agreement 0.806, KL 0.669 (true max 0.773), HS 0.034 | partly (agreement < 0.99) |
-| T2 | E2 0.949, E3 0.944, E4 0.934 | no | +0.855 | agreement 1.000, KL 0.005 (true max 0.112), HS 0.089 | yes |
-| T-new | E3 0.846, E4 0.984 | yes | +0.759 | agreement 0.897, KL 0.378 (true max 0.344), HS 0.087 | partly (agreement < 0.99; KL above the true range) |
-| T-paper (flagged: memorisation) | E1 0.925, E3 0.944, E4 0.929 | no | +0.852 | agreement 1.000, KL 9.56e-05 (true max 0.518), HS 0.091 | yes |
+| Target | Mean HS by true level | H1 increasing HS (p, ρ) | H1 decreasing KL (p, ρ) | H2 E3 − W-freq (Δ HS, p) |
+|----------|-------------------------|--------------------|--------------------|--------------------|
+| T0 | E2 0.899, E3 0.939, E4 0.912 | 0.500, +0.50 | 1.000, -1.00 | +0.884, cannot tell |
+| T1 | E2 0.955, E3 0.917, E4 0.955 | 0.833, -0.50 | 1.000, -1.00 | +0.883, cannot tell |
+| T2 | E2 0.949, E3 0.944, E4 0.934 | 1.000, -1.00 | 1.000, -1.00 | +0.855, cannot tell |
+| T-new | E3 0.846, E4 0.984 | 0.500, +1.00 | 0.500, +1.00 | +0.759, cannot tell |
+| T-paper | E1 0.925, E3 0.944, E4 0.929 | 0.500, +0.50 | 0.500, +0.50 | +0.852, cannot tell |
+
+H1 uses the available levels. The T0 row restricts the ladder to E2–E4 as a post-hoc comparison. Unmarked H1 cells miss the registered criterion. H2 uses the single displayed contrast on seed targets. The main T0 H2 verdict uses all four contrasts with Holm correction. T-paper is contamination-flagged.
+
+| Target | H3 wrong-frequency agreement, KL, HS | H3 interval and upper-bound readings |
+|----------|------------------------------------|-------------------------------------------|
+| T0 | agreement 1.000, KL 9.31e-04 (true 1.20e-05–0.087), HS 0.055 | interval passes, upper-bound reading passes |
+| T1 | agreement 0.806, KL 0.669 (true 0.003–0.773), HS 0.034 | interval fails, upper-bound reading fails |
+| T2 | agreement 1.000, KL 0.005 (true 4.69e-05–0.112), HS 0.089 | interval passes, upper-bound reading passes |
+| T-new | agreement 0.897, KL 0.378 (true 2.15e-05–0.344), HS 0.087 | interval fails, upper-bound reading fails (E2 missing; full comparison unavailable) |
+| T-paper | agreement 1.000, KL 9.56e-05 (true 0.032–0.518), HS 0.091 | interval fails, upper-bound reading passes (E2 missing; full comparison unavailable) |
 <!-- END replications -->
 
-**Reading.** Where a prediction concerns the frequency level, the main simulator's results go the predicted way (H3, H4, H7, H8, and H2 for W-freq and W-role). The predictions fail where they assumed that every added level of detail helps (H1: HS gains are small and non-monotone after E2, and output KL rises), that HS sees below the frequency level (H2: W-alg nearly ties, W-scramble is reversed; W-alg is not length-matched, about 60 % of E3's characters, `results/explanations/*/W-alg/length.json`), that the reference compiler is a ceiling (H5: by sign the agent is above it in 7 of 15 pairs), or that output KL grows smoothly as a planted model drifts (H4b: KL spikes after the first optimiser steps, then falls). "Direction matches" compares directions and preregistered thresholds only; the formal verdict adds the preregistered test, which at small N mostly cannot reach significance. On the seed-sensitivity targets the gap between E3 and the wrong-frequency explanation replicates on every target and H1's monotone rise does not; where H3 fails there (T1, T-new), the wrong-frequency replacement's argmax agreement is below the preregistered 0.99. Whether that is an implementation error of the simulator or a property of the explanation is untested; the true E3/E4 replacements on T1 (and E3 on T-new) also have agreement below 0.99.
+**Reading.** The single T0 run per condition gives directions only for H2, H4 and H7 under protocol §6. H3 passes on T0. On T-paper wrong-frequency KL falls below the observed true-explanation range and E2 is absent. H4b fails the joint monotonicity check. The local simulator matrix stopped early. H8 originally covered one selected replacement and a subset of checkpoints. The tables identify the retrospective calculation and its inputs.
 
 Full statistics: `results/hypotheses_round1.json`.
 

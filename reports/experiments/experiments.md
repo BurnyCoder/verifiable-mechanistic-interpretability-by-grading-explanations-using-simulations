@@ -8,12 +8,14 @@ no-agent arms.*
 
 | # | Experiment | Status | Report |
 |---|---|---|---|
-| 00 | Stage 0 — tooling and smoke tests on the dev target (never reported as results) | done | [00-stage0-dev/experiment.md](00-stage0-dev/experiment.md) |
+| 00 | Stage 0 — tooling and smoke tests on the dev target (development builds excluded from the hypothesis cohort) | done | [00-stage0-dev/experiment.md](00-stage0-dev/experiment.md) |
 | 01 | Round 1 (N = 1) — main method → controls → baselines → ablations → hyperparameter → seed sensitivity | done | [01-round1/experiment.md](01-round1/experiment.md) |
 | 02 | Round 2 (N = 3) — the same stages, two more replicates per condition, Claude Haiku only | agent runs done; H8 trajectory re-run as preregistered (still supported); redrawn W-freq/W-scramble and T-paper's extra retrains not run (deviation 8); second audit: post-hoc H8 negative controls, pooled E0/E1 memorisation analysis, transcript counts of self-test tuning, exact trend test (deviation 9); third audit: verdicts recomputed independently, H1's E0 clause and the T-paper replication corrected, exact H1 trend test, own label checks counted, Clock/Pizza diagnostics (deviation 10); fourth audit: independent regrade and tests, H4b and H8 re-read (deviation 11); fifth audit: every verdict re-derived with exact methods, T0's read-out-only frequency 2, scrambled-table blind spot narrowed to the agents' builds (deviation 12); sixth audit: verdicts re-derived and scores re-graded with new code, H2's literal §5 reading reported beside "cannot tell", the agents' parameter searches counted by reading, citation fixes (deviation 13); seventh audit: verdicts re-derived without project code or scipy, searches inside 7 of 96 final build scripts disclosed (deviation 14); eighth audit: the preregistered verdict leads (H2 "not supported" at N = 3 by §5), H4b stated as falsified, H7's scope, the self-test ablation's leftover cue disclosed (deviation 15); ninth audit: the distilled students copy probabilities, not logits; a logit-level output comparison separates explanations like HS; pre-specified logit-matched students; Clock-side builds exist and score no higher HS; E0 > E1 explained (deviation 16) | [02-round2/experiment.md](02-round2/experiment.md) |
 | 03 | Round 3 (N = 10) | postponed to a later day (user decision, deviation 6) | – |
 
 Learnings across experiments: [learnings.md](learnings.md).
+
+**Dated erratum · 26 November 2026.** The post-hoc scale-adjusted logit errors order all measured E3 builds below W-alg. The interval definition of H3 fails on observed published-checkpoint levels. The original round-one H8 sample differs from the later round-filtered calculation. [Independent report](../reviews/scientific-audit-2026-11-26.md).
 
 ## For a layman
 
@@ -57,7 +59,7 @@ except T-new (trained here after the protocol freeze with the same recipe) and T
 | T2 | `wd1_s8` | seed sensitivity (most frequencies) | 37, 44, 45, 46, 47, 51 | 58, 63, 81, 78, 88, 79 | 65 | 0.949 | 8.42e-07 |
 | T-new | `new_s11` | held-out, trained after the protocol freeze | 22, 37, 41, 51 | 138, 77, 79, 130 | 88 | 0.954 | 2.41e-07 |
 | T-paper | `paper` | published checkpoint (contamination-flagged) | 14, 35, 41, 42, 52 | 44, 93, 145, 87, 64 | 79 | 0.961 | 2.41e-07 |
-| dev | `wd1_s10` | development only (never reported) | 19, 31, 45, 47 | 80, 81, 189, 79 | 83 | 0.970 | 1.77e-07 |
+| dev | `wd1_s10` | development builds excluded; wrong target for H7 | 19, 31, 45, 47 | 80, 81, 189, 79 | 83 | 0.970 | 1.77e-07 |
 <!-- END targets -->
 
 ## Simulators

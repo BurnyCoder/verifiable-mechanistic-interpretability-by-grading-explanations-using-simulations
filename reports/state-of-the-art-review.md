@@ -42,13 +42,11 @@ Formulas and invariance classes follow Kornblith et al. 2019 (Table 1), Klabunde
 only up to GL(128) (literature review §1). CKA and Procrustes are *not* invariant to that group: a functionally
 identical replacement written in a different residual basis would be penalised. Hence the **primary** hidden-state
 score is cross-validated linear-regression variance explained in both directions; the alignment class is linear maps.
-Regression R² is invariant to invertible linear maps of its *predictor* only
-([Kornblith et al. 2019, Table 1](https://arxiv.org/abs/1905.00414)). So completeness R²(M̂→M) is invariant to any
-invertible map of M̂'s basis, while soundness R²(M→M̂), pooled over M̂'s dimensions, is invariant only to orthogonal
-maps and uniform scaling of M̂'s basis; HS = 1 (up to the ridge term) when each model's states are an affine function of the other's.
-The small ridge term also breaks exact invariance slightly. A post-hoc check with whitened soundness (fully invariant;
-a held-out analogue of the mean squared canonical correlation) is reported in the paper's grader-sensitivity appendix
-(audit 2026-11-22). Restricting the alignment to linear maps is this project's assumption, motivated by
+Unregularized regression absorbs invertible changes to the predictor basis. The implemented isotropic ridge
+breaks this general invariance. Squared errors pooled over the response coordinates also depend on their scale.
+The post-hoc whitened variant equalizes retained response directions, but the relative eigenvalue cutoff may
+change the retained subspace. The strength of either dependence is empirical. [Kornblith et al., Table 1](https://proceedings.mlr.press/v97/kornblith19a.html) · [Grading code](../src/vmi/grader/metrics.py) · [Whitening code](../src/vmi/sensitivity.py).
+Restricting the alignment to linear maps is this project's assumption, motivated by
 [Sutter et al. 2025](https://arxiv.org/abs/2507.08802): their Theorem 1 is an existence result — with unrestricted
 non-linear alignment maps, and under assumptions such as countable inputs and input-injective hidden states, any
 network can be mapped to any algorithm. They leave the map class to be decided case by case, noting that linear maps
@@ -62,7 +60,7 @@ group-matched comparison. CKA and Procrustes are reported as secondary metrics f
 
 **Reference implementations** for cross-checking: netrep ([MIT](https://github.com/ahwillia/netrep)) and Google's CKA
 code ([Apache-2.0](https://github.com/google-research/google-research/tree/master/representation_similarity)).
-No maintained PyPI package covers regression R², CKA, Procrustes and neuron matching together (2026-11 check: the
+The project review did not identify a maintained PyPI package covering regression R², CKA, Procrustes and neuron matching together (2026-11 check: the
 READMEs of ReSi, similarity-repository and netrep install from git; a `similarity-repository` 0.0.1 and `repsim` exist
 on PyPI), so the metrics are implemented in
 `src/vmi/grader/` in a few dozen lines each and tested against Google's `feature_space_linear_cka` (re-derived in the

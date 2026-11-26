@@ -16,7 +16,7 @@ Hypotheses and tests: [preregistration.md](preregistration.md).*
 | Limits | 60 min wall clock (amendment 2), 60 steps for the local harness (Claude Code: time and budget only), build script ≤ 60 s |
 | Grading | all 113² inputs; KL_out and HS (preregistration §4) plus secondary metrics |
 
-## Stage 0 — tooling and smoke test (dev target `wd1_s10`, never reported)
+## Stage 0 — tooling and smoke test (dev target `wd1_s10`, development builds excluded)
 
 | Run | Purpose |
 |---|---|

@@ -341,10 +341,7 @@ deviation 9).
   statistic cannot rank faithfulness. *Learning:* for "the
   score tracks X over training", compare with the end point itself, and ask whether the score adds anything beyond
   similarity to that end point.
-- **Name the real coverage of small-sample intervals.** With three runs, the "95 %" percentile bootstrap interval of a
-  mean is the range of the runs and covers about 75 % (our calculation, confirmed by simulation in audit 5; Hesterberg
-  2015 says only that percentile intervals are too narrow in small samples). "Too narrow" understated this. *Learning:*
-  compute what an interval means at the sample size used, not only that it is imperfect.
+- **Coverage of small-sample intervals · corrected 26 November 2026.** With three iid continuous draws, the range covers the median with probability 3/4. Coverage of the mean depends on the distribution. Difference-of-means coverage depends on the laws in both groups. [Derivation and simulation](../reviews/scientific-audit-2026-11-26.md) · [Hesterberg](https://arxiv.org/pdf/1411.5279).
 - **An independent re-implementation is cheap insurance.** A numpy forward pass and a scikit-learn ridge written from
   the preregistration reproduced every stored score (`results/audit4/regrade.json`), and enumeration-based exact tests
   reproduced every verdict. *Learning:* do this before reading any result, not after four audits.

@@ -4,6 +4,8 @@
 citation corrections and post-freeze facts (simulator, target contamination) added 2026-11-22; second-audit
 corrections (Haklay, Heap, Poché, contamination wording) the same day.*
 
+**Dated source check · 26 November 2026.** The source register records official arXiv identities and full-text page locators for the core methods. The audit checks the operative definitions against the implementation, including the predictor/response asymmetry of regression, the role of temperature in distillation and the interpretation of distance irrelevance. [Source register](../results/scientific-audit/sources.json) · [Scientific audit](reviews/scientific-audit-2026-11-26.md).
+
 **How this review was made.** Primary sources (arXiv HTML/PDF, LaTeX sources, official repositories, LessWrong
 posts and comments) were read in full by research subagents on 2026-11-20/21 and summarised with locations; every
 arXiv ID below was then re-checked against the arXiv API (title, first author, date) on 2026-11-21. Claims that
@@ -207,7 +209,7 @@ ML pitfalls* ([arXiv:2108.02497](https://arxiv.org/abs/2108.02497)); Nanda's res
 ([Alignment Forum](https://www.alignmentforum.org/s/5GT3yoYM9gRmMEKqL)); NeurIPS checklist
 ([guide](https://neurips.cc/public/guides/PaperChecklist)). Concretely: preregistered hypotheses and falsifiers,
 discriminating controls, explanation-free baselines, contamination controls, and reporting of negative results.
-Contamination: no paper analyses targets T0–T2; their weights and an automated analysis that lists their key
+Contamination: the sources reviewed here do not identify analyses of these specific checkpoints in a paper. Their weights and an automated analysis that lists their key
 frequencies were uploaded to Hugging Face only on 2026-10-21 — after Claude Haiku 5.5's training-data cutoff
 (June 2026, [models overview](https://platform.claude.com/docs/en/models/overview)) and after its release on
 2026-10-07 ([model page](https://platform.claude.com/docs/en/models/haiku-5-5/overview)) — so they cannot be
