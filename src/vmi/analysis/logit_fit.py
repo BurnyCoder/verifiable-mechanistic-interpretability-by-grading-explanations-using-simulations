@@ -3,16 +3,16 @@
 Local explanation:
 - `centred_logits(L)`: each input's logits minus their mean over the 113 number classes, the part a softmax sees.
 - `calibrated_logit_fvu(Lm, Lr)`: fraction of the target's centred-logit variance left unexplained after rescaling the
-  replacement's centred logits by the one positive scale s that minimises it,
-  min_{s>0} Σ‖L̃m − s·L̃r‖² / Σ‖L̃m‖² = 1 − ⟨L̃m, L̃r⟩² / (‖L̃m‖²‖L̃r‖²) (1 if ⟨L̃m, L̃r⟩ ≤ 0), i.e. one minus the squared
+  replacement's centred logits by the one nonnegative scale s that minimises it,
+  min_{s≥0} Σ‖L̃m − s·L̃r‖² / Σ‖L̃m‖² = 1 − ⟨L̃m, L̃r⟩² / (‖L̃m‖²‖L̃r‖²) (1 if ⟨L̃m, L̃r⟩ ≤ 0), i.e. one minus the squared
   cosine of the two centred-logit tables. The raw value without the scale is the preregistered secondary metric
   `centred_logit_fvu` (preregistration §4, `vmi.grader.metrics`); the one-scale version mirrors the preregistered
   temperature-calibrated KL, which also fits a single scale.
 - `analyse(settings)`: both values for every reported T0 run of the main and controls stages, the reference
   compiler's T0 builds, the independent retrains, both kinds of distilled students and the random initialisations,
   written to results/controls/logit_fvu_T0.json.
-Global context: a grokked model's softmax is nearly one-hot, so output KL sees little beyond the answer and the logit
-scale, while its centred logits carry the key frequencies (logit(c) ≈ Σ_k α_k cos(w_k(a + b − c)), Nanda et al. 2023
+Global context: exact positive softmax probabilities identify centred logits. At temperature one, small target mass
+on wrong classes allows a small forward KL alongside large errors in those logits. T0's centred logits carry key frequencies (logit(c) ≈ Σ_k α_k cos(w_k(a + b − c)), Nanda et al. 2023
 §4.2). This file measures whether an output-only comparison at the logit level separates the explanations the way
 HS does. Post hoc; no preregistered verdict uses it.
 Sources: Nanda et al. 2023 §4.2 logit form (https://arxiv.org/abs/2301.05217); matching zero-mean logits as the
@@ -44,7 +44,7 @@ def centred_logits(L: torch.Tensor) -> torch.Tensor:
 
 
 def calibrated_logit_fvu(Lm: torch.Tensor, Lr: torch.Tensor) -> tuple[float, float]:
-    """(FVU after the best positive scale, that scale) of the replacement's centred logits against the target's."""
+    """(FVU after the best nonnegative scale, that scale) of the replacement's centred logits against the target's."""
     a, b = centred_logits(Lm), centred_logits(Lr)
     ab, aa, bb = float((a * b).sum()), float((a * a).sum()), float((b * b).sum())
     if aa == 0 or bb == 0 or ab <= 0:

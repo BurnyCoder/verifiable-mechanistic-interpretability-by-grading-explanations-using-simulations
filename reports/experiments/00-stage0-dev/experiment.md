@@ -1,7 +1,6 @@
 # Experiment 00 — Stage 0: tooling and smoke tests on the dev target
 
-*Development stage. The dev target (`wd1_s10`, key frequencies {19, 31, 45, 47}) is never used for hypothesis tests;
-results here only informed tooling. Preregistration §9.*
+*Development runs informed the tooling and choice of simulator. They are excluded from the reported agent cohort. The trained dev target itself is one of H7's fixed wrong-target comparators. [Protocol §§5, 9](../../preregistration.md) · [Wrong-target records](../../../results/controls/wrong_targets_T0.json).*
 
 ## Goal
 

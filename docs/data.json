@@ -2610,13 +2610,13 @@
    "evidence": "at N=3 \u2014 not yet N=10",
    "predicted": "true explanations beat length-matched false ones on HS: E3 > W-freq, W-alg, W-role; E4 > W-scramble",
    "observed": "HS difference E3>W-freq +0.859 [+0.835, +0.880]; E3>W-alg +0.020 [-0.008, +0.045]; E3>W-role +0.725 [+0.661, +0.768]; E4>W-scramble +0.007 [-0.025, +0.037]",
-   "matches": "partly (E3>W-alg tie (CI includes 0); E4>W-scramble tie (CI includes 0))"
+   "matches": "partly (E3>W-alg direction uncertain (CI includes 0); E4>W-scramble direction uncertain (CI includes 0))"
   },
   {
    "id": "H3",
    "verdict": "supported",
    "evidence": "at N=3 \u2014 not yet N=10",
-   "predicted": "W-freq: argmax agreement \u2265 0.99, KL not above the true E2\u2013E4 range, HS below each of E2\u2013E4",
+   "predicted": "W-freq: argmax agreement \u2265 0.99, KL within the E2\u2013E4 mean range, HS below each true mean; the falsifier tests only the upper KL bound",
    "observed": "W-freq: agreement 1.000, KL 0.003 (true 2.12e-04\u20130.060), HS 0.070 (true 0.894\u20130.943); HS \u2212 E2 -0.824 [-0.840, -0.801], E3 -0.859 [-0.880, -0.835], E4 -0.873 [-0.904, -0.841]",
    "matches": "yes"
   },
@@ -2633,8 +2633,8 @@
    "verdict": "not supported",
    "evidence": "deterministic",
    "predicted": "planted model: HS = 1 and KL = 0 at step 0, then HS strictly falls and KL strictly rises",
-   "observed": "HS 1.000 \u2192 0.998 \u2192 0.957 \u2192 0.888; KL 0.000 \u2192 0.371 \u2192 0.040 \u2192 4.25e-04",
-   "matches": "partly (KL not strictly rising)"
+   "observed": "HS 1.000 \u2192 0.998 \u2192 0.957 \u2192 0.888 (step 0 unrounded: 0.999999966590); KL 0.000 \u2192 0.371 \u2192 0.040 \u2192 4.25e-04",
+   "matches": "partly (step-zero HS differs from exact identity; KL not strictly rising)"
   },
   {
    "id": "H5",
@@ -2649,7 +2649,7 @@
    "verdict": "not evaluable (local simulators stopped at chance, deviation 5)",
    "evidence": "5 local runs, qwen3.5-4b: 0/4 above chance, qwen3.5-9b: 0/1 above chance",
    "predicted": "the local simulators rank E2, E3, E4, W-freq the same way",
-   "observed": "5 local runs, 0 above chance: nothing to rank",
+   "observed": "5 local runs, 0 above uniform-guess accuracy. The three-model ranking matrix is incomplete",
    "matches": "not testable"
   },
   {
@@ -2665,9 +2665,216 @@
    "verdict": "supported",
    "evidence": "6 E3/E4 replacements \u00d7 401 checkpoints",
    "predicted": "HS against T0's checkpoints rises as restricted loss falls (circuit formation)",
-   "observed": "Spearman \u03c1(HS, \u2212log restricted loss) per replacement: median 0.774, min 0.751 (6 E3/E4 replacements \u00d7 401 checkpoints); negative controls (post hoc), \u03c1 per replacement: E0 -0.83, -0.45, +0.14; W-freq -0.40, -0.24, -0.38; E1 -0.58, -0.58, -0.57; reference networks (post hoc, audit 4): final T0 itself +0.59, Fourier-restricted T0 +0.99, compiler E3 +0.88, a retrain -0.53; during circuit formation (steps \u2264 14,900) every network with T0's frequencies has \u03c1 \u2265 0.996",
+   "observed": "Historical round 2: one selected replacement, 41 checkpoints, \u03c1 0.856. Retrospective full-checkpoint analysis: Spearman \u03c1(HS, \u2212log restricted loss) per replacement: median 0.774, min 0.751 (6 E3/E4 replacements \u00d7 401 checkpoints); negative controls (post hoc), \u03c1 per replacement: E0 -0.83, -0.45, +0.14; W-freq -0.40, -0.24, -0.38; E1 -0.58, -0.58, -0.57; reference networks (post hoc, audit 4): final T0 itself +0.59, Fourier-restricted T0 +0.99, compiler E3 +0.88, a retrain -0.53; during circuit formation (steps \u2264 14,900) every network with T0's frequencies has \u03c1 \u2265 0.996",
    "matches": "yes"
   }
  ],
- "key_results_md": "*Round 2, N = 3 run(s) per condition \u2014 not yet N=10*\n\n- **Model-specific detail raises hidden-state similarity:** HS on T0 is 0.05 (E1, algorithm only), 0.89 (E2), 0.93 (E3) and 0.94 (E4); with no explanation (E0) it is 0.13. Monotone from E1 to E4; E0 lies above E1, against the preregistered prediction.\n- **Correct behaviour from the wrong key frequencies is caught by HS, not by output KL:** the wrong-frequency replacement reaches KL 0.003 nats (true E3: 0.010) but HS 0.07. The output logits do show it (post hoc, audit 9): after one fitted scale, the centred-logit FVU is 1.00 for W-freq against 0.12\u20130.21 for E3; KL misses it because a grokked model's output probabilities are nearly one-hot.\n- **Copying output probabilities does not copy the mechanism:** independent retrains (HS 0.12) and students trained to match T0's output probabilities (KL at temperature 1; HS 0.23, KL 2.38e-06) score no higher than randomly initialised networks (HS 0.24). HS's scale is therefore not anchored at 0 for unrelated networks: it measures overlap of internal features, and working networks built on other frequencies score below random ones. Neither copies T0's logits (centred-logit FVU: students 0.94\u20131.37, retrains 1.38\u20135.39; E3 replacements 0.12\u20130.21; post hoc, audit 9); students trained to match T0's centred logits (post hoc, pre-specified; FVU 0.023\u20130.165) reach HS 0.778\u20130.849: mean HS 0.849 lies between those ranges (below 0.85, above 0.35), which the pre-specified reading calls partial (1 of 3 met the training criterion; the others are not interpreted).\n- **Negative result:** at N = 3 the primary HS does not separate the Pizza explanation (W-alg, HS 0.91; E3 \u2212 W-alg +0.020, bootstrap CI [-0.008, +0.045]) or the scrambled neuron table (W-scramble, HS 0.94; E4 \u2212 W-scramble +0.007, CI [-0.025, +0.037]) from the true explanations (a failure to separate, not a demonstrated equivalence); the secondary matched-neuron correlation separates W-scramble (0.65) from E4 (0.91). The agent-free compiler's literal build of the scrambled table does score 0.09 below its E4 build on T0, mostly at resid_post: 0.69 vs 0.95; elsewhere the gap is within \u00b10.007 on T1, T-new, T-paper; on T2 the scrambled build scores 0.05 higher. Post hoc, by Zhong et al.'s distance irrelevance (\u2265 0.4 Clock-like, < 0.4 Pizza-like) T0 is a Clock (0.75) and the literal Pizza build a Pizza (0.003); the agents' replacements from the true E1\u2013E3 are Pizza-like too (means 0.13\u20130.18), and E4's are split (mean 0.41). Among the builds that carry T0's frequencies, the Clock-side ones (two of three E4 builds, q 0.46, and all three W-scramble builds, q 0.50\u20130.66) score HS 0.91\u20130.95 and the Pizza-side ones (E2, E3, E4, W-alg) 0.89\u20130.97: at this N, HS did not separate Clock-side from Pizza-side builds that share the key frequencies (descriptive; side and explanation are confounded).\n- **Memorisation (post hoc):** E0 and E1 contain nothing target-specific (identical text on every target, and the sandbox does not reveal the target), so their runs on T0 and on the published checkpoint are replicates of one condition. When the explanation gives no frequencies, the simulator often builds most of the published paper's frequencies {14, 35, 41, 42, 52} into its replacement (recall cued by the sandbox's description of the paper's exact architecture and, for E1, by the paper's own algorithm; only E0's text also outlines the training setup; no sandbox file names a frequency or the paper; audit 8). E1 (6 runs on T0 and T-paper): 5 of 6 build scripts list at least four of the paper's five frequencies (3 of 6 replacements build at least four by the key-frequency rule, a lower bound); on average 68% of the replacements' W_L spectrum lies on those five frequencies (chance 9%); mean HS 0.08 against T0 but 0.70 against the published checkpoint (target swap: same weights, other target; range 0.24\u20130.95); E0 (3 runs on T0): 1 of 3 build scripts list at least four of the paper's five frequencies (1 of 3 replacements build at least four by the key-frequency rule, a lower bound); on average 36% of the replacements' W_L spectrum lies on those five frequencies (chance 9%); mean HS 0.13 against T0 but 0.28 against the published checkpoint (target swap: same weights, other target; range 0.03\u20130.63). On a published model, a high score can therefore come from the simulator's memory rather than the explanation (one published model and one simulator tested).\n- **Cost:** the 96 reported Claude Haiku 5.5 runs cost $2.20 ($2.33 including development runs and plumbing checks)."
+ "replications": [
+  {
+   "target_id": "T0",
+   "hs_test": {
+    "J": 24.0,
+    "p": 0.010714285714285714,
+    "method": "exact",
+    "orderings": 1680,
+    "rho": 0.7905694150420948,
+    "ci": [
+     0.4866642633922876,
+     0.9733285267845752
+    ],
+    "supported": true
+   },
+   "kl_test": {
+    "J": 1.0,
+    "p": 0.9994047619047619,
+    "method": "exact",
+    "orderings": 1680,
+    "rho": -0.8959786703810407,
+    "ci": [
+     -0.9819805060619657,
+     -0.7440916048338274
+    ],
+    "supported": false
+   },
+   "h2_difference": 0.8587022155497118,
+   "h2_p": 0.05,
+   "h2_registered": "not supported",
+   "target": "T0 (E2\u2013E4 only; post hoc, for comparison)",
+   "hs_by_level": "E2 0.894, E3 0.929, E4 0.943",
+   "h1": "means rise E2\u2192E3\u2192E4; supported (JT p 0.011, \u03c1 0.79)",
+   "h2": "+0.859; not supported (p 0.050; post-hoc rule: cannot tell at this N)",
+   "h1_kl": "not supported (JT p 0.999, \u03c1 -0.90)",
+   "kl_within_observed_range": true,
+   "kl_at_or_below_observed_max": true,
+   "h3_interval": true,
+   "h3_upper": true,
+   "h3_observed": "agreement 1.000, KL 0.003 (true 2.12e-04\u20130.060), HS 0.070",
+   "h3": "interval passes, upper-bound reading passes"
+  },
+  {
+   "target_id": "T1",
+   "hs_test": {
+    "J": 14.0,
+    "p": 0.5,
+    "method": "exact",
+    "orderings": 1680,
+    "rho": 0.05270462766947298,
+    "ci": [
+     -0.4866642633922876,
+     0.4866642633922876
+    ],
+    "supported": false
+   },
+   "kl_test": {
+    "J": 3.0,
+    "p": 0.9952380952380953,
+    "method": "exact",
+    "orderings": 1680,
+    "rho": -0.7905694150420948,
+    "ci": [
+     -0.9733285267845752,
+     -0.5337605126836237
+    ],
+    "supported": false
+   },
+   "h2_difference": 0.8852729422016767,
+   "h2_p": 0.05,
+   "h2_registered": "not supported",
+   "target": "T1",
+   "hs_by_level": "E2 0.957, E3 0.936, E4 0.960",
+   "h1": "means do not rise E2\u2192E3\u2192E4; not supported (JT p 0.500, \u03c1 0.05)",
+   "h2": "+0.885; not supported (p 0.050; post-hoc rule: cannot tell at this N)",
+   "h1_kl": "not supported (JT p 0.995, \u03c1 -0.79)",
+   "kl_within_observed_range": false,
+   "kl_at_or_below_observed_max": false,
+   "h3_interval": false,
+   "h3_upper": false,
+   "h3_observed": "agreement 0.854, KL 0.537 (true 0.001\u20130.498), HS 0.051",
+   "h3": "interval fails, upper-bound reading fails"
+  },
+  {
+   "target_id": "T2",
+   "hs_test": {
+    "J": 14.0,
+    "p": 0.5,
+    "method": "exact",
+    "orderings": 1680,
+    "rho": 0.05270462766947298,
+    "ci": [
+     -0.5383819020581655,
+     0.5948118774794626
+    ],
+    "supported": false
+   },
+   "kl_test": {
+    "J": 0.0,
+    "p": 1.0,
+    "method": "exact",
+    "orderings": 1680,
+    "rho": -0.9486832980505139,
+    "ci": [
+     -0.9863939238321436,
+     -0.9526610232449336
+    ],
+    "supported": false
+   },
+   "h2_difference": 0.8640600835359714,
+   "h2_p": 0.05,
+   "h2_registered": "not supported",
+   "target": "T2",
+   "hs_by_level": "E2 0.900, E3 0.962, E4 0.951",
+   "h1": "means do not rise E2\u2192E3\u2192E4; not supported (JT p 0.500, \u03c1 0.05)",
+   "h2": "+0.864; not supported (p 0.050; post-hoc rule: cannot tell at this N)",
+   "h1_kl": "not supported (JT p 1.000, \u03c1 -0.95)",
+   "kl_within_observed_range": true,
+   "kl_at_or_below_observed_max": true,
+   "h3_interval": true,
+   "h3_upper": true,
+   "h3_observed": "agreement 0.999, KL 0.006 (true 3.41e-05\u20130.049), HS 0.098",
+   "h3": "interval passes, upper-bound reading passes"
+  },
+  {
+   "target_id": "T-new",
+   "hs_test": {
+    "J": 9.0,
+    "p": 0.05,
+    "method": "exact",
+    "orderings": 20,
+    "rho": 0.8783100656536799,
+    "ci": [
+     0.8783100656536799,
+     0.9486832980505138
+    ],
+    "supported": false
+   },
+   "kl_test": {
+    "J": 9.0,
+    "p": 0.05,
+    "method": "exact",
+    "orderings": 20,
+    "rho": 0.8783100656536799,
+    "ci": [
+     0.8783100656536799,
+     0.9486832980505138
+    ],
+    "supported": false
+   },
+   "h2_difference": 0.8158842610622218,
+   "h2_p": 0.05,
+   "h2_registered": "not supported",
+   "target": "T-new",
+   "hs_by_level": "E3 0.910, E4 0.984",
+   "h1": "means rise E3\u2192E4; not supported (JT p 0.050, \u03c1 0.88; post-hoc rule: cannot tell at this N)",
+   "h2": "+0.816; not supported (p 0.050; post-hoc rule: cannot tell at this N)",
+   "h1_kl": "not supported (JT p 0.050, \u03c1 0.88; post-hoc rule: cannot tell at this N)",
+   "kl_within_observed_range": false,
+   "kl_at_or_below_observed_max": false,
+   "h3_interval": false,
+   "h3_upper": false,
+   "h3_observed": "agreement 0.907, KL 0.432 (true 0.012\u20130.328), HS 0.094",
+   "h3": "interval fails, upper-bound reading fails (E2 missing; full comparison unavailable)"
+  },
+  {
+   "target_id": "T-paper",
+   "hs_test": {
+    "J": 21.0,
+    "p": 0.06130952380952381,
+    "method": "exact",
+    "orderings": 1680,
+    "rho": 0.6324555320336758,
+    "ci": [
+     0.48038446141526137,
+     0.8651809126974002
+    ],
+    "supported": false
+   },
+   "kl_test": {
+    "J": 12.0,
+    "p": 0.6660714285714285,
+    "method": "exact",
+    "orderings": 1680,
+    "rho": -0.10540925533894596,
+    "ci": [
+     -0.8006407690254356,
+     0.5407380704358751
+    ],
+    "supported": false
+   },
+   "h2_difference": 0.8227691380930128,
+   "h2_p": 0.05,
+   "h2_registered": "not supported",
+   "target": "T-paper (flagged: memorisation)",
+   "hs_by_level": "E1 0.590, E3 0.940, E4 0.937",
+   "h1": "means do not rise E1\u2192E3\u2192E4; not supported (JT p 0.061, \u03c1 0.63)",
+   "h2": "+0.823; not supported (p 0.050; post-hoc rule: cannot tell at this N)",
+   "h1_kl": "not supported (JT p 0.666, \u03c1 -0.11)",
+   "kl_within_observed_range": false,
+   "kl_at_or_below_observed_max": true,
+   "h3_interval": false,
+   "h3_upper": true,
+   "h3_observed": "agreement 0.998, KL 0.007 (true 0.141\u20130.413), HS 0.117",
+   "h3": "interval fails, upper-bound reading passes (E2 missing; full comparison unavailable)"
+  }
+ ],
+ "key_results_md": "*Round 2, N = 3 run(s) per condition \u2014 not yet N=10*\n\n- **Model-specific detail raises hidden-state similarity:** HS on T0 is 0.05 (E1, algorithm only), 0.89 (E2), 0.93 (E3) and 0.94 (E4); with no explanation (E0) it is 0.13. Monotone from E1 to E4; E0 lies above E1, against the preregistered prediction.\n- **Correct behaviour from the wrong key frequencies is caught by HS, not by output KL:** the wrong-frequency replacement reaches KL 0.003 nats (true E3: 0.010) but HS 0.07. The output logits do show it (post hoc, audit 9): after one fitted scale, the centred-logit FVU is 1.00 for W-freq against 0.12\u20130.21 for E3; KL misses it because a grokked model's output probabilities are nearly one-hot.\n- **Small output KL coexists with low hidden-state similarity:** independent retrains (HS 0.12) and students trained to match T0's output probabilities (KL at temperature 1; HS 0.23, KL 2.38e-06) score no higher than randomly initialised networks (HS 0.24). HS's scale is therefore not anchored at 0 for unrelated networks: it measures overlap of internal features, and working networks built on other frequencies score below random ones. Neither copies T0's logits (centred-logit FVU: students 0.94\u20131.37, retrains 1.38\u20135.39; E3 replacements 0.12\u20130.21; post hoc, audit 9); students trained to match T0's centred logits (post hoc, pre-specified; FVU 0.023\u20130.165) reach HS 0.778\u20130.849: mean HS 0.849 lies between those ranges (below 0.85, above 0.35), which the pre-specified reading calls partial (1 of 3 met the training criterion; the others are not interpreted).\n- **Negative result:** at N = 3 the primary HS does not separate the Pizza explanation (W-alg, HS 0.91; E3 \u2212 W-alg +0.020, bootstrap CI [-0.008, +0.045]) or the scrambled neuron table (W-scramble, HS 0.94; E4 \u2212 W-scramble +0.007, CI [-0.025, +0.037]) from the true explanations (a failure to separate, not a demonstrated equivalence); the secondary matched-neuron correlation separates W-scramble (0.65) from E4 (0.91). The agent-free compiler's literal build of the scrambled table does score 0.09 below its E4 build on T0, mostly at resid_post: 0.69 vs 0.95; elsewhere the gap is within \u00b10.007 on T1, T-new, T-paper; on T2 the scrambled build scores 0.05 higher. Post hoc, T0's distance irrelevance is in Zhong et al.'s Clock-typical range (0.75) and the literal Pizza build is in the Pizza-typical range (0.003); the agents' replacements from the true E1\u2013E3 are Pizza-like too (means 0.13\u20130.18), and E4's are split (mean 0.41). Among the builds that carry T0's frequencies, the Clock-side ones (two of three E4 builds, q 0.46, and all three W-scramble builds, q 0.50\u20130.66) score HS 0.91\u20130.95 and the Pizza-side ones (E2, E3, E4, W-alg) 0.89\u20130.97: at this N, HS did not separate Clock-side from Pizza-side builds that share the key frequencies (descriptive; side and explanation are confounded).\n- **Memorisation (post hoc):** E0 and E1 contain nothing target-specific (identical text on every target, and the sandbox does not reveal the target), so their runs on T0 and on the published checkpoint are replicates of one condition. When the explanation gives no frequencies, the simulator often builds most of the published paper's frequencies {14, 35, 41, 42, 52} into its replacement (possible cues include the sandbox description of the paper's architecture and, for E1, the paper's own algorithm; only E0's text also outlines the training setup; no sandbox file names a frequency or the paper; audit 8). E1 (6 runs on T0 and T-paper): 5 of 6 build scripts list at least four of the paper's five frequencies (3 of 6 replacements build at least four by the key-frequency rule, a lower bound); on average 68% of the replacements' W_L spectrum lies on those five frequencies (chance 9%); mean HS 0.08 against T0 but 0.70 against the published checkpoint (target swap: same weights, other target; range 0.24\u20130.95); E0 (3 runs on T0): 1 of 3 build scripts list at least four of the paper's five frequencies (1 of 3 replacements build at least four by the key-frequency rule, a lower bound); on average 36% of the replacements' W_L spectrum lies on those five frequencies (chance 9%); mean HS 0.13 against T0 but 0.28 against the published checkpoint (target swap: same weights, other target; range 0.03\u20130.63). On a published model, a high score can therefore come from the simulator's memory rather than the explanation. The origin of the simulator's prior knowledge is unknown (one published model and one simulator tested).\n- **Exploratory logit comparison:** all 3 E3 builds had lower scale-adjusted logit error (0.123\u20130.210) than all 3 W-alg builds (0.232\u20130.232). E4 and W-scramble overlapped. These within-sample ranges add a descriptive result alongside the inconclusive registered HS comparisons.\n- **Cost:** the 96 reported Claude Haiku 5.5 runs cost $2.20 ($2.33 including development runs and plumbing checks)."
 }

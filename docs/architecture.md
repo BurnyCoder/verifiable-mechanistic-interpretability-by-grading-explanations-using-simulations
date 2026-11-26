@@ -53,16 +53,15 @@ flowchart TB
 
 ## Why these design choices
 
-- **Linear alignment for hidden states**: the LayerNorm-free residual stream is only defined up to GL(128). Regression
-  R² is invariant to invertible linear maps of its predictor (Kornblith et al. 2019, Table 1), so completeness
-  R²(M̂→M) is invariant to any change of the replacement's basis; soundness R²(M→M̂), pooled over the replacement's
-  dimensions, only to orthogonal maps and uniform scaling; HS = 1 (up to the ridge term) under an affine equivalence. A post-hoc
-  whitened soundness, invariant in both directions, is in the grader sensitivity analysis (audit 2026-11-22; see
-  `reports/state-of-the-art-review.md`). The GL(128) argument covers the residual sites only: at `mlp_post` the MLP's
+- **Linear alignment for hidden states.** Unregularized regression absorbs an invertible predictor-coordinate change.
+  The implemented predictor ridge and pooling in response coordinates restrict this property. Whitening gives equal
+  weight to retained response directions. Its relative eigenvalue threshold can change which directions are retained.
+  Both variants estimate prediction on ordered rows of the fixed grid. [Grader](../src/vmi/grader/metrics.py) ·
+  [Kornblith et al.](https://proceedings.mlr.press/v97/kornblith19a.html). Further details are in
+  [the methods review](../reports/state-of-the-art-review.md). The GL(128) argument covers the residual sites only: at `mlp_post` the MLP's
   symmetry is permutation and positive per-neuron scaling, so a linear map is wider than needed there, and the
   matched-neuron correlation is the group-matched secondary metric (audit 3, deviation 10).
-- **float64 grading**: matches the agent's numpy self-test, so numerical cancellations cannot make a model pass the
-  self-test and fail grading.
+- **Float64 grading.** The grading and self-test paths both use double precision. Ties and roundoff can still affect which class has the largest logit.
 - **Spec as single source**: the explanation text and the compiler input come from the same dict, so the compiler
   builds what the explanation's parameters determine, plus fixed defaults where the explanation is silent (e.g. the
   ridge read-out, E-paper's equal split of unlisted neurons).

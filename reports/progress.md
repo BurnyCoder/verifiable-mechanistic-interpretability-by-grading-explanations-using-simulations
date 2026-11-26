@@ -1,5 +1,9 @@
 # Progress
 
+## 26 November 2026 · Independent saved-results audit
+
+The T0 hidden-state trend survives. The output-KL trend fails. The published H3 replication, round-one labels, compiler accuracy, logit ordering and interval-coverage claims have dated corrections. The registered local capability comparisons remain incomplete. The reporting path rebuilds both cohorts from archived measurements. The original forward grades remain a boundary of verification. [Verdicts, counts and evidence](reviews/scientific-audit-2026-11-26.md) · [Passage ledger](reviews/claim-ledger.md).
+
 *Entries are dated snapshots, newest first; older entries keep what was believed at the time. Statements later
 corrected — e.g. "HS tracks circuit formation" (now: shared frequency structure, deviation 11), "blind to Clock vs Pizza
 and to scrambled tables" (now: did not separate the agents' builds at N = 3, deviation 12), "41 of 96 runs announce a

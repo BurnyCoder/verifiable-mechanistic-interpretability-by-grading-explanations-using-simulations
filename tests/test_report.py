@@ -124,7 +124,7 @@ def test_verdict_rules_follow_preregistration_sections_5_and_6():
 
 def test_glossary_explains_labels_once_per_unit_and_leaves_code_and_links_alone():
     from vmi.analysis.glossary import gloss
-    assert gloss("HS on T0 is 0.9; HS again") == ("HS (hidden-state similarity, 1 = internals match up to a linear map) on "
+    assert gloss("HS on T0 is 0.9; HS again") == ("HS (hidden-state similarity by linear prediction) on "
                                                    "T0 (main target network) is 0.9; HS again")
     assert gloss("0.05 (E1, algorithm only)") == "0.05 (E1, algorithm only)"  # meaning already given
     assert gloss("hidden-state similarity (HS)") == "hidden-state similarity (HS)"  # meaning given just before
@@ -146,8 +146,8 @@ def test_agent_example_explanations_name_the_cause():
     base = {"accuracy": 1.0, "hs": 0.05, "accs": [1.0], "harness_errors": [], "final": "Done.", "reaction": "",
             "said": [], "compiler_hs": 0.05, "plan": "No frequencies given. I'll pick 14, 35, 41, 42, 52."}
     memo, memo_short = ae.why({**base, "freq_lines": ["KEY_FREQS = [14, 35, 41, 42, 52]"]}, "T0", "E1")
-    assert "from memory" in memo_short and "wrong internals" in memo_short
-    assert memo.startswith("Wrong mechanism, right answers") and "published paper's" in memo and "I'll pick" in memo
+    assert "the paper's" in memo_short and "low HS" in memo_short
+    assert memo.startswith("The explanation gave no frequencies.") and "published paper's" in memo and "I'll pick" in memo
     assert "hard-codes {14, 35, 41, 42, 52}" in memo
     four, four_short = ae.why({**base, "freq_lines": ["FREQS = [14, 35, 41, 52, 73]"]}, "T0", "E1")
     assert "4 of the published paper's five frequencies" in four and "4 of the paper's five" in four_short

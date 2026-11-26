@@ -1,5 +1,7 @@
 # Round-1 adversarial review (NeurIPS-style self-review)
 
+**Historical record · erratum dated 26 November 2026.** The original H8 result followed one selected replacement over sampled checkpoints. The full-checkpoint, round-filtered calculation was retrospective. Protocol §6 prescribes the same H2 verdict for all four singleton comparisons. [Independent reconstruction and evidence limits](scientific-audit-2026-11-26.md).
+
 *2026-11-21, written during round 1 (N = 1 per condition) against the code, results and paper draft at that time.
 Reviewer stance: assume the headline claims are wrong and look for what would make them so. Each point ends with the
 action taken or planned. Numbers are in the generated tables of

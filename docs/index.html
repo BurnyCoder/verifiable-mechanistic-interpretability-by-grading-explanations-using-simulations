@@ -35,10 +35,11 @@ th { cursor:pointer; color:var(--text-secondary); font-weight:600; } td.num { fo
 <body>
 <div class="viz-root">
 <h1>Grading mechanistic explanations by weights-blind simulation</h1>
+<p><a href="https://github.com/BurnyCoder/verifiable-mechanistic-interpretability-by-grading-explanations-using-simulations/blob/main/reports/reviews/scientific-audit-2026-11-26.md">Independent scientific audit · 26 November 2026</a></p>
 <div class="muted">Libor "Burny" Burian, <a href="https://scholar.google.com/citations?user=BBGcEigAAAAJ&hl=en">Victor Levoso</a>.
 Developed in a mechanistic interpretability hackathon on automatically evaluating mechanistic interpretability explanations,
 co-organized by the authors in their community and its Discord server, <a href="https://mechinterp.com/">mechinterp.com</a>.</div>
-<p>An LLM agent that has never seen the network and has no network access except its model endpoint reads an explanation of a one-layer
+<p>An LLM agent with access to the supplied explanation, architecture, task labels and its model endpoint rebuilds a one-layer
 modular-addition transformer (<a href="https://arxiv.org/abs/2301.05217">Nanda et al. 2023</a>) and writes every weight of a
 replacement. The replacement is scored against the original by <b>output KL</b> (behaviour) and <b>hidden-state similarity (HS)</b>
 (cross-validated linear regression between the two networks' internal activations). Does the score track explanation quality?
@@ -67,7 +68,7 @@ replacement. The replacement is scored against the original by <b>output KL</b> 
   <span><svg width="18" height="10"><line x1="0" y1="5" x2="18" y2="5" stroke="var(--ref)" stroke-dasharray="4 3" stroke-width="2"/></svg>no-agent reference (mean; T0 only)</span>
 </div>
 
-<h2>Behaviour (output KL) vs mechanism (HS)</h2>
+<h2>Output KL and hidden-state similarity</h2>
 <svg id="scatter" width="100%" height="380" role="img" aria-label="Output KL against HS"></svg>
 <div class="legend">
   <span><svg width="12" height="12"><circle cx="6" cy="6" r="5" fill="var(--true)"/></svg>true explanation</span>
@@ -77,6 +78,10 @@ replacement. The replacement is scored against the original by <b>output KL</b> 
 
 <h2>Preregistered hypotheses</h2>
 <div class="tablewrap"><table id="hyp"></table></div>
+<h2>Replication checks by target</h2>
+<p>The interval and upper-bound readings use the available explanation levels. Missing levels are identified in the last column.</p>
+<div class="tablewrap"><table id="replications"></table></div>
+<p><a href="data_round1.json">Round-one evidence</a> · <a href="https://github.com/BurnyCoder/verifiable-mechanistic-interpretability-by-grading-explanations-using-simulations/blob/main/reports/reviews/scientific-audit-2026-11-26.md">Independent scientific audit</a></p>
 
 <h2>All agent runs (table view)</h2>
 <div class="tablewrap"><table id="runs"></table></div>
@@ -100,6 +105,18 @@ function md(s) { return s.split("\n").filter(l => l.trim()).map(l => {
   return l.startsWith("- ") ? "<li>" + h.slice(2) + "</li>" : "<p>" + h + "</p>"; }).join("").replace(/(<li>.*<\/li>)/s, "<ul>$1</ul>"); }
 
 fetch("data.json").then(r => r.json()).then(D => {
+  const rep = document.getElementById("replications");
+  const headers = rep.createTHead().insertRow();
+  for (const label of ["Target", "H1 HS trend", "H1 decreasing KL", "H2 wrong frequencies", "H3 measurements", "H3 readings"]) {
+    const th = document.createElement("th");
+    th.textContent = label;
+    headers.append(th);
+  }
+  const body = rep.createTBody();
+  for (const result of D.replications) {
+    const row = body.insertRow();
+    for (const key of ["target", "h1", "h1_kl", "h2", "h3_observed", "h3"]) row.insertCell().textContent = result[key];
+  }
   document.getElementById("keyres").innerHTML = md(D.key_results_md);
   const targets = [...new Set(D.runs.map(r => r.target).concat(D.compiler.map(c => c.target)))].filter(t => t !== "dev").sort();
   const tsel = document.getElementById("target"); targets.forEach(t => tsel.add(new Option(t, t))); tsel.value = "T0";

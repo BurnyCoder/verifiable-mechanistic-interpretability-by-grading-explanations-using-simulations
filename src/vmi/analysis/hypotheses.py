@@ -61,6 +61,37 @@ def compiler(target: str, level: str) -> dict | None:
     return json.loads(p.read_text()) if p.exists() else None
 
 
+def round_trajectory(data: dict, run_ids: set[str]) -> dict:
+    """Reconstruct the requested cohort from archived HS vectors on one training trajectory."""
+    steps = data["steps"]
+    loss = np.asarray(data["restricted_loss"], dtype=float)
+    if len(steps) != len(loss) or not np.all(np.isfinite(loss) & (loss > 0)):
+        raise ValueError("Invalid checkpoint or restricted-loss series")
+    series = -np.log(loss)
+    def selected(name):
+        rows = []
+        for row in data[name]:
+            if row["run_id"] in run_ids:
+                if len(row["hs"]) != len(steps):
+                    raise ValueError(f"Incomplete HS trajectory for {row['run_id']}")
+                rows.append({**row, "rho": float(st.stats.spearmanr(row["hs"], series).statistic)})
+        return rows
+    reps, controls = selected("replacements"), selected("negative_controls")
+    if not reps:
+        return {}
+    by_level = defaultdict(list)
+    for row in controls:
+        by_level[row["level"]].append(row["rho"])
+    rhos = [r["rho"] for r in reps]
+    means = np.mean([r["hs"] for r in reps], axis=0)
+    return {"N": f"{len(reps)} E3/E4 replacements × {len(steps)} checkpoints", "steps": steps,
+            "restricted_loss": data["restricted_loss"], "replacements": reps, "negative_controls": controls,
+            "negative_controls_by_level": dict(by_level), "spearman_min": min(rhos),
+            "spearman_hs_vs_neglog_restricted_loss": float(np.median(rhos)),
+            "rows": [{"step": s, "hs": float(m), "restricted_loss": l} for s, m, l in zip(steps, means, loss)],
+            "verdict": "supported" if all(r > 0 for r in rhos) else "not supported"}
+
+
 def evaluate(max_round: int) -> dict:
     """All hypothesis verdicts using runs up to round max_round."""
     runs = load_runs(max_round)
@@ -104,8 +135,8 @@ def evaluate(max_round: int) -> dict:
     if nmin < 10**9 and nmin >= 1:
         adj = st.holm({k: v["p"] for k, v in tests.items()})
         if nmin < 2:
-            verdicts = {k: ("cannot tell at this N" if effects[k] is None or effects[k]["diff"] > 0 else "not supported") for k in pairs}
-            prereg = dict(verdicts)  # one run per arm: the test is undefined, so both readings agree
+            verdicts = dict.fromkeys(pairs, "cannot tell at this N")
+            prereg = dict(verdicts)  # §6 fixes this label irrespective of the single observed difference.
         else:  # deviation 1 (post hoc): a test whose smallest attainable p is ≥ α cannot decide (3 vs 3: 1/20); deviation 7
             verdicts = {k: st.verdict(adj[k], effects[k]["diff"] > 0,
                                       st.min_p_mann_whitney(len(_select(runs, level=a)), len(_select(runs, level=b))))
@@ -123,12 +154,14 @@ def evaluate(max_round: int) -> dict:
         wf_kl, wf_hs, wf_agree = float(_vals(wf, "kl_out").mean()), float(_vals(wf).mean()), float(_vals(wf, "argmax_agreement").mean())
         kl_fooled = wf_kl <= max(kl_means.values())  # §5's falsifier: KL above the largest E2–E4 mean
         hs_catches = all(wf_hs < v for v in hs_means.values())
+        within = min(kl_means.values()) <= wf_kl <= max(kl_means.values())
         H["H3"] = {"N": n3, "label": _n_label(n3),
-                   "verdict": "supported" if (wf_agree >= 0.99 and kl_fooled and hs_catches) else "not supported",
+                   "verdict": "supported" if (wf_agree >= 0.99 and within and hs_catches) else "not supported",
+                   "upper_bound_reading": "supported" if (wf_agree >= 0.99 and kl_fooled and hs_catches) else "not supported",
                    "wfreq": {"kl": wf_kl, "hs": wf_hs, "argmax_agreement": wf_agree}, "true_kl_means": kl_means,
                    "true_hs_means": hs_means, "kl_fooled": kl_fooled, "hs_catches": hs_catches,
                    # §5's hypothesis wording also asks for KL within [min, max] of the E2–E4 means (reported, not a falsifier)
-                   "kl_within_range": min(kl_means.values()) <= wf_kl <= max(kl_means.values()),
+                   "kl_within_range": within,
                    # §5: "HS difference to each of E2–E4 with bootstrap CI" (deviation 8: was not computed before)
                    "hs_diff": {lv: st.bootstrap_mean_diff(_vals(wf), _vals(v)) for lv, v in trues.items()}}
     # H4 — E3/E4 vs independent retrains (and two-sided vs distilled students)
@@ -151,7 +184,7 @@ def evaluate(max_round: int) -> dict:
             # attainable p and the observed separation are stated; deviation 1's "cannot tell" follows.
             sep = ("every agent run above every student" if t["r_rb"] == 1 else "every student above every agent run"
                    if t["r_rb"] == -1 else f"rank-biserial r {t['r_rb']:+.2f}")
-            t["result"] = ("cannot tell at this N" if t["p"] is None
+            t["result"] = ("cannot tell at this N (protocol §6)" if n4 == 1 or t["p"] is None
                            else ("differ: " + ("agent higher" if t["r_rb"] > 0 else "students higher")) if adj2[lv] < ALPHA
                            else f"not significant (Holm p {adj2[lv]:.2f}; smallest attainable p {t['min_p']:.2f}; {sep}"
                            + ("; post-hoc rule: cannot tell at this N)" if t["min_p"] >= ALPHA else ")"))
@@ -165,8 +198,10 @@ def evaluate(max_round: int) -> dict:
         rows = json.loads(pc.read_text())["rows"]
         hs = [r["hs"] for r in rows]
         kl = [r["kl_out"] for r in rows]
-        ok = abs(hs[0] - 1) < 1e-6 and kl[0] < 1e-9 and all(a > b for a, b in zip(hs, hs[1:])) and all(a < b for a, b in zip(kl, kl[1:]))
-        H["H4b"] = {"N": "deterministic", "verdict": "supported" if ok else "not supported", "rows": rows}
+        ok = hs[0] == 1 and kl[0] == 0 and all(a > b for a, b in zip(hs, hs[1:])) and all(a < b for a, b in zip(kl, kl[1:]))
+        H["H4b"] = {"N": "deterministic", "verdict": "supported" if ok else "not supported", "rows": rows,
+                    "identity_exact": hs[0] == 1 and kl[0] == 0,
+                    "identity_with_numerical_tolerance": abs(hs[0] - 1) < 1e-6 and abs(kl[0]) < 1e-9}
     # H5/H6 — simulator gap and invariance across simulators of increasing capability (amendment 2: local Qwens + Haiku)
     lv4 = ("E2", "E3", "E4", "W-freq")
     models = LOCAL_MODELS + [MAIN_MODEL]
@@ -178,19 +213,27 @@ def evaluate(max_round: int) -> dict:
             if rs and c:
                 gaps.setdefault(m, []).extend((c["hs"] - _vals(rs)).tolist())
                 means.setdefault(m, {})[lv] = float(_vals(rs).mean())
-    if len(gaps) == len(models):
-        n5 = min(len(_select(runs, level=lv, model=m)) for m in models for lv in lv4)
-        jt = st.jonckheere([-np.array(gaps[m]) for m in models])  # gap should shrink: −gap increases with capability
+    if all(len(means.get(m, {})) == len(lv4) for m in LOCAL_MODELS) and len(means.get(MAIN_MODEL, {})) == len(lv4):
+        n5 = min(len(_select(runs, level=lv, model=m)) for m in LOCAL_MODELS for lv in lv4)
+        jt = st.jonckheere([-np.array(gaps[m]) for m in LOCAL_MODELS])  # the registered size trend compares the three local simulators
         exceed = {lv: means[MAIN_MODEL][lv] - compiler("T0", lv)["hs"] for lv in lv4}
-        H["H5"] = {"N": n5, "label": _n_label(n5), "verdict": "supported" if jt["p"] < ALPHA and max(exceed.values()) <= 0 else "not supported",
+        # §5 states a mean inequality but its falsifier asks whether the compiler is outside the agent interval.
+        # The two readings remain separate even if an agent mean barely exceeds the comparator.
+        intervals = {}
+        for lv in lv4:
+            scores = _vals(_select(runs, level=lv))
+            reference = np.full(len(scores), compiler("T0", lv)["hs"])
+            intervals[lv] = st.bootstrap_mean_diff(scores, reference)["ci"]
+        ci_verdict = None if any(ci is None for ci in intervals.values()) else jt["p"] < ALPHA and all(ci[0] <= 0 for ci in intervals.values())
+        H["H5"] = {"N": n5, "label": _n_label(n5), "gap_intervals": intervals, "passes_ci_reading": ci_verdict, "verdict": "supported" if jt["p"] < ALPHA and max(exceed.values()) <= 0 else "not supported",
                    "jt_gap": jt, "agent_minus_compiler_main": exceed, "mean_gap": {m: float(np.mean(g)) for m, g in gaps.items()}}
         if all(len(means[m]) == 4 for m in models):
-            kw = st.kendalls_w(np.array([[means[m][lv] for lv in lv4] for m in models]))
-            H["H6"] = {"N": n5, "label": _n_label(n5), "verdict": "supported" if kw["p"] < ALPHA else "not supported", **kw,
+            kw = st.kendalls_w(np.array([[means[m][lv] for lv in lv4] for m in LOCAL_MODELS]))
+            H["H6"] = {"N": n5, "label": _n_label(n5), "verdict": st.verdict_prereg(kw["p"], True), **kw,
                        "means": means}
     else:  # deviation 5: the local simulators were stopped after every run was at chance, so the tests cannot run
         local = [r for r in runs if r["model"] in LOCAL_MODELS]
-        desc = {m: {"runs": len(rs), "above_chance": sum(r["accuracy"] > 2 / 113 for r in rs),
+        desc = {m: {"runs": len(rs), "above_chance": sum(r["accuracy"] > 1 / 113 for r in rs),
                     "mean_hs": float(np.mean([r["hs"] for r in rs])) if rs else None}
                 for m in LOCAL_MODELS if (rs := [r for r in local if r["model"] == m])}
         main_gap = {lv: means[MAIN_MODEL][lv] - compiler("T0", lv)["hs"] for lv in lv4 if lv in means.get(MAIN_MODEL, {})}
@@ -202,7 +245,23 @@ def evaluate(max_round: int) -> dict:
     for key, name in (("H7", "wrong_targets_T0.json"), ("H8", "trajectory_T0.json")):
         p = RES / "controls" / name
         if p.exists():
-            H[key] = json.loads(p.read_text())
+            data = json.loads(p.read_text())
+            ids = {r["run_id"] for r in runs}
+            if key == "H7":
+                rows = [r for r in data["rows"] if r["run_id"] in ids]
+                H[key] = {**data, "N_runs": len(rows), "rows": rows}
+            elif "replacements" in data:
+                cohort = round_trajectory(data, ids)
+                if cohort:
+                    H[key] = cohort
+                    archive = RES / ("controls/trajectory_T0_round1_historical.json" if max_round == 1 else "controls/trajectory_T0_superseded.json")
+                    if archive.exists():
+                        hist = json.loads(archive.read_text())
+                        H[key]["historical"] = {"source": hist.get("source", archive.relative_to(RES).as_posix()),
+                                               "checkpoints": len(hist["rows"]), "replacement": hist["replacement"],
+                                               "rho": hist["spearman_hs_vs_neglog_restricted_loss"]}
+            elif data.get("replacement") in ids:
+                H[key] = {**data, "N": f"one replacement × {len(data['rows'])} sampled checkpoints"}
     if "H7" in H:  # verdict from the stored rows, with the power check (Wilcoxon over n runs: smallest p = 1/2^n)
         d = np.array([row["d"] for row in H["H7"]["rows"]], float)
         w = st.wilcoxon_greater(d)

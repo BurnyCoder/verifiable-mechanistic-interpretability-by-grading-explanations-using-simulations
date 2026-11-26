@@ -4,6 +4,10 @@
 added short in-place corrections to the plan text (marked as such, e.g. "corrected by the second audit"); everything
 else below is as approved.*
 
+## Independent audit completed 26 November 2026
+
+The dated review uses the frozen hypotheses, field definitions, a second statistical implementation, run-ID checks and an offline reporting path. The historical planned-run matrix still records the original design. The status of every measured and missing comparison is in the [audit](reviews/scientific-audit-2026-11-26.md).
+
 ## Changes since approval (kept up to date)
 
 | When | Change | Why | Where recorded |
@@ -81,7 +85,7 @@ Your earlier project already published what this one needs, so targets and basel
 | **T0** main | `wd1_s1` | 2, 3, 23, 37, 39 | first seed whose frequencies differ from the paper's |
 | **T1** seed sensitivity | `wd1_s4` | 11, 25, 49 | fewest key frequencies (3, tied with `wd1_s9`; the lower seed was taken) |
 | **T2** seed sensitivity | `wd1_s8` | 37, 44, 45, 46, 47, 51 | most key frequencies |
-| **dev** (never reported) | `wd1_s10` | 19, 31, 45, 47 | last seed |
+| **dev** (builds excluded, H7 comparison target) | `wd1_s10` | 19, 31, 45, 47 | last seed |
 | **T-paper** (contamination-flagged) | the paper's own checkpoint, epoch 40,000 | 14, 35, 41, 42, 52 | published model |
 
 - `wd1_s0` reproduces the paper's exact frequency set (14, 35, 41, 42, 52), so it is **not** a clean target; it serves as the paper model's independently trained "twin" in the baselines. The runs were published in October 2026 and never appeared in a paper, so the agents cannot have memorized T0–T2; the E0/E1 arms check this.

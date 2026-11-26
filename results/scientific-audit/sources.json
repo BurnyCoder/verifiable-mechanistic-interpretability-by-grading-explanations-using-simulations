@@ -1,0 +1,1829 @@
+{
+  "metadata_scope": "Identity and version checked at arXiv. Page locators describe text searches, not independent replications.",
+  "missing_metadata": [],
+  "target_frequency_records": {
+    "wd1_s0": {
+      "source": "https://huggingface.co/BurnyCoder/grokking-modular-addition-runs/resolve/98c61de0c6e6219be70bb7eef60390ab510164f2/wd1_s0/analysis/key_freqs.json",
+      "key_freqs": [
+        14,
+        35,
+        41,
+        42,
+        52
+      ],
+      "reference_index": 400
+    },
+    "wd1_s1": {
+      "source": "https://huggingface.co/BurnyCoder/grokking-modular-addition-runs/resolve/98c61de0c6e6219be70bb7eef60390ab510164f2/wd1_s1/analysis/key_freqs.json",
+      "key_freqs": [
+        2,
+        3,
+        23,
+        37,
+        39
+      ],
+      "reference_index": 400
+    },
+    "wd1_s10": {
+      "source": "https://huggingface.co/BurnyCoder/grokking-modular-addition-runs/resolve/98c61de0c6e6219be70bb7eef60390ab510164f2/wd1_s10/analysis/key_freqs.json",
+      "key_freqs": [
+        19,
+        31,
+        45,
+        47
+      ],
+      "reference_index": 400
+    },
+    "wd1_s2": {
+      "source": "https://huggingface.co/BurnyCoder/grokking-modular-addition-runs/resolve/98c61de0c6e6219be70bb7eef60390ab510164f2/wd1_s2/analysis/key_freqs.json",
+      "key_freqs": [
+        6,
+        7,
+        15,
+        27,
+        38
+      ],
+      "reference_index": 400
+    },
+    "wd1_s3": {
+      "source": "https://huggingface.co/BurnyCoder/grokking-modular-addition-runs/resolve/98c61de0c6e6219be70bb7eef60390ab510164f2/wd1_s3/analysis/key_freqs.json",
+      "key_freqs": [
+        9,
+        27,
+        53,
+        55
+      ],
+      "reference_index": 400
+    },
+    "wd1_s4": {
+      "source": "https://huggingface.co/BurnyCoder/grokking-modular-addition-runs/resolve/98c61de0c6e6219be70bb7eef60390ab510164f2/wd1_s4/analysis/key_freqs.json",
+      "key_freqs": [
+        11,
+        25,
+        49
+      ],
+      "reference_index": 400
+    },
+    "wd1_s5": {
+      "source": "https://huggingface.co/BurnyCoder/grokking-modular-addition-runs/resolve/98c61de0c6e6219be70bb7eef60390ab510164f2/wd1_s5/analysis/key_freqs.json",
+      "key_freqs": [
+        9,
+        34,
+        38,
+        40
+      ],
+      "reference_index": 400
+    },
+    "wd1_s6": {
+      "source": "https://huggingface.co/BurnyCoder/grokking-modular-addition-runs/resolve/98c61de0c6e6219be70bb7eef60390ab510164f2/wd1_s6/analysis/key_freqs.json",
+      "key_freqs": [
+        7,
+        26,
+        35,
+        41
+      ],
+      "reference_index": 400
+    },
+    "wd1_s7": {
+      "source": "https://huggingface.co/BurnyCoder/grokking-modular-addition-runs/resolve/98c61de0c6e6219be70bb7eef60390ab510164f2/wd1_s7/analysis/key_freqs.json",
+      "key_freqs": [
+        12,
+        18,
+        20,
+        48,
+        55
+      ],
+      "reference_index": 400
+    },
+    "wd1_s8": {
+      "source": "https://huggingface.co/BurnyCoder/grokking-modular-addition-runs/resolve/98c61de0c6e6219be70bb7eef60390ab510164f2/wd1_s8/analysis/key_freqs.json",
+      "key_freqs": [
+        37,
+        44,
+        45,
+        46,
+        47,
+        51
+      ],
+      "reference_index": 400
+    },
+    "wd1_s9": {
+      "source": "https://huggingface.co/BurnyCoder/grokking-modular-addition-runs/resolve/98c61de0c6e6219be70bb7eef60390ab510164f2/wd1_s9/analysis/key_freqs.json",
+      "key_freqs": [
+        19,
+        34,
+        35
+      ],
+      "reference_index": 400
+    }
+  },
+  "provider_model_details": "https://platform.claude.com/docs/en/models/overview",
+  "provider_release": "https://www.anthropic.com/claude-haiku-5-5",
+  "papers": {
+    "1411.5279": {
+      "title": "What Teachers Should Know about the Bootstrap: Resampling in the Undergraduate Statistics Curriculum",
+      "authors": [
+        "Tim Hesterberg"
+      ],
+      "submitted": "2014-11-19",
+      "version": "1411.5279v1",
+      "source": "https://arxiv.org/abs/1411.5279v1",
+      "full_text_pages": 83,
+      "pdf_sha256": "80e30e7435f9860a584d7d0da5859b97f00d0c9cea2d1ca81dc1f51f42532430",
+      "locators": {
+        "percentile": [
+          1,
+          2,
+          5,
+          9,
+          11,
+          13,
+          24,
+          29,
+          30,
+          31,
+          32,
+          41
+        ],
+        "under-cover": [
+          1,
+          43,
+          44,
+          59
+        ],
+        "skew": [
+          2,
+          3,
+          4,
+          5,
+          31,
+          37,
+          39,
+          40,
+          41,
+          42,
+          46,
+          47
+        ]
+      }
+    },
+    "1503.02531": {
+      "title": "Distilling the Knowledge in a Neural Network",
+      "authors": [
+        "Geoffrey Hinton",
+        "Oriol Vinyals",
+        "Jeff Dean"
+      ],
+      "submitted": "2015-03-09",
+      "version": "1503.02531v1",
+      "source": "https://arxiv.org/abs/1503.02531v1",
+      "full_text_pages": 9,
+      "pdf_sha256": "74e6689115c539db499f9d6153edecb364059926fd45402454f8210442444c5a",
+      "locators": {
+        "temperature": [
+          2,
+          3,
+          4,
+          5
+        ],
+        "negative logits": [
+          3
+        ],
+        "zero-mean": [
+          3
+        ]
+      }
+    },
+    "1511.07543": {
+      "title": "Convergent Learning: Do different neural networks learn the same representations?",
+      "authors": [
+        "Yixuan Li",
+        "Jason Yosinski",
+        "Jeff Clune",
+        "Hod Lipson",
+        "John Hopcroft"
+      ],
+      "submitted": "2015-11-24",
+      "version": "1511.07543v3",
+      "source": "https://arxiv.org/abs/1511.07543v3",
+      "full_text_pages": 21,
+      "pdf_sha256": "afeb5f5f02ded1b28d6e31c60f29cac1c4ded41d0fd14ab1c9123f6be8c1568f",
+      "locators": {
+        "correlation": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          9,
+          10,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "matching": [
+          1,
+          2,
+          4,
+          5,
+          6,
+          9,
+          10,
+          11,
+          13,
+          14,
+          15,
+          16
+        ]
+      }
+    },
+    "1807.03341": {
+      "title": "Troubling Trends in Machine Learning Scholarship",
+      "authors": [
+        "Zachary C. Lipton",
+        "Jacob Steinhardt"
+      ],
+      "submitted": "2018-07-09",
+      "version": "1807.03341v2",
+      "source": "https://arxiv.org/abs/1807.03341v2"
+    },
+    "1905.00414": {
+      "title": "Similarity of Neural Network Representations Revisited",
+      "authors": [
+        "Simon Kornblith",
+        "Mohammad Norouzi",
+        "Honglak Lee",
+        "Geoffrey Hinton"
+      ],
+      "submitted": "2019-05-01",
+      "version": "1905.00414v4",
+      "source": "https://arxiv.org/abs/1905.00414v4",
+      "full_text_pages": 20,
+      "pdf_sha256": "ed7da67c8a73d90966d91f0d4e9c006e9113d113fe16d77fbde1022a90c38bea",
+      "locators": {
+        "invertible linear": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          12
+        ],
+        "linear regression": [
+          1,
+          4,
+          5,
+          6,
+          12,
+          13,
+          18,
+          20
+        ],
+        "orthogonal": [
+          2,
+          3,
+          4,
+          10,
+          12,
+          13,
+          14,
+          16
+        ]
+      }
+    },
+    "2106.07682": {
+      "title": "Revisiting Model Stitching to Compare Neural Representations",
+      "authors": [
+        "Yamini Bansal",
+        "Preetum Nakkiran",
+        "Boaz Barak"
+      ],
+      "submitted": "2021-06-14",
+      "version": "2106.07682v1",
+      "source": "https://arxiv.org/abs/2106.07682v1",
+      "full_text_pages": 17,
+      "pdf_sha256": "2b80c242e9205ef2d0a95c7e10025729b1f4b512425d7c61f563569c5c406134",
+      "locators": {
+        "stitching": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          13,
+          14,
+          15
+        ],
+        "linear": [
+          4,
+          5,
+          6,
+          7,
+          10,
+          13
+        ]
+      }
+    },
+    "2108.01661": {
+      "title": "Grounding Representation Similarity with Statistical Testing",
+      "authors": [
+        "Frances Ding",
+        "Jean-Stanislas Denain",
+        "Jacob Steinhardt"
+      ],
+      "submitted": "2021-08-03",
+      "version": "2108.01661v2",
+      "source": "https://arxiv.org/abs/2108.01661v2",
+      "full_text_pages": 25,
+      "pdf_sha256": "449e595a72a0cda0768e1ecf53d67b17f9b751c95baddd10e977a491c9b08ffa",
+      "locators": {
+        "Procrustes": [
+          2,
+          3,
+          4,
+          5,
+          7,
+          8,
+          9,
+          10,
+          12,
+          15,
+          16,
+          17
+        ],
+        "nuclear": [
+          3
+        ]
+      }
+    },
+    "2108.02497": {
+      "title": "How to avoid machine learning pitfalls: a guide for academic researchers",
+      "authors": [
+        "Michael A. Lones"
+      ],
+      "submitted": "2021-08-05",
+      "version": "2108.02497v5",
+      "source": "https://arxiv.org/abs/2108.02497v5"
+    },
+    "2110.14739": {
+      "title": "Generalized Shape Metrics on Neural Representations",
+      "authors": [
+        "Alex H. Williams",
+        "Erin Kunz",
+        "Simon Kornblith",
+        "Scott W. Linderman"
+      ],
+      "submitted": "2021-10-27",
+      "version": "2110.14739v2",
+      "source": "https://arxiv.org/abs/2110.14739v2"
+    },
+    "2209.04836": {
+      "title": "Git Re-Basin: Merging Models modulo Permutation Symmetries",
+      "authors": [
+        "Samuel K. Ainsworth",
+        "Jonathan Hayase",
+        "Siddhartha Srinivasa"
+      ],
+      "submitted": "2022-09-11",
+      "version": "2209.04836v6",
+      "source": "https://arxiv.org/abs/2209.04836v6"
+    },
+    "2210.16156": {
+      "title": "Reliability of CKA as a Similarity Measure in Deep Learning",
+      "authors": [
+        "MohammadReza Davari",
+        "Stefan Horoi",
+        "Amine Natik",
+        "Guillaume Lajoie",
+        "Guy Wolf",
+        "Eugene Belilovsky"
+      ],
+      "submitted": "2022-10-28",
+      "version": "2210.16156v2",
+      "source": "https://arxiv.org/abs/2210.16156v2"
+    },
+    "2211.00593": {
+      "title": "Interpretability in the Wild: a Circuit for Indirect Object Identification in GPT-2 small",
+      "authors": [
+        "Kevin Wang",
+        "Alexandre Variengien",
+        "Arthur Conmy",
+        "Buck Shlegeris",
+        "Jacob Steinhardt"
+      ],
+      "submitted": "2022-11-01",
+      "version": "2211.00593v1",
+      "source": "https://arxiv.org/abs/2211.00593v1"
+    },
+    "2301.02679": {
+      "title": "Grokking modular arithmetic",
+      "authors": [
+        "Andrey Gromov"
+      ],
+      "submitted": "2023-01-06",
+      "version": "2301.02679v1",
+      "source": "https://arxiv.org/abs/2301.02679v1",
+      "full_text_pages": 16,
+      "pdf_sha256": "c8139c4f32d838148304931c4b395aca1d99a10157083bdded4a079150a663bc",
+      "locators": {
+        "quadratic": [
+          4,
+          6,
+          7,
+          13
+        ],
+        "ReLU": [
+          6,
+          7
+        ]
+      }
+    },
+    "2301.04709": {
+      "title": "Causal Abstraction: A Theoretical Foundation for Mechanistic Interpretability",
+      "authors": [
+        "Atticus Geiger",
+        "Duligur Ibeling",
+        "Amir Zur",
+        "Maheep Chaudhary",
+        "Sonakshi Chauhan",
+        "Jing Huang",
+        "Aryaman Arora",
+        "Zhengxuan Wu",
+        "Noah Goodman",
+        "Christopher Potts",
+        "Thomas Icard"
+      ],
+      "submitted": "2023-01-11",
+      "version": "2301.04709v4",
+      "source": "https://arxiv.org/abs/2301.04709v4",
+      "full_text_pages": 63,
+      "pdf_sha256": "070f2501b5175791f20b2e050dba14c0e1ae84160781973501a35adbdc74c8e7",
+      "locators": {
+        "interchange": [
+          2,
+          6,
+          8,
+          21,
+          22,
+          23,
+          25,
+          26,
+          27,
+          31,
+          32,
+          34
+        ],
+        "intervention": [
+          1,
+          2,
+          3,
+          5,
+          6,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14
+        ]
+      }
+    },
+    "2301.05062": {
+      "title": "Tracr: Compiled Transformers as a Laboratory for Interpretability",
+      "authors": [
+        "David Lindner",
+        "János Kramár",
+        "Sebastian Farquhar",
+        "Matthew Rahtz",
+        "Thomas McGrath",
+        "Vladimir Mikulik"
+      ],
+      "submitted": "2023-01-12",
+      "version": "2301.05062v5",
+      "source": "https://arxiv.org/abs/2301.05062v5",
+      "full_text_pages": 24,
+      "pdf_sha256": "d875ee49ab1042274e9564081d4c7f4566b2e7263b1931a87dde0ada84b411b5",
+      "locators": {
+        "sort_unique": [
+          6,
+          7,
+          9,
+          20,
+          22
+        ],
+        "compressed": [
+          2,
+          7,
+          8,
+          9,
+          11,
+          14,
+          15
+        ]
+      }
+    },
+    "2301.05217": {
+      "title": "Progress measures for grokking via mechanistic interpretability",
+      "authors": [
+        "Neel Nanda",
+        "Lawrence Chan",
+        "Tom Lieberum",
+        "Jess Smith",
+        "Jacob Steinhardt"
+      ],
+      "submitted": "2023-01-12",
+      "version": "2301.05217v3",
+      "source": "https://arxiv.org/abs/2301.05217v3",
+      "full_text_pages": 35,
+      "pdf_sha256": "93dcdafc2ecf75d31ab2e32e74cdc11e2e488fec42edfef58ad3d4b6515bcd5f",
+      "locators": {
+        "restricted loss": [
+          2,
+          7,
+          8,
+          9,
+          17,
+          18,
+          21,
+          22
+        ],
+        "433": [
+          6,
+          7
+        ],
+        "0.55": [
+          6,
+          27
+        ],
+        "5.27": [
+          8
+        ]
+      }
+    },
+    "2302.03025": {
+      "title": "A Toy Model of Universality: Reverse Engineering How Networks Learn Group Operations",
+      "authors": [
+        "Bilal Chughtai",
+        "Lawrence Chan",
+        "Neel Nanda"
+      ],
+      "submitted": "2023-02-06",
+      "version": "2302.03025v2",
+      "source": "https://arxiv.org/abs/2302.03025v2"
+    },
+    "2304.01373": {
+      "title": "Pythia: A Suite for Analyzing Large Language Models Across Training and Scaling",
+      "authors": [
+        "Stella Biderman",
+        "Hailey Schoelkopf",
+        "Quentin Anthony",
+        "Herbie Bradley",
+        "Kyle O'Brien",
+        "Eric Hallahan",
+        "Mohammad Aflah Khan",
+        "Shivanshu Purohit",
+        "USVSN Sai Prashanth",
+        "Edward Raff",
+        "Aviya Skowron",
+        "Lintang Sutawika",
+        "Oskar van der Wal"
+      ],
+      "submitted": "2023-04-03",
+      "version": "2304.01373v2",
+      "source": "https://arxiv.org/abs/2304.01373v2"
+    },
+    "2304.14997": {
+      "title": "Towards Automated Circuit Discovery for Mechanistic Interpretability",
+      "authors": [
+        "Arthur Conmy",
+        "Augustine N. Mavor-Parker",
+        "Aengus Lynch",
+        "Stefan Heimersheim",
+        "Adrià Garriga-Alonso"
+      ],
+      "submitted": "2023-04-28",
+      "version": "2304.14997v4",
+      "source": "https://arxiv.org/abs/2304.14997v4",
+      "full_text_pages": 35,
+      "pdf_sha256": "821191725252e8a2dc666c68a3e5dd2b684900fb2c80de041d22f17cf2956010",
+      "locators": {
+        "KL divergence": [
+          5,
+          6,
+          7,
+          8,
+          15,
+          17,
+          18,
+          19,
+          21,
+          22,
+          23,
+          25
+        ],
+        "subgraph": [
+          1,
+          2,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          15,
+          16,
+          17,
+          18
+        ]
+      }
+    },
+    "2305.06329": {
+      "title": "Similarity of Neural Network Models: A Survey of Functional and Representational Measures",
+      "authors": [
+        "Max Klabunde",
+        "Tobias Schumacher",
+        "Markus Strohmaier",
+        "Florian Lemmerich"
+      ],
+      "submitted": "2023-05-10",
+      "version": "2305.06329v4",
+      "source": "https://arxiv.org/abs/2305.06329v4",
+      "full_text_pages": 42,
+      "pdf_sha256": "ac80f72269404db6191e5a99b3ab0d291cda600fc8bd29c2ae7fc6908f91150b",
+      "locators": {
+        "affine": [
+          4,
+          5,
+          7,
+          8,
+          9,
+          12,
+          15
+        ],
+        "least squares": [
+          21
+        ],
+        "stitching": [
+          17,
+          20,
+          21,
+          22,
+          25,
+          37
+        ]
+      }
+    },
+    "2306.05685": {
+      "title": "Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena",
+      "authors": [
+        "Lianmin Zheng",
+        "Wei-Lin Chiang",
+        "Ying Sheng",
+        "Siyuan Zhuang",
+        "Zhanghao Wu",
+        "Yonghao Zhuang",
+        "Zi Lin",
+        "Zhuohan Li",
+        "Dacheng Li",
+        "Eric P. Xing",
+        "Hao Zhang",
+        "Joseph E. Gonzalez",
+        "Ion Stoica"
+      ],
+      "submitted": "2023-06-09",
+      "version": "2306.05685v4",
+      "source": "https://arxiv.org/abs/2306.05685v4"
+    },
+    "2306.17844": {
+      "title": "The Clock and the Pizza: Two Stories in Mechanistic Explanation of Neural Networks",
+      "authors": [
+        "Ziqian Zhong",
+        "Ziming Liu",
+        "Max Tegmark",
+        "Jacob Andreas"
+      ],
+      "submitted": "2023-06-30",
+      "version": "2306.17844v2",
+      "source": "https://arxiv.org/abs/2306.17844v2",
+      "full_text_pages": 28,
+      "pdf_sha256": "29c3534b19fede179d518c2dcd3fa5aa2c477dea870d1b5df8b602092047b9f5",
+      "locators": {
+        "distance irrelevance": [
+          7,
+          8,
+          9,
+          21
+        ],
+        "gradient symmetricity": [
+          3,
+          4,
+          7,
+          8,
+          9,
+          21
+        ],
+        "hybrid algorithms": [
+          8
+        ]
+      }
+    },
+    "2308.10248": {
+      "title": "Steering Language Models With Activation Engineering",
+      "authors": [
+        "Alexander Matt Turner",
+        "Lisa Thiergart",
+        "Gavin Leech",
+        "David Udell",
+        "Juan J. Vazquez",
+        "Ulisse Mini",
+        "Monte MacDiarmid"
+      ],
+      "submitted": "2023-08-20",
+      "version": "2308.10248v5",
+      "source": "https://arxiv.org/abs/2308.10248v5"
+    },
+    "2309.03886": {
+      "title": "FIND: A Function Description Benchmark for Evaluating Interpretability Methods",
+      "authors": [
+        "Sarah Schwettmann",
+        "Tamar Rott Shaham",
+        "Joanna Materzynska",
+        "Neil Chowdhury",
+        "Shuang Li",
+        "Jacob Andreas",
+        "David Bau",
+        "Antonio Torralba"
+      ],
+      "submitted": "2023-09-07",
+      "version": "2309.03886v3",
+      "source": "https://arxiv.org/abs/2309.03886v3"
+    },
+    "2309.10312": {
+      "title": "Rigorously Assessing Natural Language Explanations of Neurons",
+      "authors": [
+        "Jing Huang",
+        "Atticus Geiger",
+        "Karel D'Oosterlinck",
+        "Zhengxuan Wu",
+        "Christopher Potts"
+      ],
+      "submitted": "2023-09-19",
+      "version": "2309.10312v1",
+      "source": "https://arxiv.org/abs/2309.10312v1",
+      "full_text_pages": 15,
+      "pdf_sha256": "96c2c24d9a4b2560c24a6d90b9da69b2b53c4edf75e8697f99e56ec55b7af1f4",
+      "locators": {
+        "0.56": [
+          4
+        ],
+        "300": [
+          2,
+          3,
+          4
+        ],
+        "simulation": [
+          4
+        ]
+      }
+    },
+    "2311.07568": {
+      "title": "Feature emergence via margin maximization: case studies in algebraic tasks",
+      "authors": [
+        "Depen Morwani",
+        "Benjamin L. Edelman",
+        "Costin-Andrei Oncescu",
+        "Rosie Zhao",
+        "Sham Kakade"
+      ],
+      "submitted": "2023-11-13",
+      "version": "2311.07568v2",
+      "source": "https://arxiv.org/abs/2311.07568v2"
+    },
+    "2312.06581": {
+      "title": "Grokking Group Multiplication with Cosets",
+      "authors": [
+        "Dashiell Stander",
+        "Qinan Yu",
+        "Honglu Fan",
+        "Stella Biderman"
+      ],
+      "submitted": "2023-12-11",
+      "version": "2312.06581v2",
+      "source": "https://arxiv.org/abs/2312.06581v2"
+    },
+    "2402.05110": {
+      "title": "Opening the AI black box: program synthesis via mechanistic interpretability",
+      "authors": [
+        "Eric J. Michaud",
+        "Isaac Liao",
+        "Vedang Lad",
+        "Ziming Liu",
+        "Anish Mudide",
+        "Chloe Loughridge",
+        "Zifan Carl Guo",
+        "Tara Rezaei Kheirkhah",
+        "Mateja Vukelić",
+        "Max Tegmark"
+      ],
+      "submitted": "2024-02-07",
+      "version": "2402.05110v1",
+      "source": "https://arxiv.org/abs/2402.05110v1"
+    },
+    "2404.14394": {
+      "title": "A Multimodal Automated Interpretability Agent",
+      "authors": [
+        "Tamar Rott Shaham",
+        "Sarah Schwettmann",
+        "Franklin Wang",
+        "Achyuta Rajaram",
+        "Evan Hernandez",
+        "Jacob Andreas",
+        "Antonio Torralba"
+      ],
+      "submitted": "2024-04-22",
+      "version": "2404.14394v2",
+      "source": "https://arxiv.org/abs/2404.14394v2"
+    },
+    "2405.10928": {
+      "title": "The Local Interaction Basis: Identifying Computationally-Relevant and Sparsely Interacting Features in Neural Networks",
+      "authors": [
+        "Lucius Bushnaq",
+        "Stefan Heimersheim",
+        "Nicholas Goldowsky-Dill",
+        "Dan Braun",
+        "Jake Mendel",
+        "Kaarel Hänni",
+        "Avery Griffin",
+        "Jörn Stöhler",
+        "Magdalena Wache",
+        "Marius Hobbhahn"
+      ],
+      "submitted": "2024-05-17",
+      "version": "2405.10928v2",
+      "source": "https://arxiv.org/abs/2405.10928v2"
+    },
+    "2405.14860": {
+      "title": "Not All Language Model Features Are One-Dimensionally Linear",
+      "authors": [
+        "Joshua Engels",
+        "Eric J. Michaud",
+        "Isaac Liao",
+        "Wes Gurnee",
+        "Max Tegmark"
+      ],
+      "submitted": "2024-05-23",
+      "version": "2405.14860v3",
+      "source": "https://arxiv.org/abs/2405.14860v3"
+    },
+    "2405.20331": {
+      "title": "CoSy: Evaluating Textual Explanations of Neurons",
+      "authors": [
+        "Laura Kopf",
+        "Philine Lou Bommer",
+        "Anna Hedström",
+        "Sebastian Lapuschkin",
+        "Marina M. -C. Höhne",
+        "Kirill Bykov"
+      ],
+      "submitted": "2024-05-30",
+      "version": "2405.20331v2",
+      "source": "https://arxiv.org/abs/2405.20331v2"
+    },
+    "2406.11779": {
+      "title": "Compact Proofs of Model Performance via Mechanistic Interpretability",
+      "authors": [
+        "Jason Gross",
+        "Rajashree Agrawal",
+        "Thomas Kwa",
+        "Euan Ong",
+        "Chun Hei Yip",
+        "Alex Gibson",
+        "Soufiane Noubir",
+        "Lawrence Chan"
+      ],
+      "submitted": "2024-06-17",
+      "version": "2406.11779v14",
+      "source": "https://arxiv.org/abs/2406.11779v14",
+      "full_text_pages": 61,
+      "pdf_sha256": "568e1eea5b62d4a53f600af6f3e3efb6c427cab976c2c3c1b036b66c607c55ce",
+      "locators": {
+        "FLOPs": [
+          2,
+          5,
+          6,
+          8,
+          9,
+          16,
+          17,
+          18,
+          19,
+          22,
+          59
+        ],
+        "proof": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ]
+      }
+    },
+    "2407.14494": {
+      "title": "InterpBench: Semi-Synthetic Transformers for Evaluating Mechanistic Interpretability Techniques",
+      "authors": [
+        "Rohan Gupta",
+        "Iván Arcuschin",
+        "Thomas Kwa",
+        "Adrià Garriga-Alonso"
+      ],
+      "submitted": "2024-07-19",
+      "version": "2407.14494v3",
+      "source": "https://arxiv.org/abs/2407.14494v3"
+    },
+    "2408.05147": {
+      "title": "Gemma Scope: Open Sparse Autoencoders Everywhere All At Once on Gemma 2",
+      "authors": [
+        "Tom Lieberum",
+        "Senthooran Rajamanoharan",
+        "Arthur Conmy",
+        "Lewis Smith",
+        "Nicolas Sonnerat",
+        "Vikrant Varma",
+        "János Kramár",
+        "Anca Dragan",
+        "Rohin Shah",
+        "Neel Nanda"
+      ],
+      "submitted": "2024-08-09",
+      "version": "2408.05147v2",
+      "source": "https://arxiv.org/abs/2408.05147v2"
+    },
+    "2410.07476": {
+      "title": "Towards a unified and verified understanding of group-operation networks",
+      "authors": [
+        "Wilson Wu",
+        "Louis Jaburi",
+        "Jacob Drori",
+        "Jason Gross"
+      ],
+      "submitted": "2024-10-09",
+      "version": "2410.07476v3",
+      "source": "https://arxiv.org/abs/2410.07476v3"
+    },
+    "2410.11179": {
+      "title": "Interpretability as Compression: Reconsidering SAE Explanations of Neural Activations with MDL-SAEs",
+      "authors": [
+        "Kola Ayonrinde",
+        "Michael T. Pearce",
+        "Lee Sharkey"
+      ],
+      "submitted": "2024-10-15",
+      "version": "2410.11179v1",
+      "source": "https://arxiv.org/abs/2410.11179v1"
+    },
+    "2410.13928": {
+      "title": "Automatically Interpreting Millions of Features in Large Language Models",
+      "authors": [
+        "Gonçalo Paulo",
+        "Alex Mallen",
+        "Caden Juang",
+        "Nora Belrose"
+      ],
+      "submitted": "2024-10-17",
+      "version": "2410.13928v3",
+      "source": "https://arxiv.org/abs/2410.13928v3",
+      "full_text_pages": 29,
+      "pdf_sha256": "e5e2631cfd4cd7a1b6ac960536593f700b83790603ba7b80d7aa47ff76e072d4",
+      "locators": {
+        "fuzzing": [
+          4,
+          5,
+          6,
+          7,
+          8,
+          11,
+          13,
+          14,
+          15,
+          17,
+          18,
+          19
+        ],
+        "surprisal": [
+          5,
+          6,
+          15,
+          17,
+          18,
+          23
+        ],
+        "intervention": [
+          1,
+          3,
+          4,
+          5,
+          6,
+          8,
+          22,
+          23,
+          24,
+          28,
+          29
+        ]
+      }
+    },
+    "2412.03773": {
+      "title": "Modular addition without black-boxes: Compressing explanations of MLPs that compute numerical integration",
+      "authors": [
+        "Chun Hei Yip",
+        "Rajashree Agrawal",
+        "Lawrence Chan",
+        "Jason Gross"
+      ],
+      "submitted": "2024-12-04",
+      "version": "2412.03773v1",
+      "source": "https://arxiv.org/abs/2412.03773v1",
+      "full_text_pages": 33,
+      "pdf_sha256": "be2b1bf24a5968f2f54bb6692c15479d426eac5d8674d1a993970234ed98b763",
+      "locators": {
+        "integration": [
+          1,
+          4,
+          6,
+          7,
+          8,
+          10,
+          12,
+          16,
+          17,
+          18,
+          19,
+          20
+        ],
+        "pizza": [
+          1,
+          2,
+          3,
+          4,
+          9,
+          10,
+          11,
+          26,
+          32
+        ]
+      }
+    },
+    "2501.14926": {
+      "title": "Interpretability in Parameter Space: Minimizing Mechanistic Description Length with Attribution-based Parameter Decomposition",
+      "authors": [
+        "Dan Braun",
+        "Lucius Bushnaq",
+        "Stefan Heimersheim",
+        "Jake Mendel",
+        "Lee Sharkey"
+      ],
+      "submitted": "2025-01-24",
+      "version": "2501.14926v4",
+      "source": "https://arxiv.org/abs/2501.14926v4"
+    },
+    "2501.16496": {
+      "title": "Open Problems in Mechanistic Interpretability",
+      "authors": [
+        "Lee Sharkey",
+        "Bilal Chughtai",
+        "Joshua Batson",
+        "Jack Lindsey",
+        "Jeff Wu",
+        "Lucius Bushnaq",
+        "Nicholas Goldowsky-Dill",
+        "Stefan Heimersheim",
+        "Alejandro Ortega",
+        "Joseph Bloom",
+        "Stella Biderman",
+        "Adria Garriga-Alonso",
+        "Arthur Conmy",
+        "Neel Nanda",
+        "Jessica Rumbelow",
+        "Martin Wattenberg",
+        "Nandi Schoots",
+        "Joseph Miller",
+        "Eric J. Michaud",
+        "Stephen Casper",
+        "Max Tegmark",
+        "William Saunders",
+        "David Bau",
+        "Eric Todd",
+        "Atticus Geiger",
+        "Mor Geva",
+        "Jesse Hoogland",
+        "Daniel Murfet",
+        "Tom McGrath"
+      ],
+      "submitted": "2025-01-27",
+      "version": "2501.16496v1",
+      "source": "https://arxiv.org/abs/2501.16496v1"
+    },
+    "2501.17727": {
+      "title": "Automated Interpretability Metrics Do Not Distinguish Trained and Random Transformers",
+      "authors": [
+        "Thomas Heap",
+        "Tim Lawson",
+        "Lucy Farnik",
+        "Laurence Aitchison"
+      ],
+      "submitted": "2025-01-29",
+      "version": "2501.17727v2",
+      "source": "https://arxiv.org/abs/2501.17727v2"
+    },
+    "2501.18838": {
+      "title": "Partially Rewriting a Transformer in Natural Language",
+      "authors": [
+        "Gonçalo Paulo",
+        "Nora Belrose"
+      ],
+      "submitted": "2025-01-31",
+      "version": "2501.18838v1",
+      "source": "https://arxiv.org/abs/2501.18838v1"
+    },
+    "2502.16994": {
+      "title": "FADE: Why Bad Descriptions Happen to Good Features",
+      "authors": [
+        "Bruno Puri",
+        "Aakriti Jain",
+        "Elena Golimblevskaia",
+        "Patrick Kahardipraja",
+        "Thomas Wiegand",
+        "Wojciech Samek",
+        "Sebastian Lapuschkin"
+      ],
+      "submitted": "2025-02-24",
+      "version": "2502.16994v2",
+      "source": "https://arxiv.org/abs/2502.16994v2"
+    },
+    "2503.09532": {
+      "title": "SAEBench: A Comprehensive Benchmark for Sparse Autoencoders in Language Model Interpretability",
+      "authors": [
+        "Adam Karvonen",
+        "Can Rager",
+        "Johnny Lin",
+        "Curt Tigges",
+        "Joseph Bloom",
+        "David Chanin",
+        "Yeu-Tong Lau",
+        "Eoin Farrell",
+        "Callum McDougall",
+        "Kola Ayonrinde",
+        "Demian Till",
+        "Matthew Wearden",
+        "Arthur Conmy",
+        "Samuel Marks",
+        "Neel Nanda"
+      ],
+      "submitted": "2025-03-12",
+      "version": "2503.09532v4",
+      "source": "https://arxiv.org/abs/2503.09532v4"
+    },
+    "2504.07831": {
+      "title": "Deceptive Automated Interpretability: Language Models Coordinating to Fool Oversight Systems",
+      "authors": [
+        "Simon Lermen",
+        "Mateusz Dziemian",
+        "Natalia Pérez-Campanero Antolín"
+      ],
+      "submitted": "2025-04-10",
+      "version": "2504.07831v1",
+      "source": "https://arxiv.org/abs/2504.07831v1"
+    },
+    "2504.13151": {
+      "title": "MIB: A Mechanistic Interpretability Benchmark",
+      "authors": [
+        "Aaron Mueller",
+        "Atticus Geiger",
+        "Sarah Wiegreffe",
+        "Dana Arad",
+        "Iván Arcuschin",
+        "Adam Belfki",
+        "Yik Siu Chan",
+        "Jaden Fiotto-Kaufman",
+        "Tal Haklay",
+        "Michael Hanna",
+        "Jing Huang",
+        "Rohan Gupta",
+        "Yaniv Nikankin",
+        "Hadas Orgad",
+        "Nikhil Prakash",
+        "Anja Reusch",
+        "Aruna Sankaranarayanan",
+        "Shun Shao",
+        "Alessandro Stolfo",
+        "Martin Tutek",
+        "Amir Zur",
+        "David Bau",
+        "Yonatan Belinkov"
+      ],
+      "submitted": "2025-04-17",
+      "version": "2504.13151v2",
+      "source": "https://arxiv.org/abs/2504.13151v2"
+    },
+    "2506.20790": {
+      "title": "Stochastic Parameter Decomposition",
+      "authors": [
+        "Lucius Bushnaq",
+        "Dan Braun",
+        "Lee Sharkey"
+      ],
+      "submitted": "2025-06-25",
+      "version": "2506.20790v2",
+      "source": "https://arxiv.org/abs/2506.20790v2"
+    },
+    "2507.08802": {
+      "title": "The Non-Linear Representation Dilemma: Is Causal Abstraction Enough for Mechanistic Interpretability?",
+      "authors": [
+        "Denis Sutter",
+        "Julian Minder",
+        "Thomas Hofmann",
+        "Tiago Pimentel"
+      ],
+      "submitted": "2025-07-11",
+      "version": "2507.08802v2",
+      "source": "https://arxiv.org/abs/2507.08802v2",
+      "full_text_pages": 42,
+      "pdf_sha256": "19e24a3f52da0bc2721dc62060b6fae3583cc2012f07fcaa08e36cc180de0c82",
+      "locators": {
+        "input-injective": [
+          6
+        ],
+        "output-surjective": [],
+        "countable": [
+          6,
+          19,
+          23,
+          24,
+          25,
+          27,
+          28,
+          29,
+          30,
+          31
+        ]
+      }
+    },
+    "2507.20534": {
+      "title": "Kimi K2: Open Agentic Intelligence",
+      "authors": [
+        " Kimi Team",
+        "Yifan Bai",
+        "Yiping Bao",
+        "Y. Charles",
+        "Cheng Chen",
+        "Guanduo Chen",
+        "Haiting Chen",
+        "Huarong Chen",
+        "Jiahao Chen",
+        "Ningxin Chen",
+        "Ruijue Chen",
+        "Yanru Chen",
+        "Yuankun Chen",
+        "Yutian Chen",
+        "Zhuofu Chen",
+        "Jialei Cui",
+        "Hao Ding",
+        "Mengnan Dong",
+        "Angang Du",
+        "Chenzhuang Du",
+        "Dikang Du",
+        "Yulun Du",
+        "Yu Fan",
+        "Yichen Feng",
+        "Kelin Fu",
+        "Bofei Gao",
+        "Chenxiao Gao",
+        "Hongcheng Gao",
+        "Peizhong Gao",
+        "Tong Gao",
+        "Yuyao Ge",
+        "Shangyi Geng",
+        "Qizheng Gu",
+        "Xinran Gu",
+        "Longyu Guan",
+        "Haiqing Guo",
+        "Jianhang Guo",
+        "Xiaoru Hao",
+        "Tianhong He",
+        "Weiran He",
+        "Wenyang He",
+        "Yunjia He",
+        "Chao Hong",
+        "Hao Hu",
+        "Yangyang Hu",
+        "Zhenxing Hu",
+        "Weixiao Huang",
+        "Zhiqi Huang",
+        "Zihao Huang",
+        "Tao Jiang",
+        "Zhejun Jiang",
+        "Xinyi Jin",
+        "Yongsheng Kang",
+        "Guokun Lai",
+        "Cheng Li",
+        "Fang Li",
+        "Haoyang Li",
+        "Ming Li",
+        "Wentao Li",
+        "Yang Li",
+        "Yanhao Li",
+        "Yiwei Li",
+        "Zhaowei Li",
+        "Zheming Li",
+        "Hongzhan Lin",
+        "Xiaohan Lin",
+        "Zongyu Lin",
+        "Chengyin Liu",
+        "Chenyu Liu",
+        "Hongzhang Liu",
+        "Jingyuan Liu",
+        "Junqi Liu",
+        "Liang Liu",
+        "Shaowei Liu",
+        "T. Y. Liu",
+        "Tianwei Liu",
+        "Weizhou Liu",
+        "Yangyang Liu",
+        "Yibo Liu",
+        "Yiping Liu",
+        "Yue Liu",
+        "Zhengying Liu",
+        "Enzhe Lu",
+        "Haoyu Lu",
+        "Lijun Lu",
+        "Yashuo Luo",
+        "Shengling Ma",
+        "Xinyu Ma",
+        "Yingwei Ma",
+        "Shaoguang Mao",
+        "Jie Mei",
+        "Xin Men",
+        "Yibo Miao",
+        "Siyuan Pan",
+        "Yebo Peng",
+        "Ruoyu Qin",
+        "Zeyu Qin",
+        "Bowen Qu",
+        "Zeyu Shang",
+        "Lidong Shi",
+        "Shengyuan Shi",
+        "Feifan Song",
+        "Jianlin Su",
+        "Zhengyuan Su",
+        "Lin Sui",
+        "Xinjie Sun",
+        "Flood Sung",
+        "Yunpeng Tai",
+        "Heyi Tang",
+        "Jiawen Tao",
+        "Qifeng Teng",
+        "Chaoran Tian",
+        "Chensi Wang",
+        "Dinglu Wang",
+        "Feng Wang",
+        "Hailong Wang",
+        "Haiming Wang",
+        "Jianzhou Wang",
+        "Jiaxing Wang",
+        "Jinhong Wang",
+        "Shengjie Wang",
+        "Shuyi Wang",
+        "Si Wang",
+        "Xinyuan Wang",
+        "Yao Wang",
+        "Yejie Wang",
+        "Yiqin Wang",
+        "Yuxin Wang",
+        "Yuzhi Wang",
+        "Zhaoji Wang",
+        "Zhengtao Wang",
+        "Zhengtao Wang",
+        "Zhexu Wang",
+        "Chu Wei",
+        "Qianqian Wei",
+        "Haoning Wu",
+        "Wenhao Wu",
+        "Xingzhe Wu",
+        "Yuxin Wu",
+        "Chenjun Xiao",
+        "Jin Xie",
+        "Xiaotong Xie",
+        "Weimin Xiong",
+        "Boyu Xu",
+        "Jinjing Xu",
+        "L. H. Xu",
+        "Lin Xu",
+        "Suting Xu",
+        "Weixin Xu",
+        "Xinran Xu",
+        "Yangchuan Xu",
+        "Ziyao Xu",
+        "Jing Xu",
+        "Jing Xu",
+        "Junjie Yan",
+        "Yuzi Yan",
+        "Hao Yang",
+        "Xiaofei Yang",
+        "Yi Yang",
+        "Ying Yang",
+        "Zhen Yang",
+        "Zhilin Yang",
+        "Zonghan Yang",
+        "Haotian Yao",
+        "Xingcheng Yao",
+        "Wenjie Ye",
+        "Zhuorui Ye",
+        "Bohong Yin",
+        "Longhui Yu",
+        "Enming Yuan",
+        "Hongbang Yuan",
+        "Mengjie Yuan",
+        "Siyu Yuan",
+        "Haobing Zhan",
+        "Dehao Zhang",
+        "Hao Zhang",
+        "Wanlu Zhang",
+        "Xiaobin Zhang",
+        "Yadong Zhang",
+        "Yangkun Zhang",
+        "Yichi Zhang",
+        "Yizhi Zhang",
+        "Yongting Zhang",
+        "Yu Zhang",
+        "Yutao Zhang",
+        "Yutong Zhang",
+        "Zheng Zhang",
+        "Haotian Zhao",
+        "Yikai Zhao",
+        "Zijia Zhao",
+        "Huabin Zheng",
+        "Shaojie Zheng",
+        "Longguang Zhong",
+        "Jianren Zhou",
+        "Xinyu Zhou",
+        "Zaida Zhou",
+        "Jinguo Zhu",
+        "Zhen Zhu",
+        "Weiyu Zhuang",
+        "Xinxing Zu"
+      ],
+      "submitted": "2025-07-28",
+      "version": "2507.20534v2",
+      "source": "https://arxiv.org/abs/2507.20534v2"
+    },
+    "2601.04480": {
+      "title": "When Models Manipulate Manifolds: The Geometry of a Counting Task",
+      "authors": [
+        "Wes Gurnee",
+        "Emmanuel Ameisen",
+        "Isaac Kauvar",
+        "Julius Tarng",
+        "Adam Pearce",
+        "Chris Olah",
+        "Joshua Batson"
+      ],
+      "submitted": "2026-01-08",
+      "version": "2601.04480v1",
+      "source": "https://arxiv.org/abs/2601.04480v1"
+    },
+    "2603.20101": {
+      "title": "Pitfalls in Evaluating Interpretability Agents",
+      "authors": [
+        "Tal Haklay",
+        "Nikhil Prakash",
+        "Sana Pandey",
+        "Antonio Torralba",
+        "Aaron Mueller",
+        "Jacob Andreas",
+        "Tamar Rott Shaham",
+        "Yonatan Belinkov"
+      ],
+      "submitted": "2026-03-20",
+      "version": "2603.20101v1",
+      "source": "https://arxiv.org/abs/2603.20101v1",
+      "full_text_pages": 38,
+      "pdf_sha256": "c445b036c5edb6c1d8204d60afe6fb2751d54187fbe4260f04955f3f61bedd58",
+      "locators": {
+        "memorization": [
+          1,
+          2,
+          6,
+          7,
+          9,
+          10,
+          31
+        ],
+        "IOI": [
+          2,
+          4,
+          5,
+          6,
+          7,
+          8,
+          23,
+          24,
+          29,
+          31,
+          32,
+          33
+        ]
+      }
+    },
+    "2604.11061": {
+      "title": "Pando: Do Interpretability Methods Work When Models Won't Explain Themselves?",
+      "authors": [
+        "Ziqian Zhong",
+        "Aashiq Muhamed",
+        "Mona T. Diab",
+        "Virginia Smith",
+        "Aditi Raghunathan"
+      ],
+      "submitted": "2026-04-13",
+      "version": "2604.11061v1",
+      "source": "https://arxiv.org/abs/2604.11061v1"
+    },
+    "2604.28119": {
+      "title": "Do Sparse Autoencoders Capture Concept Manifolds?",
+      "authors": [
+        "Usha Bhalla",
+        "Thomas Fel",
+        "Can Rager",
+        "Sheridan Feucht",
+        "Tal Haklay",
+        "Daniel Wurgaft",
+        "Siddharth Boppana",
+        "Matthew Kowal",
+        "Vasudev Shyam",
+        "Jack Merullo",
+        "Atticus Geiger",
+        "Ekdeep Singh Lubana"
+      ],
+      "submitted": "2026-04-30",
+      "version": "2604.28119v1",
+      "source": "https://arxiv.org/abs/2604.28119v1"
+    },
+    "2606.24026": {
+      "title": "Can Language Model Agents be Helpful Circuit Explainers in Mechanistic Interpretability?",
+      "authors": [
+        "Ayan Antik Khan",
+        "Harsh Kohli",
+        "Yuekun Yao",
+        "Huan Sun",
+        "Ziyu Yao"
+      ],
+      "submitted": "2026-06-23",
+      "version": "2606.24026v2",
+      "source": "https://arxiv.org/abs/2606.24026v2"
+    },
+    "2606.25234": {
+      "title": "Structuring Sparsity: Block-Sparse Featurizers Capture Visual Concept Manifolds",
+      "authors": [
+        "Thomas Fel",
+        "Matthew Kowal",
+        "Mozes Jacobs",
+        "Dron Hazra",
+        "Usha Bhalla",
+        "Lee Sharkey",
+        "Lucius Bushnaq",
+        "Satchel Grant",
+        "Tal Haklay",
+        "Thomas Icard",
+        "Can Rager",
+        "Michael Pearce",
+        "Daniel Wurgaft",
+        "Aiden Swann",
+        "Fenil Doshi",
+        "Siddharth Boppana",
+        "Curt Tigges",
+        "Nick Cammarata",
+        "Thomas Serre",
+        "Vasudev Shyam",
+        "Owen Lewis",
+        "Thomas McGrath",
+        "Jack Merullo",
+        "Ekdeep Singh Lubana",
+        "Atticus Geiger"
+      ],
+      "submitted": "2026-06-23",
+      "version": "2606.25234v1",
+      "source": "https://arxiv.org/abs/2606.25234v1"
+    },
+    "2609.08585": {
+      "title": "Limitations of Automated Simulatability: LLM Simulators Can Bypass Explanations",
+      "authors": [
+        "Antonin Poché",
+        "Fanny Jourdan",
+        "Nils Feldhus",
+        "Qianli Wang",
+        "Jing Yang",
+        "Simon Ostermann",
+        "Nicholas Asher",
+        "Philippe Muller",
+        "Vera Schmitt"
+      ],
+      "submitted": "2026-09-08",
+      "version": "2609.08585v2",
+      "source": "https://arxiv.org/abs/2609.08585v2",
+      "full_text_pages": 33,
+      "pdf_sha256": "fcd88bdbcae3ee7d3a513f7e0dc86a86565fd4aa089e74e70cc0095ee57753d6",
+      "locators": {
+        "simulator": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          13,
+          14,
+          15,
+          16,
+          26
+        ],
+        "explanations": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ]
+      }
+    },
+    "2610.07334": {
+      "title": "Weight Oracles: Reading Neural Network Weights with Language Models",
+      "authors": [
+        "Krishna Kabra",
+        "Constantin Venhoff",
+        "Christian Schroeder de Witt"
+      ],
+      "submitted": "2026-10-05",
+      "version": "2610.07334v1",
+      "source": "https://arxiv.org/abs/2610.07334v1"
+    },
+    "2611.08070": {
+      "title": "Can an LLM Actually Reason and Program about Neural Network's Weights or is it just memorization on steroids? Exploring \"Weight-Space Programming\"",
+      "authors": [
+        "Nazmus Sakib Ahmed"
+      ],
+      "submitted": "2026-11-05",
+      "version": "2611.08070v1",
+      "source": "https://arxiv.org/abs/2611.08070v1"
+    },
+    "2611.09382": {
+      "title": "Exploring Weight-Space Programming: Capabilities, Generalization, and Limitations",
+      "authors": [
+        "Junru Hu",
+        "Cheng Tang",
+        "Wei Li",
+        "Hongze Zhu",
+        "Chun-Mei Feng",
+        "Qi Zhang",
+        "Yirong Chen",
+        "Ming Hu"
+      ],
+      "submitted": "2026-11-06",
+      "version": "2611.09382v1",
+      "source": "https://arxiv.org/abs/2611.09382v1"
+    },
+    "2611.11604": {
+      "title": "Weight-Space Programming of Policies and Their Verification via Model Checking",
+      "authors": [
+        "Dennis Gross"
+      ],
+      "submitted": "2026-11-08",
+      "version": "2611.11604v1",
+      "source": "https://arxiv.org/abs/2611.11604v1"
+    },
+    "2611.12066": {
+      "title": "Weight-Space Programming for Medical Imaging: Do We Still Need Training Data?",
+      "authors": [
+        "Maximilian Lindholz",
+        "Richard Ruppel",
+        "Annette Milnik",
+        "Sebastian Halskov",
+        "Semil Eminovic",
+        "Charlie A. Hamm",
+        "Robin Schmidt",
+        "Anika Knupfer",
+        "Jana Hutter",
+        "Johanna P. Müller",
+        "Carolina Dominguez Aleixo",
+        "Jawed Nawabi",
+        "Jens Vogel-Claussen",
+        "Tobias Penzkofer"
+      ],
+      "submitted": "2026-11-09",
+      "version": "2611.12066v1",
+      "source": "https://arxiv.org/abs/2611.12066v1"
+    },
+    "2611.12954": {
+      "title": "Physics2Weight: Direct Neural Network Architecture and Weight Generation from Physical Laws Using Large Language Models",
+      "authors": [
+        "Shogo Sato",
+        "Tomoyasu Shimada",
+        "Kazuhiko Murasaki",
+        "Takashi Sano"
+      ],
+      "submitted": "2026-11-07",
+      "version": "2611.12954v1",
+      "source": "https://arxiv.org/abs/2611.12954v1"
+    },
+    "2611.14704": {
+      "title": "Code as Explanations: Executable and Verifiable LLM Explanations",
+      "authors": [
+        "Nhi Nguyen",
+        "Shauli Ravfogel",
+        "Rajesh Ranganath"
+      ],
+      "submitted": "2026-11-10",
+      "version": "2611.14704v1",
+      "source": "https://arxiv.org/abs/2611.14704v1"
+    },
+    "2611.16981": {
+      "title": "Compiling Known Rules into Compact Neural Agents: Weight-Space Programming on Unseen Games",
+      "authors": [
+        "Jens Lehmann"
+      ],
+      "submitted": "2026-11-12",
+      "version": "2611.16981v1",
+      "source": "https://arxiv.org/abs/2611.16981v1"
+    },
+    "2611.18114": {
+      "title": "Interpretable weight-space programming builds transparent transformers and brain encoding models",
+      "authors": [
+        "Yash Mehta",
+        "Chandan Singh",
+        "Weijia Xu",
+        "Richard J. Antonello",
+        "Adeen Flinker",
+        "Nima Mesgarani",
+        "Michael F. Bonner",
+        "Nebojsa Jojic",
+        "Jianfeng Gao"
+      ],
+      "submitted": "2026-11-13",
+      "version": "2611.18114v1",
+      "source": "https://arxiv.org/abs/2611.18114v1",
+      "full_text_pages": 33,
+      "pdf_sha256": "277c2c27345296ebd2ae847921a186cac2f7ffa4edaf48f1dcf8c98ae0342f28",
+      "locators": {
+        "rebuild": [
+          2,
+          3,
+          5,
+          6,
+          9,
+          10,
+          12,
+          21,
+          25,
+          26,
+          27,
+          30
+        ],
+        "CKA": [
+          3,
+          16
+        ],
+        "200 words": [
+          2,
+          3,
+          9,
+          21,
+          26,
+          30,
+          31,
+          32
+        ]
+      }
+    }
+  }
+}

@@ -112,7 +112,7 @@ def scoreboard(max_round: int, target: str = "T0") -> str:
     Rows are the main method (true ladder) and the agent controls (no / wrong explanation) at the main simulator's
     preregistered settings; the compiler columns show what the same explanation yields with no agent at all."""
     from vmi.analysis.hypotheses import _select, load_runs  # same condition selection as the hypothesis tests
-    runs = [r for r in load_runs(max_round) if not r.get("failed")]
+    runs = load_runs(max_round)  # Primary analyses include the registered failure grade.
     rows = ["| Explanation | role | chars | N | agent accuracy | agent KL_out ↓ | agent HS ↑ | agent matched-neuron corr ↑ "
             "| compiler KL_out ↓ | compiler HS ↑ |", "|---|---|---|---|---|---|---|---|---|---|"]
     roles = {"E0": "control: no mechanism", "E1": "method", "E2": "method", "E3": "method", "E4": "method",
@@ -130,20 +130,20 @@ def scoreboard(max_round: int, target: str = "T0") -> str:
     return "\n".join(rows)
 
 
-def baselines_table(target: str = "T0") -> str:
+def baselines_table(target: str = "T0", max_round: int = 2) -> str:
     """No-agent reference points (preregistration §7): what you get without an agent or without an explanation."""
     rows = ["| Reference point | what it has | n | task accuracy | KL_out ↓ | HS ↑ |", "|---|---|---|---|---|---|"]
     b = RES / "baselines" / f"{target}.json"
     ri = RES / "controls" / f"random_init_{target}.json"
     entries = []
     if ri.exists():
-        entries.append(("Random initialisation", "nothing (floor)", json.loads(ri.read_text())))
+        entries.append(("Random initialisation", "untrained reference", json.loads(ri.read_text())))
     if b.exists():
         d = json.loads(b.read_text())
         # Audit 9: the §7 students minimise KL at temperature 1, so they copy M's output probabilities, not its logits
         entries += [("Independent retrains", "same recipe, other seeds", d["retrains"]),
                     ("Distilled students", "M's output probabilities (KL at temperature 1), no explanation", d["students"])]
-        if d.get("students_logit"):  # post hoc, pre-specified in deviation 16(a)
+        if max_round >= 2 and d.get("students_logit"):  # collected after round 2
             n_ok = sum(bool(x.get("converged")) for x in d["students_logit"])
             entries.append((f"Logit-matched students (post hoc; {n_ok} of {len(d['students_logit'])} met the training criterion)",
                             "M's centred logits (squared error), no explanation", d["students_logit"]))
@@ -198,7 +198,7 @@ def key_results(max_round: int, target: str = "T0") -> str:
                    + ("" if e0 is None else "; E0 lies above E1, against the preregistered prediction." if e0 > m("E1")
                       else "; E0 lies below E1, as predicted."))
     if m("W-freq") is not None:
-        lv9 = logit_fit.inline_values()
+        lv9 = logit_fit.inline_values() if max_round >= 2 else {}
         out.append(f"- **Correct behaviour from the wrong key frequencies is caught by HS, not by output KL:** the wrong-frequency "
                    f"replacement reaches KL {_f(m('W-freq', 'kl_out'))} nats (true E3: {_f(m('E3', 'kl_out'))}) but HS "
                    f"{m('W-freq'):.2f}."
@@ -211,8 +211,8 @@ def key_results(max_round: int, target: str = "T0") -> str:
         d, r0 = json.loads(b.read_text()), json.loads(ri.read_text())
         hs = lambda rs: float(np.mean([x["hs"] for x in rs]))  # noqa: E731
         top = max(hs(d["retrains"]), hs(d["students"]))
-        lv9 = logit_fit.inline_values()  # audit 9: what the students copy, and the pre-specified logit students
-        out.append(f"- **Copying output probabilities does not copy the mechanism:** independent retrains (HS {hs(d['retrains']):.2f}) and "
+        lv9 = logit_fit.inline_values() if max_round >= 2 else {}
+        out.append(f"- **Small output KL coexists with low hidden-state similarity:** independent retrains (HS {hs(d['retrains']):.2f}) and "
                    f"students trained to match T0's output probabilities (KL at temperature 1; HS {hs(d['students']):.2f}, KL "
                    f"{_f(float(np.mean([x['kl_out'] for x in d['students']])))}) "
                    + ("score no higher than randomly initialised networks" if top <= hs(r0) + 0.005 else "score above randomly initialised networks")
@@ -234,8 +234,8 @@ def key_results(max_round: int, target: str = "T0") -> str:
                    f"table (W-scramble, HS {m('W-scramble'):.2f}; E4 − W-scramble {d_scr['diff']:+.3f}, CI {ci(d_scr)}) from "
                    f"the true explanations (a failure to separate, not a demonstrated equivalence); the "
                    f"secondary matched-neuron correlation separates W-scramble ({_f(m('W-scramble', 'matched_neuron_corr'), 2)}) "
-                   f"from E4 ({_f(m('E4', 'matched_neuron_corr'), 2)})." + _compiler_scramble_sentence(target)
-                   + _clock_pizza_sentence(m))
+                   f"from E4 ({_f(m('E4', 'matched_neuron_corr'), 2)})."
+                   + (_compiler_scramble_sentence(target) + _clock_pizza_sentence(m) if max_round >= 2 else ""))
     mem = memorisation(max_round)
     if mem and mem.get("E1"):
         def per_level(lv):  # replicates differ (some E0 runs build blocks of consecutive frequencies instead)
@@ -252,13 +252,22 @@ def key_results(max_round: int, target: str = "T0") -> str:
                    "target, and the sandbox does not reveal the target), so their runs on T0 and on the published "
                    "checkpoint are replicates of one condition. When the explanation gives no frequencies, the simulator "
                    "often builds most of the published paper's frequencies {14, 35, 41, 42, 52} into its replacement "
-                   "(recall cued by the sandbox's description of the paper's exact architecture and, for E1, by the "
+                   "(possible cues include the sandbox description of the paper's architecture and, for E1, the "
                    "paper's own algorithm; only E0's text also outlines the training setup; no sandbox file names a "
                    "frequency or the paper; audit 8). "
                    + "; ".join(x for x in (per_level("E1"), per_level("E0")) if x)
                    + ". On a published model, a high score can therefore come from the simulator's memory rather than the "
-                   "explanation (one published model and one simulator tested).")
-    c = cost_split()
+                   "explanation. The origin of the simulator's prior knowledge is unknown (one published model and one simulator tested).")
+    if max_round == 2:
+        audit_file = RES / "scientific-audit/reconstruction.json"
+        if audit_file.exists():
+            audit = json.loads(audit_file.read_text(encoding="utf-8"))
+            fvu = audit["scale_adjusted_fvu"]
+            out.append(f"- **Exploratory logit comparison:** all {len(fvu['E3'])} E3 builds had lower scale-adjusted logit "
+                       f"error ({min(fvu['E3']):.3f}–{max(fvu['E3']):.3f}) than all {len(fvu['W-alg'])} W-alg builds "
+                       f"({min(fvu['W-alg']):.3f}–{max(fvu['W-alg']):.3f}). E4 and W-scramble overlapped. These "
+                       "within-sample ranges add a descriptive result alongside the inconclusive registered HS comparisons.")
+    c = cost_split(max_round)
     if c:
         rep = c.get("reported runs", {"runs": 0, "spend": 0.0})
         out.append(f"- **Cost:** the {rep['runs']} reported Claude Haiku 5.5 runs cost ${rep['spend']:.2f} "
@@ -303,17 +312,20 @@ def memorisation(max_round: int, model: str = "claude-haiku-5-5") -> dict:
     return out
 
 
-def cost_split() -> dict[str, dict]:
+def cost_split(max_round: int | None = None) -> dict[str, dict]:
     """Claude API spend by kind of run: reported runs (results/runs, not stage 0), stage-0 development runs, and
     plumbing checks (`vmi check --claude`), from the proxy's request ledger."""
     led = RES / "claude" / "ledger.jsonl"
     if not led.exists():
         return {}
     reported = {p.stem for p in (RES / "runs").glob("*.json") if not p.stem.startswith("dev__")}
+    from vmi.analysis.hypotheses import load_runs
+    cohort = reported if max_round is None else {r["run_id"] for r in load_runs(max_round)}
+    ledger = [json.loads(line) for line in led.read_text(encoding="utf-8").splitlines() if line.strip()]
+    end = max((d["time"] for d in ledger if d["run_id"] in cohort), default=None) if cohort != reported else None
     out: dict[str, dict] = {}
-    for line in led.read_text(encoding="utf-8").splitlines():
-        if line.strip():
-            d = json.loads(line)
+    for d in ledger:
+        if (d["run_id"] not in reported or d["run_id"] in cohort) and (end is None or d["time"] <= end):
             kind = ("reported runs" if d["run_id"] in reported else
                     "development runs (stage 0, dev target)" if d["run_id"].startswith("dev__") else "plumbing checks")
             e = out.setdefault(kind, {"ids": set(), "requests": 0, "spend": 0.0, "models": set()})
@@ -324,7 +336,7 @@ def cost_split() -> dict[str, dict]:
     for e in out.values():
         e["runs"] = len(e.pop("ids"))
     if "plumbing checks" in out:  # audit 5: every `vmi check --claude` logs under one run_id; count the check records
-        out["plumbing checks"]["runs"] = max(out["plumbing checks"]["runs"], len(list((RES / "claude").glob("check_*.json"))))
+        out["plumbing checks"]["runs"] = max(out["plumbing checks"]["runs"], sum(end is None or p.stem[6:] <= end.replace("-", "").replace(":", "") for p in (RES / "claude").glob("check_*.json")))
     return out
 
 
@@ -342,6 +354,18 @@ def inline_values(max_round: int) -> dict[str, str]:
     from vmi.analysis.hypotheses import LOCAL_MODELS, MAIN_MODEL, _select, load_runs
     runs = load_runs(max_round)
     v: dict[str, str] = {}
+    audit = RES / "scientific-audit/reconstruction.json"
+    if max_round == 2 and audit.exists():
+        data = json.loads(audit.read_text(encoding="utf-8"))
+        fold, cover, fvu = data["fold_overlap"], data["coverage"], data["scale_adjusted_fvu"]
+
+        def span(level):
+            return f"{min(fvu[level]):.3f}–{max(fvu[level]):.3f}"
+
+        v["au-fold"] = f"{fold['swap_in_training']:,} of {fold['ordered_off_diagonal']:,} ({fold['fraction']:.1%})"
+        v["au-fvu"] = f"E3 {span('E3')}, W-alg {span('W-alg')}"
+        v["au-scramble"] = f"E4 {span('E4')}, W-scramble {span('W-scramble')}"
+        v["au-coverage"] = f"{cover['mean']:.2%} and {cover['difference']:.2%}"
     local = [r for r in runs if r["model"] in LOCAL_MODELS]
     v["n-local"] = _w(len(local))
     names = {"qwen3.5-4b": "Qwen3.5-4B", "qwen3.5-9b": "Qwen3.5-9B", "qwen3.6-35b-a3b": "Qwen3.6-35B-A3B"}
@@ -439,7 +463,7 @@ def inline_values(max_round: int) -> dict[str, str]:
                    **{f"H2 {k}": t["p"] for k, t in H["H2"]["tests"].items()},
                    **{f"H4 {k}": t["p"] for k, t in H["H4"]["tests"].items()}, "H7": H["H7"]["wilcoxon"]["p"]}
             adj = st9.holm(raw)
-            keep = [k for k in raw if adj[k] < 0.05]
+            keep = [k for k in raw if adj[k] is not None and adj[k] < 0.05]
             v["holm-all"] = (f"Holm over all {len(raw)} confirmatory p-values (each test's own p) keeps "
                              + ", ".join(f"{k} ({_f(adj[k])})" for k in keep)
                              + f" and drops the others, H7 included ({_f(adj['H7'])})")
@@ -808,10 +832,11 @@ def agent_behaviour_table() -> str:
     return "\n".join(rows) + "\n\n*" + d["definition"] + extra + "*"
 
 
-def agent_examples_table(max_round: int) -> str:
+def agent_examples_table(max_round: int, rows=None) -> str:
     """What the agent did in example runs chosen by rule: process, a line it wrote, its own words, the result."""
     from vmi.analysis import agent_examples
-    rows = agent_examples.rows(max_round)
+    if rows is None:
+        rows = agent_examples.rows(max_round)
     if not rows:
         return "_no agent runs on this machine_"
     esc = lambda s: s.replace("|", "\\|")  # noqa: E731  markdown table cells
@@ -829,10 +854,11 @@ def agent_examples_table(max_round: int) -> str:
     return "\n".join(out)
 
 
-def agent_words_md(max_round: int) -> str:
+def agent_words_md(max_round: int, rows=None) -> str:
     """The agent's own words in each example run: its plan, its reaction to the first self-test, its closing line."""
     from vmi.analysis import agent_examples
-    rows = agent_examples.rows(max_round)
+    if rows is None:
+        rows = agent_examples.rows(max_round)
     if not rows:
         return "_no agent runs on this machine_"
     out = []
@@ -853,9 +879,21 @@ def replications_table(max_round: int) -> str:
     rows = replication_rows(max_round)
     if not rows:
         return "_not run yet_"
-    out = ["| Target | HS per true explanation | H1: HS rises with detail? (trend test) | H2: HS(E3) − HS(W-freq); Mann–Whitney | H3 observed (W-freq) | H3 holds? |",
-           "|-----|------|---|---|-------|-----|"]
-    out += [f"| {r['target']} | {r['hs_by_level']} | {r['h1']} | {r['h2']} | {r['h3_observed']} | {r['h3']} |" for r in rows]
+    out = ["| Target | Mean HS by true level | H1 increasing HS (p, ρ) | H1 decreasing KL (p, ρ) | H2 E3 − W-freq (Δ HS, p) |",
+           "|----------|-------------------------|--------------------|--------------------|--------------------|"]
+    for row in rows:
+        def trend(key):
+            t = row[key]
+            return f"{_f(t['p'])}, {t['rho']:+.2f}" + (" (supported)" if t["supported"] else "")
+        p = row["h2_p"]
+        out.append(f"| {row['target_id']} | {row['hs_by_level']} | {trend('hs_test')} | {trend('kl_test')} | "
+                   f"{row['h2_difference']:+.3f}, " + (_f(p) if p is not None else "cannot tell") + " |")
+    out += ["", "H1 uses the available levels. The T0 row restricts the ladder to E2–E4 as a post-hoc comparison. "
+            "Unmarked H1 cells miss the registered criterion. H2 uses the single displayed contrast on seed targets. "
+            "The main T0 H2 verdict uses all four contrasts with Holm correction. T-paper is contamination-flagged.",
+            "", "| Target | H3 wrong-frequency agreement, KL, HS | H3 interval and upper-bound readings |",
+            "|----------|------------------------------------|-------------------------------------------|"]
+    out.extend(f"| {r['target_id']} | {r['h3_observed']} | {r['h3']} |" for r in rows)
     return "\n".join(out)
 
 
@@ -877,7 +915,7 @@ def targets_table() -> str:
     from vmi import targets
     roles = {"T0": "main target", "T1": "seed sensitivity (fewest frequencies)", "T2": "seed sensitivity (most frequencies)",
              "T-new": "held-out, trained after the protocol freeze", "T-paper": "published checkpoint (contamination-flagged)",
-             "dev": "development only (never reported)"}
+             "dev": "development builds excluded; wrong target for H7"}
     rows = ["| Target | run | role | key frequencies | neurons per key frequency | unclustered neurons | logit fit FVE | loss (all 113² inputs) |",
             "|---|---|---|---|---|---|---|---|"]
     for t, role in roles.items():
@@ -893,11 +931,11 @@ def targets_table() -> str:
     return "\n".join(rows)
 
 
-def cost_table() -> str:
+def cost_table(max_round: int | None = None) -> str:
     """Claude API spend from the proxy's request ledger (every request, priced at the published rates), split into
     reported runs, stage-0 development runs and plumbing checks (audit 2026-11-22, second pass: the total used to be
     labelled "runs (incl. checks)" without saying it also contains the development runs)."""
-    c = cost_split()
+    c = cost_split(max_round)
     if not c:
         return "_no Claude runs_"
     rows = ["| Kind of run | model | runs | requests | spend (USD) |", "|---|---|---|---|---|"]
@@ -953,7 +991,7 @@ def clock_pizza_table() -> str:
     near = [f"{t} ({r[q]:.2f}; gradient symmetricity {r[g]:+.2f})" for t, r in S["targets"].items() if 0.4 <= r[q] < 0.6]
     note = ("*Zhong et al. (2023): distance irrelevance q (Def. 4.2) compares the spread of the correct-answer logit "
             "within one difference a − b with its spread over all inputs (§4.1.2: 0–0.4 typical of Pizza, 0.4–1 of Clock; "
-            "the decisive diagnostic, §4.1.3); gradient symmetricity (Def. 4.1) is the mean cosine of the logit's gradients with "
+            "hybrid algorithms are also possible, §4.2). Gradient symmetricity (Def. 4.1) is the mean cosine of the logit's gradients with "
             "respect to the input embeddings of a and b (their Pizza Model A: 0.994). Their Fig. 7 draws phase-transition lines "
             "against attention rate (and, in the bottom panel, width), fitted by logistic regression to two labels per run: gradient symmetricity "
             "> 98 % and q < 0.6"
@@ -1022,8 +1060,8 @@ def _clock_pizza_sentence(m) -> str:
     cs = clock_side_values()
     # Audit 9: Clock-side builds of explanations do exist (two E4, all three W-scramble), so HS's non-separation of
     # Clock and Pizza is measured among builds that carry T0's frequencies, not inferred (audit 5 said none existed).
-    return (f" Post hoc, by Zhong et al.'s distance irrelevance (≥ 0.4 Clock-like, < 0.4 Pizza-like) T0 is a Clock "
-            f"({S['targets']['T0']['distance_irrelevance']:.2f}) and the literal Pizza build a Pizza "
+    return (f" Post hoc, T0's distance irrelevance is in Zhong et al.'s Clock-typical range "
+            f"({S['targets']['T0']['distance_irrelevance']:.2f}) and the literal Pizza build is in the Pizza-typical range "
             f"({S['compiler']['W-alg']['distance_irrelevance']:.3f}); the agents' replacements from the true E1–E3 are "
             f"Pizza-like too (means {min(e13):.2f}–{max(e13):.2f}), and E4's are split (mean {aq['E4']:.2f})"
             + (f". Among the builds that carry T0's frequencies, the Clock-side ones ({cs['a9-cp-clock-builds']}) score HS "

@@ -81,17 +81,21 @@ interpretability hackathon on automatically evaluating mechanistic interpretabil
 [mechinterp.com](https://mechinterp.com/) community.
 
 An LLM agent (Claude Haiku 5.5 in Claude Code; local Qwen models were tried and stopped at chance), offline except for
-the model endpoint and never shown the target's weights,
+the model endpoint with the target weights withheld, gets the task, architecture and self-test,
 reads an explanation of a one-layer modular-addition transformer ([Nanda et al. 2023](https://arxiv.org/abs/2301.05217))
 and writes the weights of a replacement network. The replacement is graded against the target by output KL and by
 cross-validated hidden-state similarity. Code, preregistration, paper and all graded results: [GitHub]({GITHUB}).
 Target models: [{TARGET_RUNS_REPO}](https://huggingface.co/{TARGET_RUNS_REPO}).
 
+## Scientific audit · 26 November 2026
+
+The main target's hidden-state trend passed the registered criterion. The decreasing output-KL trend failed. On the published checkpoint, wrong-frequency KL falls below the observed true-explanation range and E2 is absent. Only the upper-bound reading passes on the measured levels. Every observed E3 build had lower scale-adjusted logit error than every wrong-algorithm build in a post-hoc comparison. The compiler received some explanation coefficients at higher precision than the agent text. The grader estimates bidirectional linear predictability on held-out ordered inputs. Generalization to unseen unordered operand pairs remains unmeasured. Archived example panels and per-input table cells have recorded provenance. [Hypothesis verdicts and measurement limits]({GITHUB}/blob/main/reports/reviews/scientific-audit-2026-11-26.md) · [Machine-readable reconstruction]({GITHUB}/blob/main/results/scientific-audit/reconstruction.json).
+
 ## Contents
 
 | Folder | What |
 |---|---|
-| `replacements/<run_id>/` | one folder per graded agent run ({n_runs} so far, of which {n_dev} are stage-0 development runs on the dev target, never reported as results): `weights.npz` (the replacement, 11 float64 arrays in the paper's layout), `build_weights.py` (the agent's script), `transcript.md`, `events.ndjson.gz` (full event stream), `wire.log.gz` (every request and response body between the sandbox and the model; no headers), `result.json` (grader output) |
+| `replacements/<run_id>/` | one folder per graded agent run ({n_runs} so far, of which {n_dev} are stage-0 development runs excluded from the reported agent cohort): `weights.npz` (the replacement, 11 float64 arrays in the paper's layout), `build_weights.py` (the agent's script), `transcript.md`, `events.ndjson.gz` (full event stream), `wire.log.gz` (every request and response body between the sandbox and the model; no headers), `result.json` (grader output) |
 | `compiler/<target>/<explanation>.npz` | the agent-free reference compiler's build for every explanation of every target |
 | `trained/T-new/` | the held-out target trained after the protocol freeze (paper recipe, seed 11): all 401 checkpoints, curves, metadata |
 | `trained/planted_T0/` | the reference-compiled E3 model for T0 and its snapshots after 100, 1,000 and 10,000 further training steps |

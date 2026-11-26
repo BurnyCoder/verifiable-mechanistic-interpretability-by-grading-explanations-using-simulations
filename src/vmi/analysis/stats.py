@@ -7,12 +7,12 @@ Global context: `hypotheses.py` applies these to per-run scores; every function 
 Sources: Jonckheere–Terpstra trend test — Terpstra 1952 (Indagationes Math. 14:327–333) statistic J = Σ_{i<j} #{(x, y):
 x ∈ G_i, y ∈ G_j, x < y} + ½ ties, equivalent to Jonckheere's 1954 (Biometrika 41:133–145) S = P − Q = 2J − Σ_{i<j} n_i n_j,
 so permutation p-values are identical;
-Holm 1979 (Scand. J. Stat. 6:65–70); Kendall's W (Kendall & Babington Smith 1939; no tie correction, negligible for
-continuous means); rank-biserial r = 2U/(n₁n₂) − 1 = (U₁ − U₂)/(n₁n₂) (Kerby 2014, Comprehensive Psychology 3,
+Holm 1979 (Scand. J. Stat. 6:65–70); Kendall's W (Kendall & Babington Smith 1939, with midrank tie correction);
+rank-biserial r = 2U/(n₁n₂) − 1 = (U₁ − U₂)/(n₁n₂) (Kerby 2014, Comprehensive Psychology 3,
 doi:10.2466/11.IT.3.1); percentile bootstrap — with 3 runs per group the 95 % interval of a mean is the range of the runs
-(true coverage ≈ 75 % for a mean, ≈ 80 % for a difference of two means: our calculation — the range misses the median
-when all three runs fall on one side of it, probability 1/4 — and a normal-data simulation in
-`scripts/audit5/checks.py`; Hesterberg 2015, https://arxiv.org/abs/1411.5279, for the general narrowness of percentile
+(its coverage at a population mean μ is 3F(μ)[1−F(μ)] for independent draws from a continuous F;
+75% holds at the median. Differences of means have distribution-dependent coverage.
+See Hesterberg 2015, https://arxiv.org/abs/1411.5279, for the general narrowness of percentile
 intervals in small samples); scipy.stats mannwhitneyu (method='exact'
 ignores ties: audit 4 found no tied values in any reported comparison),
 wilcoxon, spearmanr (https://docs.scipy.org/doc/scipy/reference/stats.html).
@@ -22,6 +22,7 @@ from __future__ import annotations  # postponed annotations
 
 import itertools  # exact permutations for tiny samples
 import math  # factorials
+from functools import lru_cache
 
 import numpy as np  # arrays, RNG
 from scipy import stats  # reference tests
@@ -73,6 +74,12 @@ def _jt_all(pooled: np.ndarray, sizes: list[int]) -> np.ndarray:
     return np.concatenate(out)
 
 
+@lru_cache(maxsize=12)
+def _untied_jt(sizes: tuple[int, ...]) -> np.ndarray:
+    """Without ties the exact permutation distribution depends only on the group sizes."""
+    return _jt_all(np.arange(sum(sizes)), list(sizes))
+
+
 def jonckheere(groups: list[np.ndarray], n_perm: int = 20000, max_exact: int = 400000) -> dict:
     """One-sided JT test for an increasing trend; p-value by exact or Monte-Carlo permutation of group labels.
 
@@ -88,7 +95,7 @@ def jonckheere(groups: list[np.ndarray], n_perm: int = 20000, max_exact: int = 4
     n_orderings = math.factorial(len(pooled)) // math.prod(math.factorial(s) for s in sizes)
     cuts = np.cumsum(sizes)[:-1]
     if n_orderings <= max_exact:  # exact: enumerate distinct assignments of values to groups
-        J = _jt_all(pooled, sizes)
+        J = _untied_jt(tuple(sizes)) if len(np.unique(pooled)) == len(pooled) else _jt_all(pooled, sizes)
         return {"J": obs, "p": float((J >= obs - 1e-12).mean()), "method": "exact", "orderings": n_orderings}
     rng = np.random.default_rng(RNG_SEED)
     hits = sum(jt_statistic(np.split(rng.permutation(pooled), cuts)) >= obs - 1e-12 for _ in range(n_perm))
@@ -102,13 +109,31 @@ def spearman_ci(levels: np.ndarray, values: np.ndarray, groups: list[np.ndarray]
         return {"rho": rho, "ci": None}
     rng = np.random.default_rng(RNG_SEED)
     lv = np.concatenate([np.full(len(g), i) for i, g in enumerate(groups)])
-    boots = []
-    for _ in range(n_boot):
-        vals = np.concatenate([rng.choice(g, size=len(g), replace=True) for g in groups])
-        r = stats.spearmanr(lv, vals).statistic
-        if np.isfinite(r):
-            boots.append(r)
+    if len(set(map(len, groups))) == 1:
+        width = len(groups[0])
+        indices = rng.integers(width, size=(n_boot, len(groups), width))
+        draws = np.asarray(groups)[np.arange(len(groups))[None, :, None], indices].reshape(n_boot, -1)
+    else:
+        draws = np.asarray([np.concatenate([rng.choice(g, size=len(g), replace=True) for g in groups]) for _ in range(n_boot)])
+    ranks = stats.rankdata(draws, axis=1)
+    ranks -= ranks.mean(axis=1, keepdims=True)
+    level_ranks = stats.rankdata(lv)
+    level_ranks -= level_ranks.mean()
+    den = np.linalg.norm(ranks, axis=1) * np.linalg.norm(level_ranks)
+    boots = (ranks[den > 0] @ level_ranks) / den[den > 0]
+    if len(boots) == 0:
+        return {"rho": rho, "ci": None}
     return {"rho": rho, "ci": [float(np.percentile(boots, 2.5)), float(np.percentile(boots, 97.5))]}
+
+
+def _rank_sum_method(x, y):
+    """Use label permutations for small tied samples. SciPy's exact U distribution assumes no ties."""
+    sizes = len(x), len(y)
+    if np.unique(np.concatenate((x, y))).size < sum(sizes):
+        if math.comb(sum(sizes), sizes[0]) <= 400000:
+            return stats.PermutationMethod(n_resamples=np.inf)
+        return "asymptotic"
+    return "exact" if sizes[0] * sizes[1] <= 400 else "asymptotic"
 
 
 def mann_whitney_greater(x: np.ndarray, y: np.ndarray) -> dict:
@@ -117,7 +142,7 @@ def mann_whitney_greater(x: np.ndarray, y: np.ndarray) -> dict:
     x, y = np.asarray(x, float), np.asarray(y, float)
     if len(x) < 2 or len(y) < 1:
         return {"p": None, "U": None, "r_rb": None}
-    res = stats.mannwhitneyu(x, y, alternative="greater", method="exact" if len(x) * len(y) <= 400 else "asymptotic")
+    res = stats.mannwhitneyu(x, y, alternative="greater", method=_rank_sum_method(x, y))
     r_rb = 2 * res.statistic / (len(x) * len(y)) - 1  # rank-biserial correlation
     return {"p": float(res.pvalue), "U": float(res.statistic), "r_rb": float(r_rb)}
 
@@ -128,7 +153,7 @@ def mann_whitney_two_sided(x: np.ndarray, y: np.ndarray) -> dict:
     x, y = np.asarray(x, float), np.asarray(y, float)
     if len(x) < 1 or len(y) < 1:
         return {"p": None, "U": None, "r_rb": None, "min_p": 1.0}
-    res = stats.mannwhitneyu(x, y, alternative="two-sided", method="exact" if len(x) * len(y) <= 400 else "asymptotic")
+    res = stats.mannwhitneyu(x, y, alternative="two-sided", method=_rank_sum_method(x, y))
     return {"p": float(res.pvalue), "U": float(res.statistic), "r_rb": float(2 * res.statistic / (len(x) * len(y)) - 1),
             "min_p": min_p_mann_whitney(len(x), len(y), two_sided=True)}
 
@@ -150,7 +175,11 @@ def bootstrap_mean_diff(x: np.ndarray, y: np.ndarray, n_boot: int = 10000) -> di
     if len(x) < 2 or len(y) < 2:
         return {"diff": d, "ci": None}
     rng = np.random.default_rng(RNG_SEED)
-    b = [rng.choice(x, len(x)).mean() - rng.choice(y, len(y)).mean() for _ in range(n_boot)]
+    if len(x) == len(y):
+        i = rng.integers(len(x), size=(n_boot, 2, len(x)))
+        b = x[i[:, 0]].mean(axis=1) - y[i[:, 1]].mean(axis=1)
+    else:
+        b = [rng.choice(x, len(x)).mean() - rng.choice(y, len(y)).mean() for _ in range(n_boot)]
     return {"diff": d, "ci": [float(np.percentile(b, 2.5)), float(np.percentile(b, 97.5))]}
 
 
@@ -158,10 +187,13 @@ def kendalls_w(rank_matrix: np.ndarray, n_perm: int = 20000) -> dict:
     """Kendall's W for m raters × n items (rows = raters, values = scores); permutation p-value shuffling within raters."""
     R = np.apply_along_axis(stats.rankdata, 1, np.asarray(rank_matrix, float))
     m, n = R.shape
+    denom = m * ((R - R.mean(axis=1, keepdims=True)) ** 2).sum()
+    if denom == 0:
+        return {"W": None, "p": None}
 
     def w(r):
         s = r.sum(0)
-        return 12 * ((s - s.mean()) ** 2).sum() / (m**2 * (n**3 - n))
+        return ((s - s.mean()) ** 2).sum() / denom
     obs = w(R)
     rng = np.random.default_rng(RNG_SEED)
     hits = sum(w(np.array([rng.permutation(row) for row in R])) >= obs - 1e-12 for _ in range(n_perm))
