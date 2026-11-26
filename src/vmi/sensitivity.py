@@ -5,8 +5,8 @@ Local explanation:
                         reference compiler's build for each explanation) under other grader settings — ridge λ × 10^±2,
                         3 and 10 folds, other fold seeds, each site alone, orthogonal instead of general linear
                         alignment — and checks whether the ordering of explanations by mean HS survives (Kendall τ
-                        against the preregistered settings). Post hoc (audit 2026-11-22): whitened soundness (fully
-                        invariant to invertible linear maps), the retrains and random-initialisation networks under
+                        against the preregistered settings). Post hoc: whitened soundness with two eigenvalue cutoffs,
+                        the retrains and random-initialisation networks under
                         every variant, and H7's margin over the wrong targets under the whitened variants.
 - `explainer_sensitivity` re-runs the explainer on T0 with other key-frequency (τ ∈ {0.15, 0.35}) and neuron-FVE
                         (0.75, 0.9) thresholds, re-compiles E2–E4 and grades the builds (no agent).
@@ -45,7 +45,7 @@ VARIANTS: dict[str, dict] = {
     "resid_post only": {"sites": ("resid_post",)},
     "orthogonal alignment (with scale)": {"orth": True},
     # Post hoc (audit 2026-11-22): soundness pooled over M̂'s dimensions is not invariant to non-orthogonal maps of M̂;
-    # whitening M̂'s states first makes both directions invariant to any invertible linear map (two eigenvalue cut-offs).
+    # Whitening equalizes retained response directions. The cutoff and predictor ridge depend on coordinates.
     "whitened soundness, eig > 1e-6·max (post hoc)": {"whiten": 1e-6},
     "whitened soundness, eig > 1e-3·max (post hoc)": {"whiten": 1e-3},
 }
@@ -83,12 +83,10 @@ def cv_r2_whitened(X: torch.Tensor, Y: torch.Tensor, k: int = mt.N_FOLDS, seed: 
     `metrics.cv_r2` pools SSE/SST over Y's dimensions, so Y's high-variance directions dominate and the score changes
     under a non-orthogonal map of Y. Here, per fold, Y is centred with the training mean and projected on the
     eigenvectors of its training covariance whose eigenvalue exceeds rel_eig·max, each scaled to unit variance; then the
-    same ridge map as `metrics.cv_r2` predicts the whitened held-out rows, and SSE/SST is pooled. Every direction of Y
-    counts equally, so the score is invariant to any invertible linear map of Y (and, through the regression, of X): it
-    is a held-out analogue of Σρᵢ²/dim(Y kept), which equals R²_CCA, the mean squared canonical correlation, when Y's
-    kept dimension ≤ X's (Kornblith et al. 2019, §4, eq. 7,
-    https://arxiv.org/abs/1905.00414; Raghu et al. 2017, https://arxiv.org/abs/1706.05806). The cut-off drops
-    directions with numerically zero variance, which have no meaning to whiten."""
+    same ridge map as metrics.cv_r2 predicts the whitened held-out rows. The ideal full-rank, unregularized
+    version is related to mean squared canonical correlation. Here the relative cutoff can remove positive-variance
+    directions and can change rank under invertible scaling. Predictor ridge is also basis-dependent.
+    See Kornblith et al., §4, https://proceedings.mlr.press/v97/kornblith19a.html."""
     X, Y = X.double(), Y.double()
     sse = sst = 0.0
     for test_idx in mt.folds(X.shape[0], k, seed):
@@ -119,7 +117,7 @@ def hs_variant(acts_m, acts_r, *, ridge_rel=mt.RIDGE_REL, k=mt.N_FOLDS, seed=mt.
         xm, xr = acts_m.site(s), acts_r.site(s)
         if orth:
             comp, sound = cv_r2_orth(xr, xm, k=k, seed=seed), cv_r2_orth(xm, xr, k=k, seed=seed)
-        elif whiten is not None:  # completeness unchanged (already invariant); soundness on M̂'s whitened states
+        elif whiten is not None:  # retain the primary completeness and whiten only the response for soundness
             comp = mt.cv_r2(xr, xm, k=k, ridge_rel=ridge_rel, seed=seed)
             sound = cv_r2_whitened(xm, xr, k=k, seed=seed, rel_eig=whiten, ridge_rel=ridge_rel)
         else:

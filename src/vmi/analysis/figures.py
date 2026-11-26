@@ -130,11 +130,11 @@ def fig_kl_vs_hs(max_round: int, target: str = "T0") -> Path | None:
                                   linestyle="", label=f"{name} (no agent, n={len(rs)})"))
     ax.set_xscale("log")
     ax.set_ylim(-0.02, 1.02)
-    ax.set_xlabel("Output KL(M ‖ M̂), nats (log) ← closer output probabilities")
-    ax.set_ylabel("Hidden-state similarity HS → better mechanism")
+    ax.set_xlabel("Output KL(M ‖ M̂), nats (log scale, floor 1e-9)")
+    ax.set_ylabel("HS (held-out linear predictability)")
     ax.legend(handles=handles, loc="upper left", bbox_to_anchor=(1.01, 1.0), fontsize=7,
               title=f"{MAIN_MODEL} runs (blue/orange), no-agent networks (green)", title_fontsize=7)
-    ax.set_title(f"Target {target}: output probabilities (KL) vs mechanism (HS), round {max_round}", loc="left")
+    ax.set_title(f"Target {target}: output KL vs hidden-state similarity, round {max_round}", loc="left")
     return _save(fig, f"kl_vs_hs_{target}")
 
 
@@ -406,10 +406,12 @@ def fig_architecture() -> Path:
     return _save(fig, "architecture")
 
 
-def make_all(max_round: int) -> list[Path]:
+def make_all(max_round: int, *, saved_only: bool = False) -> list[Path]:
     """Every figure whose inputs exist (missing inputs are skipped, never faked)."""
     figs = [fig_architecture(), fig_ladder(max_round), fig_kl_vs_hs(max_round), fig_planted(), fig_trajectory(),
             fig_length(max_round), fig_simulators(max_round)]
+    if saved_only:  # The two example figures are archived displays of seed-zero network outputs.
+        return [p for p in figs if p]
     from vmi.analysis.examples import panel_models
     panels = panel_models(max_round)  # load the example networks once for both example figures
     figs += [fig_examples(max_round, panels=panels), fig_outputs(max_round, panels=panels)]

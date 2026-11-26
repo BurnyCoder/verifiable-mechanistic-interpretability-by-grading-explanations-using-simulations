@@ -1,10 +1,8 @@
 """Render an explanation spec as the text the simulator reads (EXPLANATION.md, plus neurons.csv for E4/W-scramble).
 
 Local explanation: one template per algorithm (none / Clock / Pizza) and one quantitative section per field present
-in the spec, so W-freq, W-role and W-scramble use exactly the same wording and length as E3/E4 and differ only in the
-corrupted content. `length_stats` measures the explanation's description length (characters, gzip bytes, numbers).
-Global context: the agent never sees the spec, only this text; the reference compiler sees the spec. Both carry the
-same information.
+in the spec. The paired controls use the same quantitative templates. Digits and field values can change text length. `length_stats` measures the explanation's description length (characters, gzip bytes, numbers).
+Global context: the agent never sees the spec, only this text; the reference compiler sees the machine-readable spec including unrounded numbers.
 Sources: algorithm descriptions paraphrase Nanda et al. 2023 §3.1 (https://arxiv.org/abs/2301.05217) and Zhong et al.
 2023 §3 (https://arxiv.org/abs/2306.17844).
 """

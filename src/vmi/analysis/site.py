@@ -23,11 +23,11 @@ def _clean(x):
     return None if isinstance(x, float) and not math.isfinite(x) else x
 
 
-def build(max_round: int) -> dict:
+def build(max_round: int, destination=None) -> dict:
     runs = []
     for p in sorted((RES / "runs").glob("*.json")):
         r = json.loads(p.read_text(encoding="utf-8"))
-        if r.get("stage") == "dev":
+        if r.get("stage") == "dev" or not 1 <= int(r.get("round", 0)) <= max_round:
             continue
         runs.append({"run_id": r["run_id"], "stage": r["stage"], "target": r["target"], "level": r["level"],
                      "variant": r.get("variant", ""), "model": r["model"], "seed": r["seed"], "round": r.get("round"),
@@ -50,7 +50,7 @@ def build(max_round: int) -> dict:
             # audit 9: the §7 students copy output probabilities (KL at temperature 1); the post-hoc ones copy centred logits
             refs += [{"target": t, "kind": "probability-distilled student", "hs": x["hs"], "kl_out": x["kl_out"]} for x in d["students"]]
             refs += [{"target": t, "kind": "logit-matched student (post hoc)", "hs": x["hs"], "kl_out": x["kl_out"]}
-                     for x in d.get("students_logit", [])]
+                     for x in d.get("students_logit", []) if max_round >= 2]
     hyp = RES / f"hypotheses_round{max_round}.json"
     H = json.loads(hyp.read_text())["hypotheses"] if hyp.exists() else {}
     from vmi.analysis.predictions import _verdict, prediction_rows  # same rows and verdict text as the docs' table
@@ -59,7 +59,9 @@ def build(max_round: int) -> dict:
                  "evidence": str(v.get("label", v.get("N", ""))), "predicted": pred.get(k, {}).get("predicted", ""),
                  "observed": pred.get(k, {}).get("observed", ""), "matches": pred.get(k, {}).get("matches", "")}
                 for k, v in H.items()]
+    from vmi.analysis.predictions import replication_rows
     data = {"round": max_round, "runs": runs, "compiler": compiler, "references": refs, "hypotheses": verdicts,
+            "replications": replication_rows(max_round),
             "key_results_md": tables.key_results(max_round)}
-    OUT.write_text(json.dumps(data, indent=1), encoding="utf-8", newline="\n")
+    (destination or OUT).write_text(json.dumps(data, indent=1), encoding="utf-8", newline="\n")
     return data

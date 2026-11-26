@@ -9,6 +9,7 @@ Global context: called at the end of every stage; the paper PDF is then built fr
 from __future__ import annotations  # postponed annotations
 
 import json  # result files
+import hashlib
 from pathlib import Path  # paths
 
 from vmi.analysis import figures, hypotheses, tables  # generators
@@ -21,11 +22,22 @@ ROUND_DOCS = {1: "reports/experiments/01-round1/experiment.md", 2: "reports/expe
 TARGETS = ["T0", "T1", "T2", "T-new", "T-paper", "dev"]
 
 
-def blocks(max_round: int) -> dict[str, str]:
+def saved_inputs(max_round: int) -> tuple[str, list[dict], list[str]]:
+    """Read the archived example table and transcript excerpts, and authenticate the two static example figures."""
+    data = json.loads((REPO_ROOT / "results/saved_report_inputs.json").read_text(encoding="utf-8"))
+    panels = data["archived_panels_sha256"]
+    for name, digest in panels.items():
+        if hashlib.sha256((REPO_ROOT / name).read_bytes()).hexdigest() != digest:
+            raise ValueError(f"Archived example figure differs from the recorded version: {name}")
+    return data["example_table"], data["transcripts"][str(max_round)], list(panels)
+
+
+def blocks(max_round: int, *, saved_only: bool = False) -> dict[str, str]:
     """Every generated block, keyed by marker name."""
+    example_table, quotes, _ = saved_inputs(max_round) if saved_only else (tables.outputs_table(max_round, "T0"), None, [])
     out = {"hypotheses": tables.hypotheses_table(max_round), "runs": tables.runs_table(max_round),
-           "scoreboard-T0": tables.scoreboard(max_round, "T0"), "baselines-T0": tables.baselines_table("T0"),
-           "controls-T0": tables.controls_table("T0", max_round), "cost": tables.cost_table(), "targets": tables.targets_table(),
+           "scoreboard-T0": tables.scoreboard(max_round, "T0"), "baselines-T0": tables.baselines_table("T0", max_round),
+           "controls-T0": tables.controls_table("T0", max_round), "cost": tables.cost_table(max_round), "targets": tables.targets_table(),
            "key-results": tables.key_results(max_round),
            "grader-sensitivity-T0": tables.grader_sensitivity_table(max_round, "T0", "agent"),
            "grader-sensitivity-compiler-T0": tables.grader_sensitivity_table(max_round, "T0", "compiler"),
@@ -34,10 +46,12 @@ def blocks(max_round: int) -> dict[str, str]:
            "predictions": tables.predictions_table(max_round), "replications": tables.replications_table(max_round),
            "predictions-plain": tables.predictions_table(max_round, plain=True),
            "ablations-T0": tables.ablations_table(max_round, "T0"), "highlights": tables.highlights_table(max_round),
-           "outputs-T0": tables.outputs_table(max_round, "T0"), "agent-examples": tables.agent_examples_table(max_round),
-           "agent-words": tables.agent_words_md(max_round),
-           "kl-calibration-T0": tables.kl_calibration_table(max_round, "T0"), "agent-behaviour": tables.agent_behaviour_table(),
-           "clock-pizza-T0": tables.clock_pizza_table(), "logit-fvu-T0": tables.logit_fvu_table("T0")}
+           "outputs-T0": example_table, "agent-examples": tables.agent_examples_table(max_round, quotes),
+           "agent-words": tables.agent_words_md(max_round, quotes),
+           "kl-calibration-T0": tables.kl_calibration_table(max_round, "T0")}
+    if max_round >= 2:
+        out.update({"agent-behaviour": tables.agent_behaviour_table(), "clock-pizza-T0": tables.clock_pizza_table(),
+                    "logit-fvu-T0": tables.logit_fvu_table("T0")})
     for t in TARGETS:
         if (REPO_ROOT / "results" / "compiler" / t).exists():
             out[f"compiler-{t}"] = tables.compiler_table(t)
@@ -75,40 +89,59 @@ def inject_values(path: Path, values: dict[str, str]) -> list[str]:
     return list(dict.fromkeys(filled))
 
 
-def regenerate(max_round: int) -> dict:
+def regenerate(max_round: int, *, saved_only: bool = False) -> dict:
     """Hypotheses, figures and all document tables for one round; returns what was written."""
     from vmi.analysis import frequencies  # post-hoc memorisation check needs the saved replacement weights
     from vmi.config import load
     settings = load()
-    if settings.runs_dir.exists():  # these need the saved run folders (weights, event logs)
+    if not saved_only and settings.runs_dir.exists():  # live characterization requires run folders
         frequencies.used_frequencies(settings, max_round)
         from vmi.analysis import agent_examples  # transcript excerpts → reports/agent-examples.md
         agent_examples.write_doc(max_round)
         from vmi.analysis import agent_behaviour, environment  # post hoc (audit 2026-11-22): self-test use, versions
         agent_behaviour.analyse(max_round)
         environment.write(max_round)
+    rounds = {r["round"] for r in hypotheses.load_runs(99)}
+    if max_round not in rounds:
+        raise ValueError(f"No recorded experiment for round {max_round}. Available rounds: {sorted(rounds)}")
+    latest = max_round == max(rounds)
+    if latest and saved_only and max_round == 2:
+        from vmi.analysis import audit_reporting, scientific_audit
+        audit_reporting.update(scientific_audit.main())
     hyp = hypotheses.write(max_round)
-    figs = figures.make_all(max_round)
-    gen = blocks(max_round)
+    figs = figures.make_all(max_round, saved_only=saved_only) if latest else []
+    gen = blocks(max_round, saved_only=saved_only)
     from vmi.analysis.glossary import gloss  # the README spells out what HS, E1, T0 … mean; reports keep compact labels
     readme = {k: gloss(v) for k, v in gen.items()}
-    filled = {d: inject_all(REPO_ROOT / d, readme if d == "README.md" else gen) for d in DOCS + [ROUND_DOCS.get(max_round, "")] if d}
-    values = tables.inline_values(max_round)  # numbers quoted inside prose sentences
-    for d in DOCS:
-        filled[d] = filled.get(d, []) + inject_values(REPO_ROOT / d, values)
+    documents = (DOCS if latest else []) + [ROUND_DOCS.get(max_round, "")]
+    filled = {d: inject_all(REPO_ROOT / d, readme if d == "README.md" else gen) for d in documents if d}
+    if latest:
+        if saved_only:
+            from vmi.analysis import agent_examples
+            agent_examples.write_doc(max_round, saved_inputs(max_round)[1])
+        values = tables.inline_values(max_round)
+        for d in DOCS:
+            filled[d] = filled.get(d, []) + inject_values(REPO_ROOT / d, values)
     from vmi.analysis import site  # interactive GitHub Pages explorer reads docs/data.json
-    site.build(max_round)
-    summary = {"hypotheses": str(hyp.relative_to(REPO_ROOT)), "figures": [str(p.relative_to(REPO_ROOT)) for p in figs],
+    site.build(max_round, None if latest else REPO_ROOT / "docs" / f"data_round{max_round}.json")
+    summary = {"hypotheses": hyp.relative_to(REPO_ROOT).as_posix(), "figures": [p.relative_to(REPO_ROOT).as_posix() for p in figs],
                "filled": {d: n for d, n in filled.items() if n}}
+    if saved_only:
+        summary["source"] = "saved measurements and archived examples"
+        summary["archived_figures"] = saved_inputs(max_round)[2] if latest else []
     (REPO_ROOT / "results" / f"report_round{max_round}.json").write_text(json.dumps(summary, indent=2), encoding="utf-8", newline="\n")
+    if latest and saved_only and max_round == 2:
+        from vmi.analysis import claim_ledger
+        claim_ledger.build()
     return summary
 
 
 def build_paper() -> Path:
     """reports/paper/paper.md → reports/paper.pdf with pandoc and XeLaTeX (fonts are set in the paper's YAML header)."""
+    import os
     import subprocess  # pandoc CLI: https://pandoc.org/MANUAL.html
     src = REPO_ROOT / "reports" / "paper"
     out = REPO_ROOT / "reports" / "paper.pdf"
-    subprocess.run(["pandoc", "paper.md", "-o", str(out), "--pdf-engine=xelatex", "--resource-path=.:..:../figures"],
+    subprocess.run(["pandoc", "paper.md", "-o", str(out), "--pdf-engine=xelatex", "--resource-path=" + os.pathsep.join((".", "..", "../figures"))],
                    cwd=src, check=True)
     return out

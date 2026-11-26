@@ -289,6 +289,7 @@ def main(argv: list[str] | None = None) -> None:
     tr.add_argument("run_ids", nargs="+")
     an = sub.add_parser("analyse")
     an.add_argument("round", type=int)
+    an.add_argument("--saved-only", action="store_true", help="rebuild reports from archived measurements and panels")
     sub.add_parser("regrade", help="recompute secondary metrics of graded runs from saved weights")
     sub.add_parser("diagnose", help="re-run agents' build scripts with single edits to find what made them fail")
     sub.add_parser("clockpizza", help="Zhong et al. Clock/Pizza diagnostics of the targets and T0 builds (post hoc, audit 3)")
@@ -382,7 +383,7 @@ def main(argv: list[str] | None = None) -> None:
         log.info("logit-level comparison: %s", logit_fit(settings))
     elif a.cmd == "analyse":  # hypotheses + figures + every table in README/reports/paper, from results/
         from vmi.analysis.report import regenerate
-        log.info("report: %s", json.dumps(regenerate(a.round)))
+        log.info("report: %s", json.dumps(regenerate(a.round, saved_only=a.saved_only)))
 
 
 if __name__ == "__main__":

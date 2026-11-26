@@ -18,11 +18,11 @@ GLOSS = {  # the shortest wording that still tells a non-expert what the label s
     "E0": "no explanation", "E1": "algorithm only", "E2": "+ key frequencies", "E3": "+ per-frequency details",
     "E4": "+ per-neuron table",
     "W-freq": "wrong frequencies", "W-alg": "wrong algorithm: Pizza", "W-role": "wrong component roles",
-    "W-scramble": "shuffled neuron table",
+    "W-scramble": "redrawn neuron frequencies and phases",
     "T-paper": "the published checkpoint", "T-new": "target trained after the freeze", "T0": "main target network",
     "T1": "target from another seed", "T2": "target from another seed",
-    "HS": "hidden-state similarity, 1 = internals match up to a linear map", "KL_out": "output divergence, 0 = same answers",
-    "KL": "output divergence, 0 = same answers",
+    "HS": "hidden-state similarity by linear prediction", "KL_out": "output divergence, 0 = identical class probabilities",
+    "KL": "output divergence, 0 = identical class probabilities",
 }
 _TOKEN = re.compile(r"(?<![\w/\->→'`.–])(" + "|".join(re.escape(k) for k in sorted(GLOSS, key=len, reverse=True))
                     + r")(?![\w\-/>→'’`–])")  # en dash: ranges such as "E0–E4" are left as they are
@@ -42,7 +42,7 @@ def _gloss_unit(text: str) -> str:
         def repl(m):
             k = m.group(1)
             after, before = m.string[m.end(): m.end() + 50], m.string[max(0, m.start() - 45): m.start()]
-            meaning = GLOSS[k].split(",")[0]  # e.g. "hidden-state similarity (HS)" is explained by the words before it
+            meaning = "hidden-state similarity" if k == "HS" else GLOSS[k].split(",")[0]  # e.g. "hidden-state similarity (HS)" is explained by the words before it
             if k in seen or _EXPLAINED.match(after) or meaning in after or meaning in before:  # already explained here
                 seen.add(k)
                 return k

@@ -24,7 +24,7 @@ RULES = [  # (label, kind, rule in words); the rule, not the outcome, decides wh
     ("success", "✅", "first replicate of the true explanation E3 on T0"),
     ("beats the compiler", "✅", "largest agent-minus-compiler HS over true explanations on any target"),
     ("faithful to a wrong explanation", "✅", "first replicate of W-freq on T0 (the grader must catch it)"),
-    ("fills gaps from memory", "❌", "first replicate of the algorithm-only explanation E1 on T0"),
+    ("uses published frequencies", "❌", "first replicate of the algorithm-only explanation E1 on T0"),
     ("broken answers", "❌", "lowest task accuracy among the main simulator's runs"),
     ("small local model", "❌", "first local-model run on E3"),
 ]
@@ -193,12 +193,12 @@ def why(x: dict, target: str, level: str) -> tuple[str, str]:
     if built and n_paper >= 3 and target != "T-paper" and not told:
         exact = set(built) == set(PAPER_FREQS)  # all five, or only some of them (the rest are other choices)
         what = "the published paper's frequencies" if exact else f"{n_paper} of the published paper's five frequencies {fs(PAPER_FREQS)}"
-        return (f"Wrong mechanism, right answers: the explanation gave no frequencies, and the agent filled "
-                f"them in from memory (“{sentence_with(x['plan'], [str(v) for v in built], 120)}”). Its build script "
+        return (f"The explanation gave no frequencies. The agent chose "
+                f"the published values (“{sentence_with(x['plan'], [str(v) for v in built], 120)}”). Its build script "
                 f"hard-codes {fs(built)}, {what}, instead of {target}'s {fs(tgt)}, so its answers are right (accuracy "
                 f"{acc:.4f}) but its internals do not match (HS {hs:.2f}).",
                 f"No frequencies given, so it hard-coded " + (f"the paper's {fs(built)}" if exact else f"{fs(built)} ({n_paper} of the paper's five)")
-                + f" from memory instead of {target}'s {fs(tgt)}: right answers, wrong internals")
+                + f" instead of {target}'s {fs(tgt)}: high accuracy, low HS")
     if told and built and set(built) == set(told) and set(told) != set(tgt):
         return (f"Right behaviour of the agent, and the grader catches the explanation: its script uses exactly the "
                 f"wrong frequencies it was told, {fs(built)}, not {target}'s {fs(tgt)}. The answers are still right (accuracy "
@@ -214,8 +214,8 @@ def why(x: dict, target: str, level: str) -> tuple[str, str]:
             v = {e["name"]: e for e in d["variants"]}
             fix = next(e for n, e in v.items() if n.startswith("head 3 where") or n.startswith("fix"))  # the intended value
             others = "; ".join(f"{n}: accuracy {e['accuracy']:.4f}" for n, e in v.items() if e is not fix and n != "as submitted")
-            return (f"Wrong answers, right mechanism: its script uses the target's frequencies {fs(built or tgt)}, and the "
-                    f"internals match (HS {hs:.2f}), but the answers are wrong (accuracy {acc:.4f}). The wrong detail is {d['cause']}. "
+            return (f"Low accuracy and high HS: its script uses the target's frequencies {fs(built or tgt)}, and the "
+                    f"measured states align (HS {hs:.2f}), but the answers are wrong (accuracy {acc:.4f}). The wrong detail is {d['cause']}. "
                     f"Re-running its own script with that one fix gives accuracy {fix['accuracy']:.4f} at HS {fix['hs']:.2f} "
                     f"(other changes tested: {others}). " + (f"{d['owner']}. " if d.get("owner") else "")
                     + (f"It stopped by its own choice after {x['tool_calls']} tool calls and {x['minutes']} minutes, well "
@@ -231,8 +231,8 @@ def why(x: dict, target: str, level: str) -> tuple[str, str]:
                     + (f" (bug in {d['replicate_check']['failures']} of {d['replicate_check']['identical_runs']} identical runs)"
                        if d.get("replicate_check") else ""))
         reason = sentence_with(said, ["faithful", "keep", "trade-off"], 170) if any(k in said for k in ("faithful", "keep")) else ""
-        return (f"Wrong answers, right mechanism: its script uses the target's frequencies {fs(built or tgt)}, and the "
-                f"internals match (HS {hs:.2f}), but the answers are wrong (accuracy {acc:.4f}). It noticed (“{sentence_with(x['reaction'] or x['final'], ['ccuracy', '%'], 150)}”); "
+        return (f"Low accuracy and high HS: its script uses the target's frequencies {fs(built or tgt)}, and the "
+                f"measured states align (HS {hs:.2f}), but the answers are wrong (accuracy {acc:.4f}). It noticed (“{sentence_with(x['reaction'] or x['final'], ['ccuracy', '%'], 150)}”); "
                 f"its self-test peaked at {best:.4f} and it stopped at {acc:.4f}"
                 + (f" (“{reason}”)" if reason else "") + ". Not diagnosed further.",
                 f"Right frequencies, wrong answers: self-test peaked at {best:.4f}, it stopped at {acc:.4f} (not diagnosed)")
@@ -261,12 +261,12 @@ def rows(max_round: int) -> list[dict]:
     return out
 
 
-def write_doc(max_round: int) -> str:
+def write_doc(max_round: int, archived_rows: list[dict] | None = None) -> str:
     """Full excerpts to reports/agent-examples.md; returns the path."""
     parts = [f"# What the simulator agents did: examples from their own transcripts (round {max_round})", "",
              "Generated by `vmi analyse` from each run's event log and final `build_weights.py`; runs are chosen by the "
              "rule shown, not by reading transcripts first. Full transcripts, wire logs and weights: linked per run.", ""]
-    for x in rows(max_round):
+    for x in (rows(max_round) if archived_rows is None else archived_rows):
         parts += [f"## {x['kind']} {x['label']} — `{x['run_id']}`", "", f"*Chosen by rule:* {x['rule']}.", "",
                   f"**Why:** {x['why']}", "",
                   f"- **Result:** task accuracy {x['accuracy']:.4f}, HS {x['hs']:.3f}"

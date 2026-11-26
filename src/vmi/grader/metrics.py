@@ -7,11 +7,10 @@ Local explanation:
   both directions; HS = mean over the three sites (primary 2). Secondary: linear CKA, orthogonal Procrustes distance,
   optimally matched (linear-assignment) neuron correlation, head-matched attention distance, stitching KL.
 Global context: the residual stream of a LayerNorm-free transformer is only defined up to an invertible linear map,
-so the primary alignment class is linear regression. Its invariances (corrected by the 2026-11-22 audits): HS = 1
-(up to the ridge term and fold-to-fold estimation) when each model's states are an affine function of the other's, whatever the basis; completeness R²(M̂→M) is
-invariant to any invertible linear map of M̂'s basis (the regression absorbs it, up to the tiny ridge); soundness
-R²(M→M̂) pools over M̂'s dimensions, so it weights M̂'s directions by their variance and is invariant only to orthogonal
-maps and uniform scaling of M̂'s basis. `sensitivity.cv_r2_whitened` is the fully invariant post-hoc check.
+so linear regression allows coordinate changes at the residual sites. In unregularized regression an invertible
+predictor transformation preserves the fit. The isotropic ridge and the numerical floor break general invariance.
+Soundness pools response error and variance across dimensions, so a change of response scaling can change the score.
+The post-hoc whitened sensitivity check uses a relative eigenvalue threshold that can change the retained subspace.
 The GL argument covers the residual sites; at `mlp_post` the neurons' symmetry is permutation and positive scaling, so
 regression there is wider than the symmetry group (audit 3, deviation 10); `matched_neuron_corr` is the group-matched
 secondary metric.

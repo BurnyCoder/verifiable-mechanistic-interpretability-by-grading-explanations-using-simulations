@@ -1,0 +1,1818 @@
+{
+  "frozen_protocol": "801edf013db7239f8994e6780c5873e1890f5103",
+  "inventory": {
+    "reported": 101,
+    "dev": 15,
+    "manifest_rows": 108,
+    "with_failure_grade": 0,
+    "infra_retry_ids": [
+      "ablations__T0__E3-noselftest__claudehaiku55-claudecode__tdef__s0"
+    ],
+    "unfilled_manifest_rows": [
+      [
+        1,
+        "ablations",
+        "T0",
+        "E2",
+        "",
+        "qwen3.6-35b-a3b",
+        "mini",
+        0
+      ],
+      [
+        1,
+        "ablations",
+        "T0",
+        "E3",
+        "",
+        "qwen3.5-9b",
+        "mini",
+        0
+      ],
+      [
+        1,
+        "ablations",
+        "T0",
+        "E3",
+        "",
+        "qwen3.6-35b-a3b",
+        "mini",
+        0
+      ],
+      [
+        1,
+        "ablations",
+        "T0",
+        "E4",
+        "",
+        "qwen3.5-9b",
+        "mini",
+        0
+      ],
+      [
+        1,
+        "ablations",
+        "T0",
+        "E4",
+        "",
+        "qwen3.6-35b-a3b",
+        "mini",
+        0
+      ],
+      [
+        1,
+        "ablations",
+        "T0",
+        "W-freq",
+        "",
+        "qwen3.5-9b",
+        "mini",
+        0
+      ],
+      [
+        1,
+        "ablations",
+        "T0",
+        "W-freq",
+        "",
+        "qwen3.6-35b-a3b",
+        "mini",
+        0
+      ]
+    ],
+    "maximum_hs_reconstruction_error": 1.1102230246251565e-16
+  },
+  "rounds": {
+    "1": {
+      "N": 37,
+      "run_ids": [
+        "ablations__T0__E2__qwen354b-mini__t0.6__s0",
+        "ablations__T0__E2__qwen359b-mini__t0.6__s0",
+        "ablations__T0__E3-fmt-code__claudehaiku55-claudecode__tdef__s0",
+        "ablations__T0__E3-fmt-math__claudehaiku55-claudecode__tdef__s0",
+        "ablations__T0__E3-noselftest__claudehaiku55-claudecode__tdef__s0",
+        "ablations__T0__E3__qwen354b-mini__t0.6__s0",
+        "ablations__T0__E4__qwen354b-mini__t0.6__s0",
+        "ablations__T0__W-freq__qwen354b-mini__t0.6__s0",
+        "controls__T0__E0__claudehaiku55-claudecode__tdef__s0",
+        "controls__T0__W-alg__claudehaiku55-claudecode__tdef__s0",
+        "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s0",
+        "controls__T0__W-role__claudehaiku55-claudecode__tdef__s0",
+        "controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s0",
+        "hyper__T0__E3-effort-high__claudehaiku55-claudecode__tdef__s0",
+        "hyper__T0__E3-effort-low__claudehaiku55-claudecode__tdef__s0",
+        "hyper__T0__W-freq-effort-high__claudehaiku55-claudecode__tdef__s0",
+        "hyper__T0__W-freq-effort-low__claudehaiku55-claudecode__tdef__s0",
+        "main__T0__E1__claudehaiku55-claudecode__tdef__s0",
+        "main__T0__E2__claudehaiku55-claudecode__tdef__s0",
+        "main__T0__E3__claudehaiku55-claudecode__tdef__s0",
+        "main__T0__E4__claudehaiku55-claudecode__tdef__s0",
+        "seed__T-new__E3__claudehaiku55-claudecode__tdef__s0",
+        "seed__T-new__E4__claudehaiku55-claudecode__tdef__s0",
+        "seed__T-new__W-freq__claudehaiku55-claudecode__tdef__s0",
+        "seed__T-paper__E-paper__claudehaiku55-claudecode__tdef__s0",
+        "seed__T-paper__E1__claudehaiku55-claudecode__tdef__s0",
+        "seed__T-paper__E3__claudehaiku55-claudecode__tdef__s0",
+        "seed__T-paper__E4__claudehaiku55-claudecode__tdef__s0",
+        "seed__T-paper__W-freq__claudehaiku55-claudecode__tdef__s0",
+        "seed__T1__E2__claudehaiku55-claudecode__tdef__s0",
+        "seed__T1__E3__claudehaiku55-claudecode__tdef__s0",
+        "seed__T1__E4__claudehaiku55-claudecode__tdef__s0",
+        "seed__T1__W-freq__claudehaiku55-claudecode__tdef__s0",
+        "seed__T2__E2__claudehaiku55-claudecode__tdef__s0",
+        "seed__T2__E3__claudehaiku55-claudecode__tdef__s0",
+        "seed__T2__E4__claudehaiku55-claudecode__tdef__s0",
+        "seed__T2__W-freq__claudehaiku55-claudecode__tdef__s0"
+      ],
+      "targets": {
+        "T0": {
+          "N": 1,
+          "run_ids": [
+            "controls__T0__E0__claudehaiku55-claudecode__tdef__s0",
+            "controls__T0__W-alg__claudehaiku55-claudecode__tdef__s0",
+            "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s0",
+            "controls__T0__W-role__claudehaiku55-claudecode__tdef__s0",
+            "controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s0",
+            "main__T0__E1__claudehaiku55-claudecode__tdef__s0",
+            "main__T0__E2__claudehaiku55-claudecode__tdef__s0",
+            "main__T0__E3__claudehaiku55-claudecode__tdef__s0",
+            "main__T0__E4__claudehaiku55-claudecode__tdef__s0"
+          ],
+          "H1": {
+            "levels": [
+              "E1",
+              "E2",
+              "E3",
+              "E4"
+            ],
+            "missing_levels": [],
+            "hs": {
+              "J": 5,
+              "upper_tail": 4,
+              "assignments": 24,
+              "p": 0.16666666666666666,
+              "rho": 0.7999999999999999,
+              "ci": null,
+              "supported": false
+            },
+            "decreasing_kl": {
+              "J": 1,
+              "upper_tail": 23,
+              "assignments": 24,
+              "p": 0.9583333333333334,
+              "rho": -0.7999999999999999,
+              "ci": null,
+              "supported": false
+            },
+            "E0_minus_E1": {
+              "hs": -0.044650763220412705,
+              "kl_out": 0.0089787365126621
+            }
+          },
+          "H2": {
+            "E3>W-freq": {
+              "mean_difference": 0.8841086852206813,
+              "ci": null,
+              "p": 0.5,
+              "U": 1.0,
+              "rank_biserial": 1.0,
+              "min_p_untied": 0.5,
+              "holm_p": 1.0,
+              "verdict": "cannot tell at this N"
+            },
+            "E3>W-alg": {
+              "mean_difference": 0.05064272787975166,
+              "ci": null,
+              "p": 0.5,
+              "U": 1.0,
+              "rank_biserial": 1.0,
+              "min_p_untied": 0.5,
+              "holm_p": 1.0,
+              "verdict": "cannot tell at this N"
+            },
+            "E3>W-role": {
+              "mean_difference": 0.7714062632337544,
+              "ci": null,
+              "p": 0.5,
+              "U": 1.0,
+              "rank_biserial": 1.0,
+              "min_p_untied": 0.5,
+              "holm_p": 1.0,
+              "verdict": "cannot tell at this N"
+            },
+            "E4>W-scramble": {
+              "mean_difference": -0.006058903115892633,
+              "ci": null,
+              "p": 1.0,
+              "U": 0.0,
+              "rank_biserial": -1.0,
+              "min_p_untied": 0.5,
+              "holm_p": 1.0,
+              "verdict": "cannot tell at this N"
+            }
+          },
+          "H3": {
+            "true_levels": [
+              "E2",
+              "E3",
+              "E4"
+            ],
+            "full_design": true,
+            "agreement": 1.0,
+            "wrong_frequency_kl": 0.0009310675213667754,
+            "true_kl_range": [
+              1.1986844094061202e-05,
+              0.08719669876978627
+            ],
+            "hs_differences": {
+              "E2": {
+                "mean_difference": -0.8440736446337387,
+                "ci": null
+              },
+              "E3": {
+                "mean_difference": -0.8841086852206813,
+                "ci": null
+              },
+              "E4": {
+                "mean_difference": -0.856140105284494,
+                "ci": null
+              }
+            },
+            "interval_reading": true,
+            "upper_bound_reading": true
+          }
+        },
+        "T1": {
+          "N": 1,
+          "run_ids": [
+            "seed__T1__E2__claudehaiku55-claudecode__tdef__s0",
+            "seed__T1__E3__claudehaiku55-claudecode__tdef__s0",
+            "seed__T1__E4__claudehaiku55-claudecode__tdef__s0",
+            "seed__T1__W-freq__claudehaiku55-claudecode__tdef__s0"
+          ],
+          "H1": {
+            "levels": [
+              "E2",
+              "E3",
+              "E4"
+            ],
+            "missing_levels": [
+              "E1"
+            ],
+            "hs": {
+              "J": 1,
+              "upper_tail": 5,
+              "assignments": 6,
+              "p": 0.8333333333333334,
+              "rho": -0.5,
+              "ci": null,
+              "supported": false
+            },
+            "decreasing_kl": {
+              "J": 0,
+              "upper_tail": 6,
+              "assignments": 6,
+              "p": 1.0,
+              "rho": -1.0,
+              "ci": null,
+              "supported": false
+            }
+          },
+          "H2": {
+            "E3>W-freq": {
+              "mean_difference": 0.8830484715682109,
+              "ci": null,
+              "p": 0.5,
+              "U": 1.0,
+              "rank_biserial": 1.0,
+              "min_p_untied": 0.5,
+              "holm_p": 0.5,
+              "verdict": "cannot tell at this N"
+            }
+          },
+          "H3": {
+            "true_levels": [
+              "E2",
+              "E3",
+              "E4"
+            ],
+            "full_design": true,
+            "agreement": 0.8062495105333228,
+            "wrong_frequency_kl": 0.6687667357254271,
+            "true_kl_range": [
+              0.0030788886836026386,
+              0.7728104677853231
+            ],
+            "hs_differences": {
+              "E2": {
+                "mean_difference": -0.9211083470842701,
+                "ci": null
+              },
+              "E3": {
+                "mean_difference": -0.8830484715682109,
+                "ci": null
+              },
+              "E4": {
+                "mean_difference": -0.9208801136326951,
+                "ci": null
+              }
+            },
+            "interval_reading": false,
+            "upper_bound_reading": false
+          }
+        },
+        "T2": {
+          "N": 1,
+          "run_ids": [
+            "seed__T2__E2__claudehaiku55-claudecode__tdef__s0",
+            "seed__T2__E3__claudehaiku55-claudecode__tdef__s0",
+            "seed__T2__E4__claudehaiku55-claudecode__tdef__s0",
+            "seed__T2__W-freq__claudehaiku55-claudecode__tdef__s0"
+          ],
+          "H1": {
+            "levels": [
+              "E2",
+              "E3",
+              "E4"
+            ],
+            "missing_levels": [
+              "E1"
+            ],
+            "hs": {
+              "J": 0,
+              "upper_tail": 6,
+              "assignments": 6,
+              "p": 1.0,
+              "rho": -1.0,
+              "ci": null,
+              "supported": false
+            },
+            "decreasing_kl": {
+              "J": 0,
+              "upper_tail": 6,
+              "assignments": 6,
+              "p": 1.0,
+              "rho": -1.0,
+              "ci": null,
+              "supported": false
+            }
+          },
+          "H2": {
+            "E3>W-freq": {
+              "mean_difference": 0.854894497395827,
+              "ci": null,
+              "p": 0.5,
+              "U": 1.0,
+              "rank_biserial": 1.0,
+              "min_p_untied": 0.5,
+              "holm_p": 0.5,
+              "verdict": "cannot tell at this N"
+            }
+          },
+          "H3": {
+            "true_levels": [
+              "E2",
+              "E3",
+              "E4"
+            ],
+            "full_design": true,
+            "agreement": 1.0,
+            "wrong_frequency_kl": 0.004779640610172711,
+            "true_kl_range": [
+              4.689379661799068e-05,
+              0.1119524433384554
+            ],
+            "hs_differences": {
+              "E2": {
+                "mean_difference": -0.8598081946506063,
+                "ci": null
+              },
+              "E3": {
+                "mean_difference": -0.854894497395827,
+                "ci": null
+              },
+              "E4": {
+                "mean_difference": -0.8448704810817944,
+                "ci": null
+              }
+            },
+            "interval_reading": true,
+            "upper_bound_reading": true
+          }
+        },
+        "T-new": {
+          "N": 1,
+          "run_ids": [
+            "seed__T-new__E3__claudehaiku55-claudecode__tdef__s0",
+            "seed__T-new__E4__claudehaiku55-claudecode__tdef__s0",
+            "seed__T-new__W-freq__claudehaiku55-claudecode__tdef__s0"
+          ],
+          "H1": {
+            "levels": [
+              "E3",
+              "E4"
+            ],
+            "missing_levels": [
+              "E1",
+              "E2"
+            ],
+            "hs": {
+              "J": 1,
+              "upper_tail": 1,
+              "assignments": 2,
+              "p": 0.5,
+              "rho": 0.9999999999999999,
+              "ci": null,
+              "supported": false
+            },
+            "decreasing_kl": {
+              "J": 1,
+              "upper_tail": 1,
+              "assignments": 2,
+              "p": 0.5,
+              "rho": 0.9999999999999999,
+              "ci": null,
+              "supported": false
+            }
+          },
+          "H2": {
+            "E3>W-freq": {
+              "mean_difference": 0.7588588676700936,
+              "ci": null,
+              "p": 0.5,
+              "U": 1.0,
+              "rank_biserial": 1.0,
+              "min_p_untied": 0.5,
+              "holm_p": 0.5,
+              "verdict": "cannot tell at this N"
+            }
+          },
+          "H3": {
+            "true_levels": [
+              "E3",
+              "E4"
+            ],
+            "full_design": false,
+            "agreement": 0.8967812671313337,
+            "wrong_frequency_kl": 0.37783838674910974,
+            "true_kl_range": [
+              2.1511409110266976e-05,
+              0.34371238876076304
+            ],
+            "hs_differences": {
+              "E3": {
+                "mean_difference": -0.7588588676700936,
+                "ci": null
+              },
+              "E4": {
+                "mean_difference": -0.8972237261287694,
+                "ci": null
+              }
+            },
+            "interval_reading": false,
+            "upper_bound_reading": false
+          }
+        },
+        "T-paper": {
+          "N": 1,
+          "run_ids": [
+            "seed__T-paper__E-paper__claudehaiku55-claudecode__tdef__s0",
+            "seed__T-paper__E1__claudehaiku55-claudecode__tdef__s0",
+            "seed__T-paper__E3__claudehaiku55-claudecode__tdef__s0",
+            "seed__T-paper__E4__claudehaiku55-claudecode__tdef__s0",
+            "seed__T-paper__W-freq__claudehaiku55-claudecode__tdef__s0"
+          ],
+          "H1": {
+            "levels": [
+              "E1",
+              "E3",
+              "E4"
+            ],
+            "missing_levels": [
+              "E2"
+            ],
+            "hs": {
+              "J": 2,
+              "upper_tail": 3,
+              "assignments": 6,
+              "p": 0.5,
+              "rho": 0.5,
+              "ci": null,
+              "supported": false
+            },
+            "decreasing_kl": {
+              "J": 2,
+              "upper_tail": 3,
+              "assignments": 6,
+              "p": 0.5,
+              "rho": 0.5,
+              "ci": null,
+              "supported": false
+            }
+          },
+          "H2": {
+            "E3>W-freq": {
+              "mean_difference": 0.8524821175853641,
+              "ci": null,
+              "p": 0.5,
+              "U": 1.0,
+              "rank_biserial": 1.0,
+              "min_p_untied": 0.5,
+              "holm_p": 0.5,
+              "verdict": "cannot tell at this N"
+            }
+          },
+          "H3": {
+            "true_levels": [
+              "E3",
+              "E4"
+            ],
+            "full_design": false,
+            "agreement": 1.0,
+            "wrong_frequency_kl": 9.563350442349699e-05,
+            "true_kl_range": [
+              0.03206028373538358,
+              0.5182061871790983
+            ],
+            "hs_differences": {
+              "E3": {
+                "mean_difference": -0.8524821175853641,
+                "ci": null
+              },
+              "E4": {
+                "mean_difference": -0.8380677389285156,
+                "ci": null
+              }
+            },
+            "interval_reading": false,
+            "upper_bound_reading": true
+          }
+        }
+      },
+      "H4": {
+        "retrains": {
+          "E3": {
+            "p": 0.1,
+            "U": 9.0,
+            "rank_biserial": 1.0,
+            "min_p_untied": 0.1,
+            "holm_p": 0.2,
+            "verdict": "cannot tell at this N"
+          },
+          "E4": {
+            "p": 0.1,
+            "U": 9.0,
+            "rank_biserial": 1.0,
+            "min_p_untied": 0.1,
+            "holm_p": 0.2,
+            "verdict": "cannot tell at this N"
+          }
+        },
+        "students": {
+          "E3": {
+            "p": 0.5,
+            "U": 3.0,
+            "rank_biserial": 1.0,
+            "min_p_untied": 0.5,
+            "holm_p": 1.0,
+            "verdict": "cannot tell at this N"
+          },
+          "E4": {
+            "p": 0.5,
+            "U": 3.0,
+            "rank_biserial": 1.0,
+            "min_p_untied": 0.5,
+            "holm_p": 1.0,
+            "verdict": "cannot tell at this N"
+          }
+        }
+      },
+      "H4b": {
+        "rows": [
+          {
+            "step": 0,
+            "hs": 0.999999966589694,
+            "kl_out": 0.0,
+            "snapshot_accuracy": 1.0
+          },
+          {
+            "step": 100,
+            "hs": 0.9980927411909205,
+            "kl_out": 0.37062174455452224,
+            "snapshot_accuracy": 0.9774453755188347
+          },
+          {
+            "step": 1000,
+            "hs": 0.9574774979645472,
+            "kl_out": 0.040109442486207875,
+            "snapshot_accuracy": 0.9957710079097815
+          },
+          {
+            "step": 10000,
+            "hs": 0.8878842738878275,
+            "kl_out": 0.00042517092465205994,
+            "snapshot_accuracy": 1.0
+          }
+        ],
+        "identity_exact": false,
+        "hs_decreases": true,
+        "kl_increases": false
+      },
+      "H5_H6": {
+        "T0_compiler": {
+          "E2": {
+            "agent_minus_compiler": 0.004604312463456162,
+            "compiler_below_interval": null
+          },
+          "E3": {
+            "agent_minus_compiler": 0.012857643140726238,
+            "compiler_below_interval": null
+          },
+          "E4": {
+            "agent_minus_compiler": -0.040298062402610135,
+            "compiler_below_interval": null
+          },
+          "W-freq": {
+            "agent_minus_compiler": -0.03918311854390793,
+            "compiler_below_interval": null
+          }
+        },
+        "local_cells": [
+          [
+            "qwen3.5-4b",
+            "E2",
+            0.008849557522123894,
+            0.0
+          ],
+          [
+            "qwen3.5-9b",
+            "E2",
+            0.008849557522123894,
+            0.0
+          ],
+          [
+            "qwen3.5-4b",
+            "E3",
+            0.008849557522123894,
+            0.0
+          ],
+          [
+            "qwen3.5-4b",
+            "E4",
+            0.008849557522123894,
+            0.0
+          ],
+          [
+            "qwen3.5-4b",
+            "W-freq",
+            0.008849557522123894,
+            0.0
+          ]
+        ],
+        "required_cells": 12,
+        "completed_cells": 5,
+        "H5_verdict": "not evaluable",
+        "H6_verdict": "not evaluable"
+      },
+      "H7": {
+        "margins": {
+          "main__T0__E3__claudehaiku55-claudecode__tdef__s0": 0.6652475673992395,
+          "main__T0__E4__claudehaiku55-claudecode__tdef__s0": 0.6853957048190834
+        },
+        "p": 0.25,
+        "wrong_targets": [
+          "T-paper",
+          "T1",
+          "T2",
+          "dev",
+          "rand_s0",
+          "rand_s1",
+          "rand_s2",
+          "wd0_s0",
+          "wd0_s1",
+          "wd0_s2",
+          "wd0_s3",
+          "wd0_s4"
+        ],
+        "verdict": "cannot tell at this N"
+      },
+      "H8": {
+        "replacements": {
+          "main__T0__E3__claudehaiku55-claudecode__tdef__s0": 0.8204021662262255,
+          "main__T0__E4__claudehaiku55-claudecode__tdef__s0": 0.7522559273458147
+        },
+        "negative_controls": {
+          "controls__T0__E0__claudehaiku55-claudecode__tdef__s0": -0.8313440279897274,
+          "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s0": -0.4012472549968363,
+          "main__T0__E1__claudehaiku55-claudecode__tdef__s0": -0.5812811255443482
+        },
+        "checkpoints": 401,
+        "verdict": "supported (descriptive)",
+        "historical": {
+          "replacement": "main__T0__E3__claudehaiku55-claudecode__tdef__s0",
+          "checkpoints": 41,
+          "rho": 0.8418118466898957
+        }
+      }
+    },
+    "2": {
+      "N": 101,
+      "run_ids": [
+        "ablations__T0__E2__qwen354b-mini__t0.6__s0",
+        "ablations__T0__E2__qwen359b-mini__t0.6__s0",
+        "ablations__T0__E3-fmt-code__claudehaiku55-claudecode__tdef__s0",
+        "ablations__T0__E3-fmt-code__claudehaiku55-claudecode__tdef__s1",
+        "ablations__T0__E3-fmt-code__claudehaiku55-claudecode__tdef__s2",
+        "ablations__T0__E3-fmt-math__claudehaiku55-claudecode__tdef__s0",
+        "ablations__T0__E3-fmt-math__claudehaiku55-claudecode__tdef__s1",
+        "ablations__T0__E3-fmt-math__claudehaiku55-claudecode__tdef__s2",
+        "ablations__T0__E3-noselftest__claudehaiku55-claudecode__tdef__s0",
+        "ablations__T0__E3-noselftest__claudehaiku55-claudecode__tdef__s1",
+        "ablations__T0__E3-noselftest__claudehaiku55-claudecode__tdef__s2",
+        "ablations__T0__E3__qwen354b-mini__t0.6__s0",
+        "ablations__T0__E4__qwen354b-mini__t0.6__s0",
+        "ablations__T0__W-freq__qwen354b-mini__t0.6__s0",
+        "controls__T0__E0__claudehaiku55-claudecode__tdef__s0",
+        "controls__T0__E0__claudehaiku55-claudecode__tdef__s1",
+        "controls__T0__E0__claudehaiku55-claudecode__tdef__s2",
+        "controls__T0__W-alg__claudehaiku55-claudecode__tdef__s0",
+        "controls__T0__W-alg__claudehaiku55-claudecode__tdef__s1",
+        "controls__T0__W-alg__claudehaiku55-claudecode__tdef__s2",
+        "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s0",
+        "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s1",
+        "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s2",
+        "controls__T0__W-role__claudehaiku55-claudecode__tdef__s0",
+        "controls__T0__W-role__claudehaiku55-claudecode__tdef__s1",
+        "controls__T0__W-role__claudehaiku55-claudecode__tdef__s2",
+        "controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s0",
+        "controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s1",
+        "controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s2",
+        "hyper__T0__E3-effort-high__claudehaiku55-claudecode__tdef__s0",
+        "hyper__T0__E3-effort-high__claudehaiku55-claudecode__tdef__s1",
+        "hyper__T0__E3-effort-high__claudehaiku55-claudecode__tdef__s2",
+        "hyper__T0__E3-effort-low__claudehaiku55-claudecode__tdef__s0",
+        "hyper__T0__E3-effort-low__claudehaiku55-claudecode__tdef__s1",
+        "hyper__T0__E3-effort-low__claudehaiku55-claudecode__tdef__s2",
+        "hyper__T0__W-freq-effort-high__claudehaiku55-claudecode__tdef__s0",
+        "hyper__T0__W-freq-effort-high__claudehaiku55-claudecode__tdef__s1",
+        "hyper__T0__W-freq-effort-high__claudehaiku55-claudecode__tdef__s2",
+        "hyper__T0__W-freq-effort-low__claudehaiku55-claudecode__tdef__s0",
+        "hyper__T0__W-freq-effort-low__claudehaiku55-claudecode__tdef__s1",
+        "hyper__T0__W-freq-effort-low__claudehaiku55-claudecode__tdef__s2",
+        "main__T0__E1__claudehaiku55-claudecode__tdef__s0",
+        "main__T0__E1__claudehaiku55-claudecode__tdef__s1",
+        "main__T0__E1__claudehaiku55-claudecode__tdef__s2",
+        "main__T0__E2__claudehaiku55-claudecode__tdef__s0",
+        "main__T0__E2__claudehaiku55-claudecode__tdef__s1",
+        "main__T0__E2__claudehaiku55-claudecode__tdef__s2",
+        "main__T0__E3__claudehaiku55-claudecode__tdef__s0",
+        "main__T0__E3__claudehaiku55-claudecode__tdef__s1",
+        "main__T0__E3__claudehaiku55-claudecode__tdef__s2",
+        "main__T0__E4__claudehaiku55-claudecode__tdef__s0",
+        "main__T0__E4__claudehaiku55-claudecode__tdef__s1",
+        "main__T0__E4__claudehaiku55-claudecode__tdef__s2",
+        "seed__T-new__E3__claudehaiku55-claudecode__tdef__s0",
+        "seed__T-new__E3__claudehaiku55-claudecode__tdef__s1",
+        "seed__T-new__E3__claudehaiku55-claudecode__tdef__s2",
+        "seed__T-new__E4__claudehaiku55-claudecode__tdef__s0",
+        "seed__T-new__E4__claudehaiku55-claudecode__tdef__s1",
+        "seed__T-new__E4__claudehaiku55-claudecode__tdef__s2",
+        "seed__T-new__W-freq__claudehaiku55-claudecode__tdef__s0",
+        "seed__T-new__W-freq__claudehaiku55-claudecode__tdef__s1",
+        "seed__T-new__W-freq__claudehaiku55-claudecode__tdef__s2",
+        "seed__T-paper__E-paper__claudehaiku55-claudecode__tdef__s0",
+        "seed__T-paper__E-paper__claudehaiku55-claudecode__tdef__s1",
+        "seed__T-paper__E-paper__claudehaiku55-claudecode__tdef__s2",
+        "seed__T-paper__E1__claudehaiku55-claudecode__tdef__s0",
+        "seed__T-paper__E1__claudehaiku55-claudecode__tdef__s1",
+        "seed__T-paper__E1__claudehaiku55-claudecode__tdef__s2",
+        "seed__T-paper__E3__claudehaiku55-claudecode__tdef__s0",
+        "seed__T-paper__E3__claudehaiku55-claudecode__tdef__s1",
+        "seed__T-paper__E3__claudehaiku55-claudecode__tdef__s2",
+        "seed__T-paper__E4__claudehaiku55-claudecode__tdef__s0",
+        "seed__T-paper__E4__claudehaiku55-claudecode__tdef__s1",
+        "seed__T-paper__E4__claudehaiku55-claudecode__tdef__s2",
+        "seed__T-paper__W-freq__claudehaiku55-claudecode__tdef__s0",
+        "seed__T-paper__W-freq__claudehaiku55-claudecode__tdef__s1",
+        "seed__T-paper__W-freq__claudehaiku55-claudecode__tdef__s2",
+        "seed__T1__E2__claudehaiku55-claudecode__tdef__s0",
+        "seed__T1__E2__claudehaiku55-claudecode__tdef__s1",
+        "seed__T1__E2__claudehaiku55-claudecode__tdef__s2",
+        "seed__T1__E3__claudehaiku55-claudecode__tdef__s0",
+        "seed__T1__E3__claudehaiku55-claudecode__tdef__s1",
+        "seed__T1__E3__claudehaiku55-claudecode__tdef__s2",
+        "seed__T1__E4__claudehaiku55-claudecode__tdef__s0",
+        "seed__T1__E4__claudehaiku55-claudecode__tdef__s1",
+        "seed__T1__E4__claudehaiku55-claudecode__tdef__s2",
+        "seed__T1__W-freq__claudehaiku55-claudecode__tdef__s0",
+        "seed__T1__W-freq__claudehaiku55-claudecode__tdef__s1",
+        "seed__T1__W-freq__claudehaiku55-claudecode__tdef__s2",
+        "seed__T2__E2__claudehaiku55-claudecode__tdef__s0",
+        "seed__T2__E2__claudehaiku55-claudecode__tdef__s1",
+        "seed__T2__E2__claudehaiku55-claudecode__tdef__s2",
+        "seed__T2__E3__claudehaiku55-claudecode__tdef__s0",
+        "seed__T2__E3__claudehaiku55-claudecode__tdef__s1",
+        "seed__T2__E3__claudehaiku55-claudecode__tdef__s2",
+        "seed__T2__E4__claudehaiku55-claudecode__tdef__s0",
+        "seed__T2__E4__claudehaiku55-claudecode__tdef__s1",
+        "seed__T2__E4__claudehaiku55-claudecode__tdef__s2",
+        "seed__T2__W-freq__claudehaiku55-claudecode__tdef__s0",
+        "seed__T2__W-freq__claudehaiku55-claudecode__tdef__s1",
+        "seed__T2__W-freq__claudehaiku55-claudecode__tdef__s2"
+      ],
+      "targets": {
+        "T0": {
+          "N": 3,
+          "run_ids": [
+            "controls__T0__E0__claudehaiku55-claudecode__tdef__s0",
+            "controls__T0__E0__claudehaiku55-claudecode__tdef__s1",
+            "controls__T0__E0__claudehaiku55-claudecode__tdef__s2",
+            "controls__T0__W-alg__claudehaiku55-claudecode__tdef__s0",
+            "controls__T0__W-alg__claudehaiku55-claudecode__tdef__s1",
+            "controls__T0__W-alg__claudehaiku55-claudecode__tdef__s2",
+            "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s0",
+            "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s1",
+            "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s2",
+            "controls__T0__W-role__claudehaiku55-claudecode__tdef__s0",
+            "controls__T0__W-role__claudehaiku55-claudecode__tdef__s1",
+            "controls__T0__W-role__claudehaiku55-claudecode__tdef__s2",
+            "controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s0",
+            "controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s1",
+            "controls__T0__W-scramble__claudehaiku55-claudecode__tdef__s2",
+            "main__T0__E1__claudehaiku55-claudecode__tdef__s0",
+            "main__T0__E1__claudehaiku55-claudecode__tdef__s1",
+            "main__T0__E1__claudehaiku55-claudecode__tdef__s2",
+            "main__T0__E2__claudehaiku55-claudecode__tdef__s0",
+            "main__T0__E2__claudehaiku55-claudecode__tdef__s1",
+            "main__T0__E2__claudehaiku55-claudecode__tdef__s2",
+            "main__T0__E3__claudehaiku55-claudecode__tdef__s0",
+            "main__T0__E3__claudehaiku55-claudecode__tdef__s1",
+            "main__T0__E3__claudehaiku55-claudecode__tdef__s2",
+            "main__T0__E4__claudehaiku55-claudecode__tdef__s0",
+            "main__T0__E4__claudehaiku55-claudecode__tdef__s1",
+            "main__T0__E4__claudehaiku55-claudecode__tdef__s2"
+          ],
+          "H1": {
+            "levels": [
+              "E1",
+              "E2",
+              "E3",
+              "E4"
+            ],
+            "missing_levels": [],
+            "hs": {
+              "J": 51,
+              "upper_tail": 35,
+              "assignments": 369600,
+              "p": 9.46969696969697e-05,
+              "rho": 0.9068503858838141,
+              "ci": [
+                0.7869910029407435,
+                0.9872837696818765
+              ],
+              "supported": true
+            },
+            "decreasing_kl": {
+              "J": 17,
+              "upper_tail": 344077,
+              "assignments": 369600,
+              "p": 0.9309442640692641,
+              "rho": -0.32387513781564786,
+              "ci": [
+                -0.8713170244280355,
+                0.1974567539363753
+              ],
+              "supported": false
+            },
+            "E0_minus_E1": {
+              "hs": 0.08305588077386183,
+              "kl_out": -0.09230015851119859
+            }
+          },
+          "H2": {
+            "E3>W-freq": {
+              "mean_difference": 0.8587022155497118,
+              "ci": [
+                0.8345809470760193,
+                0.8797909847039116
+              ],
+              "p": 0.05,
+              "U": 9.0,
+              "rank_biserial": 1.0,
+              "min_p_untied": 0.05,
+              "holm_p": 0.2,
+              "verdict": "not supported"
+            },
+            "E3>W-alg": {
+              "mean_difference": 0.020000059863604314,
+              "ci": [
+                -0.010456888609789994,
+                0.04494612179943058
+              ],
+              "p": 0.35,
+              "U": 6.0,
+              "rank_biserial": 0.33333333333333326,
+              "min_p_untied": 0.05,
+              "holm_p": 0.7,
+              "verdict": "not supported"
+            },
+            "E3>W-role": {
+              "mean_difference": 0.7250769982574378,
+              "ci": [
+                0.6581303562212157,
+                0.7682007841099024
+              ],
+              "p": 0.05,
+              "U": 9.0,
+              "rank_biserial": 1.0,
+              "min_p_untied": 0.05,
+              "holm_p": 0.2,
+              "verdict": "not supported"
+            },
+            "E4>W-scramble": {
+              "mean_difference": 0.006812079136578109,
+              "ci": [
+                -0.024977841288004288,
+                0.03700881644050347
+              ],
+              "p": 0.5,
+              "U": 5.0,
+              "rank_biserial": 0.11111111111111116,
+              "min_p_untied": 0.05,
+              "holm_p": 0.7,
+              "verdict": "not supported"
+            }
+          },
+          "H3": {
+            "true_levels": [
+              "E2",
+              "E3",
+              "E4"
+            ],
+            "full_design": true,
+            "agreement": 0.9999477902211084,
+            "wrong_frequency_kl": 0.002931726669060388,
+            "true_kl_range": [
+              0.0002117706685867848,
+              0.06004481507139639
+            ],
+            "hs_differences": {
+              "E2": {
+                "mean_difference": -0.8238332033622494,
+                "ci": [
+                  -0.8404817995002558,
+                  -0.8013429607321882
+                ]
+              },
+              "E3": {
+                "mean_difference": -0.8587022155497118,
+                "ci": [
+                  -0.8797909847039116,
+                  -0.8345809470760193
+                ]
+              },
+              "E4": {
+                "mean_difference": -0.8729281625374529,
+                "ci": [
+                  -0.9039576767378011,
+                  -0.8411382421128705
+                ]
+              }
+            },
+            "interval_reading": true,
+            "upper_bound_reading": true
+          }
+        },
+        "T1": {
+          "N": 3,
+          "run_ids": [
+            "seed__T1__E2__claudehaiku55-claudecode__tdef__s0",
+            "seed__T1__E2__claudehaiku55-claudecode__tdef__s1",
+            "seed__T1__E2__claudehaiku55-claudecode__tdef__s2",
+            "seed__T1__E3__claudehaiku55-claudecode__tdef__s0",
+            "seed__T1__E3__claudehaiku55-claudecode__tdef__s1",
+            "seed__T1__E3__claudehaiku55-claudecode__tdef__s2",
+            "seed__T1__E4__claudehaiku55-claudecode__tdef__s0",
+            "seed__T1__E4__claudehaiku55-claudecode__tdef__s1",
+            "seed__T1__E4__claudehaiku55-claudecode__tdef__s2",
+            "seed__T1__W-freq__claudehaiku55-claudecode__tdef__s0",
+            "seed__T1__W-freq__claudehaiku55-claudecode__tdef__s1",
+            "seed__T1__W-freq__claudehaiku55-claudecode__tdef__s2"
+          ],
+          "H1": {
+            "levels": [
+              "E2",
+              "E3",
+              "E4"
+            ],
+            "missing_levels": [
+              "E1"
+            ],
+            "hs": {
+              "J": 14,
+              "upper_tail": 840,
+              "assignments": 1680,
+              "p": 0.5,
+              "rho": 0.05270462766947299,
+              "ci": [
+                -0.4866642633922876,
+                0.4866642633922876
+              ],
+              "supported": false
+            },
+            "decreasing_kl": {
+              "J": 3,
+              "upper_tail": 1672,
+              "assignments": 1680,
+              "p": 0.9952380952380953,
+              "rho": -0.7905694150420948,
+              "ci": [
+                -0.9733285267845752,
+                -0.5337605126836237
+              ],
+              "supported": false
+            }
+          },
+          "H2": {
+            "E3>W-freq": {
+              "mean_difference": 0.8852729422016767,
+              "ci": [
+                0.8569251141297923,
+                0.9106982718721094
+              ],
+              "p": 0.05,
+              "U": 9.0,
+              "rank_biserial": 1.0,
+              "min_p_untied": 0.05,
+              "holm_p": 0.05,
+              "verdict": "not supported"
+            }
+          },
+          "H3": {
+            "true_levels": [
+              "E2",
+              "E3",
+              "E4"
+            ],
+            "full_design": true,
+            "agreement": 0.854334716892474,
+            "wrong_frequency_kl": 0.5372078714626717,
+            "true_kl_range": [
+              0.0012712530696907091,
+              0.4984753884647315
+            ],
+            "hs_differences": {
+              "E2": {
+                "mean_difference": -0.9061776295988307,
+                "ci": [
+                  -0.9230042916006167,
+                  -0.8778833393712728
+                ]
+              },
+              "E3": {
+                "mean_difference": -0.8852729422016767,
+                "ci": [
+                  -0.9106982718721094,
+                  -0.8569251141297923
+                ]
+              },
+              "E4": {
+                "mean_difference": -0.9094438245825245,
+                "ci": [
+                  -0.9281946563273676,
+                  -0.8827197930471785
+                ]
+              }
+            },
+            "interval_reading": false,
+            "upper_bound_reading": false
+          }
+        },
+        "T2": {
+          "N": 3,
+          "run_ids": [
+            "seed__T2__E2__claudehaiku55-claudecode__tdef__s0",
+            "seed__T2__E2__claudehaiku55-claudecode__tdef__s1",
+            "seed__T2__E2__claudehaiku55-claudecode__tdef__s2",
+            "seed__T2__E3__claudehaiku55-claudecode__tdef__s0",
+            "seed__T2__E3__claudehaiku55-claudecode__tdef__s1",
+            "seed__T2__E3__claudehaiku55-claudecode__tdef__s2",
+            "seed__T2__E4__claudehaiku55-claudecode__tdef__s0",
+            "seed__T2__E4__claudehaiku55-claudecode__tdef__s1",
+            "seed__T2__E4__claudehaiku55-claudecode__tdef__s2",
+            "seed__T2__W-freq__claudehaiku55-claudecode__tdef__s0",
+            "seed__T2__W-freq__claudehaiku55-claudecode__tdef__s1",
+            "seed__T2__W-freq__claudehaiku55-claudecode__tdef__s2"
+          ],
+          "H1": {
+            "levels": [
+              "E2",
+              "E3",
+              "E4"
+            ],
+            "missing_levels": [
+              "E1"
+            ],
+            "hs": {
+              "J": 14,
+              "upper_tail": 840,
+              "assignments": 1680,
+              "p": 0.5,
+              "rho": 0.05270462766947299,
+              "ci": [
+                -0.5383819020581655,
+                0.5948118774794626
+              ],
+              "supported": false
+            },
+            "decreasing_kl": {
+              "J": 0,
+              "upper_tail": 1680,
+              "assignments": 1680,
+              "p": 1.0,
+              "rho": -0.9486832980505138,
+              "ci": [
+                -0.9863939238321436,
+                -0.9526610232449336
+              ],
+              "supported": false
+            }
+          },
+          "H2": {
+            "E3>W-freq": {
+              "mean_difference": 0.8640600835359714,
+              "ci": [
+                0.846712739648359,
+                0.8797670358116569
+              ],
+              "p": 0.05,
+              "U": 9.0,
+              "rank_biserial": 1.0,
+              "min_p_untied": 0.05,
+              "holm_p": 0.05,
+              "verdict": "not supported"
+            }
+          },
+          "H3": {
+            "true_levels": [
+              "E2",
+              "E3",
+              "E4"
+            ],
+            "full_design": true,
+            "agreement": 0.9986947555277103,
+            "wrong_frequency_kl": 0.00562668692343278,
+            "true_kl_range": [
+              3.409660638278944e-05,
+              0.048711977640984304
+            ],
+            "hs_differences": {
+              "E2": {
+                "mean_difference": -0.802700247121147,
+                "ci": [
+                  -0.867804233766799,
+                  -0.6922721222576963
+                ]
+              },
+              "E3": {
+                "mean_difference": -0.8640600835359714,
+                "ci": [
+                  -0.8797670358116569,
+                  -0.846712739648359
+                ]
+              },
+              "E4": {
+                "mean_difference": -0.8531006117055966,
+                "ci": [
+                  -0.869479569359263,
+                  -0.8366887233343264
+                ]
+              }
+            },
+            "interval_reading": true,
+            "upper_bound_reading": true
+          }
+        },
+        "T-new": {
+          "N": 3,
+          "run_ids": [
+            "seed__T-new__E3__claudehaiku55-claudecode__tdef__s0",
+            "seed__T-new__E3__claudehaiku55-claudecode__tdef__s1",
+            "seed__T-new__E3__claudehaiku55-claudecode__tdef__s2",
+            "seed__T-new__E4__claudehaiku55-claudecode__tdef__s0",
+            "seed__T-new__E4__claudehaiku55-claudecode__tdef__s1",
+            "seed__T-new__E4__claudehaiku55-claudecode__tdef__s2",
+            "seed__T-new__W-freq__claudehaiku55-claudecode__tdef__s0",
+            "seed__T-new__W-freq__claudehaiku55-claudecode__tdef__s1",
+            "seed__T-new__W-freq__claudehaiku55-claudecode__tdef__s2"
+          ],
+          "H1": {
+            "levels": [
+              "E3",
+              "E4"
+            ],
+            "missing_levels": [
+              "E1",
+              "E2"
+            ],
+            "hs": {
+              "J": 9,
+              "upper_tail": 1,
+              "assignments": 20,
+              "p": 0.05,
+              "rho": 0.87831006565368,
+              "ci": [
+                0.8783100656536799,
+                0.9486832980505138
+              ],
+              "supported": false
+            },
+            "decreasing_kl": {
+              "J": 9,
+              "upper_tail": 1,
+              "assignments": 20,
+              "p": 0.05,
+              "rho": 0.87831006565368,
+              "ci": [
+                0.8783100656536799,
+                0.9486832980505138
+              ],
+              "supported": false
+            }
+          },
+          "H2": {
+            "E3>W-freq": {
+              "mean_difference": 0.8158842610622218,
+              "ci": [
+                0.729369583210318,
+                0.9023989389141258
+              ],
+              "p": 0.05,
+              "U": 9.0,
+              "rank_biserial": 1.0,
+              "min_p_untied": 0.05,
+              "holm_p": 0.05,
+              "verdict": "not supported"
+            }
+          },
+          "H3": {
+            "true_levels": [
+              "E3",
+              "E4"
+            ],
+            "full_design": false,
+            "agreement": 0.9074320620252173,
+            "wrong_frequency_kl": 0.4317546551053135,
+            "true_kl_range": [
+              0.0123698982182414,
+              0.32805026001378307
+            ],
+            "hs_differences": {
+              "E3": {
+                "mean_difference": -0.8158842610622218,
+                "ci": [
+                  -0.9023989389141258,
+                  -0.729369583210318
+                ]
+              },
+              "E4": {
+                "mean_difference": -0.8899479857529594,
+                "ci": [
+                  -0.9550089217919858,
+                  -0.8177377747889242
+                ]
+              }
+            },
+            "interval_reading": false,
+            "upper_bound_reading": false
+          }
+        },
+        "T-paper": {
+          "N": 3,
+          "run_ids": [
+            "seed__T-paper__E-paper__claudehaiku55-claudecode__tdef__s0",
+            "seed__T-paper__E-paper__claudehaiku55-claudecode__tdef__s1",
+            "seed__T-paper__E-paper__claudehaiku55-claudecode__tdef__s2",
+            "seed__T-paper__E1__claudehaiku55-claudecode__tdef__s0",
+            "seed__T-paper__E1__claudehaiku55-claudecode__tdef__s1",
+            "seed__T-paper__E1__claudehaiku55-claudecode__tdef__s2",
+            "seed__T-paper__E3__claudehaiku55-claudecode__tdef__s0",
+            "seed__T-paper__E3__claudehaiku55-claudecode__tdef__s1",
+            "seed__T-paper__E3__claudehaiku55-claudecode__tdef__s2",
+            "seed__T-paper__E4__claudehaiku55-claudecode__tdef__s0",
+            "seed__T-paper__E4__claudehaiku55-claudecode__tdef__s1",
+            "seed__T-paper__E4__claudehaiku55-claudecode__tdef__s2",
+            "seed__T-paper__W-freq__claudehaiku55-claudecode__tdef__s0",
+            "seed__T-paper__W-freq__claudehaiku55-claudecode__tdef__s1",
+            "seed__T-paper__W-freq__claudehaiku55-claudecode__tdef__s2"
+          ],
+          "H1": {
+            "levels": [
+              "E1",
+              "E3",
+              "E4"
+            ],
+            "missing_levels": [
+              "E2"
+            ],
+            "hs": {
+              "J": 21,
+              "upper_tail": 103,
+              "assignments": 1680,
+              "p": 0.06130952380952381,
+              "rho": 0.6324555320336758,
+              "ci": [
+                0.48038446141526137,
+                0.8651809126974002
+              ],
+              "supported": false
+            },
+            "decreasing_kl": {
+              "J": 12,
+              "upper_tail": 1119,
+              "assignments": 1680,
+              "p": 0.6660714285714285,
+              "rho": -0.10540925533894598,
+              "ci": [
+                -0.8006407690254356,
+                0.5407380704358751
+              ],
+              "supported": false
+            }
+          },
+          "H2": {
+            "E3>W-freq": {
+              "mean_difference": 0.8227691380930128,
+              "ci": [
+                0.7786565340763896,
+                0.8627066606089026
+              ],
+              "p": 0.05,
+              "U": 9.0,
+              "rank_biserial": 1.0,
+              "min_p_untied": 0.05,
+              "holm_p": 0.05,
+              "verdict": "not supported"
+            }
+          },
+          "H3": {
+            "true_levels": [
+              "E3",
+              "E4"
+            ],
+            "full_design": false,
+            "agreement": 0.998224867517686,
+            "wrong_frequency_kl": 0.00677452428905851,
+            "true_kl_range": [
+              0.14057240080756458,
+              0.41335691957338483
+            ],
+            "hs_differences": {
+              "E3": {
+                "mean_difference": -0.8227691380930128,
+                "ci": [
+                  -0.8627066606089026,
+                  -0.7786565340763896
+                ]
+              },
+              "E4": {
+                "mean_difference": -0.8203432949662649,
+                "ci": [
+                  -0.8490237888916521,
+                  -0.7787136226596072
+                ]
+              }
+            },
+            "interval_reading": false,
+            "upper_bound_reading": true
+          }
+        }
+      },
+      "H4": {
+        "retrains": {
+          "E3": {
+            "p": 0.004545454545454545,
+            "U": 27.0,
+            "rank_biserial": 1.0,
+            "min_p_untied": 0.004545454545454545,
+            "holm_p": 0.00909090909090909,
+            "verdict": "supported"
+          },
+          "E4": {
+            "p": 0.004545454545454545,
+            "U": 27.0,
+            "rank_biserial": 1.0,
+            "min_p_untied": 0.004545454545454545,
+            "holm_p": 0.00909090909090909,
+            "verdict": "supported"
+          }
+        },
+        "students": {
+          "E3": {
+            "p": 0.1,
+            "U": 9.0,
+            "rank_biserial": 1.0,
+            "min_p_untied": 0.1,
+            "holm_p": 0.2,
+            "verdict": "not supported"
+          },
+          "E4": {
+            "p": 0.1,
+            "U": 9.0,
+            "rank_biserial": 1.0,
+            "min_p_untied": 0.1,
+            "holm_p": 0.2,
+            "verdict": "not supported"
+          }
+        }
+      },
+      "H4b": {
+        "rows": [
+          {
+            "step": 0,
+            "hs": 0.999999966589694,
+            "kl_out": 0.0,
+            "snapshot_accuracy": 1.0
+          },
+          {
+            "step": 100,
+            "hs": 0.9980927411909205,
+            "kl_out": 0.37062174455452224,
+            "snapshot_accuracy": 0.9774453755188347
+          },
+          {
+            "step": 1000,
+            "hs": 0.9574774979645472,
+            "kl_out": 0.040109442486207875,
+            "snapshot_accuracy": 0.9957710079097815
+          },
+          {
+            "step": 10000,
+            "hs": 0.8878842738878275,
+            "kl_out": 0.00042517092465205994,
+            "snapshot_accuracy": 1.0
+          }
+        ],
+        "identity_exact": false,
+        "hs_decreases": true,
+        "kl_increases": false
+      },
+      "H5_H6": {
+        "T0_compiler": {
+          "E2": {
+            "agent_minus_compiler": -0.0006342656364095589,
+            "compiler_below_interval": false
+          },
+          "E3": {
+            "agent_minus_compiler": 0.0024530366413803018,
+            "compiler_below_interval": false
+          },
+          "E4": {
+            "agent_minus_compiler": -0.008508141978027739,
+            "compiler_below_interval": false
+          },
+          "W-freq": {
+            "agent_minus_compiler": -0.02418125537228441,
+            "compiler_below_interval": false
+          }
+        },
+        "local_cells": [
+          [
+            "qwen3.5-4b",
+            "E2",
+            0.008849557522123894,
+            0.0
+          ],
+          [
+            "qwen3.5-9b",
+            "E2",
+            0.008849557522123894,
+            0.0
+          ],
+          [
+            "qwen3.5-4b",
+            "E3",
+            0.008849557522123894,
+            0.0
+          ],
+          [
+            "qwen3.5-4b",
+            "E4",
+            0.008849557522123894,
+            0.0
+          ],
+          [
+            "qwen3.5-4b",
+            "W-freq",
+            0.008849557522123894,
+            0.0
+          ]
+        ],
+        "required_cells": 12,
+        "completed_cells": 5,
+        "H5_verdict": "not evaluable",
+        "H6_verdict": "not evaluable"
+      },
+      "H7": {
+        "margins": {
+          "main__T0__E3__claudehaiku55-claudecode__tdef__s0": 0.6652475673992395,
+          "main__T0__E3__claudehaiku55-claudecode__tdef__s1": 0.6929018479893604,
+          "main__T0__E3__claudehaiku55-claudecode__tdef__s2": 0.625774993866173,
+          "main__T0__E4__claudehaiku55-claudecode__tdef__s0": 0.6853957048190834,
+          "main__T0__E4__claudehaiku55-claudecode__tdef__s1": 0.7263465741818759,
+          "main__T0__E4__claudehaiku55-claudecode__tdef__s2": 0.7078022548646208
+        },
+        "p": 0.015625,
+        "wrong_targets": [
+          "T-paper",
+          "T1",
+          "T2",
+          "dev",
+          "rand_s0",
+          "rand_s1",
+          "rand_s2",
+          "wd0_s0",
+          "wd0_s1",
+          "wd0_s2",
+          "wd0_s3",
+          "wd0_s4"
+        ],
+        "verdict": "supported"
+      },
+      "H8": {
+        "replacements": {
+          "main__T0__E3__claudehaiku55-claudecode__tdef__s0": 0.8204021662262255,
+          "main__T0__E3__claudehaiku55-claudecode__tdef__s1": 0.7508087988982768,
+          "main__T0__E3__claudehaiku55-claudecode__tdef__s2": 0.776555439758812,
+          "main__T0__E4__claudehaiku55-claudecode__tdef__s0": 0.7522559273458147,
+          "main__T0__E4__claudehaiku55-claudecode__tdef__s1": 0.7711582982841405,
+          "main__T0__E4__claudehaiku55-claudecode__tdef__s2": 0.8394353668068636
+        },
+        "negative_controls": {
+          "controls__T0__E0__claudehaiku55-claudecode__tdef__s0": -0.8313440279897274,
+          "controls__T0__E0__claudehaiku55-claudecode__tdef__s1": -0.45251609781516366,
+          "controls__T0__E0__claudehaiku55-claudecode__tdef__s2": 0.14019224327241597,
+          "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s0": -0.4012472549968363,
+          "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s1": -0.24106766665425994,
+          "controls__T0__W-freq__claudehaiku55-claudecode__tdef__s2": -0.3779847024230469,
+          "main__T0__E1__claudehaiku55-claudecode__tdef__s0": -0.5812811255443482,
+          "main__T0__E1__claudehaiku55-claudecode__tdef__s1": -0.5757622734209255,
+          "main__T0__E1__claudehaiku55-claudecode__tdef__s2": -0.5723850820709421
+        },
+        "checkpoints": 401,
+        "verdict": "supported (descriptive)",
+        "historical": {
+          "replacement": "main__T0__E4__claudehaiku55-claudecode__tdef__s2",
+          "checkpoints": 41,
+          "rho": 0.8560975609756099
+        }
+      }
+    }
+  },
+  "fold_overlap": {
+    "ordered_off_diagonal": 12656,
+    "swap_in_training": 10236,
+    "fraction": 0.8087863463969659
+  },
+  "coverage": {
+    "distribution": "two independent arms of three iid standard-normal draws",
+    "seed": 20261126,
+    "repetitions": 20000,
+    "mean": 0.75115,
+    "difference": 0.8079,
+    "monte_carlo_se": [
+      0.003057152903438099,
+      0.002785656026863331
+    ]
+  },
+  "stimuli": {
+    "stimuli": 67,
+    "character_ratios": {
+      "dev": {
+        "W-freq": 0.9980689655172413,
+        "W-alg": 0.6033103448275862,
+        "W-role": 1.0146206896551724,
+        "W-scramble": 1.007158449527031
+      },
+      "T-new": {
+        "W-freq": 1.0,
+        "W-alg": 0.6027510316368638,
+        "W-role": 1.0132049518569464,
+        "W-scramble": 1.0048669319015797
+      },
+      "T-paper": {
+        "W-freq": 0.9983918520503886,
+        "W-alg": 0.5974269632806218,
+        "W-role": 1.0139372822299653,
+        "W-scramble": 1.0081580575317044
+      },
+      "T0": {
+        "W-freq": 1.0032327586206897,
+        "W-alg": 0.5991379310344828,
+        "W-role": 1.017510775862069,
+        "W-scramble": 1.005084844824563
+      },
+      "T1": {
+        "W-freq": 1.0,
+        "W-alg": 0.6085972850678733,
+        "W-role": 1.0138574660633484,
+        "W-scramble": 1.0130709768095574
+      },
+      "T2": {
+        "W-freq": 0.9952953476215368,
+        "W-alg": 0.5933089388395191,
+        "W-role": 1.0159435441714584,
+        "W-scramble": 1.0092063614606654
+      }
+    },
+    "true_embedding_frequencies_in_controls": {
+      "dev": {
+        "W-freq": [],
+        "W-alg": [
+          19,
+          31,
+          45,
+          47
+        ],
+        "W-role": [
+          19,
+          31,
+          45,
+          47
+        ],
+        "W-scramble": [
+          19,
+          31,
+          45,
+          47
+        ]
+      },
+      "T-new": {
+        "W-freq": [],
+        "W-alg": [
+          22,
+          37,
+          41,
+          51
+        ],
+        "W-role": [
+          22,
+          37,
+          41,
+          51
+        ],
+        "W-scramble": [
+          22,
+          37,
+          41,
+          51
+        ]
+      },
+      "T-paper": {
+        "W-freq": [],
+        "W-alg": [
+          14,
+          35,
+          41,
+          42,
+          52
+        ],
+        "W-role": [
+          14,
+          35,
+          41,
+          42,
+          52
+        ],
+        "W-scramble": [
+          14,
+          35,
+          41,
+          42,
+          52
+        ]
+      },
+      "T0": {
+        "W-freq": [],
+        "W-alg": [
+          2,
+          3,
+          23,
+          37,
+          39
+        ],
+        "W-role": [
+          2,
+          3,
+          23,
+          37,
+          39
+        ],
+        "W-scramble": [
+          2,
+          3,
+          23,
+          37,
+          39
+        ]
+      },
+      "T1": {
+        "W-freq": [],
+        "W-alg": [
+          11,
+          25,
+          49
+        ],
+        "W-role": [
+          11,
+          25,
+          49
+        ],
+        "W-scramble": [
+          11,
+          25,
+          49
+        ]
+      },
+      "T2": {
+        "W-freq": [],
+        "W-alg": [
+          37,
+          44,
+          45,
+          46,
+          47,
+          51
+        ],
+        "W-role": [
+          37,
+          44,
+          45,
+          46,
+          47,
+          51
+        ],
+        "W-scramble": [
+          37,
+          44,
+          45,
+          46,
+          47,
+          51
+        ]
+      }
+    },
+    "T0_E3_amplitude_example": {
+      "frequency": "2",
+      "compiler": 0.5342947876292539,
+      "rendered": "0.534"
+    }
+  },
+  "scale_adjusted_fvu": {
+    "E3": [
+      0.20950545079931915,
+      0.1280231012826729,
+      0.12324128757818209
+    ],
+    "W-alg": [
+      0.231713964093468,
+      0.23210278877186286,
+      0.23210236036639253
+    ],
+    "E4": [
+      0.13971778900093867,
+      0.1394751295781449,
+      0.0797728220929711
+    ],
+    "W-scramble": [
+      0.09783618231364855,
+      0.07383381208067141,
+      0.09297372788988345
+    ]
+  },
+  "E3_Walg_complete_separation": true,
+  "W_role_compiler": {
+    "argmax": 0.006500117472002506,
+    "near_tie": 0.027801707259769756
+  },
+  "logit_students": [
+    {
+      "seed": 1000,
+      "hs": 0.7834326139795414,
+      "centred_logit_fvu": 0.164528019813009,
+      "converged": false
+    },
+    {
+      "seed": 1001,
+      "hs": 0.7777883851926243,
+      "centred_logit_fvu": 0.05108587479665164,
+      "converged": false
+    },
+    {
+      "seed": 1002,
+      "hs": 0.8491362356017517,
+      "centred_logit_fvu": 0.02301525712588707,
+      "converged": true
+    }
+  ]
+}

@@ -26,7 +26,7 @@ SEED_TARGETS = ["T1", "T2", "T-new", "T-paper"]  # T-paper is contamination-flag
 PREDICTED = {  # wording follows preregistration §5; thresholds are the preregistered constants
     "H1": "HS rises and output KL falls from E1 to E4 on T0; E0 lies below E1",
     "H2": "true explanations beat length-matched false ones on HS: E3 > W-freq, W-alg, W-role; E4 > W-scramble",
-    "H3": "W-freq: argmax agreement ≥ 0.99, KL not above the true E2–E4 range, HS below each of E2–E4",
+    "H3": "W-freq: argmax agreement ≥ 0.99, KL within the E2–E4 mean range, HS below each true mean; the falsifier tests only the upper KL bound",
     "H4": "E3 and E4 beat independent retrains on HS (vs. distilled students: open question, no direction)",
     "H4b": "planted model: HS = 1 and KL = 0 at step 0, then HS strictly falls and KL strictly rises",
     "H5": "agent ≤ reference compiler on every explanation; the gap shrinks with simulator capability",
@@ -106,7 +106,7 @@ def h5_gaps(runs) -> dict[str, list[dict]]:
     what the comparison is: "T0" (the preregistered H5 test — §5's tests use the main simulator on T0), "seed" (T1, T2,
     T-new: an extension, post hoc) and "T-paper" (contamination-flagged: memorisation can lift the agent, so it is
     reported apart and not counted). `beyond` applies §5's falsifier: the agent mean exceeds the compiler by more than
-    the agent mean's 95 % bootstrap CI (with three runs the percentile CI is the range of the runs, true coverage about 75 %, so this flags more than it should).
+    the agent mean's nominal 95 % percentile interval. With three observations its exact endpoints are their extrema.
     Audit 2026-11-22 (second pass): earlier versions pooled T0 with the seed targets and silently dropped T-paper."""
     from vmi.analysis import stats as st
     out: dict[str, list[dict]] = {"T0": [], "seed": [], "T-paper": []}
@@ -116,10 +116,10 @@ def h5_gaps(runs) -> dict[str, list[dict]]:
             rs, c = _select(runs, target=t, level=lv), compiler(t, lv)
             if rs and c:
                 v = np.array([r["hs"] for r in rs])
-                ci = st.bootstrap_mean_diff(v, np.zeros(2))["ci"]  # CI of the agent mean (second group is a constant 0)
+                ci = [v.min(), v.max()] if len(v) == 3 else st.bootstrap_mean_diff(v, np.zeros(2))["ci"]
                 gap = float(v.mean() - c["hs"])
                 out[group].append({"target": t, "level": lv, "gap": gap,
-                                   "beyond": bool(gap > 0 and ci is not None and ci[0] > c["hs"])})
+                                   "beyond": None if ci is None else bool(gap > 0 and ci[0] > c["hs"])})
     return out
 
 
@@ -173,7 +173,7 @@ def prediction_rows(max_round: int) -> list[dict]:
         def status(v):  # with ≥ 2 runs per side the bootstrap CI decides; with 1 run only the sign is known
             ci = v.get("ci")
             if ci and ci[0] <= 0 <= ci[1]:
-                return "tie (CI includes 0)"
+                return "direction uncertain (CI includes 0)"
             return "ahead" if v["diff"] > 0 else "reversed"
         add("H2", "HS difference " + "; ".join(f"{k} {v['diff']:+.3f}" + (f" [{v['ci'][0]:+.3f}, {v['ci'][1]:+.3f}]" if v.get("ci") else "")
                                                for k, v in eff.items()),
@@ -186,7 +186,7 @@ def prediction_rows(max_round: int) -> list[dict]:
                                      for lv, v in dd.items())) if dd else ""
         add("H3", f"W-freq: agreement {_f(w['argmax_agreement'])}, KL {_f(w['kl'])} (true {_f(min(tk))}–{_f(max(tk))}), "
                   f"HS {_f(w['hs'])} (true {_f(min(th))}–{_f(max(th))})" + gap,
-            _match({"agreement < 0.99": w["argmax_agreement"] >= 0.99, "KL above the true range": h["kl_fooled"],
+            _match({"agreement < 0.99": w["argmax_agreement"] >= 0.99, "KL outside the true range": h["kl_within_range"],
                     "HS not below every true explanation": h["hs_catches"]}))
     b = RES / "baselines" / "T0.json"
     if "H4" in H and b.exists():
@@ -201,8 +201,8 @@ def prediction_rows(max_round: int) -> list[dict]:
     if "H4b" in H:
         rows = H["H4b"]["rows"]
         hs, kl = [r["hs"] for r in rows], [r["kl_out"] for r in rows]
-        add("H4b", "HS " + " → ".join(_f(x) for x in hs) + "; KL " + " → ".join(_f(x) for x in kl),
-            _match({"HS not strictly falling": abs(hs[0] - 1) < 1e-6 and _mono(hs, increasing=False),
+        add("H4b", "HS " + " → ".join(_f(x) for x in hs) + f" (step 0 unrounded: {hs[0]:.12f}); KL " + " → ".join(_f(x) for x in kl),
+            _match({"step-zero HS differs from exact identity": hs[0] == 1, "HS not strictly falling": _mono(hs, increasing=False),
                     "KL not strictly rising": kl[0] < 1e-9 and _mono(kl)}))
     g5 = h5_gaps(runs)
     if g5["T0"]:
@@ -213,11 +213,13 @@ def prediction_rows(max_round: int) -> list[dict]:
                f"0.01: {s5['small']}); "
                f"T-paper (memorisation-flagged, not counted): {s5['tpaper']}")
         local = [r for r in runs if r["model"] in LOCAL_MODELS]
-        add("H5", obs + f"; {len(local)} local runs, {sum(r['accuracy'] > 2 / 113 for r in local)} above chance",
+        if all(r["beyond"] is None for r in g5["T0"]):
+            obs = "T0 agent minus compiler HS: " + ", ".join(f"{r['level']} {r['gap']:+.3f}" for r in g5["T0"]) + ". One run per condition; interval unavailable"
+        add("H5", obs + f"; {len(local)} local runs, {sum(r['accuracy'] > 1 / 113 for r in local)} above chance",
             _match({"T0: agent above compiler beyond its CI": not any(r["beyond"] for r in g5["T0"]),
                     "seed targets: agent above compiler beyond its CI": not any(r["beyond"] for r in g5["seed"]),
                     "capability trend not testable": False}))
-        add("H6", f"{len(local)} local runs, {sum(r['accuracy'] > 2 / 113 for r in local)} above chance: nothing to rank",
+        add("H6", f"{len(local)} local runs, {sum(r['accuracy'] > 1 / 113 for r in local)} above uniform-guess accuracy. The three-model ranking matrix is incomplete",
             "not testable")
     if "H7" in H:
         rows = H["H7"]["rows"]
@@ -233,7 +235,10 @@ def prediction_rows(max_round: int) -> list[dict]:
         pc = json.loads(pcf.read_text(encoding="utf-8")) if pcf.exists() else {}
         names = {"final T0 (weights dump)": "final T0 itself", "Fourier-restricted T0": "Fourier-restricted T0",
                  "reference compiler E3 (no agent)": "compiler E3", "independent retrain wd1_s0": "a retrain"}
-        add("H8", f"Spearman ρ(HS, −log restricted loss) per replacement: median {_f(rho)}, min {_f(lo)} ({h['N']})"
+        hist = h.get("historical")
+        history = (f"Historical round {max_round}: one selected replacement, {hist['checkpoints']} checkpoints, "
+                   f"ρ {_f(hist['rho'])}. Retrospective full-checkpoint analysis: " if hist else "")
+        add("H8", history + f"Spearman ρ(HS, −log restricted loss) per replacement: median {_f(rho)}, min {_f(lo)} ({h['N']})"
                   + ("; negative controls (post hoc), ρ per replacement: " + "; ".join(
                       f"{lv} " + ", ".join(f"{x:+.2f}" for x in v) for lv, v in ctrl.items()) if ctrl else "")
                   + ("; reference networks (post hoc, audit 4): " + ", ".join(
@@ -241,7 +246,7 @@ def prediction_rows(max_round: int) -> list[dict]:
                      + f"; during circuit formation (steps ≤ {pc['phases']['plateau_start_step']:,}) every network with "
                        # audit 5: a lower bound is rounded down (0.99668 → 0.996, not 0.997)
                        f"T0's frequencies has ρ ≥ {math.floor(1000 * min(x for k, x in pc['phases']['rho_formation'].items() if 'retrain' not in k)) / 1000:.3f}"
-                     if pc else ""),
+                     if pc and max_round >= 2 else ""),
             _match({"ρ ≤ 0 for some replacement": lo > 0}))
     return out
 
@@ -282,20 +287,20 @@ def highlight_rows(max_round: int, target: str = "T0") -> list[dict]:
         true_kl = [r["kl_out"] for lv in ("E2", "E3", "E4") for r in _select(runs, target=target, level=lv, stage="main")
                    if not r.get("failed")]
         ls = bd.get("students_logit")
-        add(True, "Copying the output probabilities does not copy the mechanism",
+        add(True, "Probability-distilled students achieved small output KL with low HS",
             ("networks trained to copy the target's output probabilities: KL {} (true explanations E2–E4: mean {}), HS {}; "
              "random networks: HS {}; networks trained on the task from other seeds: HS {}"
              + ("; networks trained to copy its centred logits (post hoc): HS {}" if ls else ""),
              [np.mean([x["kl_out"] for x in st]), np.mean(true_kl) if true_kl else None, np.mean([x["hs"] for x in st]),
               np.mean([x["hs"] for x in rnd]), np.mean([x["hs"] for x in rt])] + ([np.mean([x["hs"] for x in ls])] if ls else [])),
-            "Matching the answers and probabilities does not raise HS. HS measures overlap of internal features, and its "
-            "scale is not anchored at 0: random networks score above working networks that use other frequencies."
+            "Mean HS for these students was close to the random-initialisation mean. HS measures cross-validated "
+            "linear predictability. Random networks had positive scores."
             + (f" Matching the logits (pre-specified reading): {lv9['a9-ls-reading']}." if "a9-ls-reading" in lv9 else ""))
     p = RES / f"hypotheses_round{max_round}.json"
     H = json.loads(p.read_text())["hypotheses"] if p.exists() else {}
     if "H7" in H and H["H7"]["rows"]:
         rows = H["H7"]["rows"]
-        add(True, "An explanation of one network does not fit another",
+        add(True, "T0 replacements scored higher against T0 than against every tested wrong target",
             ("T0's E3/E4 rebuilds: HS {} against T0, at most {} against {} other trained networks (other seeds, the "
              "published model, no-mechanism controls)",
              [np.mean([r["hs_T0"] for r in rows]), max(max(r["hs_wrong"].values()) for r in rows), len(rows[0]["hs_wrong"])]),
@@ -316,8 +321,8 @@ def highlight_rows(max_round: int, target: str = "T0") -> list[dict]:
         "score no higher HS than the Pizza-side ones (paper §5).")
     a5 = (RES / "audit5" / "checks.json")
     gap = json.loads(a5.read_text(encoding="utf-8"))["compiler_gaps"].get(target) if a5.exists() else None
-    add(False, "Did not separate a correct neuron table from a shuffled one",
-        ("shuffled table (W-scramble): HS {}; true table (E4): HS {}; matched-neuron correlation {} vs {} does separate them",
+    add(False, "The HS comparison with a redrawn neuron table was inconclusive",
+        ("redrawn table (W-scramble): HS {}; true table (E4): HS {}; matched-neuron correlation {} vs {} does separate them",
          [m("W-scramble"), m("E4"), m("W-scramble", "matched_neuron_corr"), m("E4", "matched_neuron_corr")]),
         "Neuron-level detail needs a neuron-level metric. The agents' builds did not follow the shuffled table into a "
         "lower HS"
@@ -341,7 +346,7 @@ def highlight_rows(max_round: int, target: str = "T0") -> list[dict]:
             listed = sum(bool(r.get("declared_freqs")) and len(set(r["declared_freqs"]) & paper) >= 4 for r in e1)
             # audit 5/8: recall of the published mechanism, cued by ARCHITECTURE.md (the paper's exact architecture) and
             # E1's text (the paper's algorithm); only E0's text outlines the training setup; not necessarily the paper's text
-            add(False, "The AI fills gaps from memory of the published mechanism",
+            add(False, "Build scripts listed published frequencies that the prompt omitted",
                 ("algorithm-only rebuilds ({} runs on T0 and the published checkpoint; same input text): {} build scripts "
                  "list at least four of the paper's five frequencies; HS {} against T0 but {} against the published "
                  "checkpoint (same weights)",
@@ -358,18 +363,26 @@ def highlight_rows(max_round: int, target: str = "T0") -> list[dict]:
     return out
 
 
+def _trend_numbers(groups):
+    """Preserve numeric evidence alongside the human-readable trend summary."""
+    from vmi.analysis import stats as st
+    jt = st.jonckheere(groups)
+    lv = np.repeat(np.arange(len(groups)), list(map(len, groups)))
+    sp = st.spearman_ci(lv, np.concatenate(groups), groups)
+    return {**jt, **sp, "supported": jt["p"] < 0.05 and sp["rho"] > 0 and (sp["ci"] is None or sp["ci"][0] > 0)}
+
+
 def _trend_test(groups: list[np.ndarray]) -> str:
+    return _trend_text(_trend_numbers(groups))
+
+
+def _trend_text(result) -> str:
     """§5's H1 rule on one target: one-sided Jonckheere–Terpstra p < α and Spearman ρ's bootstrap CI above 0, else "not
     supported". Audit 8: when even a perfect order could not reach p < α (smallest exact p = 1 / number of distinct
     orderings), deviation 1's post-hoc rule reads "cannot tell at this N"; it is shown after the preregistered verdict."""
-    from vmi.analysis import stats as st
-    jt = st.jonckheere(groups)
-    lv = np.concatenate([np.full(len(g), i) for i, g in enumerate(groups)])
-    sp = st.spearman_ci(lv, np.concatenate(groups), groups)
-    ok = jt["p"] < 0.05 and sp["rho"] > 0 and (sp["ci"] is None or sp["ci"][0] > 0)
-    v = "supported" if ok else "not supported"
-    post_hoc = "; post-hoc rule: cannot tell at this N" if 1 / jt["orderings"] >= 0.05 else ""
-    return f"{v} (JT p {_f(jt['p'])}, ρ {_f(sp['rho'], 2)}{post_hoc})"
+    v = "supported" if result["supported"] else "not supported"
+    post_hoc = "; post-hoc rule: cannot tell at this N" if 1 / result["orderings"] >= 0.05 else ""
+    return f"{v} (JT p {_f(result['p'])}, ρ {_f(result['rho'], 2)}{post_hoc})"
 
 
 def replication_rows(max_round: int) -> list[dict]:
@@ -401,16 +414,29 @@ def replication_rows(max_round: int) -> list[dict]:
         up = len(e3) > 0 and e3.mean() > wfv.mean()
         h2v = st.verdict_prereg(mw["p"], up)  # §5 as written first; deviation 1's reading after it (audit 8)
         post_hoc = st.verdict(mw["p"], up, st.min_p_mann_whitney(len(e3), len(wfv)))
+        within = min(kl_true) <= w_kl <= max(kl_true)
+        upper = w_kl <= max(kl_true)
+        other = w_agree >= 0.99 and all(w_hs < hs[lv] for lv in true_lv)
+        missing = [lv for lv in ("E2", "E3", "E4") if lv not in true_lv]
+        coverage = f" ({', '.join(missing)} missing; full comparison unavailable)" if missing else ""
+        h3 = (f"interval {'passes' if within and other else 'fails'}, "
+              f"upper-bound reading {'passes' if upper and other else 'fails'}" + coverage)
+        hs_test = _trend_numbers([np.array([r["hs"] for r in _select(runs, target=t, level=lv)]) for lv in trend_lv])
+        kl_test = _trend_numbers([-np.array([r["kl_out"] for r in _select(runs, target=t, level=lv)]) for lv in trend_lv])
         out.append({
+            "target_id": t, "hs_test": hs_test, "kl_test": kl_test,
+            "h2_difference": hs["E3"]-w_hs if "E3" in hs else None, "h2_p": mw["p"], "h2_registered": h2v,
             "target": t + (" (flagged: memorisation)" if t == "T-paper" else
                            " (E2–E4 only; post hoc, for comparison)" if t == "T0" else ""),
             "hs_by_level": ", ".join(f"{lv} {_f(v)}" for lv, v in hs.items()),
             "h1": (("means rise" if _mono([hs[lv] for lv in trend_lv]) else "means do not rise") + f" {'→'.join(trend_lv)}; "
-                   + _trend_test([np.array([r["hs"] for r in _select(runs, target=t, level=lv)]) for lv in trend_lv])),
+                   + _trend_text(hs_test)),
             "h2": (f"{hs['E3'] - w_hs:+.3f}; {h2v}" + (f" (p {_f(mw['p'])}" if mw["p"] is not None else "")
                    + (f"; post-hoc rule: {post_hoc})" if post_hoc != h2v else ")" if mw["p"] is not None else "")) if "E3" in hs else "–",
-            "h3_observed": f"agreement {_f(w_agree)}, KL {_f(w_kl)} (true max {_f(max(kl_true))}), HS {_f(w_hs)}",
-            "h3": _match({"agreement < 0.99": w_agree >= 0.99, "KL above the true range": w_kl <= max(kl_true),
-                          "HS not below every true explanation": all(w_hs < hs[lv] for lv in true_lv)}),
+            "h1_kl": _trend_text(kl_test),
+            "kl_within_observed_range": within, "kl_at_or_below_observed_max": upper,
+            "h3_interval": within and other, "h3_upper": upper and other,
+            "h3_observed": f"agreement {_f(w_agree)}, KL {_f(w_kl)} (true {_f(min(kl_true))}–{_f(max(kl_true))}), HS {_f(w_hs)}",
+            "h3": h3,
         })
     return out

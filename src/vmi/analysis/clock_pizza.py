@@ -100,17 +100,17 @@ def gradient_symmetricity(model, n: int = N_GRAD, seed: int = 0, fixed_attention
 def diagnose(model) -> dict:
     """Both diagnostics for one model, evaluated in float64."""
     model = model.double().eval()
-    q = distance_irrelevance(correct_logit_matrix(model))
+    with torch.no_grad():
+        logits = model(_all_inputs())[:, -1, :P].double()
+        labels = torch.arange(P * P, device=logits.device)
+        labels = (labels // P + labels % P) % P
+        correct = logits.gather(1, labels[:, None]).squeeze(1)
+        q = distance_irrelevance(correct.reshape(P, P).cpu().numpy())
     return {"distance_irrelevance": q, "gradient_symmetricity": gradient_symmetricity(model),
             "gradient_symmetricity_fixed_attention": gradient_symmetricity(model, fixed_attention=True),
-            "accuracy": float((correct_logit_matrix(model) >= _max_logit(model) - 1e-12).mean()),
+            "accuracy": float((logits.argmax(-1) == labels).double().mean()),
+            "within_tolerance_of_max": float((correct >= logits.max(-1).values - 1e-12).double().mean()),
             "side": "Clock" if q >= CLOCK_Q else "Pizza"}
-
-
-def _max_logit(model) -> np.ndarray:
-    """Largest number-class logit per input, shaped like the correct-logit matrix (for task accuracy)."""
-    with torch.no_grad():
-        return model(_all_inputs())[:, -1, :P].double().max(-1).values.reshape(P, P).numpy()
 
 
 def analyse(settings: Settings) -> Path:
@@ -131,8 +131,9 @@ def analyse(settings: Settings) -> Path:
                 rows.append({"kind": "agent", "name": f"T0 {r['level']} s{r['seed']}", "run_id": r["run_id"],
                              **diagnose(weights.to_model(weights.load_npz(npz)))})
     out = {"definition": __doc__.split("Global context:")[0].strip(), "reading_rule":
-           f"Clock if distance irrelevance ≥ {CLOCK_Q}, Pizza if < {PIZZA_Q} (Zhong et al. §4.1.2); W-alg negative "
-           "result stands if T0 is Clock and the literal Pizza build (compiler W-alg) is Pizza", "rows": rows}
+           f"Distance irrelevance ≥ {CLOCK_Q} is Clock-typical and < {PIZZA_Q} Pizza-typical "
+           "(Zhong et al. §4.1.2). Side is a descriptive bin. Hybrid algorithms are possible.", "rows": rows,
+           "accuracy_definition": "Top-1 argmax over classes. within_tolerance_of_max counts correct logits within 1e-12 of the row maximum."}
     path = RES / "controls" / "clock_pizza.json"
     path.write_text(json.dumps(out, indent=2), encoding="utf-8", newline="\n")
     return path
